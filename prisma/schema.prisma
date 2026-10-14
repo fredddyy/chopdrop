@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  phone        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  officeId     String?
+  createdAt    DateTime @default(now())
+
+  office Office? @relation(fields: [officeId], references: [id])
+  orders Order[]
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}
+
+model Restaurant {
+  id        String   @id @default(cuid())
+  name      String
+  address   String
+  phone     String
+  imageUrl  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  meals          Meal[]
+  menuCategories MenuCategory[]
+}
+
+model Meal {
+  id           String   @id @default(cuid())
+  restaurantId String
+  name         String
+  description  String?
+  imageUrl     String?
+  price        Int // kobo - for FIXED meals only
+  tag          MealTag  @default(REGULAR)
+  type         MealType @default(FIXED)
+  isAvailable  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
+  dailyMenus DailyMenu[]
+}
+
+model MenuCategory {
+  id            String        @id @default(cuid())
+  restaurantId  String
+  name          String
+  selectionRule SelectionRule @default(PICK_ONE)
+  sortOrder     Int           @default(0)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  items      MenuItem[]
+
+  @@unique([restaurantId, name])
+}
+
+model MenuItem {
+  id         String @id @default(cuid())
+  categoryId String
+  name       String
+  price      Int // kobo
+  sortOrder  Int    @default(0)
+
+  category   MenuCategory @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+}
+
+model TimeSlot {
+  id         String @id @default(cuid())
+  label      String
+  startTime  String // "12:30" (HH:mm)
+  endTime    String // "13:00"
+  cutoffTime String // "10:30"
+
+  dailyMenus DailyMenu[]
+}
+
+model DailyMenu {
+  id            String   @id @default(cuid())
+  date          DateTime @db.Date
+  mealId        String
+  timeSlotId    String
+  maxOrders     Int
+  currentOrders Int      @default(0)
+
+  meal     Meal     @relation(fields: [mealId], references: [id])
+  timeSlot TimeSlot @relation(fields: [timeSlotId], references: [id])
+  orders   Order[]
+
+  @@unique([date, mealId, timeSlotId])
+}
+
+model Office {
+  id              String   @id @default(cuid())
+  name            String // "Northcourt"
+  code            String   @unique // "NORTH-241"
+  slug            String   @unique @default("") // "northcourt-alausa" — for magic link URLs
+  secretToken     String   @default("") // random token appended to magic link for security
+  address         String // "8th floor, Alausa, Ikeja"
+  collectionPoint String   @default("Main reception") // where boxes are dropped
+  assistantName   String?
+  assistantPhone  String?
+  assistantEmail  String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  orders Order[]
+  users  User[]
+}
+
+model Order {
+  id              String          @id @default(cuid())
+  orderCode       String          @unique
+  dailyMenuId     String
+  officeId        String?
+  userId          String?
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  fulfillmentType FulfillmentType
+  deliveryAddress String?
+  quantity        Int             @default(1)
+  totalAmount     Int // kobo
+  status          OrderStatus     @default(PENDING)
+  paymentRef      String?
+  paymentStatus   PaymentStatus   @default(PENDING)
+  paidAt          DateTime?
+  createdAt       DateTime        @default(now())
+
+  dailyMenu DailyMenu   @relation(fields: [dailyMenuId], references: [id])
+  office    Office?      @relation(fields: [officeId], references: [id])
+  user      User?        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  orderId    String
+  menuItemId String
+  quantity   Int    @default(1)
+  price      Int // kobo - snapshot at time of order
+
+  order    Order    @relation(fields: [orderId], references: [id])
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+}
+
+enum MealTag {
+  REGULAR
+  DEAL
+}
+
+enum MealType {
+  FIXED
+  BUILD_YOUR_PLATE
+}
+
+enum SelectionRule {
+  PICK_ONE
+  PICK_ONE_OR_MORE
+  PICK_ANY
+}
+
+enum FulfillmentType {
+  PICKUP
+  DELIVERY
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
