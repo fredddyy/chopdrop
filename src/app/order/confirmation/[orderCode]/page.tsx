@@ -24,7 +24,7 @@ interface OrderData {
 
 export default function ConfirmationPage() {
   return (
-    <Suspense fallback={<div className="flex-1 flex items-center justify-center min-h-screen bg-cream"><div className="w-8 h-8 border-[3px] border-green border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="flex-1 flex items-center justify-center min-h-screen bg-white"><div className="w-7 h-7 border-[2.5px] border-[#0f4030] border-t-transparent rounded-full animate-spin" /></div>}>
       <ConfirmationContent />
     </Suspense>
   );
@@ -39,6 +39,11 @@ function ConfirmationContent() {
   const [order, setOrder] = useState<OrderData | null>(null);
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState(false);
+  const [officeCodeInput, setOfficeCodeInput] = useState("");
+  const [officeConnectLoading, setOfficeConnectLoading] = useState(false);
+  const [officeConnectError, setOfficeConnectError] = useState("");
+  const [officeConnected, setOfficeConnected] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     async function loadOrder() {
@@ -47,27 +52,27 @@ function ConfirmationContent() {
         await fetch(`/api/payments/verify?reference=${reference}`);
         setVerifying(false);
       }
-
       const res = await fetch(`/api/orders/${orderCode}`);
       const data = await res.json();
-      if (data.success) {
-        setOrder(data.data);
-      }
+      if (data.success) setOrder(data.data);
       setLoading(false);
+      try {
+        const stored = localStorage.getItem("chopdrop-customer");
+        if (stored) {
+          const profile = JSON.parse(stored);
+          if (profile.officeId) setOfficeConnected(true);
+        }
+      } catch { /* ignore */ }
     }
-
     loadOrder();
   }, [orderCode, reference]);
 
-  // Poll if payment is still pending
   useEffect(() => {
     if (!order || order.paymentStatus === "SUCCESS") return;
-
     let attempts = 0;
     const interval = setInterval(async () => {
       attempts++;
       if (attempts > 10) { clearInterval(interval); return; }
-
       const res = await fetch(`/api/orders/${orderCode}`);
       const data = await res.json();
       if (data.success && data.data.paymentStatus === "SUCCESS") {
@@ -75,18 +80,44 @@ function ConfirmationContent() {
         clearInterval(interval);
       }
     }, 3000);
-
     return () => clearInterval(interval);
   }, [order, orderCode]);
 
+  async function handleConnectOffice() {
+    if (!officeCodeInput.trim()) return;
+    setOfficeConnectLoading(true); setOfficeConnectError("");
+    try {
+      const res = await fetch("/api/auth/connect-office", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: officeCodeInput.trim() }) });
+      const data = await res.json();
+      if (!data.success) { setOfficeConnectError(data.error || "Office not found"); setOfficeConnectLoading(false); return; }
+      try {
+        const stored = localStorage.getItem("chopdrop-customer");
+        const profile = stored ? JSON.parse(stored) : {};
+        localStorage.setItem("chopdrop-customer", JSON.stringify({ ...profile, officeId: data.data.id, officeName: data.data.name, officeCode: data.data.code, collectionPoint: data.data.collectionPoint }));
+      } catch { /* ignore */ }
+      setOfficeConnected(true);
+      setOfficeConnectLoading(false);
+    } catch { setOfficeConnectError("Network error."); setOfficeConnectLoading(false); }
+  }
+
+  function handleShare() {
+    const text = `I just ordered with ChopDrop — fresh meals, batch delivered to the office for free. Try it: https://chopdrop-app.vercel.app`;
+    if (navigator.share) {
+      navigator.share({ title: "ChopDrop", text }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text).then(() => {
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2500);
+      }).catch(() => {});
+    }
+  }
+
   if (loading || verifying) {
     return (
-      <main className="flex-1 flex items-center justify-center min-h-screen bg-cream">
+      <main className="flex-1 flex items-center justify-center min-h-screen bg-white">
         <div className="text-center">
-          <div className="w-10 h-10 border-[3px] border-green border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-ink-soft text-sm font-medium">
-            {verifying ? "Verifying payment..." : "Loading order..."}
-          </p>
+          <div className="w-8 h-8 border-[2.5px] border-[#0f4030] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[#9ca3af] text-[13px]">{verifying ? "Verifying payment..." : "Loading order..."}</p>
         </div>
       </main>
     );
@@ -94,193 +125,217 @@ function ConfirmationContent() {
 
   if (!order) {
     return (
-      <main className="flex-1 flex items-center justify-center min-h-screen bg-cream px-5">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-red-soft rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-coral">
-              <circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" />
-            </svg>
-          </div>
-          <h1 className="font-display font-bold text-xl mb-2">Order not found</h1>
-          <Link href="/menu" className="text-coral font-bold text-sm hover:underline">Back to menu</Link>
+      <main className="flex-1 flex flex-col items-center justify-center min-h-screen bg-white px-5">
+        <div className="w-14 h-14 bg-[#fef2f2] rounded-full flex items-center justify-center mb-4">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f05f4b]"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
         </div>
+        <h1 className="font-display font-bold text-[20px] text-[#1a1a1a] mb-1">Order not found</h1>
+        <p className="text-[#9ca3af] text-[13px] mb-5">This order may have expired or doesn&apos;t exist</p>
+        <Link href="/menu" className="bg-[#f05f4b] text-white font-bold text-[13px] px-6 py-2.5 rounded-full">Back to menu</Link>
       </main>
     );
   }
 
   const isConfirmed = order.paymentStatus === "SUCCESS";
   const isPending = order.paymentStatus === "PENDING";
+  const isOffice = !!order.office;
+  const dropTime = order.timeSlot.startTime;
 
   return (
-    <main className="flex-1 max-w-lg mx-auto w-full pb-20 bg-cream">
-      <div className="px-5 py-8">
-        {/* Status icon */}
-        <div className="text-center mb-6">
+    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24 bg-[#fafaf8]">
+      <div className="px-5 pt-6 pb-4">
+        {/* ── Status header ── */}
+        <div className="text-center mb-5">
           {isConfirmed ? (
-            <div className="w-16 h-16 bg-green rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_0_10px_var(--green-soft)]">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-lime">
-                <path d="m5 12 4 4L19 6" />
-              </svg>
+            <div className="w-14 h-14 bg-[#0f4030] rounded-full flex items-center justify-center mx-auto mb-3" style={{ animation: "scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m5 12 4 4L19 6" /></svg>
             </div>
           ) : isPending ? (
-            <div className="w-16 h-16 bg-amber rounded-full flex items-center justify-center mx-auto mb-4">
-              <div className="w-8 h-8 border-[3px] border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-14 h-14 bg-[#fef3c7] rounded-full flex items-center justify-center mx-auto mb-3">
+              <div className="w-6 h-6 border-[2.5px] border-[#92400e] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="w-16 h-16 bg-red-soft rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-coral">
-                <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
+            <div className="w-14 h-14 bg-[#fef2f2] rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#f05f4b]"><path d="M18 6 6 18M6 6l12 12" /></svg>
             </div>
           )}
-
-          <h1 className="font-display font-bold text-[24px] tracking-[-0.03em]">
-            {isConfirmed ? "Order Confirmed" : isPending ? "Verifying Payment..." : "Payment Failed"}
+          <h1 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em]">
+            {isConfirmed ? "You're all set!" : isPending ? "Verifying payment..." : "Payment failed"}
           </h1>
-          {isPending && <p className="text-ink-soft text-xs mt-1">This usually takes a few seconds</p>}
-          {!isConfirmed && !isPending && (
-            <Link href="/menu" className="text-coral font-bold text-sm mt-2 block hover:underline">Try ordering again</Link>
+          {isConfirmed && (
+            <p className="text-[#9ca3af] text-[13px] mt-1">
+              {isOffice
+                ? `Your food arrives at ${dropTime}. Show your code to the captain.`
+                : `Your food will be ready at ${dropTime}.`
+              }
+            </p>
           )}
+          {isPending && <p className="text-[#9ca3af] text-[12px] mt-1">This usually takes a few seconds</p>}
+          {!isConfirmed && !isPending && <Link href="/menu" className="text-[#f05f4b] font-bold text-[13px] mt-2 block">Try again</Link>}
         </div>
 
-        {/* Order code card */}
-        <div className="bg-paper border-2 border-green/20 rounded-[16px] p-6 text-center mb-5">
-          <p className="text-ink-soft text-[11px] font-semibold uppercase tracking-[0.1em]">Your Order Code</p>
-          <p className="font-display font-[800] text-[36px] tracking-[0.02em] text-ink mt-1">{order.orderCode}</p>
-          <p className="text-green text-[11px] font-semibold mt-1">Show this code at pickup</p>
+        {/* ── Order code — the main event ── */}
+        <div className="bg-white rounded-2xl p-5 text-center shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-3">
+          <p className="text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">Collection code</p>
+          <p className="font-display font-[800] text-[38px] text-[#1a1a1a] tracking-[0.04em] mt-1 leading-none">{order.orderCode}</p>
+          <p className="text-[11px] text-[#0f4030] font-semibold mt-2">
+            {isOffice ? "Show this to your captain at collection" : "Show this code when collecting your food"}
+          </p>
         </div>
 
-        {/* Order details */}
-        <div className="bg-paper border border-line rounded-[16px] overflow-hidden mb-5">
-          {/* Meal image + info */}
+        {/* ── What happens next ── */}
+        {isConfirmed && (
+          <div className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-3">
+            <h2 className="text-[11px] font-bold text-[#9ca3af] uppercase tracking-[0.06em] mb-3">What happens next</h2>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">1</div>
+                <div>
+                  <div className="text-[12px] font-semibold text-[#1a1a1a]">Restaurant prepares your food</div>
+                  <div className="text-[10px] text-[#9ca3af] mt-0.5">{order.restaurant.name} gets your order now</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">2</div>
+                <div>
+                  <div className="text-[12px] font-semibold text-[#1a1a1a]">
+                    {isOffice ? `Batch delivery to ${order.office!.name}` : "Your food is delivered"}
+                  </div>
+                  <div className="text-[10px] text-[#9ca3af] mt-0.5">Arrives at {dropTime}</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">3</div>
+                <div>
+                  <div className="text-[12px] font-semibold text-[#1a1a1a]">
+                    {isOffice ? `Collect from ${order.office!.collectionPoint}` : "Collect with your code"}
+                  </div>
+                  <div className="text-[10px] text-[#9ca3af] mt-0.5">Show code <strong className="text-[#1a1a1a]">{order.orderCode}</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Order summary ── */}
+        <div className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden mb-3">
           {order.meal.imageUrl && (
-            <div className="h-[140px] overflow-hidden">
+            <div className="h-[120px] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={order.meal.imageUrl} alt={order.meal.name} className="w-full h-full object-cover" />
             </div>
           )}
-
-          <div className="p-4 space-y-3.5">
-            <div className="flex justify-between items-start">
+          <div className="p-4">
+            <div className="flex items-start justify-between">
               <div>
-                <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.08em]">{order.restaurant.name}</div>
-                <strong className="font-display text-[16px] block mt-0.5">{order.meal.name}</strong>
+                <p className="text-[10px] text-[#9ca3af] font-semibold">{order.restaurant.name}</p>
+                <h3 className="text-[14px] font-semibold text-[#1a1a1a] mt-0.5">{order.meal.name}</h3>
               </div>
-              <span className={`text-[9px] font-extrabold uppercase px-2 py-1 rounded-full ${
-                isConfirmed ? "bg-green-soft text-green" : "bg-amber-soft text-[#7d5716]"
-              }`}>{order.status}</span>
+              <span className={`text-[8px] font-bold uppercase px-2 py-0.5 rounded-md ${
+                isConfirmed ? "bg-[#d1fae5] text-[#0f4030]" : isPending ? "bg-[#fef3c7] text-[#92400e]" : "bg-[#fee2e2] text-[#991b1b]"
+              }`}>{isConfirmed ? "Confirmed" : isPending ? "Pending" : "Failed"}</span>
             </div>
 
-            {/* Items if build-your-plate */}
             {order.items.length > 0 && (
-              <div className="border-t border-line pt-3">
-                <span className="text-ink-soft text-[10px] font-semibold block mb-1.5">Your plate</span>
+              <div className="mt-3 pt-3 border-t border-[#f0efeb]">
                 {order.items.map((item, i) => (
-                  <div key={i} className="flex justify-between text-[12px] py-1">
-                    <span>{item.name}</span>
-                    <span className="text-ink-soft">{formatNaira(item.price)}</span>
+                  <div key={i} className="flex justify-between text-[12px] py-0.5">
+                    <span className="text-[#6b7280]">{item.name}</span>
+                    <span className="text-[#1a1a1a] font-medium">{formatNaira(item.price)}</span>
                   </div>
                 ))}
               </div>
             )}
 
-            <div className="border-t border-line pt-3 space-y-2.5">
-              <div className="flex justify-between text-[12px]">
-                <span className="text-ink-soft">Quantity</span>
-                <strong>{order.quantity}</strong>
+            <div className="mt-3 pt-3 border-t border-[#f0efeb] space-y-1.5 text-[12px]">
+              <div className="flex justify-between">
+                <span className="text-[#9ca3af]">Quantity</span>
+                <span className="font-medium text-[#1a1a1a]">{order.quantity}</span>
               </div>
-
-              {/* Office batch delivery */}
-              {order.office ? (
-                <>
-                  <div className="flex justify-between text-[12px]">
-                    <span className="text-ink-soft">Delivery</span>
-                    <strong className="text-green">Office Batch Drop</strong>
-                  </div>
-                  <div className="flex justify-between text-[12px]">
-                    <span className="text-ink-soft">Office</span>
-                    <strong className="text-right max-w-[180px]">{order.office.name}</strong>
-                  </div>
-                  <div className="flex justify-between text-[12px]">
-                    <span className="text-ink-soft">Collect at</span>
-                    <strong className="text-right max-w-[180px]">{order.office.collectionPoint}</strong>
-                  </div>
-                  {order.office.assistantName && (
-                    <div className="flex justify-between text-[12px]">
-                      <span className="text-ink-soft">Assistant</span>
-                      <strong>{order.office.assistantName}</strong>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-[12px]">
-                    <span className="text-ink-soft">Drop time</span>
-                    <strong>{order.timeSlot.startTime} – {order.timeSlot.endTime}</strong>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex justify-between text-[12px]">
-                    <span className="text-ink-soft">{order.fulfillmentType === "PICKUP" ? "Pickup at" : "Delivery to"}</span>
-                    <strong className="text-right max-w-[180px]">
-                      {order.fulfillmentType === "PICKUP" ? order.restaurant.address : order.deliveryAddress}
-                    </strong>
-                  </div>
-                  <div className="flex justify-between text-[12px]">
-                    <span className="text-ink-soft">Ready at</span>
-                    <strong>{order.timeSlot.startTime} – {order.timeSlot.endTime}</strong>
-                  </div>
-                </>
+              <div className="flex justify-between">
+                <span className="text-[#9ca3af]">Delivery</span>
+                <span className="font-medium text-[#1a1a1a]">{isOffice ? "Office Batch (Free)" : order.fulfillmentType === "DELIVERY" ? "Express" : "Pickup"}</span>
+              </div>
+              {isOffice && (
+                <div className="flex justify-between">
+                  <span className="text-[#9ca3af]">Office</span>
+                  <span className="font-medium text-[#1a1a1a] text-right max-w-[180px]">{order.office!.name}</span>
+                </div>
               )}
+              <div className="flex justify-between">
+                <span className="text-[#9ca3af]">Drop time</span>
+                <span className="font-medium text-[#1a1a1a]">{dropTime}</span>
+              </div>
             </div>
 
-            <div className="border-t border-line pt-3 flex justify-between items-center">
-              <span className="font-semibold text-[13px]">Amount paid</span>
-              <strong className="font-display font-bold text-[18px]">{formatNaira(order.totalAmount)}</strong>
+            <div className="mt-3 pt-3 border-t border-[#f0efeb] flex justify-between items-center">
+              <span className="text-[13px] font-semibold text-[#1a1a1a]">Total paid</span>
+              <span className="font-display font-bold text-[18px] text-[#1a1a1a]">{formatNaira(order.totalAmount)}</span>
             </div>
           </div>
         </div>
 
-        {/* Collection ticket */}
-        <div className="bg-paper border border-line rounded-[16px] p-4 mb-5">
-          <div className="grid grid-cols-3 divide-x divide-line text-center">
-            <div className="px-2">
-              <span className="text-ink-soft text-[8px] font-extrabold uppercase tracking-[0.08em] block">Code</span>
-              <strong className="font-display text-[13px] mt-1 block">{order.orderCode}</strong>
-            </div>
-            <div className="px-2">
-              <span className="text-ink-soft text-[8px] font-extrabold uppercase tracking-[0.08em] block">Slot</span>
-              <strong className="font-display text-[13px] mt-1 block">{order.timeSlot.startTime}</strong>
-            </div>
-            <div className="px-2">
-              <span className="text-ink-soft text-[8px] font-extrabold uppercase tracking-[0.08em] block">Type</span>
-              <strong className="font-display text-[13px] mt-1 block">{order.office ? "Office Drop" : order.fulfillmentType === "PICKUP" ? "Pickup" : "Delivery"}</strong>
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="space-y-2.5">
-          <Link
-            href="/orders"
-            className="w-full bg-ink text-white font-bold py-3 rounded-[10px] text-sm flex items-center justify-center gap-2 hover:bg-ink/90 transition-colors"
-          >
-            Track my lunch
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+        {/* ── Actions ── */}
+        <div className="flex gap-2.5 mb-3">
+          <Link href="/orders" className="flex-1 bg-[#1a1a1a] text-white font-semibold py-3 rounded-xl text-[13px] flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+            Track order
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
           </Link>
-          <Link
-            href="/menu"
-            className="w-full bg-paper border border-line text-ink font-bold py-3 rounded-[10px] text-sm flex items-center justify-center gap-2 hover:bg-cream transition-colors"
-          >
+          <Link href="/menu" className="flex-1 bg-[#f5f5f3] text-[#1a1a1a] font-semibold py-3 rounded-xl text-[13px] flex items-center justify-center active:scale-[0.98] transition-transform">
             Order more
           </Link>
         </div>
 
-        {/* Support */}
-        <div className="text-center mt-6 text-ink-soft text-[11px]">
-          <p>Questions? WhatsApp us:</p>
-          <p className="font-bold text-ink mt-0.5">0801 234 5678</p>
-        </div>
+        {/* ── Office connect prompt ── */}
+        {!officeConnected && isConfirmed && (
+          <div className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-4 mb-3">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-8 h-8 bg-[#0f4030]/[0.06] rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#0f4030]"><path d="M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3" /></svg>
+              </div>
+              <div>
+                <h3 className="text-[13px] font-semibold text-[#1a1a1a]">Want free delivery next time?</h3>
+                <p className="text-[10px] text-[#9ca3af] mt-0.5">Connect your office code for batch delivery</p>
+              </div>
+            </div>
+            {officeConnectError && (
+              <div className="bg-[#fef2f2] text-[#f05f4b] text-[10px] font-semibold p-2 rounded-lg mb-2">{officeConnectError}</div>
+            )}
+            <div className="flex gap-2">
+              <input type="text" value={officeCodeInput} onChange={(e) => setOfficeCodeInput(e.target.value)} placeholder="e.g. NORTH-241" className="flex-1 px-3 py-2 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30 uppercase" onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
+              <button type="button" onClick={handleConnectOffice} disabled={officeConnectLoading} className="bg-[#0f4030] text-white font-bold px-4 py-2 rounded-lg text-[11px] active:scale-95 transition-transform disabled:opacity-50">{officeConnectLoading ? "..." : "Connect"}</button>
+            </div>
+          </div>
+        )}
+
+        {officeConnected && (
+          <div className="bg-[#d1fae5] rounded-2xl p-3 mb-3 flex items-center gap-2.5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#0f4030] flex-shrink-0"><path d="m5 12 4 4L19 6" /></svg>
+            <span className="text-[12px] font-semibold text-[#0f4030]">Office connected — free delivery next time</span>
+          </div>
+        )}
+
+        {/* ── Share ── */}
+        <button type="button" onClick={handleShare} className="w-full bg-white rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-4 flex items-center gap-3 active:scale-[0.98] transition-all text-left">
+          <div className="w-8 h-8 bg-[#f05f4b]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            {shareCopied ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#22c55e]"><path d="m5 12 4 4L19 6" /></svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#f05f4b]"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
+            )}
+          </div>
+          <div className="flex-1">
+            <p className="text-[12px] font-semibold text-[#1a1a1a]">{shareCopied ? "Link copied!" : "Share with colleagues"}</p>
+            <p className="text-[10px] text-[#9ca3af]">{shareCopied ? "Paste it anywhere" : "More people = free delivery for everyone"}</p>
+          </div>
+        </button>
       </div>
 
       <BottomNav />
+
+      <style jsx global>{`
+        @keyframes scaleIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      `}</style>
     </main>
   );
 }

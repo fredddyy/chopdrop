@@ -1,4 +1,5 @@
 import { Logo } from "@/components/logo";
+import { MobileNav } from "@/components/mobile-nav";
 import "./landing.css";
 
 const FOOD_IMAGE =
@@ -267,10 +268,13 @@ export default function Home() {
           <a href="#audiences">Who it&apos;s for</a>
           <a href="#about">About us</a>
         </nav>
-        <Action href="#cta">Order on WhatsApp</Action>
-        <button className="menu-button" aria-label="Open navigation">
-          ☰
-        </button>
+        <div className="nav-actions">
+          <a className="action action-outline nav-app-link" href="/menu">
+            Use the App <span aria-hidden="true">→</span>
+          </a>
+          <Action href="#cta">Order on WhatsApp</Action>
+        </div>
+        <MobileNav />
       </header>
 
       <main>

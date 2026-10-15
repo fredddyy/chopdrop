@@ -21,6 +21,8 @@ interface MenuItem {
   id: string;
   name: string;
   price: number;
+  description?: string | null;
+  imageUrl?: string | null;
 }
 
 interface Category {
@@ -30,7 +32,7 @@ interface Category {
 }
 
 interface RestaurantMenuProps {
-  restaurant: { id: string; name: string; address: string };
+  restaurant: { id: string; name: string; address: string; imageUrl?: string | null; phone?: string };
   combos: ComboMeal[];
   categories: Category[];
   buildPlateDailyMenuId: string | null;
@@ -46,12 +48,13 @@ export function RestaurantMenu({
   cutoffTime,
   allExpired,
 }: RestaurantMenuProps) {
-  const tabs: { id: string; label: string; count: number }[] = [];
-  if (combos.length > 0) tabs.push({ id: "combos", label: "Combos", count: combos.length });
-  categories.forEach((cat) => tabs.push({ id: cat.id, label: cat.name, count: cat.items.length }));
+  const tabs: { id: string; label: string }[] = [];
+  if (combos.length > 0) tabs.push({ id: "combos", label: "Combos" });
+  categories.forEach((cat) => tabs.push({ id: cat.id, label: cat.name }));
 
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || "combos");
   const [toast, setToast] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const cart = useCart();
 
   function addComboToCart(combo: ComboMeal) {
@@ -70,9 +73,10 @@ export function RestaurantMenu({
     if (!buildPlateDailyMenuId) return;
     cart.addItem({
       dailyMenuId: `${buildPlateDailyMenuId}-${item.id}`,
+      realDailyMenuId: buildPlateDailyMenuId,
       name: item.name,
-      description: "",
-      imageUrl: null,
+      description: item.description || "",
+      imageUrl: item.imageUrl || null,
       restaurantName: restaurant.name,
       price: item.price,
       customItems: [{ menuItemId: item.id, quantity: 1 }],
@@ -88,51 +92,100 @@ export function RestaurantMenu({
   const activeCategory = categories.find((c) => c.id === activeTab);
   const initials = restaurant.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
+  function getCartId(item: MenuItem): string {
+    return buildPlateDailyMenuId ? `${buildPlateDailyMenuId}-${item.id}` : item.id;
+  }
+
+  function getQty(cartId: string): number {
+    return cart.items.find((i) => i.dailyMenuId === cartId)?.quantity || 0;
+  }
+
+  // Filter items by search
+  function filterItems(items: MenuItem[]) {
+    if (!searchQuery.trim()) return items;
+    const q = searchQuery.toLowerCase();
+    return items.filter((i) => i.name.toLowerCase().includes(q) || (i.description && i.description.toLowerCase().includes(q)));
+  }
+
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full pb-20">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-paper">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
-          <Link href="/menu" className="w-9 h-9 rounded-full bg-cream flex items-center justify-center hover:bg-line transition-colors flex-shrink-0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19l-7-7 7-7" /></svg>
+    <main className="flex-1 max-w-2xl mx-auto w-full pb-20 bg-paper">
+      {/* Back button — floating */}
+      <Link href="/menu" className="fixed top-4 left-4 z-50 w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-md flex items-center justify-center hover:bg-white transition-colors">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19l-7-7 7-7" /></svg>
+      </Link>
+
+      {/* Hero image */}
+      <div className="relative h-[200px] bg-cream overflow-hidden">
+        {restaurant.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={restaurant.imageUrl} alt={restaurant.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-green-soft via-cream to-amber-soft flex items-center justify-center">
+            <span className="text-green text-[72px] font-display font-extrabold opacity-15">{initials}</span>
+          </div>
+        )}
+        {/* Cart button */}
+        {cart.totalItems > 0 && (
+          <Link href="/cart" className="absolute top-4 right-4 flex items-center gap-1.5 bg-white/90 backdrop-blur text-ink text-[11px] font-bold px-3 py-2 rounded-full shadow-md">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+            {cart.totalItems}
           </Link>
-          <div className="w-9 h-9 rounded-[10px] bg-green-soft text-green flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
-            {initials}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="font-display font-bold text-[16px] leading-tight truncate">{restaurant.name}</h1>
-            <p className="text-ink-soft text-[10px] truncate">{restaurant.address}</p>
-          </div>
-          {cart.totalItems > 0 && (
-            <Link href="/cart" className="relative flex items-center gap-1.5 bg-coral text-white text-[10px] font-bold px-3 py-1.5 rounded-full flex-shrink-0">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-              {cart.totalItems}
-            </Link>
+        )}
+      </div>
+
+      {/* Restaurant info */}
+      <div className="px-4 pt-4 pb-3 text-center border-b border-line">
+        <h1 className="font-display font-bold text-[22px] tracking-[-0.03em]">{restaurant.name}</h1>
+        <p className="text-ink-soft text-[12px] mt-1">{restaurant.address}</p>
+      </div>
+
+      {/* Search bar */}
+      <div className="px-4 py-3">
+        <div className="flex items-center gap-2 bg-cream border border-line rounded-[12px] px-3 py-2.5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-ink-soft flex-shrink-0">
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+          </svg>
+          <input
+            type="text"
+            placeholder={`Search ${restaurant.name}`}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-transparent border-0 outline-0 text-[13px] w-full placeholder:text-ink-soft/60"
+          />
+          {searchQuery && (
+            <button type="button" onClick={() => setSearchQuery("")} className="text-ink-soft hover:text-ink">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
           )}
         </div>
+      </div>
 
-        {/* Category tabs */}
-        {tabs.length > 0 && (
-          <div className="flex overflow-x-auto hide-scrollbar px-4 gap-1.5 py-2.5 border-b border-line">
+      {/* Category tabs — underline style */}
+      {tabs.length > 0 && (
+        <div className="sticky top-0 z-40 bg-paper border-b border-line">
+          <div className="flex overflow-x-auto hide-scrollbar px-4 gap-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-colors flex-shrink-0 ${
+                className={`px-4 py-3 text-[13px] font-semibold whitespace-nowrap transition-colors relative flex-shrink-0 ${
                   activeTab === tab.id
-                    ? "bg-green text-white"
-                    : "bg-paper border border-line text-ink-soft hover:border-ink-soft/30"
+                    ? "text-green"
+                    : "text-ink-soft hover:text-ink"
                 }`}
               >
                 {tab.label}
+                {activeTab === tab.id && (
+                  <span className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-green rounded-full" />
+                )}
               </button>
             ))}
           </div>
-        )}
-      </header>
+        </div>
+      )}
 
-      <div className="px-4 pt-3 pb-4">
+      <div className="px-4 pt-2 pb-4">
         {allExpired ? (
           <div className="text-center py-12 text-ink-soft text-sm">Orders are closed for today.</div>
         ) : (
@@ -140,41 +193,55 @@ export function RestaurantMenu({
             {/* Combos tab */}
             {activeTab === "combos" && (
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-display font-bold text-[15px]">Combo deals</h2>
-                  <span className="text-ink-soft text-[10px]">{combos.length} available</span>
-                </div>
-                <div className="space-y-2">
-                  {combos.map((combo) => {
-                    const disabled = combo.expired || combo.remaining <= 0;
+                <h2 className="font-display font-bold text-[18px] mt-3 mb-3">Combo deals</h2>
+                <div className="space-y-0 divide-y divide-line">
+                  {filterItems(combos.map((c) => ({ id: c.dailyMenuId, name: c.name, price: c.price, description: c.description, imageUrl: c.imageUrl }))).map((combo) => {
+                    const original = combos.find((c) => c.dailyMenuId === combo.id)!;
+                    const disabled = original.expired || original.remaining <= 0;
+                    const qty = getQty(combo.id);
                     return (
-                      <div key={combo.dailyMenuId} className="bg-paper border border-line rounded-[13px] flex items-center gap-3 p-2.5 hover:border-green/30 transition-colors">
-                        <div className="w-16 h-16 rounded-[10px] overflow-hidden bg-cream flex-shrink-0">
+                      <div key={combo.id} className="flex gap-3 py-4">
+                        <div className="w-[100px] h-[100px] rounded-[12px] overflow-hidden bg-cream flex-shrink-0">
                           {combo.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img src={combo.imageUrl} alt={combo.name} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xl">🍽️</div>
+                            <div className="w-full h-full flex items-center justify-center text-2xl">🍽️</div>
                           )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-[13px] leading-tight truncate">{combo.name}</h3>
-                          {combo.description && <p className="text-ink-soft text-[10px] mt-0.5 line-clamp-1">{combo.description}</p>}
-                          <div className="flex items-center gap-2 mt-1">
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-bold text-[14px] leading-tight">{combo.name}</h3>
+                            {combo.description && (
+                              <p className="text-ink-soft text-[12px] mt-1 line-clamp-2 leading-relaxed">{combo.description}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between mt-1.5">
                             <strong className="font-display font-bold text-[14px]">{formatNaira(combo.price)}</strong>
-                            {combo.tag === "DEAL" && <span className="bg-coral/10 text-coral text-[8px] font-extrabold px-1.5 py-0.5 rounded-full">Deal</span>}
-                            {!disabled && <span className="text-ink-soft text-[9px]">{combo.remaining} left</span>}
+                            {qty > 0 ? (
+                              <div className="flex items-center gap-0 bg-coral rounded-full">
+                                <button type="button" onClick={() => cart.changeQuantity(combo.id, -1)} className="w-8 h-8 flex items-center justify-center text-white">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                </button>
+                                <span className="text-white text-[13px] font-bold min-w-[20px] text-center">{qty}</span>
+                                <button type="button" onClick={() => !disabled && addComboToCart(original)} className="w-8 h-8 flex items-center justify-center text-white">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => !disabled && addComboToCart(original)}
+                                disabled={disabled}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                                  disabled ? "bg-line text-ink-soft opacity-50" : "bg-coral text-white hover:bg-[#d95038] shadow-sm"
+                                }`}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                              </button>
+                            )}
                           </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => !disabled && addComboToCart(combo)}
-                          disabled={disabled}
-                          className={`px-3 py-2 rounded-[10px] text-[11px] font-bold flex-shrink-0 transition-all ${
-                            disabled ? "bg-line text-ink-soft opacity-50" : "bg-coral text-white hover:bg-[#d95038] shadow-sm"
-                          }`}
-                        >
-                          Add +
-                        </button>
                       </div>
                     );
                   })}
@@ -185,29 +252,57 @@ export function RestaurantMenu({
             {/* Individual items tab */}
             {activeCategory && (
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-display font-bold text-[15px]">{activeCategory.name}</h2>
-                  <span className="text-ink-soft text-[10px]">{activeCategory.items.length} items</span>
-                </div>
-                <div className="bg-paper border border-line rounded-[13px] overflow-hidden divide-y divide-line">
-                  {activeCategory.items.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between px-4 py-3 hover:bg-cream/50 transition-colors">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-[13px]">{item.name}</h3>
-                        <strong className="font-display font-bold text-[13px] mt-0.5 block">{formatNaira(item.price)}</strong>
+                <h2 className="font-display font-bold text-[18px] mt-3 mb-3">{activeCategory.name}</h2>
+                <div className="space-y-0 divide-y divide-line">
+                  {filterItems(activeCategory.items).map((item) => {
+                    const cartId = getCartId(item);
+                    const qty = getQty(cartId);
+                    return (
+                      <div key={item.id} className="flex gap-3 py-4">
+                        {item.imageUrl ? (
+                          <div className="w-[100px] h-[100px] rounded-[12px] overflow-hidden bg-cream flex-shrink-0">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                          </div>
+                        ) : null}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-bold text-[14px] leading-tight">{item.name}</h3>
+                            {item.description && (
+                              <p className="text-ink-soft text-[12px] mt-1 line-clamp-2 leading-relaxed">{item.description}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between mt-1.5">
+                            <strong className="font-display font-bold text-[14px]">{formatNaira(item.price)}</strong>
+                            {qty > 0 ? (
+                              <div className="flex items-center gap-0 bg-coral rounded-full">
+                                <button type="button" onClick={() => cart.changeQuantity(cartId, -1)} className="w-8 h-8 flex items-center justify-center text-white">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                </button>
+                                <span className="text-white text-[13px] font-bold min-w-[20px] text-center">{qty}</span>
+                                <button type="button" onClick={() => addItemToCart(item)} className="w-8 h-8 flex items-center justify-center text-white">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => addItemToCart(item)}
+                                disabled={!buildPlateDailyMenuId}
+                                className="w-8 h-8 rounded-full flex items-center justify-center bg-coral text-white hover:bg-[#d95038] shadow-sm transition-all disabled:opacity-50"
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => addItemToCart(item)}
-                        disabled={!buildPlateDailyMenuId}
-                        className="px-3 py-1.5 rounded-[8px] text-[11px] font-bold bg-coral text-white hover:bg-[#d95038] shadow-sm transition-all disabled:opacity-50 flex-shrink-0"
-                      >
-                        Add +
-                      </button>
+                    );
+                  })}
+                  {filterItems(activeCategory.items).length === 0 && (
+                    <div className="text-center py-8 text-ink-soft text-sm">
+                      {searchQuery ? "No items match your search." : "No items available."}
                     </div>
-                  ))}
-                  {activeCategory.items.length === 0 && (
-                    <div className="text-center py-8 text-ink-soft text-sm">No items available.</div>
                   )}
                 </div>
               </div>

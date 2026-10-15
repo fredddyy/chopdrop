@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from "
 
 export interface CartItem {
   dailyMenuId: string;
+  realDailyMenuId?: string; // the actual DB dailyMenu ID (for individual items, dailyMenuId is composite)
   name: string;
   description: string;
   imageUrl: string | null;

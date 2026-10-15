@@ -11,6 +11,7 @@ export const createOrderSchema = z.object({
   fulfillmentType: z.enum(["PICKUP", "DELIVERY"]),
   deliveryAddress: z.string().optional(),
   officeId: z.string().optional(),
+  dropPointId: z.string().optional(),
   quantity: z.number().int().min(1).max(10),
   items: z
     .array(
@@ -39,6 +40,9 @@ export const createMealSchema = z.object({
   description: z.string().optional(),
   imageUrl: z.string().url().optional().or(z.literal("")),
   price: z.number().int().min(0),
+  originalPrice: z.number().int().min(0).optional().nullable(),
+  maxDeals: z.number().int().min(1).default(20),
+  claimedPad: z.number().int().min(0).default(0),
   tag: z.enum(["REGULAR", "DEAL"]).default("REGULAR"),
   type: z.enum(["FIXED", "BUILD_YOUR_PLATE"]).default("FIXED"),
 });

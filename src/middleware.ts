@@ -18,12 +18,15 @@ export function middleware(request: NextRequest) {
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Protect customer pages — require user token
-  const protectedPages = ["/menu", "/cart", "/orders", "/account", "/restaurant"];
+  // Protect checkout/account pages — require user token (menu and restaurants are public)
+  const protectedPages = ["/orders", "/account"];
   const isProtected = protectedPages.some((p) => pathname.startsWith(p));
   if (isProtected) {
     const token = request.cookies.get(USER_COOKIE)?.value;
-    if (!token) return NextResponse.redirect(new URL("/auth", request.url));
+    if (!token) {
+      const returnUrl = encodeURIComponent(pathname);
+      return NextResponse.redirect(new URL(`/auth?returnTo=${returnUrl}`, request.url));
+    }
   }
 
   // Protect customer API routes that need auth
@@ -35,5 +38,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/menu", "/cart", "/orders", "/account", "/restaurant/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/orders", "/account"],
 };

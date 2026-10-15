@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { formatNaira } from "@/lib/utils";
 import { BottomNav } from "@/components/bottom-nav";
+import Link from "next/link";
 
 interface OrderData {
   id: string;
@@ -19,21 +20,28 @@ interface OrderData {
   };
 }
 
-const STATUS_STEP: Record<string, number> = {
-  PENDING: 0,
-  CONFIRMED: 1,
-  READY: 2,
-  COMPLETED: 3,
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  PENDING: { label: "Pending", color: "text-[#92400e]", bg: "bg-[#fef3c7]" },
+  CONFIRMED: { label: "Confirmed", color: "text-[#0f4030]", bg: "bg-[#d1fae5]" },
+  READY: { label: "Ready", color: "text-[#1e40af]", bg: "bg-[#dbeafe]" },
+  COMPLETED: { label: "Delivered", color: "text-[#0f4030]", bg: "bg-[#d1fae5]" },
+  CANCELLED: { label: "Cancelled", color: "text-[#991b1b]", bg: "bg-[#fee2e2]" },
 };
 
-const STEPS = ["Paid", "Kitchen prep", "In transit", "At office"];
+const STEPS = [
+  { key: "PENDING", label: "Paid", icon: "M5 12l4 4L19 6" },
+  { key: "CONFIRMED", label: "Cooking", icon: "M5 4v7M8 4v7M5 8h3M6.5 11v9M15 4v16M15 4c3 2 3 7 0 9" },
+  { key: "READY", label: "On the way", icon: "M3 6h11v11H3zM14 10h4l3 4v3h-7z" },
+  { key: "COMPLETED", label: "Delivered", icon: "M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" },
+];
+
+const STATUS_ORDER = ["PENDING", "CONFIRMED", "READY", "COMPLETED"];
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Use authenticated endpoint — server reads cookie
     fetch("/api/orders/mine")
       .then((r) => r.json())
       .then((data) => {
@@ -43,120 +51,146 @@ export default function OrdersPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  const latestOrder = orders[0];
-  const previousOrders = orders.slice(1);
+  const activeOrders = orders.filter((o) => o.status !== "COMPLETED" && o.status !== "CANCELLED");
+  const pastOrders = orders.filter((o) => o.status === "COMPLETED" || o.status === "CANCELLED");
 
   if (loading) {
     return (
-      <main className="flex-1 max-w-2xl mx-auto w-full pb-20 px-5 py-12 flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-green border-t-transparent rounded-full animate-spin" />
+      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24 flex items-center justify-center">
+        <div className="w-7 h-7 border-[2.5px] border-[#0f4030] border-t-transparent rounded-full animate-spin" />
         <BottomNav />
       </main>
     );
   }
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto w-full pb-20">
-      <div className="px-5 md:px-12 py-8">
-        <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.13em]">Your orders</div>
-        <h1 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-1">Lunch history</h1>
+    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24 bg-[#fafaf8]">
+      {/* Header */}
+      <div className="px-5 pt-5 pb-4">
+        <h1 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em]">Orders</h1>
+        <p className="text-[#9ca3af] text-[11px] mt-0.5">
+          {orders.length > 0 ? `${orders.length} order${orders.length !== 1 ? "s" : ""}` : "Your order history"}
+        </p>
       </div>
 
-      <div className="px-5 md:px-12 pb-10">
+      <div className="px-5">
         {orders.length === 0 ? (
-          <div className="bg-paper border border-line rounded-[16px] p-8 text-center">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-ink-soft mx-auto mb-3">
-              <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" /><path d="M9 8h6M9 12h6" />
-            </svg>
-            <strong className="text-ink text-sm block">No orders yet</strong>
-            <span className="text-ink-soft text-xs">Your order history will appear here after your first purchase.</span>
+          /* ── Empty state ── */
+          <div className="flex flex-col items-center py-16">
+            <div className="w-16 h-16 bg-[#f5f5f3] rounded-full flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#9ca3af]">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                <path d="M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] mb-1">No orders yet</h2>
+            <p className="text-[#9ca3af] text-[13px] mb-5 text-center max-w-[240px]">Your order history will appear here after your first drop</p>
+            <Link href="/menu" className="bg-[#f05f4b] text-white text-[13px] font-bold px-6 py-2.5 rounded-full shadow-[0_2px_10px_rgba(240,95,75,0.3)] active:scale-95 transition-transform">
+              Browse meals
+            </Link>
           </div>
         ) : (
           <>
-            {/* Latest order */}
-            {latestOrder && (
-              <div className="bg-paper border border-line rounded-[16px] p-5 mb-6">
-                <div className="flex items-center justify-between pb-4 border-b border-line">
-                  <div className="flex items-center gap-2.5">
-                    <span className="bg-green-soft text-green text-[10px] font-extrabold uppercase tracking-[0.07em] px-2.5 py-1.5 rounded-full leading-none">
-                      {latestOrder.status === "COMPLETED" ? "Delivered" : latestOrder.status}
-                    </span>
-                    <span className="text-ink-soft text-[11px]">
-                      {new Date(latestOrder.createdAt).toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" })} &middot; {latestOrder.orderCode}
-                    </span>
-                  </div>
-                  <strong className="font-display font-bold text-[15px]">{formatNaira(latestOrder.totalAmount)}</strong>
-                </div>
-
-                <div className="flex items-center gap-3.5 py-4">
-                  <div className="w-[64px] h-[54px] rounded-[10px] overflow-hidden bg-cream flex-shrink-0">
-                    {latestOrder.dailyMenu.meal.imageUrl ? (
-                      <img src={latestOrder.dailyMenu.meal.imageUrl} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xl">🍽️</div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.08em]">
-                      {latestOrder.dailyMenu.meal.restaurant.name}
-                    </div>
-                    <strong className="font-display text-[15px] block mt-0.5">{latestOrder.dailyMenu.meal.name}</strong>
-                    <small className="text-ink-soft text-[11px]">{latestOrder.quantity} meal &middot; Paid with Paystack</small>
-                  </div>
-                </div>
-
-                {/* Progress */}
-                <div className="grid grid-cols-4 pt-4 border-t border-line">
-                  {STEPS.map((step, idx) => {
-                    const currentStep = STATUS_STEP[latestOrder.status] ?? 0;
-                    const done = idx < currentStep;
-                    const active = idx === currentStep;
+            {/* ── Active orders ── */}
+            {activeOrders.length > 0 && (
+              <section className="mb-6">
+                <h2 className="text-[12px] font-bold text-[#0f4030] uppercase tracking-[0.06em] mb-3">Active</h2>
+                <div className="space-y-3">
+                  {activeOrders.map((order) => {
+                    const currentIdx = STATUS_ORDER.indexOf(order.status);
+                    const status = STATUS_CONFIG[order.status] || STATUS_CONFIG.PENDING;
                     return (
-                      <div key={step} className="flex flex-col items-center gap-1.5 relative">
-                        {idx < STEPS.length - 1 && (
-                          <div className={`absolute top-[11px] left-[calc(50%+11px)] right-[calc(-50%+11px)] h-[1px] ${done ? "bg-green" : "bg-line"}`} />
-                        )}
-                        <div className={`w-[22px] h-[22px] rounded-full flex items-center justify-center z-10 ${
-                          done || active ? "bg-green text-white" : "bg-cream border border-line text-ink-soft"
-                        }`}>
-                          {done || active ? (
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
-                          ) : (
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-                          )}
+                      <div key={order.id} className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className={`${status.bg} ${status.color} text-[9px] font-bold uppercase tracking-[0.04em] px-2 py-0.5 rounded-md`}>
+                              {status.label}
+                            </span>
+                            <span className="text-[10px] text-[#9ca3af]">{order.orderCode}</span>
+                          </div>
+                          <span className="font-display font-bold text-[15px] text-[#1a1a1a]">{formatNaira(order.totalAmount)}</span>
                         </div>
-                        <span className={`text-[9px] font-semibold ${done || active ? "text-green font-bold" : "text-ink-soft"}`}>{step}</span>
+
+                        {/* Meal info */}
+                        <div className="flex items-center gap-3 pb-3 border-b border-[#f0efeb]">
+                          <div className="w-11 h-11 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            {order.dailyMenu.meal.imageUrl ? (
+                              <img src={order.dailyMenu.meal.imageUrl} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[16px]">🍽️</div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-[13px] font-semibold text-[#1a1a1a] leading-tight truncate">{order.dailyMenu.meal.name}</h3>
+                            <p className="text-[10px] text-[#9ca3af] mt-0.5">{order.dailyMenu.meal.restaurant.name} · {order.quantity} item{order.quantity !== 1 ? "s" : ""}</p>
+                          </div>
+                        </div>
+
+                        {/* Progress tracker */}
+                        <div className="flex items-center justify-between pt-3 px-1">
+                          {STEPS.map((step, idx) => {
+                            const done = idx <= currentIdx;
+                            const isLast = idx === STEPS.length - 1;
+                            return (
+                              <div key={step.key} className="flex items-center flex-1">
+                                <div className="flex flex-col items-center">
+                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                                    done ? "bg-[#0f4030] text-white" : "bg-[#f5f5f3] text-[#d1d5db]"
+                                  }`}>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d={step.icon} /></svg>
+                                  </div>
+                                  <span className={`text-[8px] mt-1 font-medium ${done ? "text-[#0f4030]" : "text-[#d1d5db]"}`}>{step.label}</span>
+                                </div>
+                                {!isLast && (
+                                  <div className={`flex-1 h-[2px] mx-1 rounded-full ${idx < currentIdx ? "bg-[#0f4030]" : "bg-[#f0efeb]"}`} />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     );
                   })}
                 </div>
-              </div>
+              </section>
             )}
 
-            {/* Previous orders */}
-            {previousOrders.length > 0 && (
-              <>
-                <div className="font-display font-bold text-[17px] mb-3">Previous orders</div>
-                {previousOrders.map((order) => (
-                  <div key={order.id} className="flex items-center gap-3.5 py-4 border-b border-line">
-                    <div className="w-10 h-10 rounded-[10px] bg-green-soft text-green flex items-center justify-center flex-shrink-0">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" /><path d="M9 8h6M9 12h6" />
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <strong className="text-[13px] block">{order.dailyMenu.meal.name}</strong>
-                      <span className="text-ink-soft text-[10px]">
-                        {new Date(order.createdAt).toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" })} &middot; {order.orderCode} &middot; {order.status === "COMPLETED" ? "Delivered" : order.status}
-                      </span>
-                    </div>
-                    <strong className="font-display text-[13px]">{formatNaira(order.totalAmount)}</strong>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-ink-soft flex-shrink-0">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                  </div>
-                ))}
-              </>
+            {/* ── Past orders ── */}
+            {pastOrders.length > 0 && (
+              <section>
+                <h2 className="text-[12px] font-bold text-[#9ca3af] uppercase tracking-[0.06em] mb-3">
+                  {activeOrders.length > 0 ? "Past orders" : "Order history"}
+                </h2>
+                <div className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden">
+                  {pastOrders.map((order, idx) => {
+                    const status = STATUS_CONFIG[order.status] || STATUS_CONFIG.COMPLETED;
+                    return (
+                      <div key={order.id} className={`flex items-center gap-3 px-4 py-3.5 ${idx > 0 ? "border-t border-[#f0efeb]" : ""}`}>
+                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {order.dailyMenu.meal.imageUrl ? (
+                            <img src={order.dailyMenu.meal.imageUrl} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[14px]">🍽️</div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-[13px] font-semibold text-[#1a1a1a] leading-tight truncate">{order.dailyMenu.meal.name}</h3>
+                          <p className="text-[10px] text-[#9ca3af] mt-0.5">
+                            {new Date(order.createdAt).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · {order.orderCode}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <span className="font-display font-bold text-[13px] text-[#1a1a1a] block">{formatNaira(order.totalAmount)}</span>
+                          <span className={`${status.color} text-[9px] font-semibold`}>{status.label}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
             )}
           </>
         )}

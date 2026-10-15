@@ -83,6 +83,10 @@ export default function OpsPage() {
   const [mealType, setMealType] = useState("FIXED");
   const [mealDesc, setMealDesc] = useState("");
   const [mealImage, setMealImage] = useState("");
+  const [mealOriginalPrice, setMealOriginalPrice] = useState("");
+  const [mealMaxDeals, setMealMaxDeals] = useState("20");
+  const [mealClaimedPad, setMealClaimedPad] = useState("0");
+  const [uploading, setUploading] = useState(false);
 
   // Daily menu
   const [dailyMenus, setDailyMenus] = useState<{ id: string; maxOrders: number; currentOrders: number; meal: { name: string; price: number; restaurant: { name: string } }; timeSlot: { label: string; startTime: string; endTime: string } }[]>([]);
@@ -172,6 +176,29 @@ export default function OpsPage() {
     loadAll();
   }
 
+  async function uploadImage(file: File): Promise<string | null> {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "chopdrop");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.success) return data.url;
+      alert("Upload failed: " + (data.error || "Unknown error"));
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleImageFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = await uploadImage(file);
+    if (url) setMealImage(url);
+  }
+
   async function addMeal() {
     if (!mealName.trim() || !mealRestId || !mealPrice) return;
     await fetch("/api/admin/meals", {
@@ -181,6 +208,9 @@ export default function OpsPage() {
         name: mealName.trim(),
         restaurantId: mealRestId,
         price: Math.round(parseFloat(mealPrice) * 100),
+        originalPrice: mealOriginalPrice ? Math.round(parseFloat(mealOriginalPrice) * 100) : undefined,
+        maxDeals: parseInt(mealMaxDeals) || 20,
+        claimedPad: parseInt(mealClaimedPad) || 0,
         tag: mealTag,
         type: mealType,
         description: mealDesc.trim() || undefined,
@@ -600,7 +630,7 @@ export default function OpsPage() {
                     <label className="block text-[12px] font-bold mb-1.5">Tag</label>
                     <select value={mealTag} onChange={(e) => setMealTag(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
                       <option value="REGULAR">Regular</option>
-                      <option value="DEAL">Deal</option>
+                      <option value="DEAL">Deal (discount combo)</option>
                     </select>
                   </div>
                   <div>
@@ -610,14 +640,41 @@ export default function OpsPage() {
                       <option value="BUILD_YOUR_PLATE">Build Your Plate</option>
                     </select>
                   </div>
+                  {mealTag === "DEAL" && (
+                    <>
+                      <div>
+                        <label className="block text-[12px] font-bold mb-1.5">Original price (₦) <span className="font-normal text-ink-soft">strikethrough</span></label>
+                        <input type="number" value={mealOriginalPrice} onChange={(e) => setMealOriginalPrice(e.target.value)} placeholder="e.g. 2500 (before discount)" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                      </div>
+                      <div>
+                        <label className="block text-[12px] font-bold mb-1.5">Max discount spots</label>
+                        <input type="number" value={mealMaxDeals} onChange={(e) => setMealMaxDeals(e.target.value)} placeholder="20" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                      </div>
+                      <div>
+                        <label className="block text-[12px] font-bold mb-1.5">Claimed padding <span className="font-normal text-ink-soft">fake boost</span></label>
+                        <input type="number" value={mealClaimedPad} onChange={(e) => setMealClaimedPad(e.target.value)} placeholder="0" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                      </div>
+                    </>
+                  )}
                   <div>
                     <label className="block text-[12px] font-bold mb-1.5">Description <span className="font-normal text-ink-soft">(optional)</span></label>
                     <input type="text" value={mealDesc} onChange={(e) => setMealDesc(e.target.value)} placeholder="Grilled chicken, plantain & slaw" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
                   </div>
                   <div className="col-span-full">
-                    <label className="block text-[12px] font-bold mb-1.5">Image URL <span className="font-normal text-ink-soft">(optional)</span></label>
-                    <input type="url" value={mealImage} onChange={(e) => setMealImage(e.target.value)} placeholder="https://images.unsplash.com/photo-..." className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
-                    {mealImage && <img src={mealImage} alt="Preview" className="w-16 h-16 rounded-lg object-cover mt-2 border border-line" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                    <label className="block text-[12px] font-bold mb-1.5">Image <span className="font-normal text-ink-soft">(optional)</span></label>
+                    <div className="flex items-center gap-3">
+                      <label className={`px-4 py-2.5 border border-line rounded-[10px] text-sm cursor-pointer transition-colors ${uploading ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
+                        {uploading ? "Uploading..." : mealImage ? "Change image" : "Choose image"}
+                        <input type="file" accept="image/*" onChange={handleImageFile} disabled={uploading} className="hidden" />
+                      </label>
+                      {mealImage && (
+                        <button type="button" onClick={() => setMealImage("")} className="text-ink-soft text-xs hover:text-coral">Remove</button>
+                      )}
+                    </div>
+                    {mealImage && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={mealImage} alt="Preview" className="w-16 h-16 rounded-lg object-cover mt-2 border border-line" />
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">

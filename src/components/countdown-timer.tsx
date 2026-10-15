@@ -33,47 +33,51 @@ export function CountdownTimer({ cutoffTime, compact = false }: CountdownTimerPr
   const pad = (n: number) => String(n).padStart(2, "0");
 
   if (compact) {
-    // Inline compact — for sticky bars
     if (timeLeft.expired) {
       return <span className="text-[11px] font-bold text-coral">Closed</span>;
     }
+    // Flip-clock style compact digits
     return (
-      <span className="font-display font-bold text-[12px] tracking-[0.04em] whitespace-nowrap">
-        ⏱ {pad(timeLeft.hours)}:{pad(timeLeft.minutes)}:{pad(timeLeft.seconds)}
-      </span>
+      <div className="flex items-center gap-[3px]">
+        {pad(timeLeft.hours).split("").map((d, i) => (
+          <span key={`h${i}`} className="w-[18px] h-[22px] bg-white/15 rounded-[4px] flex items-center justify-center text-[12px] font-mono font-bold text-white">{d}</span>
+        ))}
+        <span className="text-white/40 text-[10px] font-bold mx-[1px]">:</span>
+        {pad(timeLeft.minutes).split("").map((d, i) => (
+          <span key={`m${i}`} className="w-[18px] h-[22px] bg-white/15 rounded-[4px] flex items-center justify-center text-[12px] font-mono font-bold text-white">{d}</span>
+        ))}
+        <span className="text-white/40 text-[10px] font-bold mx-[1px]">:</span>
+        {pad(timeLeft.seconds).split("").map((d, i) => (
+          <span key={`s${i}`} className="w-[18px] h-[22px] bg-white/15 rounded-[4px] flex items-center justify-center text-[12px] font-mono font-bold text-white animate-[pulse_1s_ease-in-out_infinite]">{d}</span>
+        ))}
+      </div>
     );
   }
 
-  const bgClass = "border border-white/[0.18] bg-white/[0.09] text-white";
-
   if (timeLeft.expired) {
     return (
-      <div className={`inline-flex items-center gap-3 ${bgClass} rounded-[13px] px-4 py-3`}>
-        <div className="w-9 h-9 bg-red-soft rounded-[10px] flex items-center justify-center flex-shrink-0">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-coral">
-            <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
-          </svg>
-        </div>
-        <div className="min-w-0">
-          <div className="text-[9px] font-extrabold uppercase tracking-[0.13em] opacity-70">Orders closed</div>
-          <div className="font-display font-bold text-[18px] tracking-[0.06em] whitespace-nowrap">00 : 00 : 00</div>
-        </div>
+      <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 rounded-[10px] px-3 py-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-coral"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+        <span className="text-[11px] font-bold text-white/70">Orders closed</span>
       </div>
     );
   }
 
   return (
-    <div className={`inline-flex items-center gap-3 ${bgClass} rounded-[13px] px-4 py-3`}>
-      <div className="w-9 h-9 bg-lime rounded-[10px] flex items-center justify-center flex-shrink-0">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-ink">
-          <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
-        </svg>
-      </div>
-      <div className="min-w-0">
-        <div className="text-[9px] font-extrabold uppercase tracking-[0.13em] opacity-70">Orders close in</div>
-        <div className="font-display font-bold text-[18px] tracking-[0.06em] whitespace-nowrap">
-          {pad(timeLeft.hours)} : {pad(timeLeft.minutes)} : {pad(timeLeft.seconds)}
-        </div>
+    <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 rounded-[10px] px-3 py-2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-lime"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+      <div className="flex items-center gap-[3px]">
+        {pad(timeLeft.hours).split("").map((d, i) => (
+          <span key={`h${i}`} className="w-[20px] h-[24px] bg-white/15 rounded-[4px] flex items-center justify-center text-[13px] font-mono font-bold text-white">{d}</span>
+        ))}
+        <span className="text-white/40 text-[11px] font-bold mx-[1px]">:</span>
+        {pad(timeLeft.minutes).split("").map((d, i) => (
+          <span key={`m${i}`} className="w-[20px] h-[24px] bg-white/15 rounded-[4px] flex items-center justify-center text-[13px] font-mono font-bold text-white">{d}</span>
+        ))}
+        <span className="text-white/40 text-[11px] font-bold mx-[1px]">:</span>
+        {pad(timeLeft.seconds).split("").map((d, i) => (
+          <span key={`s${i}`} className="w-[20px] h-[24px] bg-white/15 rounded-[4px] flex items-center justify-center text-[13px] font-mono font-bold text-white">{d}</span>
+        ))}
       </div>
     </div>
   );

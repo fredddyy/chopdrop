@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { CartProvider } from "@/lib/cart";
 import "./globals.css";
 
@@ -6,6 +6,19 @@ export const metadata: Metadata = {
   title: "ChopDrop — Meals for Your Team, Sorted",
   description:
     "Everyone picks what they want and pays for themselves. We batch the orders and deliver everything together — one smooth drop, zero stress.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "ChopDrop",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0f4030",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -15,8 +28,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+      </head>
       <body className="min-h-full flex flex-col">
         <CartProvider>{children}</CartProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if("serviceWorker"in navigator){navigator.serviceWorker.register("/sw.js")}`,
+          }}
+        />
       </body>
     </html>
   );

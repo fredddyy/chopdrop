@@ -1,0 +1,40 @@
+{
+  "name": "ChopDrop",
+  "short_name": "ChopDrop",
+  "description": "Meals for your team, sorted. Pick, pay, and collect — one smooth drop.",
+  "start_url": "/auth",
+  "display": "standalone",
+  "background_color": "#fffdf8",
+  "theme_color": "#0f4030",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["food"],
+  "lang": "en",
+  "dir": "ltr"
+}

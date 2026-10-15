@@ -3,11 +3,13 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const date = searchParams.get("date") || new Date().toISOString().split("T")[0];
+  const date =
+    searchParams.get("date") ||
+    new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
 
   const dailyMenus = await prisma.dailyMenu.findMany({
     where: {
-      date: new Date(date),
+      date: new Date(date + "T00:00:00.000Z"),
       meal: { isAvailable: true },
     },
     include: {

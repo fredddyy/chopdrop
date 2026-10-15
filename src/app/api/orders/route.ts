@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
       dailyMenuId: data.dailyMenuId,
       userId: userPayload?.id || null,
       officeId: data.officeId || null,
+      dropPointId: data.dropPointId || null,
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       customerEmail: data.customerEmail || null,

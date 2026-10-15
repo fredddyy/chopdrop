@@ -73,6 +73,7 @@ export default async function RestaurantPage({ params }: PageProps) {
         id: restaurant.id,
         name: restaurant.name,
         address: restaurant.address,
+        imageUrl: restaurant.imageUrl,
       }}
       combos={combos}
       categories={categories}

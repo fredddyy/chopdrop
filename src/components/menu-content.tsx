@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MealCard } from "./meal-card";
 import { CountdownTimer } from "./countdown-timer";
 import { BottomNav } from "./bottom-nav";
 import { useCart } from "@/lib/cart";
@@ -9,368 +8,407 @@ import { getCustomerProfile } from "@/lib/customer";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 
-interface CategoryItem {
-  id: string;
-  name: string;
-  price: number;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  selectionRule: string;
-  items: CategoryItem[];
-}
-
+interface CategoryItem { id: string; name: string; price: number; }
+interface Category { id: string; name: string; selectionRule: string; items: CategoryItem[]; }
 interface MenuItem {
-  id: string;
-  name: string;
-  description: string | null;
-  imageUrl: string | null;
-  price: number;
-  tag: string;
-  type: string;
-  restaurantId: string;
-  restaurantName: string;
-  restaurantAddress: string;
-  startTime: string;
-  endTime: string;
-  remaining: number;
-  expired: boolean;
-  categories?: Category[];
+  id: string; name: string; description: string | null; imageUrl: string | null;
+  price: number; originalPrice: number | null; maxDeals: number; claimedPad: number;
+  tag: string; type: string; restaurantId: string; restaurantName: string;
+  restaurantAddress: string; startTime: string; endTime: string; remaining: number;
+  expired: boolean; categories?: Category[];
+}
+interface RestaurantInfo { id: string; name: string; imageUrl: string | null; address: string; mealCount: number; previewImage: string | null; }
+interface SlotInfo { id: string; label: string; startTime: string; cutoffTime: string; expired: boolean; restaurants: RestaurantInfo[]; items: MenuItem[]; }
+interface MenuContentProps { slots: SlotInfo[]; defaultSlotId: string; }
+
+function getSlotIcon(label: string): string {
+  if (label.toLowerCase().includes("breakfast")) return "☀️";
+  if (label.toLowerCase().includes("lunch")) return "🍛";
+  return "🍽️";
 }
 
-interface RestaurantInfo {
-  id: string;
-  name: string;
-  imageUrl: string | null;
-  address: string;
-  mealCount: number;
-  previewImage: string | null;
+function getSlotShortName(label: string): string {
+  if (label.toLowerCase().includes("breakfast")) return "Breakfast";
+  if (label.toLowerCase().includes("lunch")) return "Lunch";
+  return label.split("(")[0].trim();
 }
 
-interface MenuContentProps {
-  items: MenuItem[];
-  restaurants: RestaurantInfo[];
-  cutoffTime: string;
-  allExpired: boolean;
+function getSlotDropTime(label: string): string {
+  const match = label.match(/\((.+)\)/);
+  return match ? match[1] : "";
 }
 
-export function MenuContent({ items, restaurants, cutoffTime, allExpired }: MenuContentProps) {
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function formatPrice(kobo: number): string {
+  return "₦" + (kobo / 100).toLocaleString();
+}
+
+export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
+  const [activeSlot, setActiveSlot] = useState(defaultSlotId);
   const [toast, setToast] = useState("");
   const [officeName, setOfficeName] = useState("");
-  const [collectionPoint, setCollectionPoint] = useState("");
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(true);
   const cart = useCart();
 
   useEffect(() => {
     const profile = getCustomerProfile();
-    if (profile) {
-      setOfficeName(profile.officeName || "");
-      setCollectionPoint(profile.collectionPoint || "");
-    }
+    if (profile) setOfficeName(profile.officeName || "");
+    const dismissed = localStorage.getItem("chopdrop-banner-dismissed");
+    setBannerDismissed(!!dismissed);
   }, []);
 
-  // Show sticky countdown bar when scrolled past hero
+  function dismissBanner() {
+    localStorage.setItem("chopdrop-banner-dismissed", "1");
+    setBannerDismissed(true);
+  }
+
   useEffect(() => {
-    function handleScroll() {
-      setShowStickyBar(window.scrollY > 200);
-    }
+    function handleScroll() { setShowStickyBar(window.scrollY > 180); }
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const [activeFilter, setActiveFilter] = useState("All");
-  const kitchenCount = restaurants.length;
-  // Only show fixed combo meals on the main menu — individual items are on restaurant pages
-  const allComboMeals = items.filter((i) => i.type === "FIXED");
-  const comboMeals = activeFilter === "All"
-    ? allComboMeals
-    : activeFilter === "Under ₦3k"
-    ? allComboMeals.filter((m) => m.price < 300000)
-    : allComboMeals; // Other filters can be extended later
+  const slot = slots.find((s) => s.id === activeSlot) || slots[0];
+  const allExpired = slots.every((s) => s.expired);
 
   function handleAddFixed(meal: MenuItem) {
     cart.addItem({
-      dailyMenuId: meal.id,
-      name: meal.name,
-      description: meal.description || "",
-      imageUrl: meal.imageUrl,
-      restaurantName: meal.restaurantName,
-      price: meal.price,
+      dailyMenuId: meal.id, name: meal.name, description: meal.description || "",
+      imageUrl: meal.imageUrl, restaurantName: meal.restaurantName, price: meal.price,
     });
-    setToast("Added to your ChopDrop");
-    setTimeout(() => setToast(""), 1800);
+    setToast(meal.name);
+    setTimeout(() => setToast(""), 2000);
   }
 
   return (
-    <main className="flex-1 max-w-4xl mx-auto w-full pb-20">
-      {/* Mobile Header */}
-      <header className="md:hidden bg-paper sticky top-0 z-40">
-        <div className="flex items-center justify-between px-4 py-3">
-          <Logo size={28} />
-          <div className="flex items-center gap-2">
-            {cart.totalItems > 0 && (
-              <Link href="/cart" className="relative w-10 h-10 rounded-[10px] border border-line flex items-center justify-center text-ink-soft hover:bg-cream transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
-                </svg>
-                <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] bg-coral text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">{cart.totalItems}</span>
-              </Link>
-            )}
-            <button className="w-10 h-10 rounded-[10px] border border-line flex items-center justify-center text-ink-soft hover:bg-cream transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        {/* Location bar */}
-        <div className="flex items-center justify-between px-4 pb-2">
-          {officeName ? (
-            <div className="flex items-center gap-1.5 text-[11px] text-ink-soft">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" className="text-green flex-shrink-0">
-                <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-              </svg>
-              <span className="font-semibold text-ink">{officeName}</span>
-              {collectionPoint && <span>&middot; {collectionPoint}</span>}
+    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24 bg-white">
+      {/* ── Header ── */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-black/[0.04]">
+        <div className="flex items-center justify-between px-5 py-3">
+          <div className="flex items-center gap-3">
+            <Logo size={24} />
+            <div className="h-4 w-px bg-black/[0.08]" />
+            <div>
+              <span className="text-[10px] text-[#9ca3af] font-medium block leading-none">{getGreeting()}</span>
+              {officeName ? (
+                <span className="text-[12px] font-semibold text-[#1a1a1a] leading-tight">{officeName}</span>
+              ) : (
+                <span className="text-[12px] text-[#9ca3af] leading-tight">Ikeja, Lagos</span>
+              )}
             </div>
-          ) : (
-            <Link href="/auth" className="flex items-center gap-1.5 text-[11px]">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" className="text-coral flex-shrink-0">
-                <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-              </svg>
-              <span className="font-semibold text-coral">Set your office</span>
-              <span className="text-ink-soft">&middot; Ikeja</span>
-            </Link>
-          )}
+          </div>
+          <Link href="/cart" className="relative w-9 h-9 rounded-full bg-[#f5f5f3] flex items-center justify-center hover:bg-[#eeedea] transition-colors">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#1a1a1a]">
+              <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
+            </svg>
+            {cart.totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] bg-[#f05f4b] text-white text-[8px] font-bold rounded-full flex items-center justify-center px-1 shadow-[0_2px_8px_rgba(240,95,75,0.35)]">
+                {cart.totalItems}
+              </span>
+            )}
+          </Link>
         </div>
       </header>
 
-      {/* Sticky countdown bar — appears on scroll */}
-      {showStickyBar && !allExpired && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-green text-white md:hidden" style={{ animation: "slideDown 0.2s ease" }}>
-          <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-2">
-            <div className="flex items-center gap-2">
-              <span className="text-lime text-[9px] font-extrabold uppercase tracking-[0.1em]">
-                {new Date().toLocaleDateString("en-US", { weekday: "short" })} drop
-              </span>
-              <span className="text-white/40">·</span>
-              <CountdownTimer cutoffTime={cutoffTime} compact />
+      {/* ── Sticky bar ── */}
+      {showStickyBar && slot && !slot.expired && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-[#0a2e20]/95 backdrop-blur-lg text-white" style={{ animation: "slideDown 0.25s ease" }}>
+          <div className="max-w-[480px] mx-auto flex items-center justify-between px-5 py-2.5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#6ee7b7]">{getSlotShortName(slot.label)} drop</span>
+            <div className="flex items-center gap-3">
+              <CountdownTimer cutoffTime={slot.cutoffTime} compact />
+              {cart.totalItems > 0 && (
+                <Link href="/cart" className="flex items-center gap-1.5 bg-[#f05f4b] text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-[0_2px_10px_rgba(240,95,75,0.4)]">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                  {cart.totalItems}
+                </Link>
+              )}
             </div>
-            {cart.totalItems > 0 && (
-              <Link href="/cart" className="flex items-center gap-1.5 bg-coral text-white text-[10px] font-bold px-3 py-1.5 rounded-full">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
-                </svg>
-                {cart.totalItems}
-              </Link>
-            )}
           </div>
         </div>
       )}
 
-      {/* Compact Hero Card */}
-      <section className="mx-4 md:mx-8 mt-2 bg-green text-white rounded-[16px] overflow-hidden relative">
-        <div className="absolute w-[120px] h-[120px] border-[30px] border-white/[0.04] rounded-full -bottom-10 right-4" />
-        <div className="px-5 py-5 relative z-10">
-          <span className="inline-block bg-amber-soft text-[#7d5716] text-[9px] font-extrabold uppercase tracking-[0.07em] px-2 py-1 rounded-full mb-2.5">
-            {new Date().toLocaleDateString("en-US", { weekday: "long" })} lunch drop
-          </span>
-          <h1 className="font-display font-bold text-[24px] md:text-[32px] leading-[1] tracking-[-0.04em]">
-            Lunch is sorted.
-          </h1>
-          <p className="text-[#d3e3dc] text-[12px] mt-1.5 max-w-[320px] leading-relaxed">
-            Everyone orders &amp; pays before 10:30. Food arrives together at 12:30.
-          </p>
-          <div className="mt-3">
-            <CountdownTimer cutoffTime={cutoffTime} />
-            <div className="flex items-center gap-3 mt-2 text-[#b8c6c1] text-[10px]">
-              <span className="flex items-center gap-1">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-lime">
-                  <path d="M3 6h11v11H3zM14 10h4l3 4v3h-7z" /><circle cx="7" cy="19" r="2" /><circle cx="18" cy="19" r="2" />
-                </svg>
-                Batch drop at 12:30 PM
-              </span>
-              <span>·</span>
-              <span>100% prepaid</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {allExpired ? (
-        <div className="text-center py-20 px-5">
-          <div className="font-display font-bold text-2xl mb-2">Today&apos;s orders are closed</div>
-          <p className="text-ink-soft text-sm mb-6">Come back tomorrow at 9:00 AM for fresh meals.</p>
-          <div className="bg-paper border border-line rounded-2xl p-6 max-w-sm mx-auto">
-            <p className="text-sm font-semibold mb-2">Already ordered?</p>
-            <Link href="/orders" className="text-green font-bold text-sm hover:underline">Check your order status</Link>
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* Social proof bar */}
-          <div className="px-5 md:px-12 pt-5">
-            <div className="flex items-center gap-2 bg-green-soft rounded-[10px] px-3.5 py-2.5">
-              <div className="flex -space-x-1.5">
-                {["AO", "TC", "EO"].map((init) => (
-                  <div key={init} className="w-6 h-6 rounded-full bg-amber text-ink text-[8px] font-extrabold flex items-center justify-center border-2 border-green-soft">{init}</div>
-                ))}
+      {/* ── How it works — first-time users ── */}
+      {!bannerDismissed && (
+        <div className="mx-5 mt-3 bg-[#0f4030] rounded-2xl px-4 py-4 relative overflow-hidden">
+          <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-white/[0.03] rounded-full" />
+          <div className="relative z-10">
+            <div className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.06em] mb-2.5">How ChopDrop works</div>
+            <div className="flex items-start gap-3 mb-2.5">
+              <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">1</div>
+              <div>
+                <div className="text-[12px] font-semibold text-white">Pick & pay before cutoff</div>
+                <div className="text-[10px] text-white/50 mt-0.5">Everyone orders individually online</div>
               </div>
-              <span className="text-green text-[11px] font-semibold">
-                {items.reduce((s, i) => s + (i.remaining < 30 ? 30 - i.remaining : 0), 0) || 12} people at your office joined today&apos;s drop
-              </span>
             </div>
+            <div className="flex items-start gap-3 mb-2.5">
+              <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">2</div>
+              <div>
+                <div className="text-[12px] font-semibold text-white">Food arrives at your office</div>
+                <div className="text-[10px] text-white/50 mt-0.5">All meals batched in one delivery</div>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">3</div>
+              <div>
+                <div className="text-[12px] font-semibold text-white">Collect with your code — free delivery</div>
+                <div className="text-[10px] text-white/50 mt-0.5">No cash, no wrong orders, no wahala</div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={dismissBanner}
+              className="mt-3 w-full bg-white/10 text-white text-[11px] font-semibold py-2 rounded-lg active:scale-[0.98] transition-transform"
+            >
+              Got it, let me order
+            </button>
           </div>
+        </div>
+      )}
 
-          {/* Meals Section */}
-          <section id="meals" className="px-5 md:px-12 py-8 md:py-14 scroll-mt-4">
-            <div className="flex justify-between items-end mb-4">
-              <h2 className="font-display font-[750] text-[26px] tracking-[-0.04em]">Pick your lunch</h2>
-              <div className="text-ink-soft text-xs">{comboMeals.length} meals &middot; {kitchenCount} kitchens</div>
+      {/* ── FIX #1: Tabs — solid dark active, no borders ── */}
+      {slots.length > 1 && (
+        <div className="flex mx-5 mt-3 gap-2">
+          {slots.map((s) => {
+            const isActive = s.id === activeSlot;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setActiveSlot(s.id)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 ${
+                  isActive
+                    ? "bg-[#1a1a1a] text-white"
+                    : "bg-[#f5f5f3] text-[#9ca3af] hover:text-[#6b7280]"
+                }`}
+              >
+                <span className="text-[14px]">{getSlotIcon(s.label)}</span>
+                <span>{getSlotShortName(s.label)}</span>
+                {s.expired && <span className="text-[8px] font-bold text-[#f05f4b] bg-[#f05f4b]/10 px-1.5 py-0.5 rounded-full ml-0.5">Closed</span>}
+                {!s.expired && !isActive && <span className="text-[10px] font-normal">{getSlotDropTime(s.label)}</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── FIX #2 & #3: Hero card — no emoji, social proof as pill below ── */}
+      {slot && !slot.expired && (() => {
+        const totalOrdered = slot.items.reduce((sum, i) => {
+          const maxO = i.tag === "DEAL" ? 20 : 50;
+          return sum + Math.max(0, maxO - i.remaining);
+        }, 0);
+        return (
+          <>
+            <div className="mx-5 mt-3 bg-gradient-to-br from-[#0f4030] via-[#0d3528] to-[#0a2e20] text-white rounded-2xl px-4 py-3.5 relative overflow-hidden">
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/[0.03] rounded-full" />
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <h2 className="font-display font-bold text-[16px] leading-none tracking-[-0.02em]">
+                    {getSlotShortName(slot.label)} Drop
+                  </h2>
+                  <p className="text-[10px] text-white/40 mt-1">
+                    Arrives {getSlotDropTime(slot.label) || slot.startTime} · Prepaid
+                  </p>
+                </div>
+                <CountdownTimer cutoffTime={slot.cutoffTime} compact />
+              </div>
             </div>
-
-            {/* Filter pills */}
-            <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-5 px-5 mb-5 pb-1">
-              {[
-                { label: "All", icon: "M4 6h16M4 12h16M4 18h16" },
-                { label: "Under ₦3k", icon: "M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" },
-                { label: "Swallow", icon: "" },
-                { label: "Rice dishes", icon: "" },
-                { label: "Sides only", icon: "" },
-                { label: "Free delivery", icon: "M3 6h11v11H3zM14 10h4l3 4v3h-7z" },
-              ].map((filter) => (
-                <button
-                  key={filter.label}
-                  type="button"
-                  onClick={() => setActiveFilter(filter.label)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold flex-shrink-0 transition-colors ${
-                    activeFilter === filter.label
-                      ? "bg-ink text-white"
-                      : "bg-paper border border-line text-ink-soft hover:border-ink-soft/30"
-                  }`}
-                >
-                  {filter.icon && (
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={filter.icon} /></svg>
-                  )}
-                  {filter.label}
-                </button>
-              ))}
+            {/* FIX #3: Social proof as separate pill */}
+            <div className="mx-5 mt-2 flex items-center gap-2 text-[11px] text-[#6b7280]">
+              {totalOrdered > 0 ? (
+                <>
+                  <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-pulse" />
+                  <span>{totalOrdered} order{totalOrdered !== 1 ? "s" : ""} placed for this drop</span>
+                </>
+              ) : officeName ? (
+                <span>Be the first from {officeName} to join today&apos;s drop</span>
+              ) : (
+                <span>Be the first to join today&apos;s {getSlotShortName(slot.label).toLowerCase()} drop</span>
+              )}
             </div>
+          </>
+        );
+      })()}
 
-            {/* Restaurant quick links */}
-            <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-5 px-5 mb-6 pb-1">
-              {restaurants.map((r) => {
-                const initials = r.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-                return (
-                  <Link key={r.id} href={`/restaurant/${r.id}`} className="flex items-center gap-2 bg-paper border border-line rounded-[11px] px-3 py-2 flex-shrink-0 hover:border-green/30 transition-colors group">
-                    <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
-                      {r.previewImage ? (
-                        <img src={r.previewImage} alt={r.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden"); }} />
-                      ) : null}
-                      <div className={`w-full h-full bg-green-soft text-green flex items-center justify-center text-[10px] font-extrabold ${r.previewImage ? "hidden" : ""}`}>
-                        {initials}
+      {/* ── Content ── */}
+      {allExpired ? (
+        <div className="text-center py-20 px-6">
+          <div className="w-16 h-16 bg-[#f5f5f3] rounded-full flex items-center justify-center mx-auto mb-4 text-[28px]">😴</div>
+          <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] mb-2">Today&apos;s orders are closed</h2>
+          <p className="text-[#9ca3af] text-[13px] mb-6">Come back tomorrow for fresh meals.</p>
+          <Link href="/orders" className="inline-flex items-center gap-2 text-[#0f4030] text-[13px] font-bold hover:underline">
+            Check order status <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6" /></svg>
+          </Link>
+        </div>
+      ) : slot && slot.expired ? (
+        <div className="text-center py-16 px-6">
+          <div className="text-[40px] mb-3">{getSlotIcon(slot.label)}</div>
+          <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] mb-2">{getSlotShortName(slot.label)} is closed</h2>
+          <p className="text-[#9ca3af] text-[13px]">
+            {slots.find((s) => !s.expired) ? (
+              <>Switch to <button type="button" onClick={() => setActiveSlot(slots.find((s) => !s.expired)!.id)} className="text-[#0f4030] font-bold underline underline-offset-2">{getSlotShortName(slots.find((s) => !s.expired)!.label)}</button></>
+            ) : "Come back tomorrow."}
+          </p>
+        </div>
+      ) : slot && (
+        <>
+          {/* ── FIX #4 & #5: Drop combos on tinted bg, narrower cards ── */}
+          {slot.items.some((i) => i.tag === "DEAL") && (
+            <section className="mt-5 bg-[#faf9f7] py-5">
+              <div className="px-5 flex items-center gap-2 mb-3">
+                <h2 className="font-display font-bold text-[16px] text-[#1a1a1a] tracking-[-0.02em]">{getSlotShortName(slot.label)} drop combos</h2>
+              </div>
+              {/* FIX #4: 220px cards so 1.4 visible */}
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-1">
+                {slot.items.filter((i) => i.tag === "DEAL").map((deal) => {
+                  const originalPrice = deal.originalPrice || Math.round(deal.price * 1.25);
+                  const savings = originalPrice - deal.price;
+                  const maxSpots = deal.maxDeals || 20;
+                  const realClaimed = maxSpots - deal.remaining;
+                  const claimed = Math.min(maxSpots - 1, realClaimed + (deal.claimedPad || 0));
+                  const pctClaimed = Math.min(100, Math.round((claimed / maxSpots) * 100));
+                  const cartQty = cart.items.find((i) => i.dailyMenuId === deal.id)?.quantity || 0;
+
+                  return (
+                    <div key={deal.id} className="flex-shrink-0 w-[220px] bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.04)]">
+                      <div className="relative h-[120px]">
+                        {deal.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={deal.imageUrl} alt={deal.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-[#fef3f0] to-[#fdf6ed] flex items-center justify-center text-[32px]">🍽️</div>
+                        )}
+                        <div className="absolute top-2 left-2 bg-white text-[#0f4030] text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+                          Save {formatPrice(savings)}
+                        </div>
+                        <div className="absolute bottom-2 right-2">
+                          {cartQty > 0 ? (
+                            <div className="flex items-center bg-[#f05f4b] rounded-full shadow-lg">
+                              <button type="button" onClick={() => cart.changeQuantity(deal.id, -1)} className="w-7 h-7 flex items-center justify-center text-white active:scale-90 transition-transform">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                              </button>
+                              <span className="text-white text-[12px] font-bold min-w-[16px] text-center">{cartQty}</span>
+                              <button type="button" onClick={() => handleAddFixed(deal)} className="w-7 h-7 flex items-center justify-center text-white active:scale-90 transition-transform">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <button type="button" onClick={() => handleAddFixed(deal)} className="w-8 h-8 rounded-full bg-white text-[#1a1a1a] flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)] active:scale-90 transition-transform ring-1 ring-black/[0.08]">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-semibold text-[13px] text-[#1a1a1a] leading-tight">{deal.name}</h3>
+                        <p className="text-[10px] text-[#9ca3af] mt-0.5">{deal.restaurantName}</p>
+                        <div className="flex items-baseline gap-1.5 mt-2">
+                          <span className="font-display font-bold text-[16px] text-[#1a1a1a]">{formatPrice(deal.price)}</span>
+                          <span className="text-[12px] text-[#d1d5db] line-through">{formatPrice(originalPrice)}</span>
+                        </div>
+                        {/* FIX #7: Smart progress text */}
+                        <div className="mt-2.5">
+                          <div className="h-[4px] bg-[#f0efeb] rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-[#f05f4b] to-[#f5c565] rounded-full transition-all duration-700 ease-out" style={{ width: `${Math.max(pctClaimed, 5)}%` }} />
+                          </div>
+                          <div className="flex justify-between text-[9px] mt-1">
+                            <span className="font-medium text-[#6b7280]">
+                              {claimed > 0 ? `${claimed}/${maxSpots} claimed` : `${maxSpots} discount spots available`}
+                            </span>
+                            {claimed > 0 && <span className="text-[#9ca3af]">{deal.remaining > 0 ? `${deal.remaining} left` : "Full price now"}</span>}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex-1">
-                      <div className="text-[11px] font-bold group-hover:text-green transition-colors">{r.name}</div>
-                      <div className="text-[9px] text-ink-soft">{r.mealCount} meal{r.mealCount !== 1 ? "s" : ""}</div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* Divider */}
+          <div className="mx-5 mt-5 h-px bg-black/[0.06]" />
+
+          {/* Restaurants */}
+          <section className="mt-5 px-5 pb-4">
+            <div className="flex justify-between items-baseline mb-3">
+              <h2 className="font-display font-bold text-[16px] text-[#1a1a1a] tracking-[-0.02em]">
+                Pick your {getSlotShortName(slot.label).toLowerCase()}
+              </h2>
+              <span className="text-[11px] text-[#9ca3af]">
+                {slot.restaurants.length} kitchen{slot.restaurants.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {slot.restaurants.map((r) => {
+                const initials = r.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+                return (
+                  <Link
+                    key={r.id}
+                    href={`/restaurant/${r.id}`}
+                    className="group block rounded-2xl overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.07),0_8px_24px_rgba(0,0,0,0.06)] transition-shadow duration-300"
+                  >
+                    {/* FIX #6: Shorter image so card is fully visible */}
+                    <div className="relative h-[150px] overflow-hidden">
+                      {(r.previewImage || r.imageUrl) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={(r.previewImage || r.imageUrl)!}
+                          alt={r.name}
+                          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#e8f5e9] to-[#f5f5f3] flex items-center justify-center">
+                          <span className="text-[#0f4030]/15 text-[48px] font-display font-extrabold">{initials}</span>
+                        </div>
+                      )}
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+                      {/* Meal count on image */}
+                      <div className="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-sm text-[#1a1a1a] text-[10px] font-semibold px-2 py-0.5 rounded-md">
+                        {r.mealCount} meal{r.mealCount !== 1 ? "s" : ""}
+                      </div>
+                      <div className="absolute top-2.5 right-2.5 w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#1a1a1a]"><path d="m9 18 6-6-6-6" /></svg>
+                      </div>
                     </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-ink-soft/50 group-hover:text-green transition-colors flex-shrink-0">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
+                    <div className="px-3.5 py-3">
+                      <h3 className="font-display font-bold text-[14px] text-[#1a1a1a] tracking-[-0.01em]">{r.name}</h3>
+                      <p className="text-[11px] text-[#9ca3af] mt-0.5">{r.address}</p>
+                    </div>
                   </Link>
                 );
               })}
             </div>
-
-            {/* Meal Grid — only combos, individual items are on restaurant pages */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {comboMeals.map((item) => (
-                <MealCard
-                  key={item.id}
-                  dailyMenuId={item.id}
-                  name={item.name}
-                  description={item.description}
-                  imageUrl={item.imageUrl}
-                  price={item.price}
-                  tag={item.tag}
-                  type={item.type}
-                  restaurantName={item.restaurantName}
-                  restaurantAddress={item.restaurantAddress}
-                  startTime={item.startTime}
-                  endTime={item.endTime}
-                  remaining={item.remaining}
-                  expired={item.expired}
-                  onAdd={() => handleAddFixed(item)}
-                />
-              ))}
-            </div>
-
-            {/* Browse individual items CTA */}
-            <div className="mt-5 bg-paper border border-line rounded-[14px] p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-amber-soft rounded-[10px] flex items-center justify-center flex-shrink-0 text-lg">
-                    🍗
-                  </div>
-                  <div>
-                    <strong className="font-display font-bold text-[14px] block">Just want sides or protein?</strong>
-                    <span className="text-ink-soft text-[11px]">Browse any restaurant&apos;s full menu and pick individual items.</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2 mt-3">
-                {restaurants.map((r) => (
-                  <Link
-                    key={r.id}
-                    href={`/restaurant/${r.id}`}
-                    className="flex-1 flex items-center justify-center gap-1.5 bg-cream hover:bg-line border border-line rounded-[10px] py-2 text-[11px] font-bold text-ink transition-colors"
-                  >
-                    {r.name.split(" ")[0]}
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* How it works */}
-          <section className="bg-amber px-5 md:px-12 py-7 grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[
-              ["01", "No guesswork", "Pick your meal before 10:30. Restaurants cook exactly what's ordered."],
-              ["02", "No cash drama", "Everyone pays upfront with Paystack. No IOUs, no shortfalls."],
-              ["03", "One clean drop", "All meals arrive together at 12:30. Your assistant distributes by code."],
-            ].map(([num, title, desc]) => (
-              <div key={num} className="flex gap-3">
-                <span className="w-[22px] h-[22px] border border-ink/30 rounded-full flex items-center justify-center text-[9px] font-extrabold flex-shrink-0 mt-0.5">{num}</span>
-                <div>
-                  <strong className="font-display text-[13px] font-bold">{title}</strong>
-                  <p className="text-[10px] text-[#725f39] mt-1">{desc}</p>
-                </div>
-              </div>
-            ))}
           </section>
         </>
       )}
 
-      {/* Toast */}
+      {/* ── Toast ── */}
       {toast && (
-        <div className="fixed z-[100] left-1/2 bottom-6 -translate-x-1/2 bg-ink text-white rounded-[11px] shadow-[0_15px_35px_rgba(0,0,0,0.22)] px-4 py-3 flex items-center gap-2 text-xs font-bold animate-[toastIn_0.25s_ease]">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-lime">
-            <path d="m5 12 4 4L19 6" />
-          </svg>
-          {toast}
+        <div className="fixed z-[100] left-1/2 bottom-24 -translate-x-1/2 bg-[#1a1a1a] text-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.25)] pl-3 pr-4 py-2.5 flex items-center gap-2 text-[12px] font-semibold" style={{ animation: "toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+          <div className="w-5 h-5 bg-[#6ee7b7] rounded-full flex items-center justify-center flex-shrink-0">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-[#0f4030]"><path d="m5 12 4 4L19 6" /></svg>
+          </div>
+          {toast} added
         </div>
       )}
 
       <BottomNav />
 
       <style jsx global>{`
-        @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 10px); } }
+        @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 12px) scale(0.95); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
       `}</style>
     </main>
   );

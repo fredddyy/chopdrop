@@ -43,16 +43,19 @@ model Restaurant {
 }
 
 model Meal {
-  id           String   @id @default(cuid())
-  restaurantId String
-  name         String
-  description  String?
-  imageUrl     String?
-  price        Int // kobo - for FIXED meals only
-  tag          MealTag  @default(REGULAR)
-  type         MealType @default(FIXED)
-  isAvailable  Boolean  @default(true)
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  restaurantId  String
+  name          String
+  description   String?
+  imageUrl      String?
+  price         Int // kobo - deal/discounted price for FIXED meals
+  originalPrice Int?    // kobo - original price before discount (shown as strikethrough)
+  maxDeals      Int     @default(20) // max discount spots for DEAL items
+  claimedPad    Int     @default(0)  // fake claimed count padding
+  tag           MealTag  @default(REGULAR)
+  type          MealType @default(FIXED)
+  isAvailable   Boolean  @default(true)
+  createdAt     DateTime @default(now())
 
   restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
   dailyMenus DailyMenu[]
@@ -125,11 +128,32 @@ model Office {
   users  User[]
 }
 
+model DropPoint {
+  id        String        @id @default(cuid())
+  name      String // "Sterling Towers"
+  address   String // "15 Allen Avenue, Ikeja"
+  tier      DropPointTier @default(SOLO)
+  captainId String?
+  code      String?       @unique // auto-generated at OFFICE tier
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+
+  orders Order[]
+}
+
+enum DropPointTier {
+  SOLO
+  DROP_POINT
+  MANAGED
+  OFFICE
+}
+
 model Order {
   id              String          @id @default(cuid())
   orderCode       String          @unique
   dailyMenuId     String
   officeId        String?
+  dropPointId     String?
   userId          String?
   customerName    String
   customerPhone   String
@@ -144,10 +168,11 @@ model Order {
   paidAt          DateTime?
   createdAt       DateTime        @default(now())
 
-  dailyMenu DailyMenu   @relation(fields: [dailyMenuId], references: [id])
-  office    Office?      @relation(fields: [officeId], references: [id])
-  user      User?        @relation(fields: [userId], references: [id])
-  items     OrderItem[]
+  dailyMenu  DailyMenu   @relation(fields: [dailyMenuId], references: [id])
+  office     Office?     @relation(fields: [officeId], references: [id])
+  dropPoint  DropPoint?  @relation(fields: [dropPointId], references: [id])
+  user       User?       @relation(fields: [userId], references: [id])
+  items      OrderItem[]
 }
 
 model OrderItem {
