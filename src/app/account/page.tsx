@@ -21,8 +21,33 @@ export default function AccountPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Load from localStorage first
     const p = getCustomerProfile();
     if (p) setProfile({ collectionPoint: "", reminders: true, ...p });
+
+    // Then sync from server (source of truth)
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.data) {
+          const u = d.data;
+          const serverProfile = {
+            name: `${u.firstName} ${u.lastName || ""}`.trim(),
+            phone: u.phone || "",
+            email: u.email || "",
+            deliveryAddress: p?.deliveryAddress || "",
+            preferredFulfillment: p?.preferredFulfillment || "PICKUP",
+            collectionPoint: u.office?.collectionPoint || p?.collectionPoint || "",
+            reminders: p?.reminders ?? true,
+            officeId: u.office?.id,
+            officeName: u.office?.name,
+            officeCode: u.office?.code,
+          };
+          setProfile(serverProfile);
+          saveCustomerProfile(serverProfile);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   function save(updates: Partial<CustomerProfile>) {
@@ -39,13 +64,27 @@ export default function AccountPage() {
     setOfficeCodeLoading(true); setOfficeCodeError("");
     try {
       const res = await fetch("/api/auth/connect-office", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: officeCodeInput.trim() }) });
+      if (res.status === 401) {
+        // Not authenticated — try the public lookup instead
+        const lookupRes = await fetch(`/api/offices/lookup?code=${encodeURIComponent(officeCodeInput.trim().toUpperCase())}`);
+        const lookupData = await lookupRes.json();
+        if (lookupData.success) {
+          save({ officeId: lookupData.data.id, officeName: lookupData.data.name, officeCode: lookupData.data.code, collectionPoint: lookupData.data.collectionPoint });
+          setOfficeCodeInput("");
+          setEditingOffice(false);
+        } else {
+          setOfficeCodeError(lookupData.error || "Office not found");
+        }
+        setOfficeCodeLoading(false);
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         save({ officeId: data.data.id, officeName: data.data.name, officeCode: data.data.code, collectionPoint: data.data.collectionPoint });
         setOfficeCodeInput("");
         setEditingOffice(false);
       } else { setOfficeCodeError(data.error || "Office not found"); }
-    } catch { setOfficeCodeError("Network error"); }
+    } catch (e) { setOfficeCodeError("Connection error. Check your internet and try again."); }
     setOfficeCodeLoading(false);
   }
 
@@ -56,9 +95,11 @@ export default function AccountPage() {
     setCollectionInput("");
   }
 
-  function handleLogout() {
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
     clearCustomerProfile();
-    document.cookie = "chopdrop-user-token=; path=/; max-age=0";
+    localStorage.removeItem("chopdrop-cart");
+    localStorage.removeItem("chopdrop-banner-dismissed");
     router.push("/menu");
   }
 
@@ -137,6 +178,29 @@ export default function AccountPage() {
               <span className="text-[10px] font-semibold text-[#0f4030]">{editingOffice ? "Cancel" : "Connect"}</span>
             )}
           </button>
+          {/* Connected — show disconnect option */}
+          {profile.officeName && (
+            <div className="px-4 py-2.5 border-b border-[#f0efeb] flex items-center justify-between">
+              <div className="text-[10px] text-[#9ca3af]">
+                {profile.officeCode && <span className="font-mono font-bold text-[#1a1a1a] mr-1.5">{profile.officeCode}</span>}
+                {profile.collectionPoint && <span>· {profile.collectionPoint}</span>}
+              </div>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (confirm("Disconnect from this office? You'll need a code to reconnect for free delivery.")) {
+                    await fetch("/api/auth/disconnect-office", { method: "POST" });
+                    save({ officeId: undefined, officeName: undefined, officeCode: undefined, collectionPoint: "" });
+                    setEditingOffice(false);
+                  }
+                }}
+                className="text-[10px] font-semibold text-[#f05f4b]"
+              >
+                Disconnect
+              </button>
+            </div>
+          )}
+          {/* Not connected — show connect form */}
           {editingOffice && !profile.officeName && (
             <div className="px-4 py-3 border-b border-[#f0efeb] space-y-2">
               <p className="text-[10px] text-[#9ca3af]">Enter your office code to connect. Ask your office assistant if you don&apos;t have one.</p>

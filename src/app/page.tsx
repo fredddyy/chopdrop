@@ -120,9 +120,9 @@ function PhoneMockup({ compact = false }: { compact?: boolean }) {
           <div>
             <small>The Lunch Kitchen</small>
             <strong>
-              Good food.
+              Work is stressful.
               <br />
-              Zero wahala.
+              Food shouldn&apos;t be.
             </strong>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -175,7 +175,7 @@ function OrderPhone() {
         <span>We&apos;ll see you at lunchtime</span>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="Rice and chicken order" src={FOOD_IMAGE} />
-        <b>12:30 PM</b>
+        <b>by 12:00 PM</b>
         <small>One batch. One smooth delivery.</small>
         <div className="collection-code">COLLECT WITH CODE · CD 028</div>
       </div>
@@ -331,7 +331,7 @@ export default function Home() {
                   <Icon name="clock" size={18} />
                 </span>
                 <div>
-                  <strong>12:30. Meals land.</strong>
+                  <strong>By 12 PM. Meals land.</strong>
                   <small>One drop. Right on time.</small>
                 </div>
               </div>
@@ -522,7 +522,7 @@ export default function Home() {
         <div className="container footer-grid">
           <div className="footer-brand">
             <Logo size={28} variant="dark" />
-            <p>Good food. Less wahala.</p>
+            <p>Work is stressful. Food shouldn&apos;t be.</p>
           </div>
           <div>
             <strong>Product</strong>
@@ -544,7 +544,7 @@ export default function Home() {
         </div>
         <div className="container footer-bottom">
           <span>© 2026 ChopDrop · Ikeja, Lagos</span>
-          <span>Group ordering made simple.</span>
+          <span>Work is stressful. Food shouldn&apos;t be.</span>
         </div>
       </footer>
     </div>

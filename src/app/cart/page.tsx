@@ -55,10 +55,9 @@ export default function CartPage() {
   const [showAuthPassword, setShowAuthPassword] = useState(false);
 
   useEffect(() => {
+    // Only load office/delivery prefs from localStorage — contact comes from auth check
     const profile = getCustomerProfile();
     if (profile) {
-      setCustomerName(profile.name);
-      setCustomerPhone(profile.phone);
       setDeliveryAddress(profile.deliveryAddress || "");
       if (profile.officeId) {
         setOfficeId(profile.officeId);
@@ -68,15 +67,26 @@ export default function CartPage() {
       }
     }
 
-    // Check auth status and fill contact from server if available
+    // Check auth status from server (cookie is httpOnly, can't check client-side)
     fetch("/api/auth/me")
       .then((r) => r.json())
       .then((d) => {
         setIsAuthenticated(!!d.success);
         if (d.success && d.data) {
           const u = d.data;
-          if (!customerName && u.firstName) setCustomerName(`${u.firstName} ${u.lastName || ""}`);
-          if (!customerPhone && u.phone) setCustomerPhone(u.phone);
+          if (u.firstName) setCustomerName(`${u.firstName} ${u.lastName || ""}`);
+          if (u.phone) setCustomerPhone(u.phone);
+          // Also set office from server if available
+          if (u.office?.id) {
+            setOfficeId(u.office.id);
+            setOfficeName(u.office.name || "");
+            setCollectionPoint(u.office.collectionPoint || "");
+            setFulfillment("office");
+          }
+        } else {
+          // Not authenticated — clear contact fields loaded from stale localStorage
+          setCustomerName("");
+          setCustomerPhone("");
         }
         if (d.success) {
           fetch("/api/orders/mine")
@@ -137,10 +147,9 @@ export default function CartPage() {
   const deliveryFee = isFirstOrder ? 0 :
     fulfillment === "delivery" ? EXPRESS_FEE :
     (fulfillment === "building" && selectedDropPoint && !selectedDropPoint.isFreeDelivery) ? EXPRESS_FEE : 0;
-  const orderTotal = cart.subtotal + deliveryFee + SERVICE_FEE + captainTip;
-  const MIN_BASKET = 250000;
-  const belowMinimum = cart.subtotal > 0 && cart.subtotal < MIN_BASKET;
-  const shortfall = MIN_BASKET - cart.subtotal;
+  const effectiveTip = (fulfillment === "office" && officeId) ? captainTip : 0;
+  const orderTotal = cart.subtotal + deliveryFee + SERVICE_FEE + effectiveTip;
+  const belowMinimum = false; // No minimum order — batch model handles unit economics
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
   const hasContact = customerName.trim() && customerPhone.trim();
 
@@ -202,8 +211,8 @@ export default function CartPage() {
   async function handlePay() {
     if (!customerName.trim() || !customerPhone.trim()) { setError("Name and phone are required"); setEditContact(true); return; }
     if (cart.items.length === 0) return;
-    if (belowMinimum) { setError(`Add ${formatNaira(shortfall)} more`); return; }
     if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your office code for free batch delivery, or switch to Express Delivery"); return; }
+    if (fulfillment === "office" && !officeId && isFirstOrder && !deliveryAddress.trim()) { setError("Enter your delivery address so we know where to bring your food"); return; }
     if (fulfillment === "delivery" && !deliveryAddress.trim()) { setError("Enter your delivery address"); return; }
     if (fulfillment === "building" && !selectedDropPoint) { setError("Select your building to continue"); return; }
 
@@ -224,7 +233,8 @@ export default function CartPage() {
       // Clear cart only after successful redirect — store the URL first
       const redirectUrl = data.data.authorizationUrl;
       if (redirectUrl) {
-        cart.clearCart();
+        // Clear localStorage directly — don't update React state (causes flash of empty cart)
+        localStorage.removeItem("chopdrop-cart");
         window.location.href = redirectUrl;
       } else {
         setError("Payment initialization failed. Please try again.");
@@ -234,7 +244,7 @@ export default function CartPage() {
   }
 
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full pb-36 bg-[#fafaf8]">
+    <main className="flex-1 max-w-[480px] mx-auto w-full pb-48 bg-[#fafaf8]">
       {/* ── FIX #1: Compact header — no progress stepper ── */}
       <div className="px-5 pt-5 pb-3 flex items-center justify-between">
         <div>
@@ -281,7 +291,48 @@ export default function CartPage() {
             ))}
           </section>
 
-          {/* ── FIX #3: Fulfillment — integrated office code ── */}
+          {/* ── Inline Auth — right after meals, before everything else ── */}
+          {isAuthenticated === false && cart.items.length > 0 && (
+            <section id="auth-section" className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden border-2 border-[#f05f4b]/20">
+              <div className="px-4 pt-4 pb-1">
+                <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">Sign in to checkout</h2>
+                <p className="text-[11px] text-[#9ca3af] mt-0.5">Create an account or sign in to complete your order</p>
+              </div>
+              <div className="flex mx-4 mt-3 gap-1 bg-[#f5f5f3] rounded-xl p-1">
+                <button type="button" onClick={() => { setAuthTab("signin"); setAuthError(""); }} className={`flex-1 py-2 rounded-lg text-[12px] font-semibold transition-all ${authTab === "signin" ? "bg-white text-[#1a1a1a] shadow-sm" : "text-[#9ca3af]"}`}>Sign in</button>
+                <button type="button" onClick={() => { setAuthTab("signup"); setAuthError(""); }} className={`flex-1 py-2 rounded-lg text-[12px] font-semibold transition-all ${authTab === "signup" ? "bg-white text-[#1a1a1a] shadow-sm" : "text-[#9ca3af]"}`}>Create account</button>
+              </div>
+              <div className="px-4 pb-4 mt-3 space-y-2.5">
+                {authError && (
+                  <div className="bg-[#fef2f2] text-[#f05f4b] text-[11px] font-semibold p-2.5 rounded-lg flex items-center gap-1.5">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>
+                    {authError}
+                  </div>
+                )}
+                {authTab === "signup" && (
+                  <>
+                    <input type="text" value={authName} onChange={(e) => setAuthName(e.target.value)} placeholder="Full name" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#0f4030]/20" />
+                    <input type="tel" value={authPhone} onChange={(e) => setAuthPhone(e.target.value)} placeholder="Phone number" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#0f4030]/20" />
+                  </>
+                )}
+                <input type="email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} placeholder="Email address" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#0f4030]/20" />
+                <div className="relative">
+                  <input type={showAuthPassword ? "text" : "password"} value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} placeholder="Password" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#0f4030]/20 pr-10" onKeyDown={(e) => { if (e.key === "Enter") { authTab === "signin" ? handleInlineSignIn() : handleInlineSignUp(); } }} />
+                  <button type="button" onClick={() => setShowAuthPassword(!showAuthPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af]">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      {showAuthPassword ? <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M1 1l22 22" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /></> : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>}
+                    </svg>
+                  </button>
+                </div>
+                <button type="button" onClick={authTab === "signin" ? handleInlineSignIn : handleInlineSignUp} disabled={authLoading} className="w-full bg-[#0f4030] text-white font-bold py-3 rounded-xl text-[13px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50">
+                  {authLoading ? (authTab === "signin" ? "Signing in..." : "Creating account...") : (authTab === "signin" ? "Sign in" : "Create account")}
+                </button>
+              </div>
+            </section>
+          )}
+
+          {/* ── Fulfillment — only show when authenticated ── */}
+          {isAuthenticated && (
           <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
             <h2 className="font-display font-bold text-[14px] text-[#1a1a1a] mb-3">Delivery</h2>
             <div className="space-y-2">
@@ -299,7 +350,7 @@ export default function CartPage() {
                     {officeId ? (
                       <p className="text-[10px] text-[#6b7280] mt-0.5">{officeName} · {collectionPoint}</p>
                     ) : (
-                      <p className="text-[10px] text-[#9ca3af] mt-0.5">Arrives together at 12:30 PM</p>
+                      <p className="text-[10px] text-[#9ca3af] mt-0.5">Arrives on or before 12:00 PM</p>
                     )}
                   </div>
                   <span className="text-[13px] font-bold text-[#22c55e] flex-shrink-0">FREE</span>
@@ -312,9 +363,15 @@ export default function CartPage() {
                       <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="bg-[#0f4030] text-white font-bold px-4 py-2 rounded-lg text-[11px] disabled:opacity-50 active:scale-95 transition-transform">{codeLoading ? "..." : "Join"}</button>
                     </div>
                     {isFirstOrder ? (
-                      <div className="flex items-center gap-1.5 mt-1.5 text-[10px] text-[#22c55e] font-semibold">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m5 12 4 4L19 6" /></svg>
-                        First order — delivery is free! No code needed.
+                      <div className="mt-2 space-y-2">
+                        <div className="flex items-center gap-1.5 text-[10px] text-[#22c55e] font-semibold">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m5 12 4 4L19 6" /></svg>
+                          First order — delivery is free!
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-[#6b7280] font-medium block mb-1">Where should we deliver?</label>
+                          <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="e.g. Sterling Towers, 15 Allen Avenue, Ikeja" className="w-full px-3 py-2 bg-[#f5f5f3] rounded-lg text-[11px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
+                        </div>
                       </div>
                     ) : (
                       <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free batch delivery. Ask your office admin or captain.</p>
@@ -354,9 +411,10 @@ export default function CartPage() {
               </button>
             </div>
           </section>
+          )}
 
-          {/* ── FIX #4: Tip — clean pills, "Custom" expands to input ── */}
-          {fulfillment === "office" && (
+          {/* ── Tip — only show when office is connected ── */}
+          {isAuthenticated && fulfillment === "office" && officeId && (
             <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
               <div className="flex items-center justify-between mb-2.5">
                 <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">Captain tip</h2>
@@ -408,30 +466,32 @@ export default function CartPage() {
             </section>
           )}
 
-          {/* ── FIX #5: Contact — collapsed when filled, expandable ── */}
-          <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">Contact</h2>
-              {hasContact && !editContact ? (
-                <button type="button" onClick={() => setEditContact(true)} className="text-[11px] text-[#0f4030] font-semibold">Edit</button>
-              ) : hasContact && editContact ? (
-                <button type="button" onClick={() => setEditContact(false)} className="text-[11px] text-[#22c55e] font-semibold">Done</button>
-              ) : null}
-            </div>
-            {hasContact && !editContact ? (
-              <div className="flex items-center gap-2 mt-2 text-[12px] text-[#6b7280]">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#22c55e] flex-shrink-0"><path d="m5 12 4 4L19 6" /></svg>
-                <span className="text-[#1a1a1a] font-medium">{customerName}</span>
-                <span>·</span>
-                <span>{customerPhone}</span>
+          {/* ── Contact — only show after auth check completes ── */}
+          {isAuthenticated !== null && (
+            <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+              <div className="flex items-center justify-between">
+                <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">Contact</h2>
+                {isAuthenticated && hasContact && !editContact ? (
+                  <button type="button" onClick={() => setEditContact(true)} className="text-[11px] text-[#0f4030] font-semibold">Edit</button>
+                ) : isAuthenticated && hasContact && editContact ? (
+                  <button type="button" onClick={() => setEditContact(false)} className="text-[11px] text-[#22c55e] font-semibold">Done</button>
+                ) : null}
               </div>
-            ) : (
-              <div className="mt-3 space-y-2.5">
-                <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Full name" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
-                <input type="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="Phone number" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
-              </div>
-            )}
-          </section>
+              {isAuthenticated && hasContact && !editContact ? (
+                <div className="flex items-center gap-2 mt-2 text-[12px] text-[#6b7280]">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#22c55e] flex-shrink-0"><path d="m5 12 4 4L19 6" /></svg>
+                  <span className="text-[#1a1a1a] font-medium">{customerName}</span>
+                  <span>·</span>
+                  <span>{customerPhone}</span>
+                </div>
+              ) : (
+                <div className="mt-3 space-y-2.5">
+                  <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Full name" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
+                  <input type="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="Phone number" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
+                </div>
+              )}
+            </section>
+          )}
 
           {/* ── Order summary ── */}
           <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
@@ -440,7 +500,7 @@ export default function CartPage() {
               <div className="flex justify-between"><span className="text-[#6b7280]">Subtotal ({portionCount} item{portionCount !== 1 ? "s" : ""})</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(cart.subtotal)}</span></div>
               <div className="flex justify-between"><span className="text-[#6b7280]">Delivery</span><span className={`font-semibold ${deliveryFee === 0 ? "text-[#22c55e]" : "text-[#1a1a1a]"}`}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span></div>
               <div className="flex justify-between"><span className="text-[#6b7280]">Service fee (5%)</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(SERVICE_FEE)}</span></div>
-              {captainTip > 0 && <div className="flex justify-between"><span className="text-[#6b7280]">Captain tip</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(captainTip)}</span></div>}
+              {effectiveTip > 0 && <div className="flex justify-between"><span className="text-[#6b7280]">Captain tip</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(effectiveTip)}</span></div>}
               <div className="flex justify-between items-center border-t border-[#f0efeb] pt-3 mt-1">
                 <span className="text-[13px] font-semibold text-[#1a1a1a]">Total</span>
                 <span className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.02em]">{formatNaira(orderTotal)}</span>
@@ -454,82 +514,12 @@ export default function CartPage() {
             )}
           </section>
 
-          {/* ── Inline Auth (shown when not authenticated and has items) ── */}
-          {isAuthenticated === false && cart.items.length > 0 && (
-            <section className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden">
-              <div className="px-4 pt-4 pb-1">
-                <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">Sign in to continue</h2>
-                <p className="text-[11px] text-[#9ca3af] mt-0.5">You need an account to place an order</p>
-              </div>
-              {/* Tabs */}
-              <div className="flex mx-4 mt-3 gap-1 bg-[#f5f5f3] rounded-xl p-1">
-                <button
-                  type="button"
-                  onClick={() => { setAuthTab("signin"); setAuthError(""); }}
-                  className={`flex-1 py-2 rounded-lg text-[12px] font-semibold transition-all ${authTab === "signin" ? "bg-white text-[#1a1a1a] shadow-sm" : "text-[#9ca3af]"}`}
-                >
-                  Sign in
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setAuthTab("signup"); setAuthError(""); }}
-                  className={`flex-1 py-2 rounded-lg text-[12px] font-semibold transition-all ${authTab === "signup" ? "bg-white text-[#1a1a1a] shadow-sm" : "text-[#9ca3af]"}`}
-                >
-                  Create account
-                </button>
-              </div>
-              <div className="px-4 pb-4 mt-3 space-y-2.5">
-                {authError && (
-                  <div className="bg-[#fef2f2] text-[#f05f4b] text-[11px] font-semibold p-2.5 rounded-lg flex items-center gap-1.5">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>
-                    {authError}
-                  </div>
-                )}
-                {authTab === "signup" && (
-                  <>
-                    <input type="text" value={authName} onChange={(e) => setAuthName(e.target.value)} placeholder="Full name" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#0f4030]/20" />
-                    <input type="tel" value={authPhone} onChange={(e) => setAuthPhone(e.target.value)} placeholder="Phone number" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#0f4030]/20" />
-                  </>
-                )}
-                <input type="email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} placeholder="Email address" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#0f4030]/20" />
-                <div className="relative">
-                  <input
-                    type={showAuthPassword ? "text" : "password"}
-                    value={authPassword}
-                    onChange={(e) => setAuthPassword(e.target.value)}
-                    placeholder="Password"
-                    className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#0f4030]/20 pr-10"
-                    onKeyDown={(e) => { if (e.key === "Enter") { authTab === "signin" ? handleInlineSignIn() : handleInlineSignUp(); } }}
-                  />
-                  <button type="button" onClick={() => setShowAuthPassword(!showAuthPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af]">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      {showAuthPassword ? <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M1 1l22 22" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /></> : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>}
-                    </svg>
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={authTab === "signin" ? handleInlineSignIn : handleInlineSignUp}
-                  disabled={authLoading}
-                  className="w-full bg-[#0f4030] text-white font-bold py-3 rounded-xl text-[13px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50"
-                >
-                  {authLoading ? (authTab === "signin" ? "Signing in..." : "Creating account...") : (authTab === "signin" ? "Sign in" : "Create account")}
-                </button>
-              </div>
-            </section>
-          )}
 
           {/* Error */}
           {error && (
             <div className="bg-[#fef2f2] text-[#f05f4b] text-[11px] font-semibold p-3 rounded-xl flex items-center gap-2">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>
               {error}
-            </div>
-          )}
-          {belowMinimum && (
-            <div className="bg-[#fffbeb] text-[#92400e] text-[11px] font-semibold p-3 rounded-xl flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>
-              Add {formatNaira(shortfall)} more · Min order {formatNaira(MIN_BASKET)}
             </div>
           )}
         </div>
@@ -548,11 +538,21 @@ export default function CartPage() {
             </div>
             <button
               type="button"
-              onClick={handlePay}
-              disabled={loading || belowMinimum || isAuthenticated === false || (fulfillment === "building" && !selectedDropPoint) || (fulfillment === "office" && !officeId && !isFirstOrder)}
-              className="w-full bg-[#f05f4b] text-white font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(240,95,75,0.3)] hover:bg-[#e0503d] active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={() => {
+                if (isAuthenticated === false) {
+                  document.getElementById("auth-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  return;
+                }
+                handlePay();
+              }}
+              disabled={loading || belowMinimum || (fulfillment === "building" && !selectedDropPoint) || (fulfillment === "office" && !officeId && !isFirstOrder)}
+              className={`w-full font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                isAuthenticated === false
+                  ? "bg-[#1a1a1a] text-white shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+                  : "bg-[#f05f4b] text-white shadow-[0_4px_16px_rgba(240,95,75,0.3)] hover:bg-[#e0503d]"
+              }`}
             >
-              {loading ? "Processing..." : isAuthenticated === false ? "Sign in to pay" : belowMinimum ? `Add ${formatNaira(shortfall)} more` : fulfillment === "office" && !officeId && !isFirstOrder ? "Enter office code to continue" : fulfillment === "building" && !selectedDropPoint ? "Select your building" : "Continue to payment"}
+              {loading ? "Processing..." : isAuthenticated === false ? "Sign in to pay ↑" : fulfillment === "office" && !officeId && !isFirstOrder ? "Enter office code to continue" : fulfillment === "building" && !selectedDropPoint ? "Select your building" : "Continue to payment"}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
             </button>
             <p className="text-[9px] text-[#9ca3af] text-center mt-2 flex items-center justify-center gap-1">

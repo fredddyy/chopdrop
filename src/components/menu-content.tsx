@@ -53,6 +53,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [activeSlot, setActiveSlot] = useState(defaultSlotId);
   const [toast, setToast] = useState("");
   const [officeName, setOfficeName] = useState("");
+  const [captainName, setCaptainName] = useState("");
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(true);
   const cart = useCart();
@@ -62,6 +63,17 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
     if (profile) setOfficeName(profile.officeName || "");
     const dismissed = localStorage.getItem("chopdrop-banner-dismissed");
     setBannerDismissed(!!dismissed);
+
+    // Load captain name from server if authenticated
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.data?.office) {
+          if (d.data.office.name) setOfficeName(d.data.office.name);
+          if (d.data.office.assistantName) setCaptainName(d.data.office.assistantName);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   function dismissBanner() {
@@ -100,7 +112,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               {officeName ? (
                 <span className="text-[12px] font-semibold text-[#1a1a1a] leading-tight">{officeName}</span>
               ) : (
-                <span className="text-[12px] text-[#9ca3af] leading-tight">Ikeja, Lagos</span>
+                <span className="text-[11px] text-[#9ca3af] leading-tight flex items-center gap-1">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="text-[#22c55e] flex-shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
+                  Serving Ikeja, Lagos
+                </span>
               )}
             </div>
           </div>
@@ -140,7 +155,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         <div className="mx-5 mt-3 bg-[#0f4030] rounded-2xl px-4 py-4 relative overflow-hidden">
           <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-white/[0.03] rounded-full" />
           <div className="relative z-10">
-            <div className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.06em] mb-2.5">How ChopDrop works</div>
+            <div className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.06em] mb-2.5">How ChopDrop works · Ikeja offices</div>
             <div className="flex items-start gap-3 mb-2.5">
               <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">1</div>
               <div>
@@ -159,7 +174,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">3</div>
               <div>
                 <div className="text-[12px] font-semibold text-white">Collect with your code — free delivery</div>
-                <div className="text-[10px] text-white/50 mt-0.5">No cash, no wrong orders, no wahala</div>
+                <div className="text-[10px] text-white/50 mt-0.5">Work is stressful. Food shouldn&apos;t be.</div>
               </div>
             </div>
             <button
@@ -222,16 +237,26 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </div>
             </div>
             {/* FIX #3: Social proof as separate pill */}
-            <div className="mx-5 mt-2 flex items-center gap-2 text-[11px] text-[#6b7280]">
-              {totalOrdered > 0 ? (
-                <>
-                  <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-pulse" />
-                  <span>{totalOrdered} order{totalOrdered !== 1 ? "s" : ""} placed for this drop</span>
-                </>
-              ) : officeName ? (
-                <span>Be the first from {officeName} to join today&apos;s drop</span>
-              ) : (
-                <span>Be the first to join today&apos;s {getSlotShortName(slot.label).toLowerCase()} drop</span>
+            <div className="mx-5 mt-2 flex items-center justify-between text-[11px] text-[#6b7280]">
+              <div className="flex items-center gap-2">
+                {totalOrdered > 0 ? (
+                  <>
+                    <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-pulse" />
+                    <span>{totalOrdered} order{totalOrdered !== 1 ? "s" : ""} placed for this drop</span>
+                  </>
+                ) : officeName ? (
+                  <span>Be the first from {officeName} to join</span>
+                ) : (
+                  <span>Be the first to join today&apos;s drop</span>
+                )}
+              </div>
+              {captainName && (
+                <div className="flex items-center gap-1.5">
+                  <div className="w-5 h-5 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[8px] font-bold flex-shrink-0">
+                    {captainName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
+                  </div>
+                  <span className="text-[10px] text-[#0f4030] font-medium">{captainName}</span>
+                </div>
               )}
             </div>
           </>
@@ -240,13 +265,48 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
       {/* ── Content ── */}
       {allExpired ? (
-        <div className="text-center py-20 px-6">
-          <div className="w-16 h-16 bg-[#f5f5f3] rounded-full flex items-center justify-center mx-auto mb-4 text-[28px]">😴</div>
-          <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] mb-2">Today&apos;s orders are closed</h2>
-          <p className="text-[#9ca3af] text-[13px] mb-6">Come back tomorrow for fresh meals.</p>
-          <Link href="/orders" className="inline-flex items-center gap-2 text-[#0f4030] text-[13px] font-bold hover:underline">
-            Check order status <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6" /></svg>
-          </Link>
+        <div className="px-5 py-8">
+          {/* Closed header */}
+          <div className="text-center mb-6">
+            <div className="w-14 h-14 bg-[#f5f5f3] rounded-full flex items-center justify-center mx-auto mb-3 text-[24px]">😴</div>
+            <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] mb-1">Today&apos;s orders are closed</h2>
+            <p className="text-[#9ca3af] text-[13px]">Orders open at 7:00 AM tomorrow</p>
+          </div>
+
+          {/* Tomorrow's restaurants preview */}
+          {slot && slot.restaurants.length > 0 && (
+            <div className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-4">
+              <h3 className="text-[12px] font-bold text-[#9ca3af] uppercase tracking-[0.06em] mb-3">Tomorrow&apos;s kitchens</h3>
+              <div className="space-y-3">
+                {slot.restaurants.map((r) => (
+                  <div key={r.id} className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                      {(r.previewImage || r.imageUrl) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={(r.previewImage || r.imageUrl)!} alt={r.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[#0f4030]/20 text-[14px] font-bold">
+                          {r.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-semibold text-[#1a1a1a]">{r.name}</div>
+                      <div className="text-[10px] text-[#9ca3af]">{r.mealCount} meal{r.mealCount !== 1 ? "s" : ""} · {r.address}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="space-y-2.5">
+            <Link href="/orders" className="w-full flex items-center justify-center gap-2 bg-[#1a1a1a] text-white font-semibold py-3 rounded-xl text-[13px] active:scale-[0.98] transition-transform">
+              Check order status
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+            </Link>
+          </div>
         </div>
       ) : slot && slot.expired ? (
         <div className="text-center py-16 px-6">

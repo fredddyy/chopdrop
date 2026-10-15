@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "ChopDrop — Meals for Your Team, Sorted",
   description:
-    "Everyone picks what they want and pays for themselves. We batch the orders and deliver everything together — one smooth drop, zero stress.",
+    "Work is stressful. Food shouldn't be. Everyone picks their own meal, pays online, and food arrives together at your office. Free batch delivery.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

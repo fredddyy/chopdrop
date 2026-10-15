@@ -26,7 +26,7 @@ interface RestaurantReadiness {
   percent: number;
 }
 
-type OpsTab = "overview" | "restaurants" | "offices" | "meals" | "menu";
+type OpsTab = "overview" | "restaurants" | "offices" | "meals" | "menu" | "items";
 
 interface RestaurantData {
   id: string;
@@ -97,6 +97,55 @@ export default function OpsPage() {
   const [menuMaxOrders, setMenuMaxOrders] = useState("30");
   const [menuDate, setMenuDate] = useState(new Date().toISOString().split("T")[0]);
 
+  // Menu Items tab state
+  const [menuRestaurantId, setMenuRestaurantId] = useState("");
+  const [menuCategories, setMenuCategories] = useState<Array<{
+    id: string; name: string; selectionRule: string; sortOrder: number;
+    items: Array<{ id: string; name: string; price: number; sortOrder: number }>;
+  }>>([]);
+  const [menuLoading, setMenuLoading] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editItemName, setEditItemName] = useState("");
+  const [editItemPrice, setEditItemPrice] = useState("");
+  const [newItemCategoryId, setNewItemCategoryId] = useState<string | null>(null);
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemPrice, setNewItemPrice] = useState("");
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryRule, setNewCategoryRule] = useState("PICK_ONE");
+
+  // Restaurant editing
+  const [editingRestaurantId, setEditingRestaurantId] = useState<string | null>(null);
+  const [editRestName, setEditRestName] = useState("");
+  const [editRestAddress, setEditRestAddress] = useState("");
+  const [editRestPhone, setEditRestPhone] = useState("");
+  const [editRestImage, setEditRestImage] = useState("");
+  const [editRestActive, setEditRestActive] = useState(true);
+  const [uploadingRestImage, setUploadingRestImage] = useState(false);
+
+  // Office editing
+  const [editingOfficeId, setEditingOfficeId] = useState<string | null>(null);
+  const [editOffName, setEditOffName] = useState("");
+  const [editOffAddress, setEditOffAddress] = useState("");
+  const [editOffCollection, setEditOffCollection] = useState("");
+  const [editOffAssistant, setEditOffAssistant] = useState("");
+  const [editOffAssistantPhone, setEditOffAssistantPhone] = useState("");
+  const [editOffActive, setEditOffActive] = useState(true);
+
+  // Meal editing
+  const [editingMealId, setEditingMealId] = useState<string | null>(null);
+  const [editMealName, setEditMealName] = useState("");
+  const [editMealPrice, setEditMealPrice] = useState("");
+  const [editMealDesc, setEditMealDesc] = useState("");
+  const [editMealImage, setEditMealImage] = useState("");
+  const [editMealTag, setEditMealTag] = useState("REGULAR");
+  const [editMealType, setEditMealType] = useState("FIXED");
+  const [editMealOriginalPrice, setEditMealOriginalPrice] = useState("");
+  const [editMealMaxDeals, setEditMealMaxDeals] = useState("20");
+  const [editMealClaimedPad, setEditMealClaimedPad] = useState("0");
+  const [editMealAvailable, setEditMealAvailable] = useState(true);
+  const [uploadingEditMealImage, setUploadingEditMealImage] = useState(false);
+
   const [needsLogin, setNeedsLogin] = useState(false);
   const [loginEmail, setLoginEmail] = useState("admin@chopdrop.ng");
   const [loginPassword, setLoginPassword] = useState("");
@@ -147,6 +196,7 @@ export default function OpsPage() {
   }
 
   useEffect(() => { loadAll(); }, []);
+  useEffect(() => { loadMenuItems(); }, [menuRestaurantId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function addRestaurant() {
     if (!restName.trim()) return;
@@ -157,6 +207,49 @@ export default function OpsPage() {
     });
     setRestName(""); setRestAddress(""); setRestPhone(""); setShowRestForm(false);
     loadAll();
+  }
+
+  function startEditRestaurant(r: RestaurantData & { imageUrl?: string }) {
+    setEditingRestaurantId(r.id);
+    setEditRestName(r.name);
+    setEditRestAddress(r.address);
+    setEditRestPhone(r.phone);
+    setEditRestImage((r as { imageUrl?: string }).imageUrl || "");
+    setEditRestActive(r.isActive);
+  }
+
+  async function saveRestaurant() {
+    if (!editingRestaurantId || !editRestName.trim()) return;
+    await fetch(`/api/admin/restaurants/${editingRestaurantId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: editRestName.trim(),
+        address: editRestAddress.trim(),
+        phone: editRestPhone.trim(),
+        imageUrl: editRestImage.trim() || null,
+        isActive: editRestActive,
+      }),
+    });
+    setEditingRestaurantId(null);
+    loadAll();
+  }
+
+  async function handleRestImageFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingRestImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "chopdrop");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.success) setEditRestImage(data.url);
+      else alert("Upload failed: " + (data.error || "Unknown error"));
+    } finally {
+      setUploadingRestImage(false);
+    }
   }
 
   async function addOffice() {
@@ -173,6 +266,34 @@ export default function OpsPage() {
       }),
     });
     setOffName(""); setOffAddress(""); setOffCollection("Main reception"); setOffAssistant(""); setOffAssistantPhone(""); setShowOfficeForm(false);
+    loadAll();
+  }
+
+  function startEditOffice(o: OfficeDataItem) {
+    setEditingOfficeId(o.id);
+    setEditOffName(o.name);
+    setEditOffAddress(o.address);
+    setEditOffCollection(o.collectionPoint);
+    setEditOffAssistant(o.assistantName || "");
+    setEditOffAssistantPhone(o.assistantPhone || "");
+    setEditOffActive(o.isActive);
+  }
+
+  async function saveOffice() {
+    if (!editingOfficeId || !editOffName.trim()) return;
+    await fetch(`/api/admin/offices/${editingOfficeId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: editOffName.trim(),
+        address: editOffAddress.trim(),
+        collectionPoint: editOffCollection.trim(),
+        assistantName: editOffAssistant.trim() || null,
+        assistantPhone: editOffAssistantPhone.trim() || null,
+        isActive: editOffActive,
+      }),
+    });
+    setEditingOfficeId(null);
     loadAll();
   }
 
@@ -230,6 +351,59 @@ export default function OpsPage() {
     loadAll();
   }
 
+  function startEditMeal(m: typeof meals[0] & { description?: string; imageUrl?: string; originalPrice?: number; maxDeals?: number; claimedPad?: number }) {
+    setEditingMealId(m.id);
+    setEditMealName(m.name);
+    setEditMealPrice(String(m.price / 100));
+    setEditMealDesc((m as { description?: string }).description || "");
+    setEditMealImage((m as { imageUrl?: string }).imageUrl || "");
+    setEditMealTag(m.tag);
+    setEditMealType(m.type);
+    setEditMealOriginalPrice((m as { originalPrice?: number }).originalPrice ? String((m as { originalPrice?: number }).originalPrice! / 100) : "");
+    setEditMealMaxDeals(String((m as { maxDeals?: number }).maxDeals ?? 20));
+    setEditMealClaimedPad(String((m as { claimedPad?: number }).claimedPad ?? 0));
+    setEditMealAvailable(m.isAvailable);
+  }
+
+  async function saveMeal() {
+    if (!editingMealId || !editMealName.trim() || !editMealPrice) return;
+    await fetch(`/api/admin/meals/${editingMealId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: editMealName.trim(),
+        price: Math.round(parseFloat(editMealPrice) * 100),
+        description: editMealDesc.trim() || undefined,
+        imageUrl: editMealImage.trim() || undefined,
+        tag: editMealTag,
+        type: editMealType,
+        originalPrice: editMealOriginalPrice ? Math.round(parseFloat(editMealOriginalPrice) * 100) : undefined,
+        maxDeals: parseInt(editMealMaxDeals) || 20,
+        claimedPad: parseInt(editMealClaimedPad) || 0,
+        isAvailable: editMealAvailable,
+      }),
+    });
+    setEditingMealId(null);
+    loadAll();
+  }
+
+  async function handleEditMealImageFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingEditMealImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "chopdrop");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.success) setEditMealImage(data.url);
+      else alert("Upload failed: " + (data.error || "Unknown error"));
+    } finally {
+      setUploadingEditMealImage(false);
+    }
+  }
+
   async function addToMenu() {
     if (!menuMealId || !menuSlotId) return;
     await fetch("/api/admin/daily-menu", {
@@ -249,6 +423,65 @@ export default function OpsPage() {
   async function removeFromMenu(id: string) {
     await fetch(`/api/admin/daily-menu/${id}`, { method: "DELETE" });
     loadAll();
+  }
+
+  // Menu Items CRUD
+  async function loadMenuItems() {
+    if (!menuRestaurantId) { setMenuCategories([]); return; }
+    setMenuLoading(true);
+    const res = await fetch(`/api/admin/menu-items?restaurantId=${menuRestaurantId}`);
+    const data = await res.json();
+    if (data.success && data.data) setMenuCategories(data.data.menuCategories || []);
+    setMenuLoading(false);
+  }
+
+  async function saveEditItem(itemId: string) {
+    if (!editItemName.trim() || !editItemPrice) return;
+    await fetch(`/api/admin/menu-items/${itemId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editItemName.trim(), price: Math.round(parseFloat(editItemPrice) * 100) }),
+    });
+    setEditingItemId(null);
+    loadMenuItems();
+  }
+
+  async function deleteItem(itemId: string) {
+    if (!confirm("Delete this item?")) return;
+    await fetch(`/api/admin/menu-items/${itemId}`, { method: "DELETE" });
+    loadMenuItems();
+  }
+
+  async function addItem(categoryId: string) {
+    if (!newItemName.trim() || !newItemPrice) return;
+    await fetch("/api/admin/menu-items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ categoryId, name: newItemName.trim(), price: Math.round(parseFloat(newItemPrice) * 100) }),
+    });
+    setNewItemCategoryId(null);
+    setNewItemName("");
+    setNewItemPrice("");
+    loadMenuItems();
+  }
+
+  async function addCategory() {
+    if (!newCategoryName.trim() || !menuRestaurantId) return;
+    await fetch("/api/admin/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ restaurantId: menuRestaurantId, name: newCategoryName.trim(), selectionRule: newCategoryRule, sortOrder: menuCategories.length }),
+    });
+    setShowAddCategory(false);
+    setNewCategoryName("");
+    setNewCategoryRule("PICK_ONE");
+    loadMenuItems();
+  }
+
+  async function deleteCategory(categoryId: string) {
+    if (!confirm("Delete this category and all its items?")) return;
+    await fetch(`/api/admin/categories/${categoryId}`, { method: "DELETE" });
+    loadMenuItems();
   }
 
   const totalRevenue = orders.reduce((s, o) => s + o.totalAmount, 0);
@@ -338,6 +571,7 @@ export default function OpsPage() {
             ["menu", "Daily Menu", "M6 3h12v18l-3-2-3 2-3-2-3 2V3ZM9 8h6M9 12h6"],
             ["restaurants", "Restaurants", "M4 3v7a3 3 0 0 0 6 0V3M7 3v18M16 3v18M16 3c4 2 4 8 0 10"],
             ["offices", "Offices", "M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3"],
+            ["items", "Menu Items", "M4 6h16M4 10h16M4 14h8M4 18h8"],
           ] as const).map(([id, label, path]) => (
             <button
               key={id}
@@ -363,7 +597,7 @@ export default function OpsPage() {
 
         {/* Mobile tab switcher */}
         <div className="flex gap-2 mb-5 md:hidden overflow-x-auto hide-scrollbar">
-          {(["overview", "meals", "menu", "restaurants", "offices"] as const).map((t) => (
+          {(["overview", "meals", "menu", "restaurants", "offices", "items"] as const).map((t) => (
             <button key={t} type="button" onClick={() => setTab(t)} className={`px-4 py-2 rounded-full text-xs font-bold capitalize flex-shrink-0 transition-colors ${tab === t ? "bg-ink text-white" : "bg-paper border border-line text-ink-soft"}`}>
               {t}
             </button>
@@ -573,17 +807,71 @@ export default function OpsPage() {
 
             <div className="space-y-3">
               {restaurants.map((r) => (
-                <div key={r.id} className="bg-paper border border-line rounded-[15px] p-4 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-green-soft text-green rounded-[10px] flex items-center justify-center flex-shrink-0">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 3v18M16 3v18M16 3c4 2 4 8 0 10" /></svg>
+                <div key={r.id} className="bg-paper border border-line rounded-[16px] overflow-hidden">
+                  <div className="p-4 flex items-center gap-4">
+                    <div className="w-10 h-10 bg-green-soft text-green rounded-[10px] flex items-center justify-center flex-shrink-0">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 3v18M16 3v18M16 3c4 2 4 8 0 10" /></svg>
+                    </div>
+                    <div className="flex-1">
+                      <strong className="text-[14px] block">{r.name}</strong>
+                      <span className="text-ink-soft text-[11px]">{r.address} &middot; {r.phone}</span>
+                    </div>
+                    <span className={`text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-full ${r.isActive ? "bg-green-soft text-green" : "bg-cream text-ink-soft"}`}>
+                      {r.isActive ? "Active" : "Inactive"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => editingRestaurantId === r.id ? setEditingRestaurantId(null) : startEditRestaurant(r)}
+                      className="text-[10px] font-bold text-green hover:underline ml-1"
+                    >
+                      {editingRestaurantId === r.id ? "Close" : "Edit"}
+                    </button>
                   </div>
-                  <div className="flex-1">
-                    <strong className="text-[14px] block">{r.name}</strong>
-                    <span className="text-ink-soft text-[11px]">{r.address} &middot; {r.phone}</span>
-                  </div>
-                  <span className={`text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-full ${r.isActive ? "bg-green-soft text-green" : "bg-cream text-ink-soft"}`}>
-                    {r.isActive ? "Active" : "Inactive"}
-                  </span>
+                  {editingRestaurantId === r.id && (
+                    <div className="border-t border-line p-4 bg-cream/40">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Name</label>
+                          <input type="text" value={editRestName} onChange={(e) => setEditRestName(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Address</label>
+                          <input type="text" value={editRestAddress} onChange={(e) => setEditRestAddress(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Phone</label>
+                          <input type="tel" value={editRestPhone} onChange={(e) => setEditRestPhone(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Status</label>
+                          <select value={editRestActive ? "active" : "inactive"} onChange={(e) => setEditRestActive(e.target.value === "active")} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                          </select>
+                        </div>
+                        <div className="col-span-full">
+                          <label className="block text-[12px] font-bold mb-1.5">Image <span className="font-normal text-ink-soft">(optional)</span></label>
+                          <div className="flex items-center gap-3">
+                            <label className={`px-4 py-2.5 border border-line rounded-[10px] text-sm cursor-pointer transition-colors ${uploadingRestImage ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
+                              {uploadingRestImage ? "Uploading..." : editRestImage ? "Change image" : "Choose image"}
+                              <input type="file" accept="image/*" onChange={handleRestImageFile} disabled={uploadingRestImage} className="hidden" />
+                            </label>
+                            {editRestImage && (
+                              <button type="button" onClick={() => setEditRestImage("")} className="text-ink-soft text-xs hover:text-coral">Remove</button>
+                            )}
+                          </div>
+                          {editRestImage && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={editRestImage} alt="Preview" className="w-16 h-16 rounded-lg object-cover mt-2 border border-line" />
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <button type="button" onClick={saveRestaurant} className="bg-coral text-white font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors">Save</button>
+                        <button type="button" onClick={() => setEditingRestaurantId(null)} className="bg-cream text-ink-soft font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-line transition-colors">Cancel</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               {restaurants.length === 0 && (
@@ -686,21 +974,105 @@ export default function OpsPage() {
 
             <div className="space-y-3">
               {meals.map((m) => (
-                <div key={m.id} className={`bg-paper border border-line rounded-[15px] p-4 flex items-center gap-4 ${!m.isAvailable ? "opacity-50" : ""}`}>
-                  <div className="w-10 h-10 bg-amber-soft text-[#7d5716] rounded-[10px] flex items-center justify-center flex-shrink-0 text-lg">
-                    🍽️
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <strong className="text-[14px]">{m.name}</strong>
-                      {m.tag === "DEAL" && <span className="bg-coral/10 text-coral text-[9px] font-extrabold px-2 py-0.5 rounded-full">Deal</span>}
-                      {m.type === "BUILD_YOUR_PLATE" && <span className="bg-green-soft text-green text-[9px] font-extrabold px-2 py-0.5 rounded-full">Build-a-plate</span>}
+                <div key={m.id} className={`bg-paper border border-line rounded-[16px] overflow-hidden ${!m.isAvailable && editingMealId !== m.id ? "opacity-50" : ""}`}>
+                  <div className="p-4 flex items-center gap-4">
+                    <div className="w-10 h-10 bg-amber-soft text-[#7d5716] rounded-[10px] flex items-center justify-center flex-shrink-0 text-lg">
+                      🍽️
                     </div>
-                    <span className="text-ink-soft text-[11px]">{m.restaurant.name} &middot; {formatNaira(m.price)}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <strong className="text-[14px]">{m.name}</strong>
+                        {m.tag === "DEAL" && <span className="bg-coral/10 text-coral text-[9px] font-extrabold px-2 py-0.5 rounded-full">Deal</span>}
+                        {m.type === "BUILD_YOUR_PLATE" && <span className="bg-green-soft text-green text-[9px] font-extrabold px-2 py-0.5 rounded-full">Build-a-plate</span>}
+                      </div>
+                      <span className="text-ink-soft text-[11px]">{m.restaurant.name} &middot; {formatNaira(m.price)}</span>
+                    </div>
+                    <button type="button" onClick={() => toggleMealAvailability(m.id, m.isAvailable)} className={`text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full transition-colors ${m.isAvailable ? "bg-green-soft text-green hover:bg-red-soft hover:text-coral" : "bg-cream text-ink-soft hover:bg-green-soft hover:text-green"}`}>
+                      {m.isAvailable ? "Active" : "Disabled"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editingMealId === m.id ? setEditingMealId(null) : startEditMeal(m)}
+                      className="text-[10px] font-bold text-green hover:underline ml-1"
+                    >
+                      {editingMealId === m.id ? "Close" : "Edit"}
+                    </button>
                   </div>
-                  <button type="button" onClick={() => toggleMealAvailability(m.id, m.isAvailable)} className={`text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full transition-colors ${m.isAvailable ? "bg-green-soft text-green hover:bg-red-soft hover:text-coral" : "bg-cream text-ink-soft hover:bg-green-soft hover:text-green"}`}>
-                    {m.isAvailable ? "Active" : "Disabled"}
-                  </button>
+                  {editingMealId === m.id && (
+                    <div className="border-t border-line p-4 bg-cream/40">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Meal name</label>
+                          <input type="text" value={editMealName} onChange={(e) => setEditMealName(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Price (₦)</label>
+                          <input type="number" value={editMealPrice} onChange={(e) => setEditMealPrice(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Tag</label>
+                          <select value={editMealTag} onChange={(e) => setEditMealTag(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
+                            <option value="REGULAR">Regular</option>
+                            <option value="DEAL">Deal (discount combo)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Type</label>
+                          <select value={editMealType} onChange={(e) => setEditMealType(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
+                            <option value="FIXED">Fixed Combo</option>
+                            <option value="BUILD_YOUR_PLATE">Build Your Plate</option>
+                          </select>
+                        </div>
+                        {editMealTag === "DEAL" && (
+                          <>
+                            <div>
+                              <label className="block text-[12px] font-bold mb-1.5">Original price (₦) <span className="font-normal text-ink-soft">strikethrough</span></label>
+                              <input type="number" value={editMealOriginalPrice} onChange={(e) => setEditMealOriginalPrice(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                            </div>
+                            <div>
+                              <label className="block text-[12px] font-bold mb-1.5">Max discount spots</label>
+                              <input type="number" value={editMealMaxDeals} onChange={(e) => setEditMealMaxDeals(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                            </div>
+                            <div>
+                              <label className="block text-[12px] font-bold mb-1.5">Claimed padding <span className="font-normal text-ink-soft">fake boost</span></label>
+                              <input type="number" value={editMealClaimedPad} onChange={(e) => setEditMealClaimedPad(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                            </div>
+                          </>
+                        )}
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Description <span className="font-normal text-ink-soft">(optional)</span></label>
+                          <input type="text" value={editMealDesc} onChange={(e) => setEditMealDesc(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Available</label>
+                          <select value={editMealAvailable ? "yes" : "no"} onChange={(e) => setEditMealAvailable(e.target.value === "yes")} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
+                            <option value="yes">Available</option>
+                            <option value="no">Unavailable</option>
+                          </select>
+                        </div>
+                        <div className="col-span-full">
+                          <label className="block text-[12px] font-bold mb-1.5">Image <span className="font-normal text-ink-soft">(optional)</span></label>
+                          <div className="flex items-center gap-3">
+                            <label className={`px-4 py-2.5 border border-line rounded-[10px] text-sm cursor-pointer transition-colors ${uploadingEditMealImage ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
+                              {uploadingEditMealImage ? "Uploading..." : editMealImage ? "Change image" : "Choose image"}
+                              <input type="file" accept="image/*" onChange={handleEditMealImageFile} disabled={uploadingEditMealImage} className="hidden" />
+                            </label>
+                            {editMealImage && (
+                              <button type="button" onClick={() => setEditMealImage("")} className="text-ink-soft text-xs hover:text-coral">Remove</button>
+                            )}
+                          </div>
+                          {editMealImage && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={editMealImage} alt="Preview" className="w-16 h-16 rounded-lg object-cover mt-2 border border-line" />
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <button type="button" onClick={saveMeal} className="bg-coral text-white font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors">Save</button>
+                        <button type="button" onClick={() => setEditingMealId(null)} className="bg-cream text-ink-soft font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-line transition-colors">Cancel</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               {meals.length === 0 && (
@@ -846,32 +1218,291 @@ export default function OpsPage() {
 
             <div className="space-y-3">
               {offices.map((o) => (
-                <div key={o.id} className="bg-paper border border-line rounded-[15px] p-4 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-green-soft text-green rounded-[10px] flex items-center justify-center flex-shrink-0">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3" /></svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <strong className="text-[14px]">{o.name}</strong>
-                      <span className="bg-amber-soft text-[#7d5716] text-[9px] font-extrabold px-2 py-0.5 rounded-full">{o.code}</span>
+                <div key={o.id} className="bg-paper border border-line rounded-[16px] overflow-hidden">
+                  <div className="p-4 flex items-center gap-4">
+                    <div className="w-10 h-10 bg-green-soft text-green rounded-[10px] flex items-center justify-center flex-shrink-0">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3" /></svg>
                     </div>
-                    <span className="text-ink-soft text-[11px] block mt-0.5">{o.address}</span>
-                    <span className="text-ink-soft text-[10px] block">
-                      {o.assistantName ? `Assistant: ${o.assistantName}` : "No assistant"} &middot; {o.collectionPoint} &middot; {o._count.orders} orders
-                    </span>
-                    {o.slug && (
-                      <span className="text-[9px] text-green block mt-1 break-all">
-                        Magic link: /captain/{o.slug}{o.secretToken ? `?token=${o.secretToken}` : ""}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <strong className="text-[14px]">{o.name}</strong>
+                        <span className="bg-amber-soft text-[#7d5716] text-[9px] font-extrabold px-2 py-0.5 rounded-full">{o.code}</span>
+                      </div>
+                      <span className="text-ink-soft text-[11px] block mt-0.5">{o.address}</span>
+                      <span className="text-ink-soft text-[10px] block">
+                        {o.assistantName ? `Assistant: ${o.assistantName}` : "No assistant"} &middot; {o.collectionPoint} &middot; {o._count.orders} orders
                       </span>
-                    )}
+                      {o.slug && (
+                        <span className="text-[9px] text-green block mt-1 break-all">
+                          Magic link: /captain/{o.slug}{o.secretToken ? `?token=${o.secretToken}` : ""}
+                        </span>
+                      )}
+                    </div>
+                    <span className={`text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-full ${o.isActive ? "bg-green-soft text-green" : "bg-cream text-ink-soft"}`}>
+                      {o.isActive ? "Active" : "Inactive"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => editingOfficeId === o.id ? setEditingOfficeId(null) : startEditOffice(o)}
+                      className="text-[10px] font-bold text-green hover:underline ml-1"
+                    >
+                      {editingOfficeId === o.id ? "Close" : "Edit"}
+                    </button>
                   </div>
-                  <span className={`text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-full ${o.isActive ? "bg-green-soft text-green" : "bg-cream text-ink-soft"}`}>
-                    {o.isActive ? "Active" : "Inactive"}
-                  </span>
+                  {editingOfficeId === o.id && (
+                    <div className="border-t border-line p-4 bg-cream/40">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Office name</label>
+                          <input type="text" value={editOffName} onChange={(e) => setEditOffName(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Address</label>
+                          <input type="text" value={editOffAddress} onChange={(e) => setEditOffAddress(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Collection point</label>
+                          <input type="text" value={editOffCollection} onChange={(e) => setEditOffCollection(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Status</label>
+                          <select value={editOffActive ? "active" : "inactive"} onChange={(e) => setEditOffActive(e.target.value === "active")} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Assistant name <span className="font-normal text-ink-soft">(optional)</span></label>
+                          <input type="text" value={editOffAssistant} onChange={(e) => setEditOffAssistant(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Assistant phone <span className="font-normal text-ink-soft">(optional)</span></label>
+                          <input type="tel" value={editOffAssistantPhone} onChange={(e) => setEditOffAssistantPhone(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <button type="button" onClick={saveOffice} className="bg-coral text-white font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors">Save</button>
+                        <button type="button" onClick={() => setEditingOfficeId(null)} className="bg-cream text-ink-soft font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-line transition-colors">Cancel</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               {offices.length === 0 && (
                 <div className="text-center py-12 text-ink-soft text-sm">No offices yet. Click &quot;Add office&quot; to onboard your first location.</div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Menu Items Tab */}
+        {tab === "items" && (
+          <>
+            <div className="mb-6">
+              <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.13em]">Menu management</div>
+              <h2 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-1">Menu Items</h2>
+              <p className="text-ink-soft text-[13px] mt-1">Manage categories and items for each restaurant&apos;s build-a-plate menu.</p>
+            </div>
+
+            <div className="space-y-4">
+              {/* Restaurant selector */}
+              <div>
+                <label className="block text-[12px] font-bold mb-1.5">Select restaurant</label>
+                <select
+                  value={menuRestaurantId}
+                  onChange={(e) => setMenuRestaurantId(e.target.value)}
+                  className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30"
+                >
+                  <option value="">Choose a restaurant</option>
+                  {restaurants.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+                </select>
+              </div>
+
+              {menuLoading && <div className="text-center py-8 text-ink-soft">Loading...</div>}
+
+              {/* Categories and items */}
+              {menuCategories.map((cat) => (
+                <div key={cat.id} className="bg-paper border border-line rounded-[16px] overflow-hidden">
+                  {/* Category header */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-cream/50 border-b border-line">
+                    <div>
+                      <strong className="text-[13px]">{cat.name}</strong>
+                      <span className="text-ink-soft text-[10px] ml-2">
+                        {cat.selectionRule === "PICK_ONE" ? "Pick one" : cat.selectionRule === "PICK_ONE_OR_MORE" ? "Pick one or more" : "Pick any"} &middot; {cat.items.length} items
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { setNewItemCategoryId(cat.id); setNewItemName(""); setNewItemPrice(""); }}
+                        className="text-[10px] font-bold text-green hover:underline"
+                      >
+                        + Add item
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteCategory(cat.id)}
+                        className="text-[10px] font-bold text-coral hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Items list */}
+                  <div className="divide-y divide-line">
+                    {cat.items.map((item) => (
+                      <div key={item.id} className="px-4 py-2.5">
+                        {editingItemId === item.id ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={editItemName}
+                              onChange={(e) => setEditItemName(e.target.value)}
+                              className="flex-1 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30"
+                            />
+                            <input
+                              type="number"
+                              value={editItemPrice}
+                              onChange={(e) => setEditItemPrice(e.target.value)}
+                              className="w-24 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30"
+                              placeholder="₦"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => saveEditItem(item.id)}
+                              className="bg-green text-white text-[10px] font-bold px-3 py-1.5 rounded-[8px]"
+                            >
+                              Save
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingItemId(null)}
+                              className="text-ink-soft text-[10px] font-bold px-2 py-1.5"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <span className="text-[13px]">{item.name}</span>
+                            <div className="flex items-center gap-3">
+                              <strong className="text-[13px]">₦{(item.price / 100).toLocaleString()}</strong>
+                              <button
+                                type="button"
+                                onClick={() => { setEditingItemId(item.id); setEditItemName(item.name); setEditItemPrice(String(item.price / 100)); }}
+                                className="text-[10px] font-bold text-green hover:underline"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteItem(item.id)}
+                                className="text-[10px] font-bold text-coral hover:underline"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Add new item inline */}
+                    {newItemCategoryId === cat.id && (
+                      <div className="px-4 py-2.5 bg-green-soft/30">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={newItemName}
+                            onChange={(e) => setNewItemName(e.target.value)}
+                            placeholder="Item name"
+                            className="flex-1 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30"
+                            autoFocus
+                          />
+                          <input
+                            type="number"
+                            value={newItemPrice}
+                            onChange={(e) => setNewItemPrice(e.target.value)}
+                            placeholder="Price ₦"
+                            className="w-24 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => addItem(cat.id)}
+                            className="bg-coral text-white text-[10px] font-bold px-3 py-1.5 rounded-[8px]"
+                          >
+                            Add
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setNewItemCategoryId(null)}
+                            className="text-ink-soft text-[10px] font-bold px-2 py-1.5"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {cat.items.length === 0 && newItemCategoryId !== cat.id && (
+                      <div className="px-4 py-4 text-center text-ink-soft text-[11px]">No items yet</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* Add category button */}
+              {menuRestaurantId && !showAddCategory && (
+                <button
+                  type="button"
+                  onClick={() => setShowAddCategory(true)}
+                  className="w-full py-3 border-2 border-dashed border-line rounded-[16px] text-[12px] font-bold text-ink-soft hover:border-green hover:text-green transition-colors"
+                >
+                  + Add new category
+                </button>
+              )}
+
+              {showAddCategory && (
+                <div className="bg-paper border border-line rounded-[16px] p-4 space-y-3">
+                  <strong className="text-[13px] block">New category</strong>
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="Category name (e.g. Soups, Protein)"
+                    className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30"
+                  />
+                  <select
+                    value={newCategoryRule}
+                    onChange={(e) => setNewCategoryRule(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30"
+                  >
+                    <option value="PICK_ONE">Pick one (required)</option>
+                    <option value="PICK_ONE_OR_MORE">Pick one or more</option>
+                    <option value="PICK_ANY">Pick any (optional)</option>
+                  </select>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={addCategory}
+                      className="flex-1 bg-coral text-white font-bold py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors"
+                    >
+                      Create category
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCategory(false)}
+                      className="flex-1 bg-cream text-ink-soft font-bold py-2.5 rounded-[10px] text-sm hover:bg-line transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {!menuRestaurantId && (
+                <div className="text-center py-12 text-ink-soft text-sm">Select a restaurant to manage its menu items</div>
               )}
             </div>
           </>

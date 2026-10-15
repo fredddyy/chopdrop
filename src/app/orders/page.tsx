@@ -18,6 +18,7 @@ interface OrderData {
     meal: { name: string; imageUrl: string | null; restaurant: { name: string } };
     timeSlot: { startTime: string; endTime: string };
   };
+  office?: { name: string; assistantName: string | null; assistantPhone: string | null; collectionPoint: string } | null;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -150,6 +151,22 @@ export default function OrdersPage() {
                             );
                           })}
                         </div>
+
+                        {/* Captain info */}
+                        {order.office?.assistantName && (
+                          <div className="flex items-center gap-2.5 mt-3 pt-3 border-t border-[#f0efeb] px-1">
+                            <div className="w-7 h-7 bg-[#0f4030]/[0.06] rounded-full flex items-center justify-center flex-shrink-0">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#0f4030]"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z" /></svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <span className="text-[10px] text-[#9ca3af]">Captain</span>
+                              <span className="text-[12px] font-semibold text-[#1a1a1a] block">{order.office.assistantName}</span>
+                            </div>
+                            {order.office.assistantPhone && (
+                              <a href={`tel:${order.office.assistantPhone}`} className="text-[10px] font-semibold text-[#22c55e]">Call</a>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}

@@ -31,6 +31,14 @@ export async function GET(request: NextRequest) {
           timeSlot: true,
         },
       },
+      office: {
+        select: {
+          name: true,
+          assistantName: true,
+          assistantPhone: true,
+          collectionPoint: true,
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
     take: 20,

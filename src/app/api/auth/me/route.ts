@@ -25,7 +25,7 @@ export async function GET() {
       lastName: user.lastName,
       email: user.email,
       phone: user.phone,
-      office: user.office ? { id: user.office.id, name: user.office.name, code: user.office.code, collectionPoint: user.office.collectionPoint, address: user.office.address } : null,
+      office: user.office ? { id: user.office.id, name: user.office.name, code: user.office.code, collectionPoint: user.office.collectionPoint, address: user.office.address, assistantName: user.office.assistantName, assistantPhone: user.office.assistantPhone } : null,
     },
   });
 }

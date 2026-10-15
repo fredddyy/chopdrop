@@ -36,7 +36,7 @@ function BowlIllustration() {
 const STEPS = [
   { time: "9:00 AM", label: "Menu goes live", sub: "Today's meals published", active: true },
   { time: "10:30 AM", label: "Order cutoff", sub: "Last chance to add items", active: false },
-  { time: "12:30 PM", label: "Batch drop", sub: "All boxes arrive together", active: false },
+  { time: "by 12 PM", label: "Batch drop", sub: "All boxes arrive on or before 12", active: false },
 ];
 
 export function EmptyMenu() {
@@ -140,7 +140,7 @@ export function EmptyMenu() {
           {[
             { n: "01", title: "Join your office batch", body: "Enter your office code to sync up with your team's daily drop." },
             { n: "02", title: "Order before 10:30 AM", body: "Browse today's menu, build your box, and pay securely via Paystack." },
-            { n: "03", title: "Collect at 12:30 PM", body: "One batch arrives for the whole office. Your box has a unique code." },
+            { n: "03", title: "Collect by 12:00 PM", body: "One batch arrives on or before 12. Your box has a unique code." },
           ].map((item) => (
             <div key={item.n} className="flex items-start gap-4 p-4 rounded-2xl bg-green-soft">
               <span className="text-[10px] font-[900] w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-green text-white">{item.n}</span>

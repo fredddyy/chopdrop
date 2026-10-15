@@ -101,7 +101,7 @@ function ConfirmationContent() {
   }
 
   function handleShare() {
-    const text = `I just ordered with ChopDrop — fresh meals, batch delivered to the office for free. Try it: https://chopdrop-app.vercel.app`;
+    const text = `Work is stressful. Food shouldn't be. I just ordered lunch with ChopDrop — everyone picks their own meal, pays online, food arrives together at your office by 12. Free delivery for Ikeja offices. Try it: https://chopdrop-app.vercel.app`;
     if (navigator.share) {
       navigator.share({ title: "ChopDrop", text }).catch(() => {});
     } else {
@@ -213,6 +213,26 @@ function ConfirmationContent() {
                   <div className="text-[10px] text-[#9ca3af] mt-0.5">Show code <strong className="text-[#1a1a1a]">{order.orderCode}</strong></div>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Captain info ── */}
+        {order.office?.assistantName && (
+          <div className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#0f4030]/[0.06] rounded-full flex items-center justify-center flex-shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#0f4030]"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z" /></svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] text-[#9ca3af]">Your captain</div>
+                <div className="text-[13px] font-semibold text-[#1a1a1a]">{order.office.assistantName}</div>
+              </div>
+              {order.office.assistantPhone && (
+                <a href={`tel:${order.office.assistantPhone}`} className="w-9 h-9 bg-[#22c55e]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#22c55e]"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>
+                </a>
+              )}
             </div>
           </div>
         )}

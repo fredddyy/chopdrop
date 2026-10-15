@@ -60,16 +60,15 @@ export default async function MenuPage() {
     .map(([id, slot]) => {
       const expired = isSlotExpired(slot.cutoffTime);
 
-      // Build restaurant list for this slot
+      // Build restaurant list for this slot — count actual menu items, not daily menu entries
       const restaurantMap = new Map<string, { id: string; name: string; imageUrl: string | null; address: string; mealCount: number; previewImage: string | null }>();
       for (const dm of slot.menus) {
         const r = dm.meal.restaurant;
-        const existing = restaurantMap.get(r.id);
-        if (existing) {
-          existing.mealCount++;
-          if (!existing.previewImage && dm.meal.imageUrl) existing.previewImage = dm.meal.imageUrl;
-        } else {
-          restaurantMap.set(r.id, { id: r.id, name: r.name, imageUrl: r.imageUrl, address: r.address, mealCount: 1, previewImage: dm.meal.imageUrl });
+        if (!restaurantMap.has(r.id)) {
+          const itemCount = r.menuCategories.reduce((sum, cat) => sum + cat.items.length, 0);
+          restaurantMap.set(r.id, { id: r.id, name: r.name, imageUrl: r.imageUrl, address: r.address, mealCount: itemCount || 1, previewImage: dm.meal.imageUrl });
+        } else if (!restaurantMap.get(r.id)!.previewImage && dm.meal.imageUrl) {
+          restaurantMap.get(r.id)!.previewImage = dm.meal.imageUrl;
         }
       }
 
