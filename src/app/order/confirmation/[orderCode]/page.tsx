@@ -101,7 +101,7 @@ function ConfirmationContent() {
   }
 
   function handleShare() {
-    const text = `Work is stressful. Food shouldn't be. I just ordered lunch with ChopDrop — everyone picks their own meal, pays online, food arrives together at your office by 12. Free delivery for Ikeja offices. Try it: https://chopdrop-app.vercel.app`;
+    const text = `Work is stressful. Food shouldn't be. I just ordered lunch with ChopDrop — pick your meal, pay on your phone, fresh food at your office by 12. ₦0 delivery for Ikeja offices. Try it: https://chopdrop-app.vercel.app`;
     if (navigator.share) {
       navigator.share({ title: "ChopDrop", text }).catch(() => {});
     } else {
@@ -199,7 +199,7 @@ function ConfirmationContent() {
                 <div className="w-6 h-6 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">2</div>
                 <div>
                   <div className="text-[12px] font-semibold text-[#1a1a1a]">
-                    {isOffice ? `Batch delivery to ${order.office!.name}` : "Your food is delivered"}
+                    {isOffice ? `Delivery to ${order.office!.name}` : "Your food is delivered"}
                   </div>
                   <div className="text-[10px] text-[#9ca3af] mt-0.5">Arrives at {dropTime}</div>
                 </div>
@@ -274,7 +274,7 @@ function ConfirmationContent() {
               </div>
               <div className="flex justify-between">
                 <span className="text-[#9ca3af]">Delivery</span>
-                <span className="font-medium text-[#1a1a1a]">{isOffice ? "Office Batch (Free)" : order.fulfillmentType === "DELIVERY" ? "Express" : "Pickup"}</span>
+                <span className="font-medium text-[#1a1a1a]">{isOffice ? "Office Drop (Free)" : order.fulfillmentType === "DELIVERY" ? "Express" : "Pickup"}</span>
               </div>
               {isOffice && (
                 <div className="flex justify-between">
@@ -315,7 +315,7 @@ function ConfirmationContent() {
               </div>
               <div>
                 <h3 className="text-[13px] font-semibold text-[#1a1a1a]">Want free delivery next time?</h3>
-                <p className="text-[10px] text-[#9ca3af] mt-0.5">Connect your office code for batch delivery</p>
+                <p className="text-[10px] text-[#9ca3af] mt-0.5">Connect your office code for free delivery</p>
               </div>
             </div>
             {officeConnectError && (
@@ -346,7 +346,7 @@ function ConfirmationContent() {
           </div>
           <div className="flex-1">
             <p className="text-[12px] font-semibold text-[#1a1a1a]">{shareCopied ? "Link copied!" : "Share with colleagues"}</p>
-            <p className="text-[10px] text-[#9ca3af]">{shareCopied ? "Paste it anywhere" : "More people = free delivery for everyone"}</p>
+            <p className="text-[10px] text-[#9ca3af]">{shareCopied ? "Paste it anywhere" : "Spread the word — ₦0 delivery for your office"}</p>
           </div>
         </button>
       </div>

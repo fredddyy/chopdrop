@@ -60,7 +60,7 @@ export function CaptainDashboard({
   const handoffSteps = [
     { label: "Orders closed", detail: "Final list locked at 10:30 AM", done: true },
     { label: "Kitchens preparing", detail: `${totalBoxes} meals accepted`, done: true },
-    { label: "Receive batch", detail: "Count boxes before confirming", done: received },
+    { label: "Receive drop", detail: "Count boxes before confirming", done: received },
     { label: "Distribute", detail: `Hand out at ${office.collectionPoint}`, done: false },
   ];
 
@@ -133,7 +133,7 @@ export function CaptainDashboard({
             }`}
           >
             {received
-              ? `✓ Batch received at ${receivedTime}`
+              ? `✓ Drop received at ${receivedTime}`
               : `Confirm ${totalBoxes} boxes received`}
           </button>
         </div>
@@ -147,7 +147,7 @@ export function CaptainDashboard({
               tab === "batch" ? "bg-ink text-white" : "bg-paper border border-line text-ink-soft"
             }`}
           >
-            Batch ({batches.length})
+            Drop ({batches.length})
           </button>
           <button
             type="button"

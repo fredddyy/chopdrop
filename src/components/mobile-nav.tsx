@@ -23,7 +23,7 @@ export function MobileNav() {
           <a href="/menu" className="action action-primary">
             Use the App <span aria-hidden="true">→</span>
           </a>
-          <a href="#cta" className="action action-outline mobile-wa">
+          <a href="https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20order%20food%20for%20my%20office" className="action action-outline mobile-wa">
             Order on WhatsApp <span aria-hidden="true">→</span>
           </a>
         </div>

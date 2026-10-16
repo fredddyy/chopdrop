@@ -87,7 +87,7 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
 function Action({
   children,
   variant = "primary",
-  href = "#cta",
+  href = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20order%20food%20for%20my%20office",
 }: {
   children: React.ReactNode;
   variant?: "primary" | "outline" | "light";
@@ -176,7 +176,7 @@ function OrderPhone() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="Rice and chicken order" src={FOOD_IMAGE} />
         <b>by 12:00 PM</b>
-        <small>One batch. One smooth delivery.</small>
+        <small>Fresh food at your desk. ₦0 delivery.</small>
         <div className="collection-code">COLLECT WITH CODE · CD 028</div>
       </div>
       <div className="phone-home" />
@@ -218,13 +218,13 @@ const steps = [
     icon: "restaurant" as IconName,
     number: "02",
     title: "Restaurants Cook to Order",
-    copy: "Prepaid group orders go straight to the kitchen. No guesswork, no waste.",
+    copy: "Your prepaid order goes straight to the kitchen. No guesswork, no waste.",
   },
   {
     icon: "truck" as IconName,
     number: "03",
-    title: "One Batch Arrives Together",
-    copy: "Every meal reaches your location in one coordinated delivery.",
+    title: "₦0 Delivery to Your Office",
+    copy: "Your meal reaches your desk in one smooth drop — free delivery, no hassle.",
   },
   {
     icon: "copy" as IconName,
@@ -289,9 +289,8 @@ export default function Home() {
                 Meals for <span>Your Team,</span> <strong>Sorted.</strong>
               </h1>
               <p>
-                Everyone picks what they want and pays for themselves. We batch
-                the orders and deliver everything together—one smooth drop, zero
-                stress.
+                Pick your meal, pay on your phone. Fresh food arrives at your
+                office — zero delivery fees, zero stress.
               </p>
               <div className="button-row">
                 <Action>Order on WhatsApp</Action>
@@ -310,7 +309,7 @@ export default function Home() {
                   <i>
                     <Icon name="truck" size={15} />
                   </i>
-                  <b>Arrive together</b>
+                  <b>₦0 delivery</b>
                 </span>
               </div>
             </div>
@@ -390,8 +389,8 @@ export default function Home() {
                   <span>Meals per drop</span>
                 </div>
                 <div>
-                  <strong>1</strong>
-                  <span>Group delivery</span>
+                  <strong>₦0</strong>
+                  <span>Delivery fee</span>
                 </div>
                 <div>
                   <strong>100%</strong>

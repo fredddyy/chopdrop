@@ -159,22 +159,22 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             <div className="flex items-start gap-3 mb-2.5">
               <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">1</div>
               <div>
-                <div className="text-[12px] font-semibold text-white">Pre-order your meal now</div>
-                <div className="text-[10px] text-white/50 mt-0.5">Pick what you want, pay online</div>
+                <div className="text-[12px] font-semibold text-white">Pick what you&apos;re eating today</div>
+                <div className="text-[10px] text-white/50 mt-0.5">Choose your meal, pay on your phone</div>
               </div>
             </div>
             <div className="flex items-start gap-3 mb-2.5">
               <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">2</div>
               <div>
-                <div className="text-[12px] font-semibold text-white">Cooked fresh, delivered together</div>
-                <div className="text-[10px] text-white/50 mt-0.5">All meals arrive in one batch delivery</div>
+                <div className="text-[12px] font-semibold text-white">Cooked fresh, delivered to your office</div>
+                <div className="text-[10px] text-white/50 mt-0.5">Fresh food at your desk, ₦0 delivery</div>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">3</div>
               <div>
-                <div className="text-[12px] font-semibold text-white">Collect with your code — free delivery</div>
-                <div className="text-[10px] text-white/50 mt-0.5">Work is stressful. Food shouldn&apos;t be.</div>
+                <div className="text-[12px] font-semibold text-white">Collect with your code — you paid ₦0 delivery</div>
+                <div className="text-[10px] text-white/50 mt-0.5">No cash, no wrong orders, no delivery fee</div>
               </div>
             </div>
             <button
@@ -182,7 +182,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               onClick={dismissBanner}
               className="mt-3 w-full bg-white/10 text-white text-[11px] font-semibold py-2 rounded-lg active:scale-[0.98] transition-transform"
             >
-              Got it, let me order
+              Got it, show me food
             </button>
           </div>
         </div>
@@ -242,12 +242,12 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 {totalOrdered > 0 ? (
                   <>
                     <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-pulse" />
-                    <span>{totalOrdered} order{totalOrdered !== 1 ? "s" : ""} placed for this drop</span>
+                    <span>{totalOrdered} {totalOrdered !== 1 ? "people" : "person"} ordered so far</span>
                   </>
                 ) : officeName ? (
-                  <span>Be the first from {officeName} to join</span>
+                  <span>Be the first from {officeName} to order today</span>
                 ) : (
-                  <span>Be the first to join today&apos;s drop</span>
+                  <span>Be the first to order today</span>
                 )}
               </div>
               {captainName && (

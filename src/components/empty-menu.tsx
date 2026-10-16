@@ -36,7 +36,7 @@ function BowlIllustration() {
 const STEPS = [
   { time: "9:00 AM", label: "Menu goes live", sub: "Today's meals published", active: true },
   { time: "10:30 AM", label: "Order cutoff", sub: "Last chance to add items", active: false },
-  { time: "by 12 PM", label: "Batch drop", sub: "All boxes arrive on or before 12", active: false },
+  { time: "by 12 PM", label: "Office drop", sub: "Your food arrives on or before 12", active: false },
 ];
 
 export function EmptyMenu() {
@@ -138,9 +138,9 @@ export function EmptyMenu() {
         <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-ink-soft mb-4">How ChopDrop works</p>
         <div className="space-y-3">
           {[
-            { n: "01", title: "Join your office batch", body: "Enter your office code to sync up with your team's daily drop." },
+            { n: "01", title: "Connect your office", body: "Enter your office code to unlock free delivery on every drop." },
             { n: "02", title: "Order before 10:30 AM", body: "Browse today's menu, build your box, and pay securely via Paystack." },
-            { n: "03", title: "Collect by 12:00 PM", body: "One batch arrives on or before 12. Your box has a unique code." },
+            { n: "03", title: "Collect by 12:00 PM", body: "Your food arrives on or before 12. Your box has a unique code." },
           ].map((item) => (
             <div key={item.n} className="flex items-start gap-4 p-4 rounded-2xl bg-green-soft">
               <span className="text-[10px] font-[900] w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-green text-white">{item.n}</span>
@@ -157,7 +157,7 @@ export function EmptyMenu() {
       <div className="mx-5 mb-8 flex items-start gap-3 p-4 rounded-2xl" style={{ background: "#FFF8F0", border: "1px solid rgba(232,96,76,0.2)" }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-coral flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>
         <p className="text-[11px] leading-relaxed text-ink">
-          <strong>Minimum order ₦2,500.</strong> Office batch drops are free. Solo delivery costs ₦1,000. Self-pickup is always free.
+          <strong>Minimum order ₦2,500.</strong> Office drops are free. Solo delivery costs ₦1,000. Self-pickup is always free.
         </p>
       </div>
 

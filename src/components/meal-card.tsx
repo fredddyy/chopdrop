@@ -103,7 +103,7 @@ export function MealCard({
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 6h11v11H3zM14 10h4l3 4v3h-7z" /><circle cx="7" cy="19" r="2" /><circle cx="18" cy="19" r="2" />
             </svg>
-            Free batch delivery
+            Free delivery
           </span>
         </div>
 

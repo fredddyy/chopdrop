@@ -173,7 +173,7 @@ export default function AuthPage() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#0f4030]"><path d="M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3" /></svg>
             </div>
             <h1 className="font-display font-bold text-[26px] text-[#1a1a1a] tracking-[-0.03em] leading-tight">Connect your office</h1>
-            <p className="text-[#9ca3af] text-[13px] mt-1.5 mb-6">Enter your office code to join batch deliveries. Ask your office assistant if you don&apos;t have one.</p>
+            <p className="text-[#9ca3af] text-[13px] mt-1.5 mb-6">Enter your office code for free delivery. Ask your office assistant if you don&apos;t have one.</p>
 
             {error && <div className="bg-[#fef2f2] text-[#f05f4b] text-[12px] font-semibold p-3 rounded-xl mb-4 flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>{error}</div>}
 

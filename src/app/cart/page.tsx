@@ -149,7 +149,7 @@ export default function CartPage() {
     (fulfillment === "building" && selectedDropPoint && !selectedDropPoint.isFreeDelivery) ? EXPRESS_FEE : 0;
   const effectiveTip = (fulfillment === "office" && officeId) ? captainTip : 0;
   const orderTotal = cart.subtotal + deliveryFee + SERVICE_FEE + effectiveTip;
-  const belowMinimum = false; // No minimum order — batch model handles unit economics
+  const belowMinimum = false; // No minimum order — drop model handles unit economics
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
   const hasContact = customerName.trim() && customerPhone.trim();
 
@@ -211,7 +211,7 @@ export default function CartPage() {
   async function handlePay() {
     if (!customerName.trim() || !customerPhone.trim()) { setError("Name and phone are required"); setEditContact(true); return; }
     if (cart.items.length === 0) return;
-    if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your office code for free batch delivery, or switch to Express Delivery"); return; }
+    if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your office code for free delivery, or switch to Express Delivery"); return; }
     if (fulfillment === "office" && !officeId && isFirstOrder && !deliveryAddress.trim()) { setError("Enter your delivery address so we know where to bring your food"); return; }
     if (fulfillment === "delivery" && !deliveryAddress.trim()) { setError("Enter your delivery address"); return; }
     if (fulfillment === "building" && !selectedDropPoint) { setError("Select your building to continue"); return; }
@@ -336,7 +336,7 @@ export default function CartPage() {
           <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
             <h2 className="font-display font-bold text-[14px] text-[#1a1a1a] mb-3">Delivery</h2>
             <div className="space-y-2">
-              {/* Office Batch */}
+              {/* Office Drop */}
               <button type="button" onClick={() => setFulfillment("office")} className={`w-full text-left p-3 rounded-xl border-[1.5px] transition-all ${fulfillment === "office" ? "border-[#0f4030] bg-[#0f4030]/[0.03]" : "border-[#f0efeb] hover:border-[#d1d5db]"}`}>
                 <div className="flex items-center gap-3">
                   <div className={`w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0 ${fulfillment === "office" ? "border-[#0f4030]" : "border-[#d1d5db]"}`}>
@@ -344,7 +344,7 @@ export default function CartPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-semibold text-[#1a1a1a]">Office Batch Drop</span>
+                      <span className="text-[13px] font-semibold text-[#1a1a1a]">Office Drop</span>
                       <span className="bg-[#0f4030]/10 text-[#0f4030] text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">Free</span>
                     </div>
                     {officeId ? (
@@ -355,7 +355,7 @@ export default function CartPage() {
                   </div>
                   <span className="text-[13px] font-bold text-[#22c55e] flex-shrink-0">FREE</span>
                 </div>
-                {/* Office code input — required for free batch */}
+                {/* Office code input — required for free delivery */}
                 {fulfillment === "office" && !officeId && (
                   <div className="mt-2.5">
                     <div className="flex gap-2">
@@ -374,14 +374,14 @@ export default function CartPage() {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free batch delivery. Ask your office admin or captain.</p>
+                      <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free delivery. Ask your office admin or captain.</p>
                     )}
                   </div>
                 )}
                 {fulfillment === "office" && officeId && (
                   <div className="mt-2 flex items-center gap-1.5 text-[10px] text-[#22c55e] font-semibold">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m5 12 4 4L19 6" /></svg>
-                    Connected — free batch delivery
+                    Connected — free delivery
                   </div>
                 )}
                 {codeError && <p className="text-[#f05f4b] text-[10px] mt-1 ml-7">{codeError}</p>}
@@ -509,7 +509,7 @@ export default function CartPage() {
             {(fulfillment === "office" || (fulfillment === "building" && selectedDropPoint?.isFreeDelivery)) && (
               <div className="flex items-center gap-1.5 bg-[#0f4030]/[0.06] rounded-lg px-3 py-2 mt-3 text-[#0f4030] text-[10px] font-semibold">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m5 12 4 4L19 6" /></svg>
-                Saving {formatNaira(EXPRESS_FEE)} with batch delivery
+                You&apos;re saving {formatNaira(EXPRESS_FEE)} on delivery
               </div>
             )}
           </section>

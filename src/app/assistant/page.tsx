@@ -170,7 +170,7 @@ function AssistantContent() {
   const handoffSteps = [
     { label: "Orders closed", detail: "Final list locked at 10:30 AM", done: true },
     { label: "Restaurants preparing", detail: `${totalBoxes} of ${totalBoxes} meals accepted`, done: true },
-    { label: "Receive lunch batch", detail: "Count boxes before confirming", done: received },
+    { label: "Receive lunch drop", detail: "Count boxes before confirming", done: received },
     { label: "Share collection codes", detail: "Workers collect from " + (office?.collectionPoint || "reception"), done: false },
   ];
 
@@ -239,7 +239,7 @@ function AssistantContent() {
           <div className="bg-paper border border-line rounded-[15px] p-5">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <div className="font-display font-bold text-[17px]">Today&apos;s batch</div>
+                <div className="font-display font-bold text-[17px]">Today&apos;s drop</div>
                 <span className="text-ink-soft text-[10px]">Grouped by restaurant</span>
               </div>
               {orders.length > 0 && (
@@ -304,7 +304,7 @@ function AssistantContent() {
                   : "bg-coral text-white shadow-[0_5px_14px_rgba(240,100,73,0.22)] hover:bg-[#d95038]"
               }`}
             >
-              {received ? `Batch received ✓` : `Confirm ${totalBoxes} boxes received`}
+              {received ? `Drop received ✓` : `Confirm ${totalBoxes} boxes received`}
             </button>
           </div>
         </div>

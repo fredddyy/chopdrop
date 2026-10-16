@@ -160,7 +160,7 @@ export default function KitchenPage() {
           <div className="bg-paper border border-line rounded-[13px] p-4 border-t-[3px] border-t-green">
             <span className="text-ink-soft text-[10px] font-bold block">Ready for pickup</span>
             <strong className="font-display font-[750] text-[25px] tracking-[-0.04em] block mt-1">{readyCount} / {totalBoxes}</strong>
-            <small className="text-ink-soft text-[9px]">{readyCount === totalBoxes ? "Batch complete" : `${totalBoxes - readyCount} boxes remaining`}</small>
+            <small className="text-ink-soft text-[9px]">{readyCount === totalBoxes ? "Drop complete" : `${totalBoxes - readyCount} boxes remaining`}</small>
           </div>
         </div>
 
