@@ -165,8 +165,8 @@ function ConfirmationContent() {
           {isConfirmed && (
             <p className="text-[#9ca3af] text-[13px] mt-1">
               {isOffice
-                ? `Your food arrives at ${dropTime}. Show your code to the captain.`
-                : `Your food will be ready at ${dropTime}.`
+                ? `Cooked fresh, arrives at ${dropTime}. Show your code to the captain.`
+                : `Cooked fresh, ready at ${dropTime}.`
               }
             </p>
           )}

@@ -14,7 +14,7 @@ interface MenuItem {
   id: string; name: string; description: string | null; imageUrl: string | null;
   price: number; originalPrice: number | null; maxDeals: number; claimedPad: number;
   tag: string; type: string; restaurantId: string; restaurantName: string;
-  restaurantAddress: string; startTime: string; endTime: string; remaining: number;
+  restaurantAddress: string; restaurantImageUrl: string | null; startTime: string; endTime: string; remaining: number;
   expired: boolean; categories?: Category[];
 }
 interface RestaurantInfo { id: string; name: string; imageUrl: string | null; address: string; mealCount: number; previewImage: string | null; }
@@ -159,15 +159,15 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             <div className="flex items-start gap-3 mb-2.5">
               <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">1</div>
               <div>
-                <div className="text-[12px] font-semibold text-white">Pick & pay before cutoff</div>
-                <div className="text-[10px] text-white/50 mt-0.5">Everyone orders individually online</div>
+                <div className="text-[12px] font-semibold text-white">Pre-order your meal now</div>
+                <div className="text-[10px] text-white/50 mt-0.5">Pick what you want, pay online</div>
               </div>
             </div>
             <div className="flex items-start gap-3 mb-2.5">
               <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-[9px] font-bold text-white">2</div>
               <div>
-                <div className="text-[12px] font-semibold text-white">Food arrives at your office</div>
-                <div className="text-[10px] text-white/50 mt-0.5">All meals batched in one delivery</div>
+                <div className="text-[12px] font-semibold text-white">Cooked fresh, delivered together</div>
+                <div className="text-[10px] text-white/50 mt-0.5">All meals arrive in one batch delivery</div>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -230,7 +230,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     {getSlotShortName(slot.label)} Drop
                   </h2>
                   <p className="text-[10px] text-white/40 mt-1">
-                    Arrives {getSlotDropTime(slot.label) || slot.startTime} · Prepaid
+                    Cooked fresh, arrives {getSlotDropTime(slot.label) || slot.startTime} · Prepaid
                   </p>
                 </div>
                 <CountdownTimer cutoffTime={slot.cutoffTime} compact />
@@ -281,9 +281,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 {slot.restaurants.map((r) => (
                   <div key={r.id} className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
-                      {(r.previewImage || r.imageUrl) ? (
+                      {(r.imageUrl || r.previewImage) ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={(r.previewImage || r.imageUrl)!} alt={r.name} className="w-full h-full object-cover" />
+                        <img src={(r.imageUrl || r.previewImage)!} alt={r.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[#0f4030]/20 text-[14px] font-bold">
                           {r.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
@@ -309,14 +309,90 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           </div>
         </div>
       ) : slot && slot.expired ? (
-        <div className="text-center py-16 px-6">
-          <div className="text-[40px] mb-3">{getSlotIcon(slot.label)}</div>
-          <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] mb-2">{getSlotShortName(slot.label)} is closed</h2>
-          <p className="text-[#9ca3af] text-[13px]">
-            {slots.find((s) => !s.expired) ? (
-              <>Switch to <button type="button" onClick={() => setActiveSlot(slots.find((s) => !s.expired)!.id)} className="text-[#0f4030] font-bold underline underline-offset-2">{getSlotShortName(slots.find((s) => !s.expired)!.label)}</button></>
-            ) : "Come back tomorrow."}
-          </p>
+        <div className="px-5 pt-8 pb-4">
+          {/* Closed header */}
+          <div className="text-center mb-6">
+            <div className="text-[36px] mb-2">{getSlotIcon(slot.label)}</div>
+            <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] mb-1">{getSlotShortName(slot.label)} is closed</h2>
+            <p className="text-[#9ca3af] text-[13px]">
+              {slots.find((s) => !s.expired) ? "But there's more food waiting..." : "Come back tomorrow."}
+            </p>
+          </div>
+
+          {/* Preview of the open slot */}
+          {(() => {
+            const openSlot = slots.find((s) => !s.expired);
+            if (!openSlot) return null;
+            const openDeals = openSlot.items.filter((i) => i.tag === "DEAL").slice(0, 3);
+            const openRestaurants = openSlot.restaurants.slice(0, 2);
+            return (
+              <div className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden">
+                {/* Header */}
+                <button
+                  type="button"
+                  onClick={() => setActiveSlot(openSlot.id)}
+                  className="w-full flex items-center justify-between px-4 py-3.5 bg-gradient-to-r from-[#0f4030] to-[#0d3528] text-white active:opacity-90 transition-opacity"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[18px]">{getSlotIcon(openSlot.label)}</span>
+                    <div className="text-left">
+                      <div className="text-[14px] font-bold">{getSlotShortName(openSlot.label)} is open</div>
+                      <div className="text-[10px] text-white/50">{openRestaurants.length} kitchen{openRestaurants.length !== 1 ? "s" : ""}{openDeals.length > 0 ? ` · ${openDeals.length} deal${openDeals.length !== 1 ? "s" : ""}` : ""}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-3 py-1.5 text-[11px] font-semibold">
+                    Show {getSlotShortName(openSlot.label).toLowerCase()}
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+                  </div>
+                </button>
+
+                {/* Deal previews */}
+                {openDeals.length > 0 && (
+                  <div className="px-4 py-3 space-y-2">
+                    {openDeals.map((deal) => (
+                      <div key={deal.id} className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                          {deal.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={deal.imageUrl} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[14px]">🍽️</div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[12px] font-semibold text-[#1a1a1a] truncate">{deal.name}</div>
+                          <div className="text-[10px] text-[#9ca3af]">{deal.restaurantName}</div>
+                        </div>
+                        <span className="font-display font-bold text-[13px] text-[#1a1a1a] flex-shrink-0">{formatPrice(deal.price)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Restaurant previews */}
+                {openRestaurants.length > 0 && openDeals.length === 0 && (
+                  <div className="px-4 py-3 space-y-2">
+                    {openRestaurants.map((r) => (
+                      <div key={r.id} className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                          {(r.imageUrl || r.previewImage) ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={(r.imageUrl || r.previewImage)!} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-[#e8f5e9] flex items-center justify-center text-[10px] font-bold text-[#0f4030]/30">{r.name.charAt(0)}</div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[12px] font-semibold text-[#1a1a1a] truncate">{r.name}</div>
+                          <div className="text-[10px] text-[#9ca3af]">{r.mealCount} meals · {r.address}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       ) : slot && (
         <>
@@ -329,8 +405,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               {/* FIX #4: 220px cards so 1.4 visible */}
               <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-1">
                 {slot.items.filter((i) => i.tag === "DEAL").map((deal) => {
-                  const originalPrice = deal.originalPrice || Math.round(deal.price * 1.25);
-                  const savings = originalPrice - deal.price;
+                  const originalPrice = deal.originalPrice;
+                  const savings = originalPrice ? originalPrice - deal.price : 0;
+                  const hasDiscount = originalPrice && originalPrice > deal.price;
                   const maxSpots = deal.maxDeals || 20;
                   const realClaimed = maxSpots - deal.remaining;
                   const claimed = Math.min(maxSpots - 1, realClaimed + (deal.claimedPad || 0));
@@ -338,7 +415,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   const cartQty = cart.items.find((i) => i.dailyMenuId === deal.id)?.quantity || 0;
 
                   return (
-                    <div key={deal.id} className="flex-shrink-0 w-[220px] bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.04)]">
+                    <div key={deal.id} onClick={() => handleAddFixed(deal)} className="flex-shrink-0 w-[220px] bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.04)] cursor-pointer active:scale-[0.98] transition-transform">
                       <div className="relative h-[120px]">
                         {deal.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -346,12 +423,14 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-[#fef3f0] to-[#fdf6ed] flex items-center justify-center text-[32px]">🍽️</div>
                         )}
-                        <div className="absolute top-2 left-2 bg-white text-[#0f4030] text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                          Save {formatPrice(savings)}
-                        </div>
+                        {hasDiscount && (
+                          <div className="absolute top-2 left-2 bg-white text-[#0f4030] text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+                            Save {formatPrice(savings)}
+                          </div>
+                        )}
                         <div className="absolute bottom-2 right-2">
                           {cartQty > 0 ? (
-                            <div className="flex items-center bg-[#f05f4b] rounded-full shadow-lg">
+                            <div className="flex items-center bg-[#f05f4b] rounded-full shadow-lg" onClick={(e) => e.stopPropagation()}>
                               <button type="button" onClick={() => cart.changeQuantity(deal.id, -1)} className="w-7 h-7 flex items-center justify-center text-white active:scale-90 transition-transform">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
                               </button>
@@ -361,7 +440,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                               </button>
                             </div>
                           ) : (
-                            <button type="button" onClick={() => handleAddFixed(deal)} className="w-8 h-8 rounded-full bg-white text-[#1a1a1a] flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)] active:scale-90 transition-transform ring-1 ring-black/[0.08]">
+                            <button type="button" onClick={(e) => e.stopPropagation()} className="w-8 h-8 rounded-full bg-white text-[#1a1a1a] flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)] active:scale-90 transition-transform ring-1 ring-black/[0.08]">
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                             </button>
                           )}
@@ -369,10 +448,20 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                       </div>
                       <div className="p-3">
                         <h3 className="font-semibold text-[13px] text-[#1a1a1a] leading-tight">{deal.name}</h3>
-                        <p className="text-[10px] text-[#9ca3af] mt-0.5">{deal.restaurantName}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          {deal.restaurantImageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={deal.restaurantImageUrl} alt="" className="w-4 h-4 rounded-full object-cover flex-shrink-0" />
+                          ) : (
+                            <div className="w-4 h-4 rounded-full bg-[#f0efeb] text-[#9ca3af] flex items-center justify-center text-[7px] font-bold flex-shrink-0">
+                              {deal.restaurantName.charAt(0)}
+                            </div>
+                          )}
+                          <span className="text-[10px] text-[#9ca3af]">{deal.restaurantName}</span>
+                        </div>
                         <div className="flex items-baseline gap-1.5 mt-2">
                           <span className="font-display font-bold text-[16px] text-[#1a1a1a]">{formatPrice(deal.price)}</span>
-                          <span className="text-[12px] text-[#d1d5db] line-through">{formatPrice(originalPrice)}</span>
+                          {hasDiscount && <span className="text-[12px] text-[#d1d5db] line-through">{formatPrice(originalPrice)}</span>}
                         </div>
                         {/* FIX #7: Smart progress text */}
                         <div className="mt-2.5">
@@ -419,10 +508,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   >
                     {/* FIX #6: Shorter image so card is fully visible */}
                     <div className="relative h-[150px] overflow-hidden">
-                      {(r.previewImage || r.imageUrl) ? (
+                      {(r.imageUrl || r.previewImage) ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={(r.previewImage || r.imageUrl)!}
+                          src={(r.imageUrl || r.previewImage)!}
                           alt={r.name}
                           className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
                           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}

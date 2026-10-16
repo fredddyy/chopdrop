@@ -2,19 +2,63 @@ import { prisma } from "@/lib/prisma";
 import { isSlotExpired } from "@/lib/utils";
 import { MenuContent } from "@/components/menu-content";
 import { EmptyMenu } from "@/components/empty-menu";
-import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function MenuPage() {
-  // Use date string to avoid timezone issues — match the DB date format
-  const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+  const todayStr = new Date().toLocaleDateString("en-CA");
   const today = new Date(todayStr + "T00:00:00.000Z");
 
+  // Get all time slots
+  const timeSlots = await prisma.timeSlot.findMany();
+
+  if (timeSlots.length === 0) {
+    return <EmptyMenu />;
+  }
+
+  // Get all active meals with their restaurants
+  const activeMeals = await prisma.meal.findMany({
+    where: { isAvailable: true, restaurant: { isActive: true } },
+    include: {
+      restaurant: {
+        include: {
+          menuCategories: {
+            include: { items: { orderBy: { sortOrder: "asc" } } },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      },
+    },
+  });
+
+  if (activeMeals.length === 0) {
+    return <EmptyMenu />;
+  }
+
+  // Auto-create daily menu entries for today if they don't exist
+  for (const meal of activeMeals) {
+    for (const slot of timeSlots) {
+      const existing = await prisma.dailyMenu.findFirst({
+        where: { date: today, mealId: meal.id, timeSlotId: slot.id },
+      });
+      if (!existing) {
+        await prisma.dailyMenu.create({
+          data: {
+            date: today,
+            mealId: meal.id,
+            timeSlotId: slot.id,
+            maxOrders: meal.tag === "DEAL" ? (meal.maxDeals || 20) : 50,
+          },
+        });
+      }
+    }
+  }
+
+  // Now fetch the daily menus normally
   const dailyMenus = await prisma.dailyMenu.findMany({
     where: {
       date: today,
-      meal: { isAvailable: true },
+      meal: { isAvailable: true, restaurant: { isActive: true } },
     },
     include: {
       meal: {
@@ -37,7 +81,7 @@ export default async function MenuPage() {
     return <EmptyMenu />;
   }
 
-  // Group daily menus by time slot
+  // Group by time slot
   const slotMap = new Map<string, { label: string; startTime: string; cutoffTime: string; menus: typeof dailyMenus }>();
   for (const dm of dailyMenus) {
     const key = dm.timeSlot.id;
@@ -54,22 +98,18 @@ export default async function MenuPage() {
     }
   }
 
-  // Sort slots by startTime (breakfast first, then lunch)
   const slots = Array.from(slotMap.entries())
     .sort(([, a], [, b]) => a.startTime.localeCompare(b.startTime))
     .map(([id, slot]) => {
       const expired = isSlotExpired(slot.cutoffTime);
 
-      // Build restaurant list for this slot — count actual menu items, not daily menu entries
+      // Only show restaurants that have a BUILD_YOUR_PLATE entry (full menu enabled)
       const restaurantMap = new Map<string, { id: string; name: string; imageUrl: string | null; address: string; mealCount: number; previewImage: string | null }>();
       for (const dm of slot.menus) {
+        if (dm.meal.type !== "BUILD_YOUR_PLATE") continue; // skip deals/combos — they show in combo section
         const r = dm.meal.restaurant;
-        if (!restaurantMap.has(r.id)) {
-          const itemCount = r.menuCategories.reduce((sum, cat) => sum + cat.items.length, 0);
-          restaurantMap.set(r.id, { id: r.id, name: r.name, imageUrl: r.imageUrl, address: r.address, mealCount: itemCount || 1, previewImage: dm.meal.imageUrl });
-        } else if (!restaurantMap.get(r.id)!.previewImage && dm.meal.imageUrl) {
-          restaurantMap.get(r.id)!.previewImage = dm.meal.imageUrl;
-        }
+        const menuItemCount = r.menuCategories.reduce((sum, cat) => sum + cat.items.length, 0);
+        restaurantMap.set(r.id, { id: r.id, name: r.name, imageUrl: r.imageUrl, address: r.address, mealCount: menuItemCount, previewImage: dm.meal.imageUrl });
       }
 
       const items = slot.menus.map((dm) => {
@@ -88,7 +128,7 @@ export default async function MenuPage() {
           id: dm.id, name: dm.meal.name, description: dm.meal.description, imageUrl: dm.meal.imageUrl,
           price: minPrice, originalPrice: dm.meal.originalPrice, maxDeals: dm.meal.maxDeals, claimedPad: dm.meal.claimedPad,
           tag: dm.meal.tag, type: dm.meal.type,
-          restaurantId: dm.meal.restaurant.id, restaurantName: dm.meal.restaurant.name, restaurantAddress: dm.meal.restaurant.address,
+          restaurantId: dm.meal.restaurant.id, restaurantName: dm.meal.restaurant.name, restaurantAddress: dm.meal.restaurant.address, restaurantImageUrl: dm.meal.restaurant.imageUrl,
           startTime: dm.timeSlot.startTime, endTime: dm.timeSlot.endTime,
           remaining: dm.maxOrders - dm.currentOrders, expired,
           categories: dm.meal.type === "BUILD_YOUR_PLATE"
@@ -111,7 +151,6 @@ export default async function MenuPage() {
       };
     });
 
-  // Pick default tab: first non-expired slot, or first slot
   const defaultSlot = slots.find((s) => !s.expired)?.id || slots[0]?.id || "";
 
   return (

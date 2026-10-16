@@ -13,6 +13,8 @@ export const createOrderSchema = z.object({
   officeId: z.string().optional(),
   dropPointId: z.string().optional(),
   quantity: z.number().int().min(1).max(10),
+  captainTip: z.number().int().min(0).optional(),
+  serviceFee: z.number().int().min(0).optional(),
   items: z
     .array(
       z.object({

@@ -15,6 +15,7 @@ export async function PATCH(
     assistantName?: string | null;
     assistantPhone?: string | null;
     isActive?: boolean;
+    zoneId?: string | null;
   } = {};
 
   if (body.name !== undefined) data.name = body.name;
@@ -23,6 +24,7 @@ export async function PATCH(
   if (body.assistantName !== undefined) data.assistantName = body.assistantName || null;
   if (body.assistantPhone !== undefined) data.assistantPhone = body.assistantPhone || null;
   if (body.isActive !== undefined) data.isActive = body.isActive;
+  if (body.zoneId !== undefined) data.zoneId = body.zoneId || null;
 
   const office = await prisma.office.update({
     where: { id },

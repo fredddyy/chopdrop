@@ -34,6 +34,7 @@ interface RestaurantData {
   address: string;
   phone: string;
   isActive: boolean;
+  zoneId: string | null;
 }
 
 interface OfficeDataItem {
@@ -47,7 +48,16 @@ interface OfficeDataItem {
   assistantName: string | null;
   assistantPhone: string | null;
   isActive: boolean;
+  zoneId: string | null;
   _count: { orders: number };
+}
+
+interface ZoneData {
+  id: string;
+  name: string;
+  areas: string;
+  isActive: boolean;
+  _count: { restaurants: number; offices: number };
 }
 
 export default function OpsPage() {
@@ -74,7 +84,7 @@ export default function OpsPage() {
   const [offAssistantPhone, setOffAssistantPhone] = useState("");
 
   // Meals
-  const [meals, setMeals] = useState<{ id: string; name: string; price: number; tag: string; type: string; isAvailable: boolean; restaurant: { id: string; name: string } }[]>([]);
+  const [meals, setMeals] = useState<{ id: string; name: string; price: number; tag: string; type: string; isAvailable: boolean; imageUrl: string | null; description: string | null; originalPrice: number | null; maxDeals: number; claimedPad: number; restaurant: { id: string; name: string } }[]>([]);
   const [showMealForm, setShowMealForm] = useState(false);
   const [mealName, setMealName] = useState("");
   const [mealPrice, setMealPrice] = useState("");
@@ -89,7 +99,7 @@ export default function OpsPage() {
   const [uploading, setUploading] = useState(false);
 
   // Daily menu
-  const [dailyMenus, setDailyMenus] = useState<{ id: string; maxOrders: number; currentOrders: number; meal: { name: string; price: number; restaurant: { name: string } }; timeSlot: { label: string; startTime: string; endTime: string } }[]>([]);
+  const [dailyMenus, setDailyMenus] = useState<{ id: string; maxOrders: number; currentOrders: number; meal: { name: string; price: number; tag: string; type: string; imageUrl: string | null; restaurant: { name: string } }; timeSlot: { id: string; label: string; startTime: string; endTime: string } }[]>([]);
   const [timeSlots, setTimeSlots] = useState<{ id: string; label: string; startTime: string; endTime: string }[]>([]);
   const [showMenuForm, setShowMenuForm] = useState(false);
   const [menuMealId, setMenuMealId] = useState("");
@@ -107,6 +117,10 @@ export default function OpsPage() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editItemName, setEditItemName] = useState("");
   const [editItemPrice, setEditItemPrice] = useState("");
+  const [editItemImage, setEditItemImage] = useState("");
+  const [editItemUploading, setEditItemUploading] = useState(false);
+  const [newItemImage, setNewItemImage] = useState("");
+  const [newItemUploading, setNewItemUploading] = useState(false);
   const [newItemCategoryId, setNewItemCategoryId] = useState<string | null>(null);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
@@ -132,6 +146,15 @@ export default function OpsPage() {
   const [editOffAssistantPhone, setEditOffAssistantPhone] = useState("");
   const [editOffActive, setEditOffActive] = useState(true);
 
+  // Office details view
+  const [viewingOfficeId, setViewingOfficeId] = useState<string | null>(null);
+  const [officeDetails, setOfficeDetails] = useState<{
+    office: { id: string; name: string; code: string; address: string; collectionPoint: string; assistantName: string | null; assistantPhone: string | null; assistantEmail: string | null };
+    stats: { totalMembers: number; totalOrders: number; totalRevenue: number; totalTips: number; totalServiceFees: number; todayOrders: number; todayTips: number };
+    members: Array<{ id: string; name: string; email: string; phone: string; joinedAt: string; orderCount: number; totalSpent: number; lastOrder: string | null }>;
+  } | null>(null);
+  const [officeDetailsLoading, setOfficeDetailsLoading] = useState(false);
+
   // Meal editing
   const [editingMealId, setEditingMealId] = useState<string | null>(null);
   const [editMealName, setEditMealName] = useState("");
@@ -145,6 +168,15 @@ export default function OpsPage() {
   const [editMealClaimedPad, setEditMealClaimedPad] = useState("0");
   const [editMealAvailable, setEditMealAvailable] = useState(true);
   const [uploadingEditMealImage, setUploadingEditMealImage] = useState(false);
+
+  // Zone management
+  const [zones, setZones] = useState<ZoneData[]>([]);
+  const [activeZoneId, setActiveZoneId] = useState<string>("all");
+  const [activeDropFilter, setActiveDropFilter] = useState<string>("all");
+  const [showZoneForm, setShowZoneForm] = useState(false);
+  const [newZoneName, setNewZoneName] = useState("");
+  const [newZoneAreas, setNewZoneAreas] = useState("");
+  const [offZoneId, setOffZoneId] = useState("");
 
   const [needsLogin, setNeedsLogin] = useState(false);
   const [loginEmail, setLoginEmail] = useState("admin@chopdrop.ng");
@@ -180,7 +212,8 @@ export default function OpsPage() {
         fetch("/api/admin/meals").then((r) => r.json()),
         fetch("/api/admin/daily-menu?date=" + new Date().toISOString().split("T")[0]).then((r) => r.json()),
         fetch("/api/admin/time-slots").then((r) => r.json()),
-      ]).then(([ordersData, restD, offData, mealsData, dmData, slotsData]) => {
+        fetch("/api/admin/zones").then((r) => r.json()),
+      ]).then(([ordersData, restD, offData, mealsData, dmData, slotsData, zoneData]) => {
         if (ordersData.success) setOrders(ordersData.data.filter((o: OrderData) => o.paymentStatus === "SUCCESS"));
         if (restD.success) setRestaurants(restD.data);
         if (offData.success) setOffices(offData.data);
@@ -190,6 +223,7 @@ export default function OpsPage() {
           setTimeSlots(slotsData.data);
           if (slotsData.data.length > 0 && !menuSlotId) setMenuSlotId(slotsData.data[0].id);
         }
+        if (zoneData.success) setZones(zoneData.data);
         setLoading(false);
       });
     }).catch(() => setLoading(false));
@@ -263,10 +297,22 @@ export default function OpsPage() {
         collectionPoint: offCollection.trim(),
         assistantName: offAssistant.trim() || null,
         assistantPhone: offAssistantPhone.trim() || null,
+        zoneId: offZoneId || null,
       }),
     });
-    setOffName(""); setOffAddress(""); setOffCollection("Main reception"); setOffAssistant(""); setOffAssistantPhone(""); setShowOfficeForm(false);
+    setOffName(""); setOffAddress(""); setOffCollection("Main reception"); setOffAssistant(""); setOffAssistantPhone(""); setOffZoneId(""); setShowOfficeForm(false);
     loadAll();
+  }
+
+  async function loadOfficeDetails(officeId: string) {
+    setViewingOfficeId(officeId);
+    setOfficeDetailsLoading(true);
+    try {
+      const res = await fetch(`/api/admin/offices/${officeId}/details`);
+      const data = await res.json();
+      if (data.success) setOfficeDetails(data.data);
+    } catch { /* ignore */ }
+    setOfficeDetailsLoading(false);
   }
 
   function startEditOffice(o: OfficeDataItem) {
@@ -351,12 +397,12 @@ export default function OpsPage() {
     loadAll();
   }
 
-  function startEditMeal(m: typeof meals[0] & { description?: string; imageUrl?: string; originalPrice?: number; maxDeals?: number; claimedPad?: number }) {
+  function startEditMeal(m: typeof meals[0]) {
     setEditingMealId(m.id);
     setEditMealName(m.name);
     setEditMealPrice(String(m.price / 100));
     setEditMealDesc((m as { description?: string }).description || "");
-    setEditMealImage((m as { imageUrl?: string }).imageUrl || "");
+    setEditMealImage(m.imageUrl || "");
     setEditMealTag(m.tag);
     setEditMealType(m.type);
     setEditMealOriginalPrice((m as { originalPrice?: number }).originalPrice ? String((m as { originalPrice?: number }).originalPrice! / 100) : "");
@@ -435,12 +481,25 @@ export default function OpsPage() {
     setMenuLoading(false);
   }
 
+  async function uploadItemImage(file: File, setter: (url: string) => void, setUploading: (v: boolean) => void) {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "chopdrop/items");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.success) setter(data.url);
+    } catch { /* ignore */ }
+    setUploading(false);
+  }
+
   async function saveEditItem(itemId: string) {
     if (!editItemName.trim() || !editItemPrice) return;
     await fetch(`/api/admin/menu-items/${itemId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: editItemName.trim(), price: Math.round(parseFloat(editItemPrice) * 100) }),
+      body: JSON.stringify({ name: editItemName.trim(), price: Math.round(parseFloat(editItemPrice) * 100), imageUrl: editItemImage.trim() || null }),
     });
     setEditingItemId(null);
     loadMenuItems();
@@ -457,11 +516,12 @@ export default function OpsPage() {
     await fetch("/api/admin/menu-items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryId, name: newItemName.trim(), price: Math.round(parseFloat(newItemPrice) * 100) }),
+      body: JSON.stringify({ categoryId, name: newItemName.trim(), price: Math.round(parseFloat(newItemPrice) * 100), imageUrl: newItemImage.trim() || null }),
     });
     setNewItemCategoryId(null);
     setNewItemName("");
     setNewItemPrice("");
+    setNewItemImage("");
     loadMenuItems();
   }
 
@@ -518,6 +578,10 @@ export default function OpsPage() {
         o.customerName.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
+
+  // Filter by active zone
+  const filteredRestaurants = activeZoneId === "all" ? restaurants : restaurants.filter((r) => r.zoneId === activeZoneId);
+  const filteredOffices = activeZoneId === "all" ? offices : offices.filter((o) => o.zoneId === activeZoneId);
 
   if (loading) {
     return (
@@ -603,6 +667,58 @@ export default function OpsPage() {
             </button>
           ))}
         </div>
+
+        {/* Zone filter */}
+        {zones.length > 0 && (
+          <div className="flex items-center gap-2 mb-5 overflow-x-auto hide-scrollbar">
+            <span className="text-[10px] font-bold text-ink-soft uppercase tracking-[0.06em] flex-shrink-0">Zone:</span>
+            <button type="button" onClick={() => setActiveZoneId("all")} className={`px-3 py-1.5 rounded-full text-[11px] font-bold flex-shrink-0 transition-colors ${activeZoneId === "all" ? "bg-green text-white" : "bg-cream text-ink-soft hover:bg-line"}`}>All zones</button>
+            {zones.map((z) => (
+              <button key={z.id} type="button" onClick={() => setActiveZoneId(z.id)} className={`px-3 py-1.5 rounded-full text-[11px] font-bold flex-shrink-0 transition-colors ${activeZoneId === z.id ? "bg-green text-white" : "bg-cream text-ink-soft hover:bg-line"}`}>
+                {z.name} <span className="ml-1 text-[9px] opacity-70">{z._count.restaurants}R · {z._count.offices}O</span>
+              </button>
+            ))}
+            <button type="button" onClick={() => setShowZoneForm(true)} className="px-2.5 py-1.5 rounded-full text-[11px] font-bold text-green bg-green-soft hover:bg-green/20 flex-shrink-0 transition-colors">+ Add zone</button>
+          </div>
+        )}
+
+        {/* New zone form */}
+        {showZoneForm && (
+          <div className="bg-paper border border-line rounded-[15px] p-5 mb-5">
+            <div className="font-display font-bold text-[17px] mb-4">New zone</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[12px] font-bold mb-1.5">Zone name</label>
+                <input type="text" value={newZoneName} onChange={(e) => setNewZoneName(e.target.value)} placeholder="e.g. Victoria Island" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+              </div>
+              <div>
+                <label className="block text-[12px] font-bold mb-1.5">Areas covered</label>
+                <input type="text" value={newZoneAreas} onChange={(e) => setNewZoneAreas(e.target.value)} placeholder="Lekki, Ikoyi, Oniru" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button type="button" onClick={async () => {
+                if (!newZoneName.trim()) return;
+                await fetch("/api/admin/zones", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newZoneName.trim(), areas: newZoneAreas.trim() }) });
+                setNewZoneName(""); setNewZoneAreas(""); setShowZoneForm(false);
+                loadAll();
+              }} className="bg-coral text-white font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors">Create zone</button>
+              <button type="button" onClick={() => setShowZoneForm(false)} className="bg-cream text-ink-soft font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-line transition-colors">Cancel</button>
+            </div>
+          </div>
+        )}
+
+        {zones.length === 0 && !showZoneForm && (
+          <div className="flex justify-end mb-4">
+            <button
+              type="button"
+              onClick={() => setShowZoneForm(true)}
+              className="px-3 py-1.5 rounded-full text-[11px] font-bold text-green bg-green-soft hover:bg-green/20 transition-colors"
+            >
+              + Add first zone
+            </button>
+          </div>
+        )}
 
         {tab === "overview" && (<>
         {/* Header */}
@@ -806,7 +922,7 @@ export default function OpsPage() {
             )}
 
             <div className="space-y-3">
-              {restaurants.map((r) => (
+              {filteredRestaurants.map((r) => (
                 <div key={r.id} className="bg-paper border border-line rounded-[16px] overflow-hidden">
                   <div className="p-4 flex items-center gap-4">
                     <div className="w-10 h-10 bg-green-soft text-green rounded-[10px] flex items-center justify-center flex-shrink-0">
@@ -874,8 +990,10 @@ export default function OpsPage() {
                   )}
                 </div>
               ))}
-              {restaurants.length === 0 && (
-                <div className="text-center py-12 text-ink-soft text-sm">No restaurants yet. Click &quot;Add restaurant&quot; to onboard your first partner.</div>
+              {filteredRestaurants.length === 0 && (
+                <div className="text-center py-12 text-ink-soft text-sm">
+                  {activeZoneId === "all" ? "No restaurants yet. Click \"Add restaurant\" to onboard your first partner." : "No restaurants in this zone."}
+                </div>
               )}
             </div>
           </>
@@ -976,8 +1094,13 @@ export default function OpsPage() {
               {meals.map((m) => (
                 <div key={m.id} className={`bg-paper border border-line rounded-[16px] overflow-hidden ${!m.isAvailable && editingMealId !== m.id ? "opacity-50" : ""}`}>
                   <div className="p-4 flex items-center gap-4">
-                    <div className="w-10 h-10 bg-amber-soft text-[#7d5716] rounded-[10px] flex items-center justify-center flex-shrink-0 text-lg">
-                      🍽️
+                    <div className="w-10 h-10 rounded-[10px] overflow-hidden flex-shrink-0">
+                      {m.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={m.imageUrl} alt={m.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-amber-soft text-[#7d5716] flex items-center justify-center text-lg">🍽️</div>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -1142,28 +1265,56 @@ export default function OpsPage() {
             )}
 
             {dailyMenus.length === 0 ? (
-              <div className="text-center py-12 text-ink-soft text-sm">No meals on the menu for this date. Click &quot;Add to menu&quot; to assign meals.</div>
+              <div className="text-center py-12 text-ink-soft text-sm">No meals on the menu for this date. Meals auto-publish when restaurants and meals are active.</div>
             ) : (
-              <div className="space-y-3">
-                {dailyMenus.map((dm) => (
-                  <div key={dm.id} className="bg-paper border border-line rounded-[15px] p-4 flex items-center gap-4">
-                    <div className="w-10 h-10 bg-green-soft text-green rounded-[10px] flex items-center justify-center flex-shrink-0 text-lg">
-                      🍽️
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <strong className="text-[14px] block">{dm.meal.name}</strong>
-                      <span className="text-ink-soft text-[11px]">
-                        {dm.meal.restaurant.name} &middot; {formatNaira(dm.meal.price)} &middot; {dm.timeSlot.startTime}–{dm.timeSlot.endTime}
-                      </span>
-                      <div className="text-[10px] mt-1">
-                        <strong>{dm.currentOrders}</strong> / {dm.maxOrders} orders
+              <div className="space-y-6">
+                {/* Group daily menus by time slot */}
+                {(() => {
+                  const slotGroups = new Map<string, { label: string; items: typeof dailyMenus }>();
+                  for (const dm of dailyMenus) {
+                    const key = dm.timeSlot.id;
+                    const existing = slotGroups.get(key);
+                    if (existing) { existing.items.push(dm); }
+                    else { slotGroups.set(key, { label: dm.timeSlot.label, items: [dm] }); }
+                  }
+                  return Array.from(slotGroups.entries()).map(([slotId, group]) => (
+                    <div key={slotId}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[16px]">{group.label.toLowerCase().includes("breakfast") ? "☀️" : "🍛"}</span>
+                        <h3 className="font-display font-bold text-[16px]">{group.label.split("(")[0].trim()}</h3>
+                        <span className="text-ink-soft text-[11px]">{group.items.length} items</span>
+                      </div>
+                      <div className="space-y-2">
+                        {group.items.map((dm) => (
+                          <div key={dm.id} className="bg-paper border border-line rounded-[12px] p-3 flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-[8px] overflow-hidden flex-shrink-0">
+                              {dm.meal.imageUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={dm.meal.imageUrl} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full bg-green-soft text-green flex items-center justify-center text-[12px]">🍽️</div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <strong className="text-[13px] block truncate">{dm.meal.name}</strong>
+                              <span className="text-ink-soft text-[10px]">
+                                {dm.meal.restaurant.name} &middot; {dm.meal.price > 0 ? formatNaira(dm.meal.price) : "Build-a-plate"}
+                              </span>
+                              <div className="text-[9px] text-ink-soft mt-0.5">
+                                <strong className="text-ink">{dm.currentOrders}</strong> / {dm.maxOrders} orders
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {dm.meal.tag === "DEAL" && <span className="bg-coral/10 text-coral text-[8px] font-extrabold px-1.5 py-0.5 rounded-full">Deal</span>}
+                              {dm.meal.type === "BUILD_YOUR_PLATE" && <span className="bg-green-soft text-green text-[8px] font-extrabold px-1.5 py-0.5 rounded-full">Restaurant</span>}
+                              <button type="button" onClick={() => removeFromMenu(dm.id)} className="text-coral text-[9px] font-bold hover:underline">Remove</button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <button type="button" onClick={() => removeFromMenu(dm.id)} className="bg-red-soft text-coral text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full hover:bg-coral hover:text-white transition-colors">
-                      Remove
-                    </button>
-                  </div>
-                ))}
+                  ));
+                })()}
               </div>
             )}
           </>
@@ -1207,6 +1358,15 @@ export default function OpsPage() {
                     <label className="block text-[12px] font-bold mb-1.5">Assistant phone <span className="font-normal text-ink-soft">(optional)</span></label>
                     <input type="tel" value={offAssistantPhone} onChange={(e) => setOffAssistantPhone(e.target.value)} placeholder="08034567890" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
                   </div>
+                  {zones.length > 0 && (
+                    <div>
+                      <label className="block text-[12px] font-bold mb-1.5">Zone</label>
+                      <select value={offZoneId} onChange={(e) => setOffZoneId(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
+                        <option value="">No zone</option>
+                        {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+                      </select>
+                    </div>
+                  )}
                 </div>
                 <p className="text-ink-soft text-[10px] mt-3">An office code will be generated automatically. Share it with workers to connect them.</p>
                 <div className="flex gap-2 mt-4">
@@ -1217,7 +1377,7 @@ export default function OpsPage() {
             )}
 
             <div className="space-y-3">
-              {offices.map((o) => (
+              {filteredOffices.map((o) => (
                 <div key={o.id} className="bg-paper border border-line rounded-[16px] overflow-hidden">
                   <div className="p-4 flex items-center gap-4">
                     <div className="w-10 h-10 bg-green-soft text-green rounded-[10px] flex items-center justify-center flex-shrink-0">
@@ -1241,6 +1401,13 @@ export default function OpsPage() {
                     <span className={`text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-full ${o.isActive ? "bg-green-soft text-green" : "bg-cream text-ink-soft"}`}>
                       {o.isActive ? "Active" : "Inactive"}
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => loadOfficeDetails(o.id)}
+                      className="text-[10px] font-bold text-coral hover:underline ml-1"
+                    >
+                      View
+                    </button>
                     <button
                       type="button"
                       onClick={() => editingOfficeId === o.id ? setEditingOfficeId(null) : startEditOffice(o)}
@@ -1288,10 +1455,115 @@ export default function OpsPage() {
                   )}
                 </div>
               ))}
-              {offices.length === 0 && (
-                <div className="text-center py-12 text-ink-soft text-sm">No offices yet. Click &quot;Add office&quot; to onboard your first location.</div>
+              {filteredOffices.length === 0 && (
+                <div className="text-center py-12 text-ink-soft text-sm">
+                  {activeZoneId === "all" ? "No offices yet. Click \"Add office\" to onboard your first location." : "No offices in this zone."}
+                </div>
               )}
             </div>
+
+            {/* Office Detail Panel */}
+            {viewingOfficeId && (
+              <div className="fixed inset-0 bg-black/40 z-50 flex items-end md:items-center justify-center" onClick={() => { setViewingOfficeId(null); setOfficeDetails(null); }}>
+                <div className="bg-paper rounded-t-[20px] md:rounded-[20px] w-full max-w-lg max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                  {officeDetailsLoading ? (
+                    <div className="flex items-center justify-center py-20">
+                      <div className="w-8 h-8 border-[3px] border-green border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : officeDetails ? (
+                    <div className="p-5">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-5">
+                        <div>
+                          <h2 className="font-display font-bold text-[20px]">{officeDetails.office.name}</h2>
+                          <span className="text-ink-soft text-[11px]">{officeDetails.office.address} &middot; Code: <strong className="text-ink">{officeDetails.office.code}</strong></span>
+                        </div>
+                        <button type="button" onClick={() => { setViewingOfficeId(null); setOfficeDetails(null); }} className="w-8 h-8 rounded-full bg-cream flex items-center justify-center hover:bg-line">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+
+                      {/* Captain info */}
+                      <div className="bg-green-soft rounded-[12px] p-4 mb-4">
+                        <div className="text-[10px] font-bold text-green uppercase tracking-[0.06em] mb-2">Captain / Assistant</div>
+                        {officeDetails.office.assistantName ? (
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <strong className="text-[14px] block">{officeDetails.office.assistantName}</strong>
+                              <span className="text-ink-soft text-[11px]">{officeDetails.office.assistantPhone || "No phone"}</span>
+                            </div>
+                            <div className="text-right">
+                              <strong className="text-green text-[16px] font-display block">{formatNaira(officeDetails.stats.totalTips)}</strong>
+                              <span className="text-ink-soft text-[9px]">Total tips earned</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-ink-soft text-[12px]">No captain assigned yet</div>
+                        )}
+                        {officeDetails.stats.todayTips > 0 && (
+                          <div className="mt-2 pt-2 border-t border-green/20 text-[11px] text-green font-semibold">
+                            Today&apos;s tips: {formatNaira(officeDetails.stats.todayTips)}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Stats grid */}
+                      <div className="grid grid-cols-4 gap-2 mb-5">
+                        {[
+                          [String(officeDetails.stats.totalMembers), "Members"],
+                          [String(officeDetails.stats.totalOrders), "Orders"],
+                          [formatNaira(officeDetails.stats.totalRevenue), "Revenue"],
+                          [formatNaira(officeDetails.stats.totalServiceFees), "Fees earned"],
+                        ].map(([val, label]) => (
+                          <div key={label} className="bg-cream rounded-[10px] p-3 text-center">
+                            <strong className="font-display text-[14px] block">{val}</strong>
+                            <span className="text-ink-soft text-[8px] uppercase tracking-[0.05em]">{label}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Members list */}
+                      <div className="mb-2">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-display font-bold text-[15px]">Members using this code</h3>
+                          <span className="text-ink-soft text-[11px]">{officeDetails.members.length} people</span>
+                        </div>
+                        {officeDetails.members.length === 0 ? (
+                          <div className="text-center py-8 text-ink-soft text-[12px]">No members yet. Share the code <strong className="text-ink">{officeDetails.office.code}</strong> with office workers.</div>
+                        ) : (
+                          <div className="space-y-1">
+                            {officeDetails.members.map((m) => (
+                              <div key={m.id} className="flex items-center gap-3 py-2.5 border-b border-line last:border-b-0">
+                                <div className="w-8 h-8 rounded-full bg-amber-soft flex items-center justify-center text-[10px] font-bold text-ink flex-shrink-0">
+                                  {m.name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <strong className="text-[12px] block truncate">{m.name}</strong>
+                                  <span className="text-ink-soft text-[10px]">{m.phone} &middot; {m.orderCount} orders</span>
+                                </div>
+                                <div className="text-right flex-shrink-0">
+                                  <strong className="text-[12px] block">{formatNaira(m.totalSpent)}</strong>
+                                  <span className="text-ink-soft text-[9px]">
+                                    {m.lastOrder ? `Last: ${new Date(m.lastOrder).toLocaleDateString("en-US", { day: "numeric", month: "short" })}` : "No orders"}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Collection point */}
+                      <div className="bg-cream rounded-[10px] p-3 text-[11px] text-ink-soft">
+                        <strong className="text-ink block mb-0.5">Collection point:</strong> {officeDetails.office.collectionPoint}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-ink-soft text-sm">Failed to load office details</div>
+                  )}
+                </div>
+              </div>
+            )}
           </>
         )}
 
@@ -1354,43 +1626,41 @@ export default function OpsPage() {
                     {cat.items.map((item) => (
                       <div key={item.id} className="px-4 py-2.5">
                         {editingItemId === item.id ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={editItemName}
-                              onChange={(e) => setEditItemName(e.target.value)}
-                              className="flex-1 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30"
-                            />
-                            <input
-                              type="number"
-                              value={editItemPrice}
-                              onChange={(e) => setEditItemPrice(e.target.value)}
-                              className="w-24 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30"
-                              placeholder="₦"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => saveEditItem(item.id)}
-                              className="bg-green text-white text-[10px] font-bold px-3 py-1.5 rounded-[8px]"
-                            >
-                              Save
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setEditingItemId(null)}
-                              className="text-ink-soft text-[10px] font-bold px-2 py-1.5"
-                            >
-                              Cancel
-                            </button>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <input type="text" value={editItemName} onChange={(e) => setEditItemName(e.target.value)} className="flex-1 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                              <input type="number" value={editItemPrice} onChange={(e) => setEditItemPrice(e.target.value)} className="w-24 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" placeholder="₦" />
+                              <button type="button" onClick={() => saveEditItem(item.id)} className="bg-green text-white text-[10px] font-bold px-3 py-1.5 rounded-[8px]">Save</button>
+                              <button type="button" onClick={() => setEditingItemId(null)} className="text-ink-soft text-[10px] font-bold px-2 py-1.5">Cancel</button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className={`px-3 py-1.5 border border-line rounded-[8px] text-[10px] font-bold cursor-pointer ${editItemUploading ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
+                                {editItemUploading ? "Uploading..." : editItemImage ? "Change image" : "Add image"}
+                                <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadItemImage(f, setEditItemImage, setEditItemUploading); }} disabled={editItemUploading} className="hidden" />
+                              </label>
+                              {editItemImage && (
+                                <>
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={editItemImage} alt="" className="w-8 h-8 rounded object-cover border border-line" />
+                                  <button type="button" onClick={() => setEditItemImage("")} className="text-coral text-[9px] font-bold">Remove</button>
+                                </>
+                              )}
+                            </div>
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <span className="text-[13px]">{item.name}</span>
+                            <div className="flex items-center gap-2">
+                              {(item as { imageUrl?: string }).imageUrl && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={(item as { imageUrl?: string }).imageUrl!} alt="" className="w-7 h-7 rounded object-cover flex-shrink-0" />
+                              )}
+                              <span className="text-[13px]">{item.name}</span>
+                            </div>
                             <div className="flex items-center gap-3">
                               <strong className="text-[13px]">₦{(item.price / 100).toLocaleString()}</strong>
                               <button
                                 type="button"
-                                onClick={() => { setEditingItemId(item.id); setEditItemName(item.name); setEditItemPrice(String(item.price / 100)); }}
+                                onClick={() => { setEditingItemId(item.id); setEditItemName(item.name); setEditItemPrice(String(item.price / 100)); setEditItemImage((item as { imageUrl?: string }).imageUrl || ""); }}
                                 className="text-[10px] font-bold text-green hover:underline"
                               >
                                 Edit
@@ -1410,23 +1680,10 @@ export default function OpsPage() {
 
                     {/* Add new item inline */}
                     {newItemCategoryId === cat.id && (
-                      <div className="px-4 py-2.5 bg-green-soft/30">
+                      <div className="px-4 py-2.5 bg-green-soft/30 space-y-2">
                         <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={newItemName}
-                            onChange={(e) => setNewItemName(e.target.value)}
-                            placeholder="Item name"
-                            className="flex-1 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30"
-                            autoFocus
-                          />
-                          <input
-                            type="number"
-                            value={newItemPrice}
-                            onChange={(e) => setNewItemPrice(e.target.value)}
-                            placeholder="Price ₦"
-                            className="w-24 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30"
-                          />
+                          <input type="text" value={newItemName} onChange={(e) => setNewItemName(e.target.value)} placeholder="Item name" className="flex-1 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30" autoFocus />
+                          <input type="number" value={newItemPrice} onChange={(e) => setNewItemPrice(e.target.value)} placeholder="Price ₦" className="w-24 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30" />
                           <button
                             type="button"
                             onClick={() => addItem(cat.id)}
@@ -1436,11 +1693,24 @@ export default function OpsPage() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => setNewItemCategoryId(null)}
+                            onClick={() => { setNewItemCategoryId(null); setNewItemImage(""); }}
                             className="text-ink-soft text-[10px] font-bold px-2 py-1.5"
                           >
                             Cancel
                           </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className={`px-3 py-1.5 border border-line rounded-[8px] text-[10px] font-bold cursor-pointer ${newItemUploading ? "bg-line text-ink-soft" : "bg-paper hover:bg-cream text-ink"}`}>
+                            {newItemUploading ? "Uploading..." : newItemImage ? "Change image" : "Add image (optional)"}
+                            <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadItemImage(f, setNewItemImage, setNewItemUploading); }} disabled={newItemUploading} className="hidden" />
+                          </label>
+                          {newItemImage && (
+                            <>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={newItemImage} alt="" className="w-8 h-8 rounded object-cover border border-line" />
+                              <button type="button" onClick={() => setNewItemImage("")} className="text-coral text-[9px] font-bold">Remove</button>
+                            </>
+                          )}
                         </div>
                       </div>
                     )}

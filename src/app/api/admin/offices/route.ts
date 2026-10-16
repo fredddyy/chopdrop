@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
       assistantName: body.assistantName || null,
       assistantPhone: body.assistantPhone || null,
       assistantEmail: body.assistantEmail || null,
+      zoneId: body.zoneId || null,
     },
   });
 

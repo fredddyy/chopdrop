@@ -100,6 +100,8 @@ export async function POST(request: NextRequest) {
       deliveryAddress: data.deliveryAddress || null,
       quantity: data.quantity,
       totalAmount,
+      captainTip: data.captainTip || 0,
+      serviceFee: data.serviceFee || 0,
       paymentRef,
       items: data.items?.length
         ? {

@@ -29,15 +29,28 @@ model Admin {
   createdAt    DateTime @default(now())
 }
 
+model Zone {
+  id        String   @id @default(cuid())
+  name      String   @unique // "Ikeja", "Victoria Island"
+  areas     String   // "Allen Avenue, Opebi, Computer Village, Alausa, Toyin Street"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  restaurants Restaurant[]
+  offices     Office[]
+}
+
 model Restaurant {
   id        String   @id @default(cuid())
   name      String
   address   String
   phone     String
   imageUrl  String?
+  zoneId    String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
+  zone           Zone?          @relation(fields: [zoneId], references: [id])
   meals          Meal[]
   menuCategories MenuCategory[]
 }
@@ -75,9 +88,11 @@ model MenuCategory {
 }
 
 model MenuItem {
-  id         String @id @default(cuid())
-  categoryId String
-  name       String
+  id          String  @id @default(cuid())
+  categoryId  String
+  name        String
+  description String?
+  imageUrl    String?
   price      Int // kobo
   sortOrder  Int    @default(0)
 
@@ -121,9 +136,11 @@ model Office {
   assistantName   String?
   assistantPhone  String?
   assistantEmail  String?
+  zoneId          String?
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
 
+  zone   Zone?   @relation(fields: [zoneId], references: [id])
   orders Order[]
   users  User[]
 }
@@ -162,6 +179,8 @@ model Order {
   deliveryAddress String?
   quantity        Int             @default(1)
   totalAmount     Int // kobo
+  captainTip      Int             @default(0) // kobo — tip for captain
+  serviceFee      Int             @default(0) // kobo — platform service fee
   status          OrderStatus     @default(PENDING)
   paymentRef      String?
   paymentStatus   PaymentStatus   @default(PENDING)
