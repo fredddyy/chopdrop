@@ -389,7 +389,7 @@ export default function Home() {
                   <span>Meals per drop</span>
                 </div>
                 <div>
-                  <strong>₦0</strong>
+                  <strong className="stat-coral">₦0</strong>
                   <span>Delivery fee</span>
                 </div>
                 <div>
