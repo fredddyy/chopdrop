@@ -542,7 +542,7 @@ export default function Home() {
           </div>
         </div>
         <div className="container footer-bottom">
-          <span>© 2026 ChopDrop · Ikeja, Lagos</span>
+          <span>© 2026 Arete Ltd (trading as ChopDrop) · Ikeja, Lagos</span>
           <span>Work is stressful. Food shouldn&apos;t be.</span>
         </div>
       </footer>
