@@ -78,6 +78,8 @@ export default async function RestaurantPage({ params }: PageProps) {
       id: item.id,
       name: item.name,
       price: item.price,
+      description: item.description,
+      imageUrl: item.imageUrl,
     })),
   }));
 
