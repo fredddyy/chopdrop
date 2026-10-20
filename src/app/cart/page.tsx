@@ -28,6 +28,7 @@ export default function CartPage() {
   const [editContact, setEditContact] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [orderingClosed, setOrderingClosed] = useState(false);
 
   // Building Drop state
   const [buildingSearch, setBuildingSearch] = useState("");
@@ -66,6 +67,12 @@ export default function CartPage() {
         setFulfillment("office");
       }
     }
+
+    // Check if ordering is closed
+    fetch("/api/menu/status")
+      .then((r) => r.json())
+      .then((d) => { if (d.allExpired) setOrderingClosed(true); })
+      .catch(() => {});
 
     // Check auth status from server (cookie is httpOnly, can't check client-side)
     fetch("/api/auth/me")
@@ -550,36 +557,60 @@ export default function CartPage() {
       {cart.items.length > 0 && (
         <div className="fixed bottom-[52px] left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-black/[0.06] px-5 py-3 md:hidden">
           <div className="max-w-[480px] mx-auto">
-            {error && (
-              <div className="bg-[#fef2f2] text-[#f05f4b] text-[11px] font-semibold p-2 rounded-lg mb-2 text-center">{error}</div>
+            {orderingClosed ? (
+              <>
+                {/* Pre-order saved confirmation — no payment */}
+                <div className="flex items-center gap-3 bg-[#0f4030] rounded-xl p-3 mb-2">
+                  <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-[12px] font-bold text-white">Pre-order saved!</div>
+                    <div className="text-[10px] text-white/60">Your {cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""} ({formatNaira(cart.subtotal)}) will be ready at <span className="text-[#f5c565] font-bold">7:00 AM</span></div>
+                  </div>
+                </div>
+                <Link
+                  href="/menu"
+                  className="w-full font-bold py-3 rounded-xl text-[13px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all bg-[#f5f5f3] text-[#1a1a1a]"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6" /></svg>
+                  Back to menu
+                </Link>
+              </>
+            ) : (
+              <>
+                {error && (
+                  <div className="bg-[#fef2f2] text-[#f05f4b] text-[11px] font-semibold p-2 rounded-lg mb-2 text-center">{error}</div>
+                )}
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-[12px] text-[#6b7280]">Total</span>
+                  <span className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.02em]">{formatNaira(orderTotal)}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isAuthenticated === false) {
+                      document.getElementById("auth-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      return;
+                    }
+                    handlePay();
+                  }}
+                  disabled={loading || belowMinimum || (fulfillment === "building" && !selectedDropPoint) || (fulfillment === "office" && !officeId && !isFirstOrder)}
+                  className={`w-full font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                    isAuthenticated === false
+                      ? "bg-[#1a1a1a] text-white shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+                      : "bg-[#f05f4b] text-white shadow-[0_4px_16px_rgba(240,95,75,0.3)] hover:bg-[#e0503d]"
+                  }`}
+                >
+                  {loading ? "Processing..." : isAuthenticated === false ? "Sign in to pay ↑" : fulfillment === "office" && !officeId && !isFirstOrder ? "Enter office code to continue" : fulfillment === "building" && !selectedDropPoint ? "Select your building" : "Continue to payment"}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+                </button>
+                <p className="text-[9px] text-[#9ca3af] text-center mt-2 flex items-center justify-center gap-1">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#22c55e]"><path d="m5 12 4 4L19 6" /></svg>
+                  Secure prepaid checkout · Powered by Paystack
+                </p>
+              </>
             )}
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-[12px] text-[#6b7280]">Total</span>
-              <span className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.02em]">{formatNaira(orderTotal)}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (isAuthenticated === false) {
-                  document.getElementById("auth-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  return;
-                }
-                handlePay();
-              }}
-              disabled={loading || belowMinimum || (fulfillment === "building" && !selectedDropPoint) || (fulfillment === "office" && !officeId && !isFirstOrder)}
-              className={`w-full font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
-                isAuthenticated === false
-                  ? "bg-[#1a1a1a] text-white shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
-                  : "bg-[#f05f4b] text-white shadow-[0_4px_16px_rgba(240,95,75,0.3)] hover:bg-[#e0503d]"
-              }`}
-            >
-              {loading ? "Processing..." : isAuthenticated === false ? "Sign in to pay ↑" : fulfillment === "office" && !officeId && !isFirstOrder ? "Enter office code to continue" : fulfillment === "building" && !selectedDropPoint ? "Select your building" : "Continue to payment"}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
-            </button>
-            <p className="text-[9px] text-[#9ca3af] text-center mt-2 flex items-center justify-center gap-1">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#22c55e]"><path d="m5 12 4 4L19 6" /></svg>
-              Secure prepaid checkout · Powered by Paystack
-            </p>
           </div>
         </div>
       )}
