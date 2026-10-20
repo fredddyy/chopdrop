@@ -5,6 +5,47 @@ import { getCustomerProfile, saveCustomerProfile, clearCustomerProfile, type Cus
 import { BottomNav } from "@/components/bottom-nav";
 import { useRouter } from "next/navigation";
 
+function ChopDropperInfo({ officeId }: { officeId: string }) {
+  const [info, setInfo] = useState<{ name: string; phone: string } | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/offices/lookup?id=${encodeURIComponent(officeId)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.data?.assistantName) {
+          setInfo({ name: d.data.assistantName, phone: d.data.assistantPhone || "" });
+        }
+      })
+      .catch(() => {});
+  }, [officeId]);
+
+  if (!info) return null;
+
+  return (
+    <div className="px-4 py-3 border-b border-[#f0efeb]">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-xl bg-[#f05f4b]/10 flex items-center justify-center flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#f05f4b]">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <span className="text-[10px] text-[#9ca3af] block">Your ChopDropper</span>
+          <span className="text-[13px] font-medium text-[#1a1a1a]">{info.name}</span>
+        </div>
+        {info.phone && (
+          <a
+            href={`tel:${info.phone}`}
+            className="text-[10px] font-semibold text-[#0f4030] bg-[#0f4030]/[0.06] px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
+          >
+            Call
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AccountPage() {
   const [profile, setProfile] = useState<CustomerProfile>({
     name: "", phone: "", email: "", deliveryAddress: "",
@@ -200,6 +241,11 @@ export default function AccountPage() {
               </button>
             </div>
           )}
+          {/* ChopDropper info — show when connected */}
+          {profile.officeName && profile.officeId && (
+            <ChopDropperInfo officeId={profile.officeId} />
+          )}
+
           {/* Not connected — show connect form */}
           {editingOffice && !profile.officeName && (
             <div className="px-4 py-3 border-b border-[#f0efeb] space-y-2">
