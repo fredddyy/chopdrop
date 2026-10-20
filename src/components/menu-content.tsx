@@ -265,21 +265,26 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
       {/* ── Content ── */}
       {allExpired ? (
-        <div className="px-5 py-8">
-          {/* Closed header */}
-          <div className="text-center mb-6">
-            <div className="w-14 h-14 bg-[#f5f5f3] rounded-full flex items-center justify-center mx-auto mb-3 text-[24px]">😴</div>
-            <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] mb-1">Today&apos;s orders are closed</h2>
-            <p className="text-[#9ca3af] text-[13px]">Orders open at 7:00 AM tomorrow</p>
+        <div className="px-5 py-4">
+          {/* Closed banner — compact, not a dead end */}
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#fff8f0] border border-[#f5c565]/30 mb-5">
+            <div className="w-10 h-10 rounded-full bg-[#f5c565]/20 flex items-center justify-center flex-shrink-0 text-[18px]">🔔</div>
+            <div className="flex-1">
+              <div className="text-[13px] font-bold text-[#1a1a1a]">Orders open at 7:00 AM</div>
+              <div className="text-[11px] text-[#9ca3af]">Browse tomorrow&apos;s menu below</div>
+            </div>
+            <Link href="/orders" className="text-[10px] font-bold text-[#0f4030] bg-[#0f4030]/[0.06] px-3 py-1.5 rounded-lg flex-shrink-0">
+              My orders
+            </Link>
           </div>
 
-          {/* Tomorrow's restaurants preview */}
+          {/* Tomorrow's restaurants */}
           {slot && slot.restaurants.length > 0 && (
-            <div className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-4">
+            <div className="mb-5">
               <h3 className="text-[12px] font-bold text-[#9ca3af] uppercase tracking-[0.06em] mb-3">Tomorrow&apos;s kitchens</h3>
-              <div className="space-y-3">
+              <div className="flex gap-3 overflow-x-auto pb-2">
                 {slot.restaurants.map((r) => (
-                  <div key={r.id} className="flex items-center gap-3">
+                  <div key={r.id} className="flex items-center gap-2.5 bg-white rounded-xl p-3 border border-[#f0efeb] flex-shrink-0">
                     <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
                       {(r.imageUrl || r.previewImage) ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -290,9 +295,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-semibold text-[#1a1a1a]">{r.name}</div>
-                      <div className="text-[10px] text-[#9ca3af]">{r.mealCount} meal{r.mealCount !== 1 ? "s" : ""} · {r.address}</div>
+                    <div>
+                      <div className="text-[13px] font-semibold text-[#1a1a1a] whitespace-nowrap">{r.name}</div>
+                      <div className="text-[10px] text-[#9ca3af]">{r.mealCount} meal{r.mealCount !== 1 ? "s" : ""}</div>
                     </div>
                   </div>
                 ))}
@@ -300,13 +305,74 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             </div>
           )}
 
-          {/* Actions */}
-          <div className="space-y-2.5">
-            <Link href="/orders" className="w-full flex items-center justify-center gap-2 bg-[#1a1a1a] text-white font-semibold py-3 rounded-xl text-[13px] active:scale-[0.98] transition-transform">
-              Check order status
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
-            </Link>
-          </div>
+          {/* Browse the full menu — show all items even when closed */}
+          {slot && slot.items.length > 0 && (
+            <>
+              <h3 className="font-display font-bold text-[18px] text-[#1a1a1a] mb-1">Preview tomorrow&apos;s menu</h3>
+              <p className="text-[11px] text-[#9ca3af] mb-4">See what&apos;s available. Ordering opens at 7:00 AM.</p>
+
+              {/* Group by restaurant */}
+              {(() => {
+                const byRestaurant = new Map<string, { name: string; imageUrl: string | null; items: MenuItem[] }>();
+                for (const item of slot.items) {
+                  if (!byRestaurant.has(item.restaurantId)) {
+                    byRestaurant.set(item.restaurantId, { name: item.restaurantName, imageUrl: item.restaurantImageUrl, items: [] });
+                  }
+                  byRestaurant.get(item.restaurantId)!.items.push(item);
+                }
+                return Array.from(byRestaurant.entries()).map(([rId, rData]) => (
+                  <div key={rId} className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                        {rData.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#0f4030]/30">
+                            {rData.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-[14px] font-bold text-[#1a1a1a]">{rData.name}</span>
+                      <span className="text-[10px] text-[#9ca3af] ml-auto">{rData.items.length} items</span>
+                    </div>
+                    <div className="space-y-2">
+                      {rData.items.map((item) => (
+                        <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                            {item.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[20px]">🍽️</div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[13px] font-semibold text-[#1a1a1a]">{item.name}</div>
+                            {item.description && <div className="text-[10px] text-[#9ca3af] truncate">{item.description}</div>}
+                          </div>
+                          <div className="text-[14px] font-bold text-[#0f4030] flex-shrink-0">{formatPrice(item.price)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ));
+              })()}
+
+              {/* CTA for new users */}
+              <div className="mt-4 p-4 rounded-xl bg-[#0f4030] text-center">
+                <p className="text-[14px] font-bold text-white mb-1">Want this for your office?</p>
+                <p className="text-[11px] text-[#c0d2c8] mb-3">Free delivery. Everyone picks &amp; pays individually.</p>
+                <a
+                  href="https://wa.me/2349120532827?text=Hi!%20I%20want%20ChopDrop%20for%20my%20office"
+                  className="inline-flex items-center gap-2 bg-[#f05f4b] text-white font-bold text-[13px] px-5 py-2.5 rounded-xl active:scale-95 transition-transform"
+                >
+                  Get ChopDrop for your office
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+                </a>
+              </div>
+            </>
+          )}
         </div>
       ) : slot && slot.expired ? (
         <div className="px-5 pt-8 pb-4">
