@@ -56,6 +56,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [captainName, setCaptainName] = useState("");
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(true);
+  const [reminderSet, setReminderSet] = useState(false);
+  const [preorderToast, setPreorderToast] = useState("");
   const cart = useCart();
 
   useEffect(() => {
@@ -63,6 +65,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
     if (profile) setOfficeName(profile.officeName || "");
     const dismissed = localStorage.getItem("chopdrop-banner-dismissed");
     setBannerDismissed(!!dismissed);
+
+    // Check if reminder was already set
+    const savedReminder = localStorage.getItem("chopdrop-reminder-set");
+    if (savedReminder === "true") setReminderSet(true);
 
     // Load captain name from server if authenticated
     fetch("/api/auth/me")
@@ -97,6 +103,24 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
     });
     setToast(meal.name);
     setTimeout(() => setToast(""), 2000);
+  }
+
+  function handleSetReminder() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(7, 0, 0, 0);
+    localStorage.setItem("chopdrop-reminder-set", "true");
+    localStorage.setItem("chopdrop-reminder-time", tomorrow.toISOString());
+    setReminderSet(true);
+  }
+
+  function handlePreorderAdd(item: MenuItem) {
+    cart.addItem({
+      dailyMenuId: item.id, name: item.name, description: item.description || "",
+      imageUrl: item.imageUrl, restaurantName: item.restaurantName, price: item.price,
+    });
+    setPreorderToast(item.name);
+    setTimeout(() => setPreorderToast(""), 2200);
   }
 
   return (
@@ -266,8 +290,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       {/* ── Content ── */}
       {allExpired ? (
         <div className="px-5 py-4">
-          {/* ── Premium closed banner with gradient ── */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4030] to-[#0a2e20] p-4 mb-5">
+          {/* ── Premium closed banner with gradient + reminder ── */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4030] to-[#0a2e20] p-4 mb-3">
             <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-[#f5c565]/10" />
             <div className="absolute -right-2 -bottom-8 w-20 h-20 rounded-full bg-[#f05f4b]/10" />
             <div className="relative flex items-center gap-3.5">
@@ -282,6 +306,27 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 My orders
               </Link>
             </div>
+          </div>
+
+          {/* ── Reminder button ── */}
+          <div className="mb-5">
+            {reminderSet ? (
+              <div className="flex items-center justify-center gap-2 bg-[#f5c565]/10 border border-[#f5c565]/20 rounded-xl px-4 py-2.5" style={{ animation: "reminderConfirm 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+                <div className="w-5 h-5 rounded-full bg-[#f5c565] flex items-center justify-center flex-shrink-0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
+                </div>
+                <span className="text-[12px] font-semibold text-[#92702a]">You&apos;ll be reminded at 7:00 AM</span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSetReminder}
+                className="w-full flex items-center justify-center gap-2 bg-[#f5c565]/10 hover:bg-[#f5c565]/15 border border-[#f5c565]/25 rounded-xl px-4 py-2.5 active:scale-[0.98] transition-all duration-200"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8860b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span className="text-[12px] font-semibold text-[#92702a]">Remind me when orders open</span>
+              </button>
+            )}
           </div>
 
           {/* ── Restaurant chips — horizontal scroll ── */}
@@ -314,13 +359,13 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             </div>
           )}
 
-          {/* ── Full browsable menu ── */}
+          {/* ── Full browsable menu with pre-order ── */}
           {slot && slot.items.length > 0 && (
             <>
               <div className="flex items-end justify-between mb-4">
                 <div>
                   <h3 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em]">What&apos;s cooking</h3>
-                  <p className="text-[11px] text-[#9ca3af] mt-0.5">Browse &amp; plan. Ordering opens 7 AM.</p>
+                  <p className="text-[11px] text-[#9ca3af] mt-0.5">Tap + to pre-order. Ready when orders open.</p>
                 </div>
                 <div className="flex items-center gap-1 text-[10px] font-bold text-[#f05f4b] bg-[#f05f4b]/[0.08] px-2.5 py-1 rounded-full">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#f05f4b] animate-pulse" />
@@ -357,27 +402,65 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                       <span className="text-[10px] font-medium text-[#9ca3af] bg-[#f5f5f3] px-2 py-0.5 rounded-md">{rData.items.length} items</span>
                     </div>
 
-                    {/* Menu items */}
+                    {/* Menu items with pre-order buttons */}
                     <div className="space-y-2">
-                      {rData.items.map((item) => (
-                        <div key={item.id} className="flex items-center gap-3.5 bg-white rounded-2xl p-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-[#f0efeb]/60 active:scale-[0.99] transition-transform">
-                          <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
-                            {item.imageUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[24px]">🍽️</div>
-                            )}
+                      {rData.items.map((item) => {
+                        const cartQty = cart.items.find((i) => i.dailyMenuId === item.id)?.quantity || 0;
+                        const isInCart = cartQty > 0;
+                        return (
+                          <div
+                            key={item.id}
+                            className={`flex items-center gap-3.5 bg-white rounded-2xl p-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border transition-all duration-200 ${
+                              isInCart
+                                ? "border-l-[3px] border-l-[#f05f4b] border-t-[#f05f4b]/15 border-r-[#f05f4b]/15 border-b-[#f05f4b]/15 shadow-[0_1px_6px_rgba(240,95,75,0.08)]"
+                                : "border-[#f0efeb]/60"
+                            }`}
+                          >
+                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
+                              {item.imageUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[24px]">🍽️</div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[14px] font-semibold text-[#1a1a1a] leading-tight">{item.name}</div>
+                              {item.description && <div className="text-[11px] text-[#9ca3af] mt-0.5 truncate">{item.description}</div>}
+                              <span className="text-[14px] font-bold text-[#0f4030] tracking-[-0.02em] mt-0.5 block">{formatPrice(item.price)}</span>
+                            </div>
+                            <div className="flex-shrink-0">
+                              {isInCart ? (
+                                <div className="flex items-center bg-[#f05f4b] rounded-full shadow-[0_2px_8px_rgba(240,95,75,0.3)]">
+                                  <button
+                                    type="button"
+                                    onClick={() => cart.changeQuantity(item.id, -1)}
+                                    className="w-[30px] h-[30px] flex items-center justify-center text-white active:scale-90 transition-transform"
+                                  >
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                  </button>
+                                  <span className="text-white text-[12px] font-bold min-w-[16px] text-center">{cartQty}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handlePreorderAdd(item)}
+                                    className="w-[30px] h-[30px] flex items-center justify-center text-white active:scale-90 transition-transform"
+                                  >
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handlePreorderAdd(item)}
+                                  className="w-9 h-9 rounded-full bg-[#f05f4b] text-white flex items-center justify-center shadow-[0_2px_8px_rgba(240,95,75,0.3)] active:scale-95 transition-transform"
+                                >
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                                </button>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[14px] font-semibold text-[#1a1a1a] leading-tight">{item.name}</div>
-                            {item.description && <div className="text-[11px] text-[#9ca3af] mt-0.5 truncate">{item.description}</div>}
-                          </div>
-                          <div className="flex flex-col items-end flex-shrink-0">
-                            <span className="text-[15px] font-bold text-[#0f4030] tracking-[-0.02em]">{formatPrice(item.price)}</span>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 ));
@@ -400,6 +483,32 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 </div>
               </div>
             </>
+          )}
+
+          {/* ── Pre-order sticky bottom bar ── */}
+          {cart.totalItems > 0 && (
+            <div className="fixed bottom-16 left-0 right-0 z-50" style={{ animation: "preorderBarIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <div className="max-w-[480px] mx-auto px-4">
+                <Link
+                  href="/cart"
+                  className="flex items-center justify-between bg-[#0f4030] text-white rounded-2xl px-4 py-3.5 shadow-[0_4px_20px_rgba(15,64,48,0.35)] active:scale-[0.98] transition-transform"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                    </div>
+                    <div>
+                      <div className="text-[13px] font-bold">{cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""} pre-ordered</div>
+                      <div className="text-[10px] text-white/50">Ready when orders open</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[15px] font-bold">{formatPrice(cart.subtotal)}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/60"><path d="m9 18 6-6-6-6" /></svg>
+                  </div>
+                </Link>
+              </div>
+            </div>
           )}
         </div>
       ) : slot && slot.expired ? (
@@ -647,11 +756,24 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </div>
       )}
 
+      {/* ── Pre-order toast ── */}
+      {preorderToast && (
+        <div className="fixed z-[100] left-1/2 bottom-36 -translate-x-1/2 bg-[#0f4030] text-white rounded-full shadow-[0_4px_20px_rgba(15,64,48,0.35)] pl-3 pr-4 py-2.5 flex items-center gap-2 text-[12px] font-semibold whitespace-nowrap" style={{ animation: "preorderToastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+          <div className="w-5 h-5 bg-[#f05f4b] rounded-full flex items-center justify-center flex-shrink-0">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
+          </div>
+          Pre-order saved
+        </div>
+      )}
+
       <BottomNav />
 
       <style jsx global>{`
         @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 12px) scale(0.95); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
         @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        @keyframes reminderConfirm { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes preorderBarIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes preorderToastIn { from { opacity: 0; transform: translate(-50%, 8px) scale(0.92); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
       `}</style>
     </main>
   );
