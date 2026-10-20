@@ -35,24 +35,9 @@ export default async function MenuPage() {
     return <EmptyMenu />;
   }
 
-  // Auto-create daily menu entries for today if they don't exist
-  for (const meal of activeMeals) {
-    for (const slot of timeSlots) {
-      const existing = await prisma.dailyMenu.findFirst({
-        where: { date: today, mealId: meal.id, timeSlotId: slot.id },
-      });
-      if (!existing) {
-        await prisma.dailyMenu.create({
-          data: {
-            date: today,
-            mealId: meal.id,
-            timeSlotId: slot.id,
-            maxOrders: meal.tag === "DEAL" ? (meal.maxDeals || 20) : 50,
-          },
-        });
-      }
-    }
-  }
+  // Daily menu entries are now created ONLY via the ops dashboard or auto-publish API.
+  // No more auto-creating every meal for every slot — meals belong to specific time slots
+  // as published by the admin. This prevents breakfast items showing in lunch and vice versa.
 
   // Now fetch the daily menus normally
   const dailyMenus = await prisma.dailyMenu.findMany({
