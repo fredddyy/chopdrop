@@ -199,10 +199,10 @@ export function RestaurantMenu({
               </div>
             </div>
 
-            {/* Show combos in browse mode */}
-            {combos.length > 0 && (
-              <div className="mb-4">
-                <h2 className="font-display font-bold text-[16px] mb-3">Combo deals</h2>
+            {/* Use the SAME tab system as live mode — show only the active tab's items */}
+            {activeTab === "combos" && combos.length > 0 && (
+              <div>
+                <h2 className="font-display font-bold text-[16px] mt-2 mb-3">Combo deals</h2>
                 <div className="space-y-2">
                   {combos.map((combo) => (
                     <div key={combo.dailyMenuId} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
@@ -225,26 +225,28 @@ export function RestaurantMenu({
               </div>
             )}
 
-            {/* Show all categories in browse mode */}
+            {/* Category tabs — show whichever tab is active */}
             {categories.map((cat) => (
-              <div key={cat.id} className="mb-4">
-                <h2 className="font-display font-bold text-[16px] mb-3">{cat.name}</h2>
-                <div className="space-y-2">
-                  {cat.items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-semibold text-[#1a1a1a]">{item.name}</div>
-                        {item.description && <div className="text-[10px] text-[#9ca3af] truncate">{item.description}</div>}
+              activeTab === cat.id ? (
+                <div key={cat.id}>
+                  <h2 className="font-display font-bold text-[16px] mt-2 mb-3">{cat.name}</h2>
+                  <div className="space-y-2">
+                    {cat.items.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[13px] font-semibold text-[#1a1a1a]">{item.name}</div>
+                          {item.description && <div className="text-[10px] text-[#9ca3af] truncate">{item.description}</div>}
+                        </div>
+                        <span className="text-[14px] font-bold text-[#0f4030] flex-shrink-0">{formatNaira(item.price)}</span>
                       </div>
-                      <span className="text-[14px] font-bold text-[#0f4030] flex-shrink-0">{formatNaira(item.price)}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null
             ))}
 
             {/* Back to menu CTA */}
-            <Link href="/menu" className="w-full flex items-center justify-center gap-2 bg-[#0f4030] text-white font-bold py-3 rounded-xl text-[13px] active:scale-[0.98] transition-transform mt-2">
+            <Link href="/menu" className="w-full flex items-center justify-center gap-2 bg-[#0f4030] text-white font-bold py-3 rounded-xl text-[13px] active:scale-[0.98] transition-transform mt-4">
               Back to menu
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
             </Link>
