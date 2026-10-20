@@ -377,6 +377,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               {(() => {
                 const byRestaurant = new Map<string, { name: string; imageUrl: string | null; items: MenuItem[] }>();
                 for (const item of slot.items) {
+                  // Hide "Full Menu" / BUILD type items from preview — they open the customizer during live ordering
+                  if (item.type === "BUILD" || item.name.toLowerCase().includes("full menu")) continue;
                   if (!byRestaurant.has(item.restaurantId)) {
                     byRestaurant.set(item.restaurantId, { name: item.restaurantName, imageUrl: item.restaurantImageUrl, items: [] });
                   }
