@@ -286,7 +286,7 @@ export default function Home() {
                 <span className="status-dot" /> Now serving Ikeja offices
               </Eyebrow>
               <h1>
-                Meals for <span>Your Team,</span> <strong>Sorted.</strong>
+                Meals for <span>Offices,</span> <strong>Sorted.</strong>
               </h1>
               <p>
                 Pick your meal, pay on your phone. Fresh food arrives at your
