@@ -5,12 +5,13 @@ import { getCustomerProfile, saveCustomerProfile, clearCustomerProfile, type Cus
 import { BottomNav } from "@/components/bottom-nav";
 import { useRouter } from "next/navigation";
 
-function ChopDropperInfo({ officeId }: { officeId: string }) {
+function ChopDropperInfo({ officeId, officeCode }: { officeId?: string; officeCode?: string }) {
   const [info, setInfo] = useState<{ name: string; phone: string } | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/offices/lookup?id=${encodeURIComponent(officeId)}`)
+    const param = officeId ? `id=${encodeURIComponent(officeId)}` : `code=${encodeURIComponent(officeCode || "")}`;
+    fetch(`/api/offices/lookup?${param}`)
       .then((r) => r.json())
       .then((d) => {
         if (d.success && d.data?.assistantName) {
@@ -255,8 +256,8 @@ export default function AccountPage() {
             </div>
           )}
           {/* ChopDropper info — show when connected */}
-          {profile.officeName && profile.officeId && (
-            <ChopDropperInfo officeId={profile.officeId} />
+          {profile.officeName && (profile.officeId || profile.officeCode) && (
+            <ChopDropperInfo officeId={profile.officeId} officeCode={profile.officeCode} />
           )}
 
           {/* Not connected — show connect form */}
