@@ -321,10 +321,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               <button
                 type="button"
                 onClick={handleSetReminder}
-                className="w-full flex items-center justify-center gap-2 bg-[#f5c565]/10 hover:bg-[#f5c565]/15 border border-[#f5c565]/25 rounded-xl px-4 py-2.5 active:scale-[0.98] transition-all duration-200"
+                className="w-full flex items-center justify-center gap-2.5 bg-[#f5c565] rounded-xl px-4 py-3 active:scale-[0.97] transition-all duration-200 shadow-[0_2px_8px_rgba(245,197,101,0.3)]"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8860b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                <span className="text-[12px] font-semibold text-[#92702a]">Remind me when orders open</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a3e00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span className="text-[13px] font-bold text-[#5a3e00]">Remind me when orders open</span>
               </button>
             )}
           </div>
@@ -416,12 +416,12 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                                 : "border-[#f0efeb]/60"
                             }`}
                           >
-                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
+                            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
                               {item.imageUrl ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[24px]">🍽️</div>
+                                <div className="w-full h-full flex items-center justify-center text-[32px]">🍽️</div>
                               )}
                             </div>
                             <div className="flex-1 min-w-0">

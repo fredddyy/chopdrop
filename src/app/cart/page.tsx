@@ -374,7 +374,22 @@ export default function CartPage() {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free delivery. Ask your office admin or ChopDropper.</p>
+                      <>
+                        <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free delivery.</p>
+                        <a
+                          href="https://wa.me/2349120532827?text=Hi!%20I%20need%20an%20office%20code%20for%20ChopDrop.%20My%20office%20is%20at%20"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-2 flex items-center gap-2 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="#22c55e"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" /></svg>
+                          <div>
+                            <div className="text-[11px] font-bold text-[#1a1a1a]">Get an office code via WhatsApp</div>
+                            <div className="text-[9px] text-[#9ca3af]">Takes 2 minutes. We will set you up.</div>
+                          </div>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" className="ml-auto flex-shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                        </a>
+                      </>
                     )}
                   </div>
                 )}
