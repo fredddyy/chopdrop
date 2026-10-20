@@ -338,7 +338,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </div>
               <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
                 {slot.restaurants.map((r) => (
-                  <div key={r.id} className="flex items-center gap-2.5 bg-white rounded-2xl py-2.5 px-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-[#f0efeb]/80 flex-shrink-0 active:scale-[0.98] transition-transform">
+                  <Link key={r.id} href={`/restaurant/${r.id}`} className="flex items-center gap-2.5 bg-white rounded-2xl py-2.5 pl-3 pr-2 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-[#f0efeb]/80 flex-shrink-0 active:scale-[0.97] transition-transform">
                     <div className="w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
                       {(r.imageUrl || r.previewImage) ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -353,7 +353,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                       <div className="text-[13px] font-semibold text-[#1a1a1a] whitespace-nowrap">{r.name}</div>
                       <div className="text-[10px] text-[#0f4030] font-medium">{r.mealCount} meal{r.mealCount !== 1 ? "s" : ""}</div>
                     </div>
-                  </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" className="flex-shrink-0 ml-1"><path d="m9 18 6-6-6-6" /></svg>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -473,28 +474,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                       })}
                     </div>
 
-                    {/* Build Your Own Plate card */}
-                    {rData.hasBuildMenu && (
-                      <Link
-                        href={`/restaurant/${rId}`}
-                        className="mt-2 flex items-center gap-3.5 bg-gradient-to-r from-[#0f4030] to-[#0d3528] rounded-2xl p-3.5 active:scale-[0.98] transition-transform"
-                      >
-                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 text-[24px]">
-                          🍽️
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[14px] font-bold text-white">Build Your Own Plate</div>
-                          <div className="text-[11px] text-white/60 mt-0.5">
-                            {rData.buildItemCount > 0 ? `${rData.buildItemCount} items` : "Pick rice + protein + extras"}
-                            {rData.cheapestPrice < Infinity ? ` · from ${formatPrice(rData.cheapestPrice)}` : ""}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 bg-white/15 rounded-lg px-2.5 py-1.5 flex-shrink-0">
-                          <span className="text-[11px] font-bold text-white">See menu</span>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="m9 18 6-6-6-6" /></svg>
-                        </div>
-                      </Link>
-                    )}
+                    {/* Build Your Own Plate — removed, kitchen chips are now tappable */}
                   </div>
                 ));
               })()}
