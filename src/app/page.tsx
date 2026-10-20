@@ -294,8 +294,8 @@ export default function Home() {
               </p>
               <div className="button-row">
                 <Action>Order on WhatsApp</Action>
-                <Action variant="outline" href="#how">
-                  See how it works
+                <Action variant="outline" href="/menu">
+                  Use the App
                 </Action>
               </div>
               <div className="trust-row">
