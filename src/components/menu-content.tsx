@@ -266,38 +266,47 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       {/* ── Content ── */}
       {allExpired ? (
         <div className="px-5 py-4">
-          {/* Closed banner — compact, not a dead end */}
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#fff8f0] border border-[#f5c565]/30 mb-5">
-            <div className="w-10 h-10 rounded-full bg-[#f5c565]/20 flex items-center justify-center flex-shrink-0 text-[18px]">🔔</div>
-            <div className="flex-1">
-              <div className="text-[13px] font-bold text-[#1a1a1a]">Orders open at 7:00 AM</div>
-              <div className="text-[11px] text-[#9ca3af]">Browse tomorrow&apos;s menu below</div>
+          {/* ── Premium closed banner with gradient ── */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4030] to-[#0a2e20] p-4 mb-5">
+            <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-[#f5c565]/10" />
+            <div className="absolute -right-2 -bottom-8 w-20 h-20 rounded-full bg-[#f05f4b]/10" />
+            <div className="relative flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f5c565" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <div className="flex-1">
+                <div className="text-[14px] font-bold text-white">Tomorrow&apos;s Drop</div>
+                <div className="text-[11px] text-white/60 mt-0.5">Orders open at <span className="text-[#f5c565] font-bold">7:00 AM</span></div>
+              </div>
+              <Link href="/orders" className="text-[11px] font-bold text-white bg-white/15 backdrop-blur-sm px-4 py-2 rounded-xl flex-shrink-0 active:scale-95 transition-transform">
+                My orders
+              </Link>
             </div>
-            <Link href="/orders" className="text-[10px] font-bold text-[#0f4030] bg-[#0f4030]/[0.06] px-3 py-1.5 rounded-lg flex-shrink-0">
-              My orders
-            </Link>
           </div>
 
-          {/* Tomorrow's restaurants */}
+          {/* ── Restaurant chips — horizontal scroll ── */}
           {slot && slot.restaurants.length > 0 && (
-            <div className="mb-5">
-              <h3 className="text-[12px] font-bold text-[#9ca3af] uppercase tracking-[0.06em] mb-3">Tomorrow&apos;s kitchens</h3>
-              <div className="flex gap-3 overflow-x-auto pb-2">
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[11px] font-bold text-[#9ca3af] uppercase tracking-[0.08em]">Kitchens</h3>
+                <span className="text-[10px] text-[#9ca3af]">{slot.restaurants.length} available</span>
+              </div>
+              <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
                 {slot.restaurants.map((r) => (
-                  <div key={r.id} className="flex items-center gap-2.5 bg-white rounded-xl p-3 border border-[#f0efeb] flex-shrink-0">
-                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                  <div key={r.id} className="flex items-center gap-2.5 bg-white rounded-2xl py-2.5 px-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-[#f0efeb]/80 flex-shrink-0 active:scale-[0.98] transition-transform">
+                    <div className="w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
                       {(r.imageUrl || r.previewImage) ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={(r.imageUrl || r.previewImage)!} alt={r.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#0f4030]/20 text-[14px] font-bold">
+                        <div className="w-full h-full flex items-center justify-center text-[#0f4030]/25 text-[13px] font-bold">
                           {r.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
                         </div>
                       )}
                     </div>
                     <div>
                       <div className="text-[13px] font-semibold text-[#1a1a1a] whitespace-nowrap">{r.name}</div>
-                      <div className="text-[10px] text-[#9ca3af]">{r.mealCount} meal{r.mealCount !== 1 ? "s" : ""}</div>
+                      <div className="text-[10px] text-[#0f4030] font-medium">{r.mealCount} meal{r.mealCount !== 1 ? "s" : ""}</div>
                     </div>
                   </div>
                 ))}
@@ -305,11 +314,19 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             </div>
           )}
 
-          {/* Browse the full menu — show all items even when closed */}
+          {/* ── Full browsable menu ── */}
           {slot && slot.items.length > 0 && (
             <>
-              <h3 className="font-display font-bold text-[18px] text-[#1a1a1a] mb-1">Preview tomorrow&apos;s menu</h3>
-              <p className="text-[11px] text-[#9ca3af] mb-4">See what&apos;s available. Ordering opens at 7:00 AM.</p>
+              <div className="flex items-end justify-between mb-4">
+                <div>
+                  <h3 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em]">What&apos;s cooking</h3>
+                  <p className="text-[11px] text-[#9ca3af] mt-0.5">Browse &amp; plan. Ordering opens 7 AM.</p>
+                </div>
+                <div className="flex items-center gap-1 text-[10px] font-bold text-[#f05f4b] bg-[#f05f4b]/[0.08] px-2.5 py-1 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#f05f4b] animate-pulse" />
+                  Preview
+                </div>
+              </div>
 
               {/* Group by restaurant */}
               {(() => {
@@ -321,9 +338,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   byRestaurant.get(item.restaurantId)!.items.push(item);
                 }
                 return Array.from(byRestaurant.entries()).map(([rId, rData]) => (
-                  <div key={rId} className="mb-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                  <div key={rId} className="mb-7">
+                    {/* Restaurant header */}
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <div className="w-9 h-9 rounded-xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
                         {rData.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
@@ -333,25 +351,31 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           </div>
                         )}
                       </div>
-                      <span className="text-[14px] font-bold text-[#1a1a1a]">{rData.name}</span>
-                      <span className="text-[10px] text-[#9ca3af] ml-auto">{rData.items.length} items</span>
+                      <div className="flex-1">
+                        <span className="text-[15px] font-bold text-[#1a1a1a] tracking-[-0.01em]">{rData.name}</span>
+                      </div>
+                      <span className="text-[10px] font-medium text-[#9ca3af] bg-[#f5f5f3] px-2 py-0.5 rounded-md">{rData.items.length} items</span>
                     </div>
+
+                    {/* Menu items */}
                     <div className="space-y-2">
                       {rData.items.map((item) => (
-                        <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
-                          <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                        <div key={item.id} className="flex items-center gap-3.5 bg-white rounded-2xl p-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-[#f0efeb]/60 active:scale-[0.99] transition-transform">
+                          <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
                             {item.imageUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[20px]">🍽️</div>
+                              <div className="w-full h-full flex items-center justify-center text-[24px]">🍽️</div>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-[13px] font-semibold text-[#1a1a1a]">{item.name}</div>
-                            {item.description && <div className="text-[10px] text-[#9ca3af] truncate">{item.description}</div>}
+                            <div className="text-[14px] font-semibold text-[#1a1a1a] leading-tight">{item.name}</div>
+                            {item.description && <div className="text-[11px] text-[#9ca3af] mt-0.5 truncate">{item.description}</div>}
                           </div>
-                          <div className="text-[14px] font-bold text-[#0f4030] flex-shrink-0">{formatPrice(item.price)}</div>
+                          <div className="flex flex-col items-end flex-shrink-0">
+                            <span className="text-[15px] font-bold text-[#0f4030] tracking-[-0.02em]">{formatPrice(item.price)}</span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -359,17 +383,21 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 ));
               })()}
 
-              {/* CTA for new users */}
-              <div className="mt-4 p-4 rounded-xl bg-[#0f4030] text-center">
-                <p className="text-[14px] font-bold text-white mb-1">Want this for your office?</p>
-                <p className="text-[11px] text-[#c0d2c8] mb-3">Free delivery. Everyone picks &amp; pays individually.</p>
-                <a
-                  href="https://wa.me/2349120532827?text=Hi!%20I%20want%20ChopDrop%20for%20my%20office"
-                  className="inline-flex items-center gap-2 bg-[#f05f4b] text-white font-bold text-[13px] px-5 py-2.5 rounded-xl active:scale-95 transition-transform"
-                >
-                  Get ChopDrop for your office
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
-                </a>
+              {/* ── Premium CTA card ── */}
+              <div className="relative overflow-hidden mt-6 mb-2 rounded-2xl bg-gradient-to-br from-[#0f4030] to-[#0a2e20] p-5 text-center">
+                <div className="absolute -left-8 -top-8 w-32 h-32 rounded-full bg-[#f05f4b]/10" />
+                <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-[#f5c565]/10" />
+                <div className="relative">
+                  <p className="text-[16px] font-bold text-white mb-1">Want this for your office?</p>
+                  <p className="text-[12px] text-white/60 mb-4">₦0 delivery. Everyone picks &amp; pays individually.</p>
+                  <a
+                    href="https://wa.me/2349120532827?text=Hi!%20I%20want%20ChopDrop%20for%20my%20office"
+                    className="inline-flex items-center gap-2.5 bg-[#f05f4b] text-white font-bold text-[14px] px-6 py-3 rounded-xl shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-95 transition-transform"
+                  >
+                    Get ChopDrop for your office
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+                  </a>
+                </div>
               </div>
             </>
           )}
