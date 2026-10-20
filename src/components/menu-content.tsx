@@ -438,7 +438,12 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                             <div className="flex-1 min-w-0">
                               <div className="text-[14px] font-semibold text-[#1a1a1a] leading-tight">{item.name}</div>
                               {item.description && <div className="text-[11px] text-[#9ca3af] mt-0.5 truncate">{item.description}</div>}
-                              <span className="text-[14px] font-bold text-[#0f4030] tracking-[-0.02em] mt-0.5 block">{formatPrice(item.price)}</span>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="text-[14px] font-bold text-[#0f4030] tracking-[-0.02em]">{formatPrice(item.price)}</span>
+                                {item.originalPrice && item.originalPrice > item.price && (
+                                  <span className="text-[11px] text-[#d1d5db] line-through">{formatPrice(item.originalPrice)}</span>
+                                )}
+                              </div>
                             </div>
                             <div className="flex-shrink-0">
                               {isInCart ? (
