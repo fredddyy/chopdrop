@@ -203,22 +203,28 @@ export function RestaurantMenu({
             {activeTab === "combos" && combos.length > 0 && (
               <div>
                 <h2 className="font-display font-bold text-[16px] mt-2 mb-3">Combo deals</h2>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {combos.map((combo) => (
-                    <div key={combo.dailyMenuId} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
-                      <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                    <div key={combo.dailyMenuId} className="bg-white rounded-2xl overflow-hidden border border-[#f0efeb] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                      {/* Large food image */}
+                      <div className="w-full h-[160px] bg-[#f5f5f3] overflow-hidden">
                         {combo.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={combo.imageUrl} alt={combo.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[20px]">🍽️</div>
+                          <div className="w-full h-full flex items-center justify-center text-[48px]">🍽️</div>
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-semibold text-[#1a1a1a]">{combo.name}</div>
-                        {combo.description && <div className="text-[10px] text-[#9ca3af] truncate">{combo.description}</div>}
+                      {/* Details */}
+                      <div className="p-3.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[15px] font-bold text-[#1a1a1a]">{combo.name}</div>
+                            {combo.description && <div className="text-[12px] text-[#6b7280] mt-1 leading-relaxed">{combo.description}</div>}
+                          </div>
+                          <span className="text-[16px] font-bold text-[#0f4030] flex-shrink-0">{formatNaira(combo.price)}</span>
+                        </div>
                       </div>
-                      <span className="text-[14px] font-bold text-[#0f4030] flex-shrink-0">{formatNaira(combo.price)}</span>
                     </div>
                   ))}
                 </div>
@@ -232,12 +238,18 @@ export function RestaurantMenu({
                   <h2 className="font-display font-bold text-[16px] mt-2 mb-3">{cat.name}</h2>
                   <div className="space-y-2">
                     {cat.items.map((item) => (
-                      <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
+                      <div key={item.id} className="flex items-center gap-3 bg-white rounded-2xl p-3 border border-[#f0efeb] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                        {item.imageUrl && (
+                          <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                          </div>
+                        )}
                         <div className="flex-1 min-w-0">
-                          <div className="text-[13px] font-semibold text-[#1a1a1a]">{item.name}</div>
-                          {item.description && <div className="text-[10px] text-[#9ca3af] truncate">{item.description}</div>}
+                          <div className="text-[14px] font-semibold text-[#1a1a1a]">{item.name}</div>
+                          {item.description && <div className="text-[11px] text-[#6b7280] mt-0.5 leading-relaxed">{item.description}</div>}
                         </div>
-                        <span className="text-[14px] font-bold text-[#0f4030] flex-shrink-0">{formatNaira(item.price)}</span>
+                        <span className="text-[15px] font-bold text-[#0f4030] flex-shrink-0">{formatNaira(item.price)}</span>
                       </div>
                     ))}
                   </div>
