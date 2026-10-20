@@ -187,7 +187,68 @@ export function RestaurantMenu({
 
       <div className="px-4 pt-2 pb-4">
         {allExpired ? (
-          <div className="text-center py-12 text-ink-soft text-sm">Orders are closed for today.</div>
+          <>
+            {/* Closed banner */}
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-[#0f4030] to-[#0d3528] mb-4 mt-2">
+              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5c565" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <div className="flex-1">
+                <div className="text-[12px] font-bold text-white">Preview only</div>
+                <div className="text-[10px] text-white/60">Ordering opens at <span className="text-[#f5c565] font-bold">7:00 AM</span></div>
+              </div>
+            </div>
+
+            {/* Show combos in browse mode */}
+            {combos.length > 0 && (
+              <div className="mb-4">
+                <h2 className="font-display font-bold text-[16px] mb-3">Combo deals</h2>
+                <div className="space-y-2">
+                  {combos.map((combo) => (
+                    <div key={combo.dailyMenuId} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
+                      <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                        {combo.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={combo.imageUrl} alt={combo.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[20px]">🍽️</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-semibold text-[#1a1a1a]">{combo.name}</div>
+                        {combo.description && <div className="text-[10px] text-[#9ca3af] truncate">{combo.description}</div>}
+                      </div>
+                      <span className="text-[14px] font-bold text-[#0f4030] flex-shrink-0">{formatNaira(combo.price)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Show all categories in browse mode */}
+            {categories.map((cat) => (
+              <div key={cat.id} className="mb-4">
+                <h2 className="font-display font-bold text-[16px] mb-3">{cat.name}</h2>
+                <div className="space-y-2">
+                  {cat.items.map((item) => (
+                    <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-[#f0efeb]">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-semibold text-[#1a1a1a]">{item.name}</div>
+                        {item.description && <div className="text-[10px] text-[#9ca3af] truncate">{item.description}</div>}
+                      </div>
+                      <span className="text-[14px] font-bold text-[#0f4030] flex-shrink-0">{formatNaira(item.price)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Back to menu CTA */}
+            <Link href="/menu" className="w-full flex items-center justify-center gap-2 bg-[#0f4030] text-white font-bold py-3 rounded-xl text-[13px] active:scale-[0.98] transition-transform mt-2">
+              Back to menu
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+            </Link>
+          </>
         ) : (
           <>
             {/* Combos tab */}
