@@ -269,7 +269,13 @@ export default function CartPage() {
           <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
             {cart.items.map((item, idx) => (
               <div key={item.dailyMenuId} className={`flex items-center gap-3 py-3 ${idx > 0 ? "border-t border-[#f0efeb]" : ""}`}>
-                <span className="text-[12px] font-bold text-[#0f4030] bg-[#0f4030]/[0.06] w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">{item.quantity}x</span>
+                <div className="relative flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f5f5f3]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[14px]">🍽️</div>}
+                  </div>
+                  <span className="absolute -top-1.5 -left-1.5 text-[9px] font-bold text-white bg-[#0f4030] w-5 h-5 rounded-md flex items-center justify-center">{item.quantity}x</span>
+                </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-[13px] font-semibold text-[#1a1a1a] leading-tight truncate">{item.name}</h3>
                   <p className="text-[10px] text-[#9ca3af] mt-0.5">{item.restaurantName}</p>
@@ -408,10 +414,14 @@ export default function CartPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="text-[13px] font-semibold text-[#1a1a1a]">Express Delivery</span>
-                    <p className="text-[10px] text-[#9ca3af] mt-0.5">Delivered to your address</p>
+                    <p className="text-[10px] text-[#9ca3af] mt-0.5">Delivered within 45 min to your address</p>
                   </div>
-                  <span className="text-[13px] font-bold text-[#1a1a1a] flex-shrink-0">
-                    {isFirstOrder ? <><span className="text-[#22c55e]">FREE</span> <span className="text-[10px] text-[#d1d5db] line-through">{formatNaira(EXPRESS_FEE)}</span></> : formatNaira(EXPRESS_FEE)}
+                  <span className="text-[13px] font-bold flex-shrink-0">
+                    {isFirstOrder ? (
+                      <><span className="text-[#22c55e]">FREE</span> <span className="text-[10px] text-[#d1d5db] line-through">{formatNaira(EXPRESS_FEE)}</span></>
+                    ) : (
+                      <span className="text-[#f05f4b]">{formatNaira(EXPRESS_FEE)}</span>
+                    )}
                   </span>
                 </div>
                 {fulfillment === "delivery" && (
