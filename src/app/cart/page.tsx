@@ -268,27 +268,18 @@ export default function CartPage() {
           {/* ── FIX #2: Meals — tighter padding ── */}
           <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
             {cart.items.map((item, idx) => (
-              <div key={item.dailyMenuId} className={`flex gap-3 py-3 items-center ${idx > 0 ? "border-t border-[#f0efeb]" : ""}`}>
-                <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[16px]">🍽️</div>}
-                </div>
+              <div key={item.dailyMenuId} className={`flex items-center gap-3 py-3 ${idx > 0 ? "border-t border-[#f0efeb]" : ""}`}>
+                <span className="text-[12px] font-bold text-[#0f4030] bg-[#0f4030]/[0.06] w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">{item.quantity}x</span>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-[13px] font-semibold text-[#1a1a1a] leading-tight truncate">{item.name}</h3>
                   <p className="text-[10px] text-[#9ca3af] mt-0.5">{item.restaurantName}</p>
                 </div>
-                <div className="flex items-center bg-[#f5f5f3] rounded-lg flex-shrink-0">
-                  <button type="button" onClick={() => cart.changeQuantity(item.dailyMenuId, -1)} className="w-7 h-7 flex items-center justify-center text-[#6b7280] active:scale-90 transition-transform">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14" /></svg>
-                  </button>
-                  <span className="w-5 text-center text-[12px] font-bold text-[#1a1a1a]">{item.quantity}</span>
-                  <button type="button" onClick={() => cart.changeQuantity(item.dailyMenuId, 1)} className="w-7 h-7 flex items-center justify-center text-[#6b7280] active:scale-90 transition-transform">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>
-                  </button>
-                </div>
-                <span className="font-display font-bold text-[13px] text-[#1a1a1a] min-w-[55px] text-right">{formatNaira(item.price * item.quantity)}</span>
+                <span className="font-display font-bold text-[14px] text-[#1a1a1a] flex-shrink-0">{formatNaira(item.price * item.quantity)}</span>
               </div>
             ))}
+            <div className="pt-2 border-t border-[#f0efeb]">
+              <Link href="/menu" className="text-[11px] font-semibold text-[#f05f4b] active:opacity-70">Edit items</Link>
+            </div>
           </section>
 
           {/* ── Inline Auth — right after meals, before everything else ── */}
@@ -376,19 +367,24 @@ export default function CartPage() {
                     ) : (
                       <>
                         <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free delivery.</p>
-                        <a
-                          href="https://wa.me/2349120532827?text=Hi!%20I%20need%20an%20office%20code%20for%20ChopDrop.%20My%20office%20is%20at%20"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-2 flex items-center gap-2 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform"
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="#22c55e"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" /></svg>
-                          <div>
-                            <div className="text-[11px] font-bold text-[#1a1a1a]">Get an office code via WhatsApp</div>
-                            <div className="text-[9px] text-[#9ca3af]">Takes 2 minutes. We will set you up.</div>
-                          </div>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" className="ml-auto flex-shrink-0"><path d="m9 18 6-6-6-6" /></svg>
-                        </a>
+                        <div className="mt-3 pt-3 border-t border-[#f0efeb]">
+                          <p className="text-[10px] font-bold text-[#6b7280] mb-1.5">Don&apos;t have a code?</p>
+                          <a
+                            href="https://wa.me/2349120532827?text=Hi!%20I%20need%20an%20office%20code%20for%20ChopDrop.%20My%20office%20is%20at%20"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2.5 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-xl px-3.5 py-3 active:scale-[0.98] transition-transform"
+                          >
+                            <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center flex-shrink-0">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" /></svg>
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-[12px] font-bold text-[#1a1a1a]">Get one via WhatsApp</div>
+                              <div className="text-[10px] text-[#6b7280]">Takes 2 minutes</div>
+                            </div>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" className="flex-shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                          </a>
+                        </div>
                       </>
                     )}
                   </div>
