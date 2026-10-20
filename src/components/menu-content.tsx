@@ -375,14 +375,22 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
               {/* Group by restaurant */}
               {(() => {
-                const byRestaurant = new Map<string, { name: string; imageUrl: string | null; items: MenuItem[] }>();
+                const byRestaurant = new Map<string, { name: string; imageUrl: string | null; items: MenuItem[]; hasBuildMenu: boolean; buildItemCount: number; cheapestPrice: number }>();
                 for (const item of slot.items) {
-                  // Hide "Full Menu" / BUILD type items from preview — they open the customizer during live ordering
-                  if (item.type === "BUILD" || item.name.toLowerCase().includes("full menu")) continue;
                   if (!byRestaurant.has(item.restaurantId)) {
-                    byRestaurant.set(item.restaurantId, { name: item.restaurantName, imageUrl: item.restaurantImageUrl, items: [] });
+                    byRestaurant.set(item.restaurantId, { name: item.restaurantName, imageUrl: item.restaurantImageUrl, items: [], hasBuildMenu: false, buildItemCount: 0, cheapestPrice: Infinity });
                   }
-                  byRestaurant.get(item.restaurantId)!.items.push(item);
+                  const rEntry = byRestaurant.get(item.restaurantId)!;
+                  // Track BUILD items but don't show them as cards
+                  if (item.type === "BUILD" || item.name.toLowerCase().includes("full menu")) {
+                    rEntry.hasBuildMenu = true;
+                    if (item.categories) {
+                      for (const cat of item.categories) rEntry.buildItemCount += cat.items.length;
+                      for (const cat of item.categories) for (const ci of cat.items) { if (ci.price < rEntry.cheapestPrice) rEntry.cheapestPrice = ci.price; }
+                    }
+                    continue;
+                  }
+                  rEntry.items.push(item);
                 }
                 return Array.from(byRestaurant.entries()).map(([rId, rData]) => (
                   <div key={rId} className="mb-7">
@@ -464,6 +472,29 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         );
                       })}
                     </div>
+
+                    {/* Build Your Own Plate card */}
+                    {rData.hasBuildMenu && (
+                      <Link
+                        href={`/restaurant/${rId}`}
+                        className="mt-2 flex items-center gap-3.5 bg-gradient-to-r from-[#0f4030] to-[#0d3528] rounded-2xl p-3.5 active:scale-[0.98] transition-transform"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 text-[24px]">
+                          🍽️
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[14px] font-bold text-white">Build Your Own Plate</div>
+                          <div className="text-[11px] text-white/60 mt-0.5">
+                            {rData.buildItemCount > 0 ? `${rData.buildItemCount} items` : "Pick rice + protein + extras"}
+                            {rData.cheapestPrice < Infinity ? ` · from ${formatPrice(rData.cheapestPrice)}` : ""}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 bg-white/15 rounded-lg px-2.5 py-1.5 flex-shrink-0">
+                          <span className="text-[11px] font-bold text-white">See menu</span>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="m9 18 6-6-6-6" /></svg>
+                        </div>
+                      </Link>
+                    )}
                   </div>
                 ));
               })()}
