@@ -363,6 +363,14 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           {/* ── Full browsable menu with pre-order ── */}
           {slot && slot.items.length > 0 && (
             <>
+              {/* Preview mode notice — sticky so it's always visible while scrolling */}
+              <div className="sticky top-[57px] z-30 -mx-5 px-5 py-2 bg-[#f5c565]/15 border-y border-[#f5c565]/20 backdrop-blur-sm mb-4">
+                <div className="flex items-center justify-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92702a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                  <span className="text-[11px] font-semibold text-[#92702a]">Preview mode &mdash; ordering opens at 7:00 AM. Pre-order now, pay later.</span>
+                </div>
+              </div>
+
               <div className="flex items-end justify-between mb-4">
                 <div>
                   <h3 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em]">What&apos;s cooking</h3>
