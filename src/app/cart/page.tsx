@@ -449,7 +449,7 @@ export default function CartPage() {
                 <span className="text-[10px] text-[#9ca3af]">100% to your assistant</span>
               </div>
               <div className="flex gap-2 flex-wrap">
-                {[10000, 20000, 50000, 100000].map((amount) => (
+                {[0, 10000, 20000, 50000, 100000].map((amount) => (
                   <button
                     key={amount}
                     type="button"
