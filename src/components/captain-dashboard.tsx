@@ -54,7 +54,7 @@ export function CaptainDashboard({
     setReceivedTime(new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }));
   }
 
-  const firstName = office.assistantName?.split(" ")[0] || "Captain";
+  const firstName = office.assistantName?.split(" ")[0] || "ChopDropper";
   const distributionFee = totalBoxes * 15000; // ₦150 per box
 
   const handoffSteps = [

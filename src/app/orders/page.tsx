@@ -159,7 +159,7 @@ export default function OrdersPage() {
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#0f4030]"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z" /></svg>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <span className="text-[10px] text-[#9ca3af]">Captain</span>
+                              <span className="text-[10px] text-[#9ca3af]">ChopDropper</span>
                               <span className="text-[12px] font-semibold text-[#1a1a1a] block">{order.office.assistantName}</span>
                             </div>
                             {order.office.assistantPhone && (

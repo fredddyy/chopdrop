@@ -1485,7 +1485,7 @@ export default function OpsPage() {
 
                       {/* Captain info */}
                       <div className="bg-green-soft rounded-[12px] p-4 mb-4">
-                        <div className="text-[10px] font-bold text-green uppercase tracking-[0.06em] mb-2">Captain / Assistant</div>
+                        <div className="text-[10px] font-bold text-green uppercase tracking-[0.06em] mb-2">ChopDropper / Assistant</div>
                         {officeDetails.office.assistantName ? (
                           <div className="flex items-center justify-between">
                             <div>
@@ -1498,7 +1498,7 @@ export default function OpsPage() {
                             </div>
                           </div>
                         ) : (
-                          <div className="text-ink-soft text-[12px]">No captain assigned yet</div>
+                          <div className="text-ink-soft text-[12px]">No ChopDropper assigned yet</div>
                         )}
                         {officeDetails.stats.todayTips > 0 && (
                           <div className="mt-2 pt-2 border-t border-green/20 text-[11px] text-green font-semibold">

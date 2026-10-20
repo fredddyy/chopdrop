@@ -374,7 +374,7 @@ export default function CartPage() {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free delivery. Ask your office admin or captain.</p>
+                      <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free delivery. Ask your office admin or ChopDropper.</p>
                     )}
                   </div>
                 )}
@@ -417,7 +417,7 @@ export default function CartPage() {
           {isAuthenticated && fulfillment === "office" && officeId && (
             <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
               <div className="flex items-center justify-between mb-2.5">
-                <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">Captain tip</h2>
+                <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">ChopDropper tip</h2>
                 <span className="text-[10px] text-[#9ca3af]">100% to your assistant</span>
               </div>
               <div className="flex gap-2 flex-wrap">
@@ -500,7 +500,7 @@ export default function CartPage() {
               <div className="flex justify-between"><span className="text-[#6b7280]">Subtotal ({portionCount} item{portionCount !== 1 ? "s" : ""})</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(cart.subtotal)}</span></div>
               <div className="flex justify-between"><span className="text-[#6b7280]">Delivery</span><span className={`font-semibold ${deliveryFee === 0 ? "text-[#22c55e]" : "text-[#1a1a1a]"}`}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span></div>
               <div className="flex justify-between"><span className="text-[#6b7280]">Service fee (5%)</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(SERVICE_FEE)}</span></div>
-              {effectiveTip > 0 && <div className="flex justify-between"><span className="text-[#6b7280]">Captain tip</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(effectiveTip)}</span></div>}
+              {effectiveTip > 0 && <div className="flex justify-between"><span className="text-[#6b7280]">ChopDropper tip</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(effectiveTip)}</span></div>}
               <div className="flex justify-between items-center border-t border-[#f0efeb] pt-3 mt-1">
                 <span className="text-[13px] font-semibold text-[#1a1a1a]">Total</span>
                 <span className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.02em]">{formatNaira(orderTotal)}</span>

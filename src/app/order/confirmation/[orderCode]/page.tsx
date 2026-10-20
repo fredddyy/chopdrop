@@ -165,7 +165,7 @@ function ConfirmationContent() {
           {isConfirmed && (
             <p className="text-[#9ca3af] text-[13px] mt-1">
               {isOffice
-                ? `Cooked fresh, arrives at ${dropTime}. Show your code to the captain.`
+                ? `Cooked fresh, arrives at ${dropTime}. Show your code to your ChopDropper.`
                 : `Cooked fresh, ready at ${dropTime}.`
               }
             </p>
@@ -179,7 +179,7 @@ function ConfirmationContent() {
           <p className="text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">Collection code</p>
           <p className="font-display font-[800] text-[38px] text-[#1a1a1a] tracking-[0.04em] mt-1 leading-none">{order.orderCode}</p>
           <p className="text-[11px] text-[#0f4030] font-semibold mt-2">
-            {isOffice ? "Show this to your captain at collection" : "Show this code when collecting your food"}
+            {isOffice ? "Show this to your ChopDropper at collection" : "Show this code when collecting your food"}
           </p>
         </div>
 
@@ -225,7 +225,7 @@ function ConfirmationContent() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#0f4030]"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z" /></svg>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] text-[#9ca3af]">Your captain</div>
+                <div className="text-[10px] text-[#9ca3af]">Your ChopDropper</div>
                 <div className="text-[13px] font-semibold text-[#1a1a1a]">{order.office.assistantName}</div>
               </div>
               {order.office.assistantPhone && (

@@ -229,7 +229,7 @@ const steps = [
   {
     icon: "copy" as IconName,
     number: "04",
-    title: "Your Captain Distributes",
+    title: "Your ChopDropper Distributes",
     copy: "Simple collection codes make handing out every meal quick and easy.",
   },
 ];
@@ -245,9 +245,9 @@ const audiences = [
   {
     className: "audience-green",
     icon: "copy" as IconName,
-    title: "For Captains",
+    title: "For ChopDroppers",
     copy: "Bring your group together without chasing cash, orders, or restaurants.",
-    action: "Become a Captain",
+    action: "Become a ChopDropper",
   },
   {
     className: "audience-coral",
@@ -527,7 +527,7 @@ export default function Home() {
             <strong>Product</strong>
             <a href="#how">How it works</a>
             <a href="#cta">Order on WhatsApp</a>
-            <a href="#audiences">For captains</a>
+            <a href="#audiences">For ChopDroppers</a>
           </div>
           <div>
             <strong>Company</strong>
