@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 function ChopDropperInfo({ officeId }: { officeId: string }) {
   const [info, setInfo] = useState<{ name: string; phone: string } | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetch(`/api/offices/lookup?id=${encodeURIComponent(officeId)}`)
@@ -15,11 +16,12 @@ function ChopDropperInfo({ officeId }: { officeId: string }) {
         if (d.success && d.data?.assistantName) {
           setInfo({ name: d.data.assistantName, phone: d.data.assistantPhone || "" });
         }
+        setLoaded(true);
       })
-      .catch(() => {});
+      .catch(() => setLoaded(true));
   }, [officeId]);
 
-  if (!info) return null;
+  if (!loaded) return null;
 
   return (
     <div className="px-4 py-3 border-b border-[#f0efeb]">
@@ -31,14 +33,25 @@ function ChopDropperInfo({ officeId }: { officeId: string }) {
         </div>
         <div className="flex-1 min-w-0">
           <span className="text-[10px] text-[#9ca3af] block">Your ChopDropper</span>
-          <span className="text-[13px] font-medium text-[#1a1a1a]">{info.name}</span>
+          {info ? (
+            <span className="text-[13px] font-medium text-[#1a1a1a]">{info.name}</span>
+          ) : (
+            <span className="text-[12px] text-[#9ca3af]">Not assigned yet</span>
+          )}
         </div>
-        {info.phone && (
+        {info?.phone ? (
           <a
             href={`tel:${info.phone}`}
             className="text-[10px] font-semibold text-[#0f4030] bg-[#0f4030]/[0.06] px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
           >
             Call
+          </a>
+        ) : (
+          <a
+            href="https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20need%20a%20ChopDropper%20for%20my%20office"
+            className="text-[10px] font-semibold text-[#f05f4b]"
+          >
+            Request
           </a>
         )}
       </div>
