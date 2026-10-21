@@ -64,8 +64,12 @@ export async function POST(request: NextRequest) {
   }
 
   // Calculate total amount
+  // Use client-sent subtotal (sum of all cart items × quantities) when available,
+  // fall back to single-meal calculation for backwards compatibility
   let totalAmount: number;
-  if (dailyMenu.meal.type === "BUILD_YOUR_PLATE" && data.items?.length) {
+  if (data.subtotal && data.subtotal > 0) {
+    totalAmount = data.subtotal;
+  } else if (dailyMenu.meal.type === "BUILD_YOUR_PLATE" && data.items?.length) {
     const menuItemIds = data.items.map((i) => i.menuItemId);
     const menuItems = await prisma.menuItem.findMany({
       where: { id: { in: menuItemIds } },
