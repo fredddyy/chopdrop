@@ -342,51 +342,57 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           const pct = Math.min(100, Math.round((current / target) * 100));
           const unlocked = remaining === 0;
           const hasImage = !!p.imageUrl;
+          // Dot indicators for each order slot
+          const dots = Array.from({ length: target }, (_, i) => i < current);
           return (
-            <div className="mx-5 mt-2.5">
+            <div className="mx-5 mt-2.5 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
               {hasImage ? (
-                <div className="rounded-2xl overflow-hidden active:scale-[0.98] transition-transform">
+                <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.imageUrl!} alt={p.name} className="w-full object-cover" style={{ maxHeight: 180 }} />
-                </div>
+                  <div className="px-4 py-3" style={{ background: "#1a1a1a" }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-semibold text-white/90" style={{ fontFamily: "DM Sans, sans-serif" }}>
+                        {unlocked ? "Cashback unlocked! Order to claim." : <>{remaining} more to unlock <span className="text-[#f5c565] font-bold">{reward} cashback</span></>}
+                      </span>
+                      <span className="text-[10px] font-bold text-white/40">{current}/{target}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {dots.map((filled, i) => (
+                        <div
+                          key={i}
+                          className="h-[5px] rounded-full flex-1 transition-all duration-500"
+                          style={{ background: filled ? (unlocked ? "#0f4030" : "#f05f4b") : "rgba(255,255,255,0.12)" }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </>
               ) : (
-                <div className="rounded-2xl overflow-hidden px-4 py-3.5 active:scale-[0.98] transition-transform" style={{ backgroundColor: "#fffbf0", border: "1px solid rgba(245,197,101,0.25)" }}>
-                  <div className="flex items-center gap-2 mb-1">
+                <div className="px-4 py-3.5" style={{ backgroundColor: "#fffbf0", border: "1px solid rgba(245,197,101,0.25)" }}>
+                  <div className="flex items-center gap-2 mb-1.5">
                     <div className="w-6 h-6 rounded-lg bg-[#f5c565] flex items-center justify-center flex-shrink-0">
                       <span className="text-[12px]">&#x1F3AF;</span>
                     </div>
                     <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-[#92702a]">Office Group Deal</span>
                   </div>
-                  {unlocked ? (
-                    <p className="text-[13px] font-bold leading-snug text-[#1a1a1a]" style={{ fontFamily: "Manrope, sans-serif" }}>
-                      You unlocked <span className="text-[#f05f4b]">{reward} {rewardLabel}</span>!
-                    </p>
-                  ) : (
-                    <p className="text-[13px] font-bold leading-snug text-[#1a1a1a]" style={{ fontFamily: "Manrope, sans-serif" }}>
-                      <span className="text-[#f05f4b]">{current}/{target}</span> orders &mdash; {remaining} more for <span className="text-[#0f4030]">{reward} {rewardLabel}</span>
-                    </p>
-                  )}
+                  <p className="text-[13px] font-bold leading-snug text-[#1a1a1a] mb-2.5" style={{ fontFamily: "Manrope, sans-serif" }}>
+                    {unlocked
+                      ? <>You unlocked <span className="text-[#f05f4b]">{reward} {rewardLabel}</span>!</>
+                      : <><span className="text-[#f05f4b]">{current}/{target}</span> orders &mdash; {remaining} more for <span className="text-[#0f4030]">{reward} {rewardLabel}</span></>
+                    }
+                  </p>
+                  <div className="flex items-center gap-1.5">
+                    {dots.map((filled, i) => (
+                      <div
+                        key={i}
+                        className="h-[5px] rounded-full flex-1 transition-all duration-500"
+                        style={{ background: filled ? (unlocked ? "#0f4030" : "#f05f4b") : "rgba(245,197,101,0.25)" }}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
-              <div className="mt-2 rounded-xl px-4 py-2.5" style={{ backgroundColor: "#fafaf8", border: "1px solid rgba(0,0,0,0.06)" }}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-[18px] h-[18px] rounded-full bg-[#0f4030] flex items-center justify-center">
-                      <span className="text-[9px] text-white font-bold">{current}</span>
-                    </div>
-                    <span className="text-[11px] font-semibold text-[#1a1a1a]" style={{ fontFamily: "DM Sans, sans-serif" }}>
-                      {unlocked ? "Cashback unlocked!" : <>{remaining} more order{remaining !== 1 ? "s" : ""} to unlock <span className="text-[#f05f4b] font-bold">{reward}</span></>}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-bold text-[#0f4030]">{current}/{target}</span>
-                </div>
-                <div className="h-[6px] rounded-full overflow-hidden bg-[#e8e8e4]">
-                  <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{ width: `${pct}%`, background: unlocked ? "#0f4030" : "linear-gradient(90deg, #f05f4b, #f5c565)" }}
-                  />
-                </div>
-              </div>
             </div>
           );
         }
