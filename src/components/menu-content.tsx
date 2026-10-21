@@ -343,36 +343,48 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           const unlocked = remaining === 0;
           const hasImage = !!p.imageUrl;
           return (
-            <div
-              className="mx-5 mt-2.5 rounded-2xl overflow-hidden px-4 py-3.5 active:scale-[0.98] transition-transform relative"
-              style={hasImage
-                ? { backgroundImage: `url(${p.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
-                : { backgroundColor: "#fffbf0", border: "1px solid rgba(245,197,101,0.25)" }
-              }
-            >
-              {hasImage && <div className="absolute inset-0 bg-black/40" />}
-              <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${hasImage ? "bg-white/20" : "bg-[#f5c565]"}`}>
-                    <span className="text-[14px]">&#x1F3AF;</span>
+            <div className="mx-5 mt-2.5">
+              {hasImage ? (
+                <div className="rounded-2xl overflow-hidden active:scale-[0.98] transition-transform">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.imageUrl!} alt={p.name} className="w-full object-cover" style={{ maxHeight: 180 }} />
+                </div>
+              ) : (
+                <div className="rounded-2xl overflow-hidden px-4 py-3.5 active:scale-[0.98] transition-transform" style={{ backgroundColor: "#fffbf0", border: "1px solid rgba(245,197,101,0.25)" }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-6 h-6 rounded-lg bg-[#f5c565] flex items-center justify-center flex-shrink-0">
+                      <span className="text-[12px]">&#x1F3AF;</span>
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-[#92702a]">Office Group Deal</span>
                   </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-[0.06em] ${hasImage ? "text-white/80" : "text-[#92702a]"}`}>Office Group Deal</span>
+                  {unlocked ? (
+                    <p className="text-[13px] font-bold leading-snug text-[#1a1a1a]" style={{ fontFamily: "Manrope, sans-serif" }}>
+                      You unlocked <span className="text-[#f05f4b]">{reward} {rewardLabel}</span>!
+                    </p>
+                  ) : (
+                    <p className="text-[13px] font-bold leading-snug text-[#1a1a1a]" style={{ fontFamily: "Manrope, sans-serif" }}>
+                      <span className="text-[#f05f4b]">{current}/{target}</span> orders &mdash; {remaining} more for <span className="text-[#0f4030]">{reward} {rewardLabel}</span>
+                    </p>
+                  )}
                 </div>
-                {unlocked ? (
-                  <p className={`text-[13px] font-bold leading-snug ${hasImage ? "text-white" : "text-[#1a1a1a]"}`} style={{ fontFamily: "Manrope, sans-serif" }}>
-                    You unlocked <span className={hasImage ? "text-[#f5c565]" : "text-[#f05f4b]"}>{reward} {rewardLabel}</span>!
-                  </p>
-                ) : (
-                  <p className={`text-[13px] font-bold leading-snug ${hasImage ? "text-white" : "text-[#1a1a1a]"}`} style={{ fontFamily: "Manrope, sans-serif" }}>
-                    <span className="text-[#f05f4b]">{current}/{target}</span> orders &mdash; {remaining} more for <span className={hasImage ? "text-[#f5c565]" : "text-[#0f4030]"}>{reward} {rewardLabel}</span>
-                  </p>
-                )}
-                <div className={`mt-2.5 h-2 rounded-full overflow-hidden ${hasImage ? "bg-white/20" : "bg-[#f5c565]/20"}`}>
-                  <div className="h-full rounded-full transition-all duration-700 ease-out bg-[#f05f4b]" style={{ width: `${pct}%` }} />
+              )}
+              <div className="mt-2 rounded-xl px-4 py-2.5" style={{ backgroundColor: "#fafaf8", border: "1px solid rgba(0,0,0,0.06)" }}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-[18px] h-[18px] rounded-full bg-[#0f4030] flex items-center justify-center">
+                      <span className="text-[9px] text-white font-bold">{current}</span>
+                    </div>
+                    <span className="text-[11px] font-semibold text-[#1a1a1a]" style={{ fontFamily: "DM Sans, sans-serif" }}>
+                      {unlocked ? "Cashback unlocked!" : <>{remaining} more order{remaining !== 1 ? "s" : ""} to unlock <span className="text-[#f05f4b] font-bold">{reward}</span></>}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-[#0f4030]">{current}/{target}</span>
                 </div>
-                <div className="flex items-center justify-between mt-1.5">
-                  <span className={`text-[10px] ${hasImage ? "text-white/50" : "text-[#9ca3af]"}`}>{current} of {target} orders</span>
-                  {!unlocked && <span className={`text-[10px] font-bold ${hasImage ? "text-[#f5c565]" : "text-[#f05f4b]"}`}>{remaining} to go</span>}
+                <div className="h-[6px] rounded-full overflow-hidden bg-[#e8e8e4]">
+                  <div
+                    className="h-full rounded-full transition-all duration-700 ease-out"
+                    style={{ width: `${pct}%`, background: unlocked ? "#0f4030" : "linear-gradient(90deg, #f05f4b, #f5c565)" }}
+                  />
                 </div>
               </div>
             </div>
