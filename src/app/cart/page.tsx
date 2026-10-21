@@ -251,7 +251,7 @@ export default function CartPage() {
   }
 
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full pb-48 bg-[#fafaf8]">
+    <main className="flex-1 max-w-[480px] lg:max-w-[640px] mx-auto w-full pb-48 lg:pb-8 bg-[#fafaf8]">
       {/* ── FIX #1: Compact header — no progress stepper ── */}
       <div className="px-5 pt-5 pb-3 flex items-center justify-between">
         <div>

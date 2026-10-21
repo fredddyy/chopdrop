@@ -7,6 +7,7 @@ import { useCart } from "@/lib/cart";
 import { getCustomerProfile } from "@/lib/customer";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { CartSidebar } from "./cart-sidebar";
 
 interface CategoryItem { id: string; name: string; price: number; }
 interface Category { id: string; name: string; selectionRule: string; items: CategoryItem[]; }
@@ -165,42 +166,57 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   }
 
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24 bg-white">
+    <main className="flex-1 max-w-[480px] lg:max-w-[1120px] mx-auto w-full pb-24 lg:pb-8 bg-white lg:bg-transparent">
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-black/[0.04]">
-        <div className="flex items-center justify-between px-5 py-3">
+        <div className="flex items-center justify-between px-5 py-3 lg:max-w-[1120px] lg:mx-auto">
           <div className="flex items-center gap-3">
             <Logo size={24} />
             <div className="h-4 w-px bg-black/[0.08]" />
             <div>
-              <span className="text-[10px] text-[#9ca3af] font-medium block leading-none">{getGreeting()}</span>
+              <span className="text-[10px] lg:text-[11px] text-[#9ca3af] font-medium block leading-none">{getGreeting()}</span>
               {officeName ? (
-                <span className="text-[12px] font-semibold text-[#1a1a1a] leading-tight">{officeName}</span>
+                <span className="text-[12px] lg:text-[13px] font-semibold text-[#1a1a1a] leading-tight">{officeName}</span>
               ) : (
-                <span className="text-[11px] text-[#9ca3af] leading-tight flex items-center gap-1">
+                <span className="text-[11px] lg:text-[12px] text-[#9ca3af] leading-tight flex items-center gap-1">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="text-[#22c55e] flex-shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
                   Serving Ikeja, Lagos
                 </span>
               )}
             </div>
           </div>
-          <Link href="/cart" className="relative w-9 h-9 rounded-full bg-[#f5f5f3] flex items-center justify-center hover:bg-[#eeedea] transition-colors">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#1a1a1a]">
-              <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
-            </svg>
-            {cart.totalItems > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] bg-[#f05f4b] text-white text-[8px] font-bold rounded-full flex items-center justify-center px-1 shadow-[0_2px_8px_rgba(240,95,75,0.35)]">
-                {cart.totalItems}
-              </span>
-            )}
-          </Link>
+          <div className="flex items-center gap-2">
+            {/* Desktop nav links */}
+            <nav className="hidden lg:flex items-center gap-1 mr-3">
+              <Link href="/orders" className="text-[13px] font-medium text-[#6b7280] hover:text-[#1a1a1a] px-3 py-1.5 rounded-lg hover:bg-[#f5f5f3] transition-colors">
+                Orders
+              </Link>
+              <Link href="/account" className="text-[13px] font-medium text-[#6b7280] hover:text-[#1a1a1a] px-3 py-1.5 rounded-lg hover:bg-[#f5f5f3] transition-colors">
+                Account
+              </Link>
+            </nav>
+            <Link href="/cart" className="relative w-9 h-9 rounded-full bg-[#f5f5f3] flex items-center justify-center hover:bg-[#eeedea] transition-colors lg:hidden">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#1a1a1a]">
+                <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
+              </svg>
+              {cart.totalItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] bg-[#f05f4b] text-white text-[8px] font-bold rounded-full flex items-center justify-center px-1 shadow-[0_2px_8px_rgba(240,95,75,0.35)]">
+                  {cart.totalItems}
+                </span>
+              )}
+            </Link>
+          </div>
         </div>
       </header>
+
+      {/* ── Desktop two-column layout ── */}
+      <div className="lg:flex lg:gap-8 lg:px-5 lg:pt-5">
+      <div className="flex-1 min-w-0 lg:bg-white lg:rounded-2xl lg:border lg:border-black/[0.06] lg:overflow-hidden lg:pb-6">
 
       {/* ── Sticky bar ── */}
       {showStickyBar && slot && !slot.expired && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-[#0a2e20]/95 backdrop-blur-lg text-white" style={{ animation: "slideDown 0.25s ease" }}>
-          <div className="max-w-[480px] mx-auto flex items-center justify-between px-5 py-2.5">
+          <div className="max-w-[480px] lg:max-w-[1120px] mx-auto flex items-center justify-between px-5 py-2.5">
             <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#6ee7b7]">{getSlotShortName(slot.label)} drop</span>
             <div className="flex items-center gap-3">
               <CountdownTimer cutoffTime={slot.cutoffTime} compact />
@@ -598,7 +614,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 <h3 className="text-[11px] font-bold text-[#9ca3af] uppercase tracking-[0.08em]">Kitchens</h3>
                 <span className="text-[10px] text-[#9ca3af]">{slot.restaurants.length} available</span>
               </div>
-              <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
+              <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1 lg:flex-wrap lg:overflow-visible" style={{ scrollbarWidth: "none" }}>
                 {slot.restaurants.map((r) => (
                   <Link key={r.id} href={`/restaurant/${r.id}`} className="flex items-center gap-2.5 bg-white rounded-2xl py-2.5 pl-3 pr-2 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-[#f0efeb]/80 flex-shrink-0 active:scale-[0.97] transition-transform">
                     <div className="w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
@@ -676,7 +692,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     </div>
 
                     {/* Menu items with pre-order buttons */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
                       {rData.items.map((item) => {
                         const cartQty = cart.items.find((i) => i.dailyMenuId === item.id)?.quantity || 0;
                         const isInCart = cartQty > 0;
@@ -767,7 +783,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
           {/* ── Pre-order sticky bottom bar ── */}
           {cart.totalItems > 0 && (
-            <div className="fixed bottom-16 left-0 right-0 z-50" style={{ animation: "preorderBarIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+            <div className="fixed bottom-16 lg:bottom-8 left-0 right-0 z-50 lg:hidden" style={{ animation: "preorderBarIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)" }}>
               <div className="max-w-[480px] mx-auto px-4">
                 <Link
                   href="/cart"
@@ -886,7 +902,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 <h2 className="font-display font-bold text-[16px] text-[#1a1a1a] tracking-[-0.02em]">{getSlotShortName(slot.label)} drop combos</h2>
               </div>
               {/* FIX #4: 220px cards so 1.4 visible */}
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-1">
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-1 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pl-5 lg:pr-5">
                 {slot.items.filter((i) => i.tag === "DEAL").map((deal) => {
                   const originalPrice = deal.originalPrice;
                   const savings = originalPrice ? originalPrice - deal.price : 0;
@@ -898,7 +914,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   const cartQty = cart.items.find((i) => i.dailyMenuId === deal.id)?.quantity || 0;
 
                   return (
-                    <div key={deal.id} onClick={() => handleAddFixed(deal)} className="flex-shrink-0 w-[220px] bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.04)] cursor-pointer active:scale-[0.98] transition-transform">
+                    <div key={deal.id} onClick={() => handleAddFixed(deal)} className="flex-shrink-0 w-[220px] lg:w-auto bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.04)] cursor-pointer active:scale-[0.98] transition-transform hover:shadow-[0_2px_4px_rgba(0,0,0,0.07),0_8px_24px_rgba(0,0,0,0.06)]">
                       <div className="relative h-[120px]">
                         {deal.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -980,7 +996,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </span>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
               {slot.restaurants.map((r) => {
                 const initials = r.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
                 return (
@@ -1045,6 +1061,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           Pre-order saved
         </div>
       )}
+
+      </div>{/* end left column */}
+      <CartSidebar />
+      </div>{/* end two-column layout */}
 
       <BottomNav />
 
