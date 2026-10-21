@@ -1976,10 +1976,28 @@ export default function OpsPage() {
                   <textarea value={promoDescription} onChange={(e) => setPromoDescription(e.target.value)} placeholder="Shown to customers on the promo banner" rows={2} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30 resize-none" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold mb-1.5">Banner image URL <span className="font-normal text-ink-soft">(optional)</span></label>
-                  <input type="url" value={promoImageUrl} onChange={(e) => setPromoImageUrl(e.target.value)} placeholder="https://res.cloudinary.com/..." className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  <label className="block text-[12px] font-bold mb-1.5">Banner image <span className="font-normal text-ink-soft">(optional)</span></label>
+                  <div className="flex items-center gap-3">
+                    <label className={`px-4 py-2.5 border border-line rounded-[10px] text-sm cursor-pointer transition-colors ${uploading ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
+                      {uploading ? "Uploading..." : promoImageUrl ? "Change image" : "Upload banner"}
+                      <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setUploading(true);
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        try {
+                          const res = await fetch("/api/upload", { method: "POST", body: formData });
+                          const data = await res.json();
+                          if (data.url) setPromoImageUrl(data.url);
+                        } catch { /* ignore */ }
+                        setUploading(false);
+                      }} />
+                    </label>
+                    {promoImageUrl && <button type="button" onClick={() => setPromoImageUrl("")} className="text-[12px] text-ink-soft hover:text-coral">Remove</button>}
+                  </div>
                   {promoImageUrl && (
-                    <div className="mt-2 rounded-xl overflow-hidden border border-line h-[100px]">
+                    <div className="mt-2 rounded-xl overflow-hidden border border-line h-[120px]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={promoImageUrl} alt="Banner preview" className="w-full h-full object-cover" />
                     </div>
