@@ -34,21 +34,21 @@ export function CountdownTimer({ cutoffTime, compact = false }: CountdownTimerPr
 
   if (compact) {
     if (timeLeft.expired) {
-      return <span className="text-[11px] font-bold text-coral">Closed</span>;
+      return <span className="text-[11px] font-bold text-[#f05f4b]">Closed</span>;
     }
-    // Flip-clock style compact digits
+    // Flip-clock style compact digits — works on light backgrounds
     return (
       <div className="flex items-center gap-[3px]">
         {pad(timeLeft.hours).split("").map((d, i) => (
-          <span key={`h${i}`} className="w-[18px] h-[22px] bg-white/15 rounded-[4px] flex items-center justify-center text-[12px] font-mono font-bold text-white">{d}</span>
+          <span key={`h${i}`} className="w-[20px] h-[24px] bg-[#0f4030] rounded-[5px] flex items-center justify-center text-[13px] font-mono font-bold text-white shadow-[0_1px_2px_rgba(0,0,0,0.1)]">{d}</span>
         ))}
-        <span className="text-white/40 text-[10px] font-bold mx-[1px]">:</span>
+        <span className="text-[#9ca3af] text-[11px] font-bold mx-[1px]">:</span>
         {pad(timeLeft.minutes).split("").map((d, i) => (
-          <span key={`m${i}`} className="w-[18px] h-[22px] bg-white/15 rounded-[4px] flex items-center justify-center text-[12px] font-mono font-bold text-white">{d}</span>
+          <span key={`m${i}`} className="w-[20px] h-[24px] bg-[#0f4030] rounded-[5px] flex items-center justify-center text-[13px] font-mono font-bold text-white shadow-[0_1px_2px_rgba(0,0,0,0.1)]">{d}</span>
         ))}
-        <span className="text-white/40 text-[10px] font-bold mx-[1px]">:</span>
+        <span className="text-[#9ca3af] text-[11px] font-bold mx-[1px]">:</span>
         {pad(timeLeft.seconds).split("").map((d, i) => (
-          <span key={`s${i}`} className="w-[18px] h-[22px] bg-white/15 rounded-[4px] flex items-center justify-center text-[12px] font-mono font-bold text-white animate-[pulse_1s_ease-in-out_infinite]">{d}</span>
+          <span key={`s${i}`} className="w-[20px] h-[24px] bg-[#f05f4b] rounded-[5px] flex items-center justify-center text-[13px] font-mono font-bold text-white shadow-[0_1px_2px_rgba(240,95,75,0.2)]">{d}</span>
         ))}
       </div>
     );
