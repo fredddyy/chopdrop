@@ -244,7 +244,7 @@ export default function OpsPage() {
         fetch("/api/admin/daily-menu?date=" + new Date().toISOString().split("T")[0]).then((r) => r.json()),
         fetch("/api/admin/time-slots").then((r) => r.json()),
         fetch("/api/admin/zones").then((r) => r.json()),
-        fetch("/api/admin/promos").then((r) => r.json()),
+        fetch("/api/admin/promos").then((r) => r.json()).catch(() => ({ success: true, data: [] })),
       ]).then(([ordersData, restD, offData, mealsData, dmData, slotsData, zoneData, promoData]) => {
         if (ordersData.success) setOrders(ordersData.data.filter((o: OrderData) => o.paymentStatus === "SUCCESS"));
         if (restD.success) setRestaurants(restD.data);
