@@ -341,7 +341,6 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           const pct = Math.min(100, Math.round((current / target) * 100));
           const unlocked = remaining === 0;
           return (
-            {/* ── Group cashback — light amber card ── */}
             <div className="mx-5 mt-2.5 rounded-2xl overflow-hidden bg-[#fffbf0] border border-[#f5c565]/25 px-4 py-3 active:scale-[0.98] transition-transform">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-7 h-7 rounded-lg bg-[#f5c565] flex items-center justify-center flex-shrink-0">
