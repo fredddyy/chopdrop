@@ -168,43 +168,67 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   return (
     <main className="flex-1 max-w-[480px] lg:max-w-[1120px] mx-auto w-full pb-24 lg:pb-8 bg-white lg:bg-[#f8f8f6]">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-black/[0.04]">
-        <div className="flex items-center justify-between px-5 py-3 lg:max-w-[1120px] lg:mx-auto">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-black/[0.06]">
+        {/* Mobile header */}
+        <div className="flex items-center justify-between px-5 py-3 lg:hidden">
           <div className="flex items-center gap-3">
             <Logo size={24} />
             <div className="h-4 w-px bg-black/[0.08]" />
             <div>
-              <span className="text-[10px] lg:text-[11px] text-[#9ca3af] font-medium block leading-none">{getGreeting()}</span>
+              <span className="text-[10px] text-[#9ca3af] font-medium block leading-none">{getGreeting()}</span>
               {officeName ? (
-                <span className="text-[12px] lg:text-[13px] font-semibold text-[#1a1a1a] leading-tight">{officeName}</span>
+                <span className="text-[12px] font-semibold text-[#1a1a1a] leading-tight">{officeName}</span>
               ) : (
-                <span className="text-[11px] lg:text-[12px] text-[#9ca3af] leading-tight flex items-center gap-1">
+                <span className="text-[11px] text-[#9ca3af] leading-tight flex items-center gap-1">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="text-[#22c55e] flex-shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
                   Serving Ikeja, Lagos
                 </span>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {/* Desktop nav links */}
-            <nav className="hidden lg:flex items-center gap-1 mr-3">
-              <Link href="/orders" className="text-[13px] font-medium text-[#6b7280] hover:text-[#1a1a1a] px-3 py-1.5 rounded-lg hover:bg-[#f5f5f3] transition-colors">
+          <Link href="/cart" className="relative w-9 h-9 rounded-full bg-[#f5f5f3] flex items-center justify-center hover:bg-[#eeedea] transition-colors">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#1a1a1a]">
+              <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
+            </svg>
+            {cart.totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] bg-[#f05f4b] text-white text-[8px] font-bold rounded-full flex items-center justify-center px-1 shadow-[0_2px_8px_rgba(240,95,75,0.35)]">
+                {cart.totalItems}
+              </span>
+            )}
+          </Link>
+        </div>
+        {/* Desktop header */}
+        <div className="hidden lg:block">
+          <div className="max-w-[1120px] mx-auto flex items-center justify-between px-5 py-4">
+            <div className="flex items-center gap-5">
+              <Link href="/menu" className="flex items-center gap-2.5">
+                <Logo size={28} />
+                <span className="font-display font-bold text-[18px] text-[#1a1a1a] tracking-[-0.03em]">ChopDrop</span>
+              </Link>
+              <div className="h-6 w-px bg-black/[0.08]" />
+              <div className="flex items-center gap-2 bg-[#f5f5f3] hover:bg-[#eeedea] transition-colors rounded-xl px-4 py-2 cursor-default">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-[#22c55e] flex-shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
+                <div>
+                  <div className="text-[10px] text-[#9ca3af] font-medium leading-none">Delivering to</div>
+                  <div className="text-[13px] font-semibold text-[#1a1a1a] leading-tight">{officeName || "Ikeja, Lagos"}</div>
+                </div>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" className="ml-1"><path d="m6 9 6 6 6-6" /></svg>
+              </div>
+            </div>
+            <nav className="flex items-center gap-1">
+              <Link href="/menu" className="flex items-center gap-2 text-[13px] font-semibold text-[#1a1a1a] bg-[#f05f4b]/[0.08] px-4 py-2 rounded-xl transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f05f4b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" /></svg>
+                <span className="text-[#f05f4b]">Menu</span>
+              </Link>
+              <Link href="/orders" className="flex items-center gap-2 text-[13px] font-medium text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f5f5f3] px-4 py-2 rounded-xl transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /></svg>
                 Orders
               </Link>
-              <Link href="/account" className="text-[13px] font-medium text-[#6b7280] hover:text-[#1a1a1a] px-3 py-1.5 rounded-lg hover:bg-[#f5f5f3] transition-colors">
+              <Link href="/account" className="flex items-center gap-2 text-[13px] font-medium text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f5f5f3] px-4 py-2 rounded-xl transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
                 Account
               </Link>
             </nav>
-            <Link href="/cart" className="relative w-9 h-9 rounded-full bg-[#f5f5f3] flex items-center justify-center hover:bg-[#eeedea] transition-colors lg:hidden">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#1a1a1a]">
-                <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
-              </svg>
-              {cart.totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] bg-[#f05f4b] text-white text-[8px] font-bold rounded-full flex items-center justify-center px-1 shadow-[0_2px_8px_rgba(240,95,75,0.35)]">
-                  {cart.totalItems}
-                </span>
-              )}
-            </Link>
           </div>
         </div>
       </header>
@@ -361,7 +385,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           // Dot indicators for each order slot
           const dots = Array.from({ length: target }, (_, i) => i < current);
           return (
-            <div className="mx-5 mt-2.5 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
+            <div className="mx-5 lg:mx-6 mt-2.5 lg:mt-4 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
               {hasImage ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -415,7 +439,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
         if (p.type === "EARLY_BIRD") {
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+            <div className="mx-5 lg:mx-6 mt-3 lg:mt-4 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
               {p.imageUrl ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -446,7 +470,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
         if (p.type === "FIRST_ORDER") {
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+            <div className="mx-5 lg:mx-6 mt-3 lg:mt-4 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
               {p.imageUrl ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -477,7 +501,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
         if (p.type === "REFER") {
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+            <div className="mx-5 lg:mx-6 mt-3 lg:mt-4 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
               {p.imageUrl ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -512,7 +536,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           const remaining = Math.max(0, target - weekOrders);
           const dots = Array.from({ length: target }, (_, i) => i < weekOrders);
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+            <div className="mx-5 lg:mx-6 mt-3 lg:mt-4 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
               {p.imageUrl ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -643,7 +667,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             <>
               <div className="flex items-end justify-between mb-4">
                 <div>
-                  <h3 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em]">What&apos;s cooking</h3>
+                  <h3 className="font-display font-bold text-[20px] lg:text-[24px] text-[#1a1a1a] tracking-[-0.03em]">What&apos;s cooking</h3>
                   <p className="text-[11px] text-[#9ca3af] mt-0.5">Tap + to pre-order. Ready when orders open.</p>
                 </div>
                 <div className="flex items-center gap-1 text-[10px] font-bold text-[#f05f4b] bg-[#f05f4b]/[0.08] px-2.5 py-1 rounded-full">
@@ -705,7 +729,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                                 : "border-[#f0efeb]/60"
                             }`}
                           >
-                            <div className="w-20 h-20 lg:w-full lg:h-[140px] rounded-2xl lg:rounded-none overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0 relative">
+                            <div className="w-20 h-20 lg:w-full lg:h-[160px] rounded-2xl lg:rounded-none overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0 relative">
                               {item.imageUrl ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
@@ -917,11 +941,11 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           {/* ── FIX #4 & #5: Drop combos on tinted bg, narrower cards ── */}
           {slot.items.some((i) => i.tag === "DEAL") && (
             <section className="mt-5 bg-[#faf9f7] lg:bg-transparent py-5">
-              <div className="px-5 lg:px-6 flex items-center gap-2 mb-3">
-                <h2 className="font-display font-bold text-[16px] text-[#1a1a1a] tracking-[-0.02em]">{getSlotShortName(slot.label)} drop combos</h2>
+              <div className="px-5 lg:px-6 flex items-center gap-2 mb-3 lg:mb-4">
+                <h2 className="font-display font-bold text-[16px] lg:text-[20px] text-[#1a1a1a] tracking-[-0.02em]">{getSlotShortName(slot.label)} drop combos</h2>
               </div>
               {/* FIX #4: 220px cards so 1.4 visible */}
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-1 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pl-5 lg:pr-5">
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-1 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible lg:pl-6 lg:pr-6">
                 {slot.items.filter((i) => i.tag === "DEAL").map((deal) => {
                   const originalPrice = deal.originalPrice;
                   const savings = originalPrice ? originalPrice - deal.price : 0;
@@ -1002,12 +1026,12 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           )}
 
           {/* Divider */}
-          <div className="mx-5 mt-5 h-px bg-black/[0.06]" />
+          <div className="mx-5 lg:mx-6 mt-5 lg:mt-6 h-px bg-black/[0.06]" />
 
           {/* Restaurants */}
           <section className="mt-5 px-5 lg:px-6 pb-4">
-            <div className="flex justify-between items-baseline mb-3">
-              <h2 className="font-display font-bold text-[16px] text-[#1a1a1a] tracking-[-0.02em]">
+            <div className="flex justify-between items-baseline mb-3 lg:mb-4">
+              <h2 className="font-display font-bold text-[16px] lg:text-[20px] text-[#1a1a1a] tracking-[-0.02em]">
                 Pick your {getSlotShortName(slot.label).toLowerCase()}
               </h2>
               <span className="text-[11px] text-[#9ca3af]">
@@ -1025,7 +1049,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     className="group block rounded-2xl overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.07),0_8px_24px_rgba(0,0,0,0.06)] transition-shadow duration-300"
                   >
                     {/* FIX #6: Shorter image so card is fully visible */}
-                    <div className="relative h-[150px] overflow-hidden">
+                    <div className="relative h-[150px] lg:h-[180px] overflow-hidden">
                       {(r.imageUrl || r.previewImage) ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
