@@ -286,27 +286,19 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         }, 0);
         return (
           <>
-            <div className="mx-5 mt-3 bg-gradient-to-br from-[#0f4030] via-[#0d3528] to-[#0a2e20] text-white rounded-2xl px-4 py-3.5 relative overflow-hidden">
-              <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/[0.03] rounded-full" />
-              <div className="relative z-10">
-                {/* Clear two-line explanation */}
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#f5c565]/20 flex items-center justify-center flex-shrink-0">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5c565" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            {/* ── Countdown — light card, not dark ── */}
+            <div className="mx-5 mt-3 bg-white rounded-2xl border border-[#f0efeb] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-[#0f4030] flex items-center justify-center flex-shrink-0">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                   </div>
                   <div>
-                    <span className="text-[12px] font-bold text-white">Order before cutoff</span>
-                    <span className="text-[10px] text-white/50 ml-1.5">&#8226; Food arrives {getSlotDropTime(slot.label) || `by ${slot.startTime}`}</span>
+                    <div className="text-[12px] font-bold text-[#1a1a1a]">Time left to order</div>
+                    <div className="text-[10px] text-[#9ca3af]">Food arrives {getSlotDropTime(slot.label) || `by ${slot.startTime}`}</div>
                   </div>
                 </div>
-                {/* Countdown with clear label */}
-                <div className="flex items-center justify-between bg-white/[0.08] rounded-xl px-3 py-2">
-                  <div>
-                    <div className="text-[11px] font-semibold text-[#f5c565]">Time left to order</div>
-                    <div className="text-[9px] text-white/40 mt-0.5">Pay now &middot; delivered to your desk</div>
-                  </div>
-                  <CountdownTimer cutoffTime={slot.cutoffTime} compact />
-                </div>
+                <CountdownTimer cutoffTime={slot.cutoffTime} compact />
               </div>
             </div>
             {/* FIX #3: Social proof as separate pill */}
@@ -349,32 +341,29 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           const pct = Math.min(100, Math.round((current / target) * 100));
           const unlocked = remaining === 0;
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
-              <div className="relative px-4 py-3.5">
-                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
-                <div className="absolute -left-6 -bottom-6 w-20 h-20 rounded-full bg-white/[0.03]" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[16px]">&#x1F3AF;</span>
-                    <span className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.08em]">Office Group Deal</span>
-                  </div>
-                  {unlocked ? (
-                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
-                      You unlocked <span style={{ color: "#F5C565" }}>{reward} {rewardLabel}</span>!
-                    </p>
-                  ) : (
-                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
-                      <span style={{ color: "#F05F4B" }}>{current}/{target}</span> orders from your office &mdash; {remaining} more to unlock <span style={{ color: "#F5C565" }}>{reward} {rewardLabel}</span>!
-                    </p>
-                  )}
-                  <div className="mt-2.5 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.15)" }}>
-                    <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, backgroundColor: "#F05F4B" }} />
-                  </div>
-                  <div className="flex items-center justify-between mt-1.5">
-                    <span className="text-white/40 text-[10px]" style={{ fontFamily: "DM Sans, sans-serif" }}>{current} of {target} orders</span>
-                    {!unlocked && <span className="text-[#F5C565] text-[10px] font-bold">{remaining} to go</span>}
-                  </div>
+            {/* ── Group cashback — light amber card ── */}
+            <div className="mx-5 mt-2.5 rounded-2xl overflow-hidden bg-[#fffbf0] border border-[#f5c565]/25 px-4 py-3 active:scale-[0.98] transition-transform">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-7 h-7 rounded-lg bg-[#f5c565] flex items-center justify-center flex-shrink-0">
+                  <span className="text-[14px]">&#x1F3AF;</span>
                 </div>
+                <span className="text-[10px] font-bold text-[#92702a] uppercase tracking-[0.06em]">Office Group Deal</span>
+              </div>
+              {unlocked ? (
+                <p className="text-[13px] font-bold text-[#1a1a1a] leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                  You unlocked <span className="text-[#f05f4b]">{reward} {rewardLabel}</span>!
+                </p>
+              ) : (
+                <p className="text-[13px] font-bold text-[#1a1a1a] leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                  <span className="text-[#f05f4b]">{current}/{target}</span> orders &mdash; {remaining} more for <span className="text-[#0f4030]">{reward} {rewardLabel}</span>
+                </p>
+              )}
+              <div className="mt-2 h-1.5 rounded-full overflow-hidden bg-[#f5c565]/20">
+                <div className="h-full rounded-full transition-all duration-700 ease-out bg-[#f05f4b]" style={{ width: `${pct}%` }} />
+              </div>
+              <div className="flex items-center justify-between mt-1.5">
+                <span className="text-[#9ca3af] text-[10px]">{current} of {target} orders</span>
+                {!unlocked && <span className="text-[#f05f4b] text-[10px] font-bold">{remaining} to go</span>}
               </div>
             </div>
           );
