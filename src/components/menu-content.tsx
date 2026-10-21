@@ -201,9 +201,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         <div className="hidden lg:block">
           <div className="max-w-[1120px] mx-auto flex items-center justify-between px-5 py-4">
             <div className="flex items-center gap-5">
-              <Link href="/menu" className="flex items-center gap-2.5">
-                <Logo size={28} />
-                <span className="font-display font-bold text-[18px] text-[#1a1a1a] tracking-[-0.03em]">ChopDrop</span>
+              <Link href="/menu" className="flex items-center">
+                <Logo size={30} />
               </Link>
               <div className="h-6 w-px bg-black/[0.08]" />
               <div className="flex items-center gap-2 bg-[#f5f5f3] hover:bg-[#eeedea] transition-colors rounded-xl px-4 py-2 cursor-default">
@@ -235,7 +234,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
       {/* ── Desktop two-column layout ── */}
       <div className="lg:flex lg:gap-8 lg:px-5 lg:pt-5">
-      <div className="flex-1 min-w-0 lg:bg-white lg:rounded-2xl lg:border lg:border-black/[0.06] lg:overflow-hidden lg:pb-6 lg:px-2">
+      <div className="flex-1 min-w-0 lg:bg-white lg:rounded-2xl lg:border lg:border-black/[0.06] lg:overflow-hidden lg:pb-6 lg:px-3">
 
       {/* ── Sticky bar ── */}
       {showStickyBar && slot && !slot.expired && (
@@ -295,7 +294,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
       {/* ── FIX #1: Tabs — solid dark active, no borders ── */}
       {slots.length > 1 && (
-        <div className="flex mx-5 mt-3 gap-2 lg:max-w-[400px]">
+        <div className="flex mx-5 lg:mx-6 mt-3 gap-2 lg:inline-flex">
           {slots.map((s) => {
             const isActive = s.id === activeSlot;
             return (
@@ -303,7 +302,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 key={s.id}
                 type="button"
                 onClick={() => setActiveSlot(s.id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 ${
+                className={`flex-1 lg:flex-initial flex items-center justify-center gap-1.5 py-2.5 lg:px-6 rounded-full text-[13px] font-semibold transition-all duration-200 ${
                   isActive
                     ? "bg-[#1a1a1a] text-white"
                     : "bg-[#f5f5f3] text-[#9ca3af] hover:text-[#6b7280]"
@@ -328,7 +327,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         return (
           <>
             {/* ── Countdown — light card, not dark ── */}
-            <div className="mx-5 mt-3 bg-white rounded-2xl border border-[#f0efeb] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-3 lg:max-w-[480px]">
+            <div className="mx-5 lg:mx-6 mt-3 bg-white rounded-2xl border border-[#f0efeb] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-[#0f4030] flex items-center justify-center flex-shrink-0">
@@ -593,7 +592,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       {allExpired ? (
         <div className="px-5 py-4 lg:px-6">
           {/* ── Premium closed banner with gradient + reminder ── */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4030] to-[#0a2e20] p-4 mb-3 lg:max-w-[520px]">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4030] to-[#0a2e20] p-4 mb-3">
             <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-[#f5c565]/10" />
             <div className="absolute -right-2 -bottom-8 w-20 h-20 rounded-full bg-[#f05f4b]/10" />
             <div className="relative flex items-center gap-3.5">
@@ -611,7 +610,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           </div>
 
           {/* ── Reminder button ── */}
-          <div className="mb-5 lg:max-w-[520px]">
+          <div className="mb-5">
             {reminderSet ? (
               <div className="flex items-center justify-center gap-2 bg-[#f5c565]/10 border border-[#f5c565]/20 rounded-xl px-4 py-2.5" style={{ animation: "reminderConfirm 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
                 <div className="w-5 h-5 rounded-full bg-[#f5c565] flex items-center justify-center flex-shrink-0">
