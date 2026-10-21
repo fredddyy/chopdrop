@@ -136,9 +136,12 @@ export async function POST(request: NextRequest) {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
+  // Payment amount = meal total + tip + service fee
+  const paymentAmount = totalAmount + (data.captainTip || 0) + (data.serviceFee || 0);
+
   const paystack = await initializeTransaction({
     email,
-    amount: totalAmount,
+    amount: paymentAmount,
     reference: paymentRef,
     callbackUrl: `${appUrl}/order/confirmation/${orderCode}`,
   });
@@ -149,7 +152,7 @@ export async function POST(request: NextRequest) {
       orderCode,
       reference: paymentRef,
       authorizationUrl: paystack.data.authorization_url,
-      totalAmount,
+      totalAmount: paymentAmount,
     },
   });
 }
