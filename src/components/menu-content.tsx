@@ -81,6 +81,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [reminderSet, setReminderSet] = useState(false);
   const [preorderToast, setPreorderToast] = useState("");
   const [activePromo, setActivePromo] = useState<ActivePromo | null>(null);
+  const [poolData, setPoolData] = useState<{ officeOrderCount: number; meals: Record<string, { poolPrice: number; basePrice: number; savings: number; nextTier: { min: number; price: number } | null; tiers: { min: number; price: number }[] }> }>({ officeOrderCount: 0, meals: {} });
+  const [userOfficeId, setUserOfficeId] = useState("");
   const cart = useCart();
 
   useEffect(() => {
@@ -100,8 +102,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         if (d.success && d.data?.office) {
           if (d.data.office.name) setOfficeName(d.data.office.name);
           if (d.data.office.assistantName) setCaptainName(d.data.office.assistantName);
-          // Fetch active promo with office context
           const officeId = d.data.office.id || "";
+          setUserOfficeId(officeId);
+          // Fetch active promo with office context
           const userId = d.data.id || "";
           fetch(`/api/promos/active?officeId=${officeId}&userId=${userId}`)
             .then((r2) => r2.json())
@@ -129,6 +132,15 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
     setBannerDismissed(true);
   }
 
+  // Fetch pool pricing when office or slot changes
+  useEffect(() => {
+    if (!userOfficeId || !activeSlot) return;
+    fetch(`/api/pool-price?officeId=${userOfficeId}&timeSlotId=${activeSlot}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.success && d.data) setPoolData(d.data); })
+      .catch(() => {});
+  }, [userOfficeId, activeSlot]);
+
   useEffect(() => {
     function handleScroll() { setShowStickyBar(window.scrollY > 180); }
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -138,10 +150,15 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const slot = slots.find((s) => s.id === activeSlot) || slots[0];
   const allExpired = slots.every((s) => s.expired);
 
+  function getEffectivePrice(mealId: string, basePrice: number): number {
+    const pool = poolData.meals[mealId];
+    return pool ? pool.poolPrice : basePrice;
+  }
+
   function handleAddFixed(meal: MenuItem) {
     cart.addItem({
       dailyMenuId: meal.id, name: meal.name, description: meal.description || "",
-      imageUrl: meal.imageUrl, restaurantName: meal.restaurantName, price: meal.price,
+      imageUrl: meal.imageUrl, restaurantName: meal.restaurantName, price: getEffectivePrice(meal.id, meal.price),
     });
     setToast(meal.name);
     setTimeout(() => setToast(""), 2000);
@@ -159,7 +176,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   function handlePreorderAdd(item: MenuItem) {
     cart.addItem({
       dailyMenuId: item.id, name: item.name, description: item.description || "",
-      imageUrl: item.imageUrl, restaurantName: item.restaurantName, price: item.price,
+      imageUrl: item.imageUrl, restaurantName: item.restaurantName, price: getEffectivePrice(item.id, item.price),
     });
     setPreorderToast(item.name);
     setTimeout(() => setPreorderToast(""), 2200);
@@ -588,6 +605,32 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         return null;
       })()}
 
+      {/* ── Pool pricing banner ── */}
+      {poolData.officeOrderCount > 0 && Object.keys(poolData.meals).length > 0 && (() => {
+        const firstMeal = Object.values(poolData.meals)[0];
+        const nextTier = firstMeal?.nextTier;
+        const moreNeeded = nextTier ? nextTier.min - poolData.officeOrderCount : 0;
+        return (
+          <div className="mx-5 lg:mx-6 mt-2.5 rounded-xl px-4 py-2.5 flex items-center gap-3" style={{ backgroundColor: "#f0fdf4", border: "1px solid rgba(34,197,94,0.15)" }}>
+            <div className="w-8 h-8 rounded-lg bg-[#22c55e]/15 flex items-center justify-center flex-shrink-0">
+              <span className="text-[14px]">&#x1F4B0;</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[12px] font-semibold text-[#1a1a1a]">
+                {poolData.officeOrderCount} from your office ordered
+              </div>
+              <div className="text-[10px] text-[#6b7280]">
+                {nextTier
+                  ? <>{moreNeeded} more colleague{moreNeeded !== 1 ? "s" : ""} and <span className="text-[#22c55e] font-bold">prices drop for everyone</span></>
+                  : <span className="text-[#22c55e] font-bold">Best pool price unlocked!</span>
+                }
+              </div>
+            </div>
+            <div className="text-[18px] font-display font-bold text-[#22c55e] flex-shrink-0">{poolData.officeOrderCount}</div>
+          </div>
+        );
+      })()}
+
       {/* ── Content ── */}
       {allExpired ? (
         <div className="px-5 py-4 lg:px-6">
@@ -758,11 +801,21 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                               <div className="text-[14px] font-semibold text-[#1a1a1a] leading-tight">{item.name}</div>
                               {item.description && <div className="text-[11px] text-[#9ca3af] mt-0.5 truncate">{item.description}</div>}
                               <div className="flex items-center gap-1.5 mt-1">
-                                <span className="text-[14px] font-bold text-[#0f4030] tracking-[-0.02em]">{formatPrice(item.price)}</span>
-                                {item.originalPrice && item.originalPrice > item.price && (
-                                  <span className="text-[11px] text-[#d1d5db] line-through">{formatPrice(item.originalPrice)}</span>
+                                <span className="text-[14px] font-bold text-[#0f4030] tracking-[-0.02em]">{formatPrice(getEffectivePrice(item.id, item.price))}</span>
+                                {(poolData.meals[item.id] || (item.originalPrice && item.originalPrice > item.price)) && (
+                                  <span className="text-[11px] text-[#d1d5db] line-through">{formatPrice(poolData.meals[item.id]?.basePrice || item.originalPrice || item.price)}</span>
                                 )}
                               </div>
+                              {poolData.meals[item.id]?.nextTier && (
+                                <div className="flex items-center gap-1 mt-1">
+                                  <div className="w-3 h-3 rounded-full bg-[#22c55e]/15 flex items-center justify-center flex-shrink-0">
+                                    <div className="w-1 h-1 rounded-full bg-[#22c55e]" />
+                                  </div>
+                                  <span className="text-[9px] font-medium text-[#22c55e]">
+                                    {poolData.meals[item.id]!.nextTier!.min - poolData.officeOrderCount} more → {formatPrice(poolData.meals[item.id]!.nextTier!.price)}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             {/* Mobile add button */}
                             <div className="flex-shrink-0 lg:hidden">
@@ -1001,9 +1054,20 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           <span className="text-[10px] text-[#9ca3af]">{deal.restaurantName}</span>
                         </div>
                         <div className="flex items-baseline gap-1.5 mt-2">
-                          <span className="font-display font-bold text-[16px] text-[#1a1a1a]">{formatPrice(deal.price)}</span>
-                          {hasDiscount && <span className="text-[12px] text-[#d1d5db] line-through">{formatPrice(originalPrice)}</span>}
+                          <span className="font-display font-bold text-[16px] text-[#1a1a1a]">{formatPrice(getEffectivePrice(deal.id, deal.price))}</span>
+                          {(hasDiscount || poolData.meals[deal.id]) && <span className="text-[12px] text-[#d1d5db] line-through">{formatPrice(poolData.meals[deal.id]?.basePrice || originalPrice || deal.price)}</span>}
                         </div>
+                        {/* Pool pricing progress */}
+                        {poolData.meals[deal.id]?.nextTier && (
+                          <div className="mt-1.5 flex items-center gap-1.5">
+                            <div className="w-3.5 h-3.5 rounded-full bg-[#22c55e]/15 flex items-center justify-center flex-shrink-0">
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                            </div>
+                            <span className="text-[9px] font-medium text-[#22c55e]">
+                              {poolData.meals[deal.id]!.nextTier!.min - poolData.officeOrderCount} more → {formatPrice(poolData.meals[deal.id]!.nextTier!.price)}
+                            </span>
+                          </div>
+                        )}
                         {/* FIX #7: Smart progress text */}
                         <div className="mt-2.5">
                           <div className="h-[4px] bg-[#f0efeb] rounded-full overflow-hidden">

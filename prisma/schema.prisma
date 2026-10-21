@@ -65,6 +65,7 @@ model Meal {
   originalPrice Int?    // kobo - original price before discount (shown as strikethrough)
   maxDeals      Int     @default(20) // max discount spots for DEAL items
   claimedPad    Int     @default(0)  // fake claimed count padding
+  poolTiers     Json?    // [{min: 5, price: 145000}, {min: 10, price: 130000}] — pool pricing tiers (kobo)
   tag           MealTag  @default(REGULAR)
   type          MealType @default(FIXED)
   isAvailable   Boolean  @default(true)

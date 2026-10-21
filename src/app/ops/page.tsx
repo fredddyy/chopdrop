@@ -84,7 +84,7 @@ export default function OpsPage() {
   const [offAssistantPhone, setOffAssistantPhone] = useState("");
 
   // Meals
-  const [meals, setMeals] = useState<{ id: string; name: string; price: number; tag: string; type: string; isAvailable: boolean; imageUrl: string | null; description: string | null; originalPrice: number | null; maxDeals: number; claimedPad: number; restaurant: { id: string; name: string } }[]>([]);
+  const [meals, setMeals] = useState<{ id: string; name: string; price: number; tag: string; type: string; isAvailable: boolean; imageUrl: string | null; description: string | null; originalPrice: number | null; maxDeals: number; claimedPad: number; poolTiers: { min: number; price: number }[] | null; restaurant: { id: string; name: string } }[]>([]);
   const [showMealForm, setShowMealForm] = useState(false);
   const [mealName, setMealName] = useState("");
   const [mealPrice, setMealPrice] = useState("");
@@ -167,6 +167,7 @@ export default function OpsPage() {
   const [editMealMaxDeals, setEditMealMaxDeals] = useState("20");
   const [editMealClaimedPad, setEditMealClaimedPad] = useState("0");
   const [editMealAvailable, setEditMealAvailable] = useState(true);
+  const [editMealPoolTiers, setEditMealPoolTiers] = useState("");
   const [uploadingEditMealImage, setUploadingEditMealImage] = useState(false);
 
   // Zone management
@@ -443,6 +444,7 @@ export default function OpsPage() {
     setEditMealMaxDeals(String((m as { maxDeals?: number }).maxDeals ?? 20));
     setEditMealClaimedPad(String((m as { claimedPad?: number }).claimedPad ?? 0));
     setEditMealAvailable(m.isAvailable);
+    setEditMealPoolTiers(m.poolTiers ? m.poolTiers.map((t: { min: number; price: number }) => `${t.min}:${t.price / 100}`).join(", ") : "");
   }
 
   async function saveMeal() {
@@ -461,6 +463,7 @@ export default function OpsPage() {
         maxDeals: isNaN(parseInt(editMealMaxDeals)) ? 20 : parseInt(editMealMaxDeals),
         claimedPad: parseInt(editMealClaimedPad) || 0,
         isAvailable: editMealAvailable,
+        poolTiers: editMealPoolTiers.trim() ? editMealPoolTiers.split(",").map(t => { const [min, price] = t.trim().split(":"); return { min: parseInt(min), price: Math.round(parseFloat(price) * 100) }; }).filter(t => !isNaN(t.min) && !isNaN(t.price) && t.min > 0 && t.price > 0) : null,
       }),
     });
     setEditingMealId(null);
@@ -1281,6 +1284,15 @@ export default function OpsPage() {
                             </div>
                           </>
                         )}
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Pool pricing tiers <span className="font-normal text-ink-soft">(min:price pairs, e.g. 5:1450, 10:1300, 15:1150)</span></label>
+                          <input type="text" value={editMealPoolTiers} onChange={(e) => setEditMealPoolTiers(e.target.value)} placeholder="5:1450, 10:1300, 15:1150" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                          {editMealPoolTiers.trim() && (
+                            <div className="mt-1 text-[10px] text-ink-soft">
+                              {editMealPoolTiers.split(",").map((t, i) => { const [min, price] = t.trim().split(":"); return min && price ? <span key={i} className="inline-block bg-green/10 text-green px-1.5 py-0.5 rounded mr-1">{min}+ orders → ₦{price}</span> : null; })}
+                            </div>
+                          )}
+                        </div>
                         <div>
                           <label className="block text-[12px] font-bold mb-1.5">Description <span className="font-normal text-ink-soft">(optional)</span></label>
                           <input type="text" value={editMealDesc} onChange={(e) => setEditMealDesc(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
