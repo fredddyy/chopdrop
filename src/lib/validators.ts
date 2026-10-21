@@ -43,7 +43,7 @@ export const createMealSchema = z.object({
   imageUrl: z.string().url().optional().or(z.literal("")),
   price: z.number().int().min(0),
   originalPrice: z.number().int().min(0).optional().nullable(),
-  maxDeals: z.number().int().min(1).default(20),
+  maxDeals: z.number().int().min(0).default(20),
   claimedPad: z.number().int().min(0).default(0),
   tag: z.enum(["REGULAR", "DEAL"]).default("REGULAR"),
   type: z.enum(["FIXED", "BUILD_YOUR_PLATE"]).default("FIXED"),
