@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
         endDate: body.endDate ? new Date(body.endDate) : null,
         officeOnly: body.officeOnly ?? true,
         description: body.description || null,
-        imageUrl: body.imageUrl || null,
       },
     });
 

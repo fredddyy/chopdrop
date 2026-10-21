@@ -208,6 +208,7 @@ export default function OpsPage() {
   const [promoEndDate, setPromoEndDate] = useState("");
   const [promoOfficeOnly, setPromoOfficeOnly] = useState(true);
   const [promoDescription, setPromoDescription] = useState("");
+  const [promoImageUrl, setPromoImageUrl] = useState("");
 
   const [needsLogin, setNeedsLogin] = useState(false);
   const [loginEmail, setLoginEmail] = useState("admin@chopdrop.ng");
@@ -590,6 +591,7 @@ export default function OpsPage() {
     setPromoEndDate("");
     setPromoOfficeOnly(true);
     setPromoDescription("");
+    setPromoImageUrl("");
     setEditingPromoId(null);
     setShowPromoForm(false);
   }
@@ -607,6 +609,7 @@ export default function OpsPage() {
     setPromoEndDate(p.endDate ? p.endDate.split("T")[0] : "");
     setPromoOfficeOnly(p.officeOnly);
     setPromoDescription(p.description || "");
+    setPromoImageUrl((p as { imageUrl?: string }).imageUrl || "");
     setShowPromoForm(true);
   }
 
@@ -624,6 +627,7 @@ export default function OpsPage() {
       endDate: promoEndDate || null,
       officeOnly: promoOfficeOnly,
       description: promoDescription.trim() || null,
+      imageUrl: promoImageUrl.trim() || null,
     };
 
     if (editingPromoId) {
@@ -1970,6 +1974,16 @@ export default function OpsPage() {
                 <div>
                   <label className="block text-[12px] font-bold mb-1.5">Description (optional)</label>
                   <textarea value={promoDescription} onChange={(e) => setPromoDescription(e.target.value)} placeholder="Shown to customers on the promo banner" rows={2} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30 resize-none" />
+                </div>
+                <div>
+                  <label className="block text-[12px] font-bold mb-1.5">Banner image URL <span className="font-normal text-ink-soft">(optional)</span></label>
+                  <input type="url" value={promoImageUrl} onChange={(e) => setPromoImageUrl(e.target.value)} placeholder="https://res.cloudinary.com/..." className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  {promoImageUrl && (
+                    <div className="mt-2 rounded-xl overflow-hidden border border-line h-[100px]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={promoImageUrl} alt="Banner preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <button type="button" onClick={savePromo} className="flex-1 bg-coral text-white font-bold py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors">
