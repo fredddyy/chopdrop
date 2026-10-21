@@ -211,7 +211,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
       {/* ── Desktop two-column layout ── */}
       <div className="lg:flex lg:gap-8 lg:px-5 lg:pt-5">
-      <div className="flex-1 min-w-0 lg:bg-white lg:rounded-2xl lg:border lg:border-black/[0.06] lg:overflow-hidden lg:pb-6">
+      <div className="flex-1 min-w-0 lg:bg-white lg:rounded-2xl lg:border lg:border-black/[0.06] lg:overflow-hidden lg:pb-6 lg:px-2">
 
       {/* ── Sticky bar ── */}
       {showStickyBar && slot && !slot.expired && (
@@ -271,7 +271,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
       {/* ── FIX #1: Tabs — solid dark active, no borders ── */}
       {slots.length > 1 && (
-        <div className="flex mx-5 mt-3 gap-2">
+        <div className="flex mx-5 mt-3 gap-2 lg:max-w-[400px]">
           {slots.map((s) => {
             const isActive = s.id === activeSlot;
             return (
@@ -304,7 +304,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         return (
           <>
             {/* ── Countdown — light card, not dark ── */}
-            <div className="mx-5 mt-3 bg-white rounded-2xl border border-[#f0efeb] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-3">
+            <div className="mx-5 mt-3 bg-white rounded-2xl border border-[#f0efeb] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-3 lg:max-w-[480px]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-[#0f4030] flex items-center justify-center flex-shrink-0">
@@ -567,9 +567,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
       {/* ── Content ── */}
       {allExpired ? (
-        <div className="px-5 py-4">
+        <div className="px-5 py-4 lg:px-6">
           {/* ── Premium closed banner with gradient + reminder ── */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4030] to-[#0a2e20] p-4 mb-3">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4030] to-[#0a2e20] p-4 mb-3 lg:max-w-[520px]">
             <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-[#f5c565]/10" />
             <div className="absolute -right-2 -bottom-8 w-20 h-20 rounded-full bg-[#f05f4b]/10" />
             <div className="relative flex items-center gap-3.5">
@@ -587,7 +587,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           </div>
 
           {/* ── Reminder button ── */}
-          <div className="mb-5">
+          <div className="mb-5 lg:max-w-[520px]">
             {reminderSet ? (
               <div className="flex items-center justify-center gap-2 bg-[#f5c565]/10 border border-[#f5c565]/20 rounded-xl px-4 py-2.5" style={{ animation: "reminderConfirm 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}>
                 <div className="w-5 h-5 rounded-full bg-[#f5c565] flex items-center justify-center flex-shrink-0">
@@ -916,8 +916,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         <>
           {/* ── FIX #4 & #5: Drop combos on tinted bg, narrower cards ── */}
           {slot.items.some((i) => i.tag === "DEAL") && (
-            <section className="mt-5 bg-[#faf9f7] py-5">
-              <div className="px-5 flex items-center gap-2 mb-3">
+            <section className="mt-5 bg-[#faf9f7] lg:bg-transparent py-5">
+              <div className="px-5 lg:px-6 flex items-center gap-2 mb-3">
                 <h2 className="font-display font-bold text-[16px] text-[#1a1a1a] tracking-[-0.02em]">{getSlotShortName(slot.label)} drop combos</h2>
               </div>
               {/* FIX #4: 220px cards so 1.4 visible */}
@@ -1005,7 +1005,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           <div className="mx-5 mt-5 h-px bg-black/[0.06]" />
 
           {/* Restaurants */}
-          <section className="mt-5 px-5 pb-4">
+          <section className="mt-5 px-5 lg:px-6 pb-4">
             <div className="flex justify-between items-baseline mb-3">
               <h2 className="font-display font-bold text-[16px] text-[#1a1a1a] tracking-[-0.02em]">
                 Pick your {getSlotShortName(slot.label).toLowerCase()}
