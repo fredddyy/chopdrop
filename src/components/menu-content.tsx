@@ -166,7 +166,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   }
 
   return (
-    <main className="flex-1 max-w-[480px] lg:max-w-[1120px] mx-auto w-full pb-24 lg:pb-8 bg-white lg:bg-transparent">
+    <main className="flex-1 max-w-[480px] lg:max-w-[1120px] mx-auto w-full pb-24 lg:pb-8 bg-white lg:bg-[#f8f8f6]">
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-black/[0.04]">
         <div className="flex items-center justify-between px-5 py-3 lg:max-w-[1120px] lg:mx-auto">
@@ -692,38 +692,57 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     </div>
 
                     {/* Menu items with pre-order buttons */}
-                    <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
+                    <div className="space-y-2 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0">
                       {rData.items.map((item) => {
                         const cartQty = cart.items.find((i) => i.dailyMenuId === item.id)?.quantity || 0;
                         const isInCart = cartQty > 0;
                         return (
                           <div
                             key={item.id}
-                            className={`flex items-center gap-3.5 bg-white rounded-2xl p-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border transition-all duration-200 ${
+                            className={`flex items-center gap-3.5 lg:flex-col lg:items-stretch lg:gap-0 bg-white rounded-2xl p-3 lg:p-0 lg:overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)] border transition-all duration-200 hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] ${
                               isInCart
-                                ? "border-l-[3px] border-l-[#f05f4b] border-t-[#f05f4b]/15 border-r-[#f05f4b]/15 border-b-[#f05f4b]/15 shadow-[0_1px_6px_rgba(240,95,75,0.08)]"
+                                ? "border-l-[3px] lg:border-l-0 border-l-[#f05f4b] border-t-[#f05f4b]/15 lg:border-t-[2px] lg:border-t-[#f05f4b] border-r-[#f05f4b]/15 border-b-[#f05f4b]/15 shadow-[0_1px_6px_rgba(240,95,75,0.08)]"
                                 : "border-[#f0efeb]/60"
                             }`}
                           >
-                            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0">
+                            <div className="w-20 h-20 lg:w-full lg:h-[140px] rounded-2xl lg:rounded-none overflow-hidden bg-gradient-to-br from-[#f5f5f3] to-[#eceae4] flex-shrink-0 relative">
                               {item.imageUrl ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-[32px]">🍽️</div>
                               )}
+                              {/* Desktop add button on image */}
+                              <div className="hidden lg:block absolute bottom-2 right-2">
+                                {isInCart ? (
+                                  <div className="flex items-center bg-[#f05f4b] rounded-full shadow-lg">
+                                    <button type="button" onClick={() => cart.changeQuantity(item.id, -1)} className="w-7 h-7 flex items-center justify-center text-white active:scale-90 transition-transform">
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                    </button>
+                                    <span className="text-white text-[12px] font-bold min-w-[16px] text-center">{cartQty}</span>
+                                    <button type="button" onClick={() => handlePreorderAdd(item)} className="w-7 h-7 flex items-center justify-center text-white active:scale-90 transition-transform">
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button type="button" onClick={() => handlePreorderAdd(item)} className="w-8 h-8 rounded-full bg-white text-[#1a1a1a] flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)] hover:bg-[#f05f4b] hover:text-white active:scale-90 transition-all ring-1 ring-black/[0.08]">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 lg:p-3">
                               <div className="text-[14px] font-semibold text-[#1a1a1a] leading-tight">{item.name}</div>
                               {item.description && <div className="text-[11px] text-[#9ca3af] mt-0.5 truncate">{item.description}</div>}
-                              <div className="flex items-center gap-1.5 mt-0.5">
+                              <div className="flex items-center gap-1.5 mt-1">
                                 <span className="text-[14px] font-bold text-[#0f4030] tracking-[-0.02em]">{formatPrice(item.price)}</span>
                                 {item.originalPrice && item.originalPrice > item.price && (
                                   <span className="text-[11px] text-[#d1d5db] line-through">{formatPrice(item.originalPrice)}</span>
                                 )}
                               </div>
                             </div>
-                            <div className="flex-shrink-0">
+                            {/* Mobile add button */}
+                            <div className="flex-shrink-0 lg:hidden">
                               {isInCart ? (
                                 <div className="flex items-center bg-[#f05f4b] rounded-full shadow-[0_2px_8px_rgba(240,95,75,0.3)]">
                                   <button

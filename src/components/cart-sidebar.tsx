@@ -52,15 +52,29 @@ export function CartSidebar() {
                 <h4 className="text-[12px] font-semibold text-[#1a1a1a] leading-tight truncate">{item.name}</h4>
                 <p className="text-[10px] text-[#9ca3af]">{item.restaurantName}</p>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex flex-col items-end gap-1 flex-shrink-0">
                 <span className="font-display font-bold text-[13px] text-[#1a1a1a]">{formatNaira(item.price * item.quantity)}</span>
-                <button
-                  type="button"
-                  onClick={() => cart.removeItem(item.dailyMenuId)}
-                  className="w-5 h-5 rounded-full bg-[#f5f5f3] hover:bg-[#fee2e2] flex items-center justify-center transition-colors group"
-                >
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="text-[#9ca3af] group-hover:text-[#f05f4b]"><path d="M18 6 6 18M6 6l12 12" /></svg>
-                </button>
+                <div className="flex items-center gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => cart.changeQuantity(item.dailyMenuId, -1)}
+                    className="w-6 h-6 rounded-md bg-[#f5f5f3] hover:bg-[#fee2e2] flex items-center justify-center transition-colors group"
+                  >
+                    {item.quantity === 1 ? (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-[#9ca3af] group-hover:text-[#f05f4b]"><path d="M3 6h18M8 6V4h8v2M5 6v14h14V6" /><path d="M10 11v6M14 11v6" /></svg>
+                    ) : (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-[#6b7280]"><path d="M5 12h14" /></svg>
+                    )}
+                  </button>
+                  <span className="text-[11px] font-bold text-[#1a1a1a] min-w-[18px] text-center">{item.quantity}</span>
+                  <button
+                    type="button"
+                    onClick={() => cart.addItem({ ...item })}
+                    className="w-6 h-6 rounded-md bg-[#f5f5f3] hover:bg-[#e8f5e9] flex items-center justify-center transition-colors"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-[#6b7280]"><path d="M12 5v14M5 12h14" /></svg>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
