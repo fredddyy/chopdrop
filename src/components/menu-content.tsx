@@ -288,16 +288,25 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           <>
             <div className="mx-5 mt-3 bg-gradient-to-br from-[#0f4030] via-[#0d3528] to-[#0a2e20] text-white rounded-2xl px-4 py-3.5 relative overflow-hidden">
               <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/[0.03] rounded-full" />
-              <div className="relative z-10 flex items-center justify-between">
-                <div>
-                  <h2 className="font-display font-bold text-[16px] leading-none tracking-[-0.02em]">
-                    {getSlotShortName(slot.label)} Drop
-                  </h2>
-                  <p className="text-[10px] text-white/40 mt-1">
-                    Cooked fresh, arrives {getSlotDropTime(slot.label) || slot.startTime} · Prepaid
-                  </p>
+              <div className="relative z-10">
+                {/* Clear two-line explanation */}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-lg bg-[#f5c565]/20 flex items-center justify-center flex-shrink-0">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5c565" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  </div>
+                  <div>
+                    <span className="text-[12px] font-bold text-white">Order before cutoff</span>
+                    <span className="text-[10px] text-white/50 ml-1.5">&#8226; Food arrives {getSlotDropTime(slot.label) || `by ${slot.startTime}`}</span>
+                  </div>
                 </div>
-                <CountdownTimer cutoffTime={slot.cutoffTime} compact />
+                {/* Countdown with clear label */}
+                <div className="flex items-center justify-between bg-white/[0.08] rounded-xl px-3 py-2">
+                  <div>
+                    <div className="text-[11px] font-semibold text-[#f5c565]">Time left to order</div>
+                    <div className="text-[9px] text-white/40 mt-0.5">Pay now &middot; delivered to your desk</div>
+                  </div>
+                  <CountdownTimer cutoffTime={slot.cutoffTime} compact />
+                </div>
               </div>
             </div>
             {/* FIX #3: Social proof as separate pill */}
