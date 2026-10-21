@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
+  try {
   const now = new Date();
 
   // Find the active promo that is within its date range
@@ -80,4 +81,8 @@ export async function GET(request: NextRequest) {
       },
     },
   });
+  } catch (e) {
+    // Table or column might not exist yet — return no promo
+    return NextResponse.json({ success: true, data: null });
+  }
 }
