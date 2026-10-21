@@ -72,6 +72,7 @@ export async function GET(request: NextRequest) {
       minOrders: promo.minOrders,
       cutoffTime: promo.cutoffTime,
       description: promo.description,
+      imageUrl: promo.imageUrl,
       officeOnly: promo.officeOnly,
       progress: {
         officeOrderCount,

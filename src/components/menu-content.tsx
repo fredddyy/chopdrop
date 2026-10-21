@@ -58,6 +58,7 @@ interface ActivePromo {
   minOrders: number;
   cutoffTime: string | null;
   description: string | null;
+  imageUrl: string | null;
   officeOnly: boolean;
   progress: {
     officeOrderCount: number;
@@ -340,29 +341,39 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           const remaining = Math.max(0, target - current);
           const pct = Math.min(100, Math.round((current / target) * 100));
           const unlocked = remaining === 0;
+          const hasImage = !!p.imageUrl;
           return (
-            <div className="mx-5 mt-2.5 rounded-2xl overflow-hidden bg-[#fffbf0] border border-[#f5c565]/25 px-4 py-3 active:scale-[0.98] transition-transform">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-lg bg-[#f5c565] flex items-center justify-center flex-shrink-0">
-                  <span className="text-[14px]">&#x1F3AF;</span>
+            <div
+              className="mx-5 mt-2.5 rounded-2xl overflow-hidden px-4 py-3.5 active:scale-[0.98] transition-transform relative"
+              style={hasImage
+                ? { backgroundImage: `url(${p.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                : { backgroundColor: "#fffbf0", border: "1px solid rgba(245,197,101,0.25)" }
+              }
+            >
+              {hasImage && <div className="absolute inset-0 bg-black/40" />}
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${hasImage ? "bg-white/20" : "bg-[#f5c565]"}`}>
+                    <span className="text-[14px]">&#x1F3AF;</span>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-[0.06em] ${hasImage ? "text-white/80" : "text-[#92702a]"}`}>Office Group Deal</span>
                 </div>
-                <span className="text-[10px] font-bold text-[#92702a] uppercase tracking-[0.06em]">Office Group Deal</span>
-              </div>
-              {unlocked ? (
-                <p className="text-[13px] font-bold text-[#1a1a1a] leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
-                  You unlocked <span className="text-[#f05f4b]">{reward} {rewardLabel}</span>!
-                </p>
-              ) : (
-                <p className="text-[13px] font-bold text-[#1a1a1a] leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
-                  <span className="text-[#f05f4b]">{current}/{target}</span> orders &mdash; {remaining} more for <span className="text-[#0f4030]">{reward} {rewardLabel}</span>
-                </p>
-              )}
-              <div className="mt-2 h-1.5 rounded-full overflow-hidden bg-[#f5c565]/20">
-                <div className="h-full rounded-full transition-all duration-700 ease-out bg-[#f05f4b]" style={{ width: `${pct}%` }} />
-              </div>
-              <div className="flex items-center justify-between mt-1.5">
-                <span className="text-[#9ca3af] text-[10px]">{current} of {target} orders</span>
-                {!unlocked && <span className="text-[#f05f4b] text-[10px] font-bold">{remaining} to go</span>}
+                {unlocked ? (
+                  <p className={`text-[13px] font-bold leading-snug ${hasImage ? "text-white" : "text-[#1a1a1a]"}`} style={{ fontFamily: "Manrope, sans-serif" }}>
+                    You unlocked <span className={hasImage ? "text-[#f5c565]" : "text-[#f05f4b]"}>{reward} {rewardLabel}</span>!
+                  </p>
+                ) : (
+                  <p className={`text-[13px] font-bold leading-snug ${hasImage ? "text-white" : "text-[#1a1a1a]"}`} style={{ fontFamily: "Manrope, sans-serif" }}>
+                    <span className="text-[#f05f4b]">{current}/{target}</span> orders &mdash; {remaining} more for <span className={hasImage ? "text-[#f5c565]" : "text-[#0f4030]"}>{reward} {rewardLabel}</span>
+                  </p>
+                )}
+                <div className={`mt-2.5 h-2 rounded-full overflow-hidden ${hasImage ? "bg-white/20" : "bg-[#f5c565]/20"}`}>
+                  <div className="h-full rounded-full transition-all duration-700 ease-out bg-[#f05f4b]" style={{ width: `${pct}%` }} />
+                </div>
+                <div className="flex items-center justify-between mt-1.5">
+                  <span className={`text-[10px] ${hasImage ? "text-white/50" : "text-[#9ca3af]"}`}>{current} of {target} orders</span>
+                  {!unlocked && <span className={`text-[10px] font-bold ${hasImage ? "text-[#f5c565]" : "text-[#f05f4b]"}`}>{remaining} to go</span>}
+                </div>
               </div>
             </div>
           );

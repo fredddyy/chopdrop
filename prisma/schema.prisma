@@ -254,6 +254,7 @@ model Promo {
   endDate       DateTime?
   officeOnly    Boolean   @default(true) // only applies to office drops
   description   String?
+  imageUrl      String?   // banner background image URL (Cloudinary)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
