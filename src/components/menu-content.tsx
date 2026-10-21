@@ -399,57 +399,93 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
         if (p.type === "EARLY_BIRD") {
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
-              <div className="relative px-4 py-3.5">
-                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
-                <div className="relative z-10 flex items-center gap-3">
-                  <span className="text-[22px]">&#x2615;</span>
-                  <div>
-                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
-                      Order before <span style={{ color: "#F5C565" }}>{p.cutoffTime || "8:00 AM"}</span> and save <span style={{ color: "#F05F4B" }}>{reward}</span>!
-                    </p>
-                    {p.description && <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description}</p>}
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              {p.imageUrl ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.imageUrl} alt={p.name} className="w-full object-cover" style={{ maxHeight: 180 }} />
+                  <div className="px-4 py-2.5" style={{ background: "#1a1a1a" }}>
+                    <span className="text-[11px] font-semibold text-white/90" style={{ fontFamily: "DM Sans, sans-serif" }}>
+                      Order before <span className="text-[#f5c565] font-bold">{p.cutoffTime || "8:00 AM"}</span> and save <span className="text-[#f05f4b] font-bold">{reward}</span>
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="relative px-4 py-3.5">
+                  <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                  <div className="relative z-10 flex items-center gap-3">
+                    <span className="text-[22px]">&#x2615;</span>
+                    <div>
+                      <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                        Order before <span style={{ color: "#F5C565" }}>{p.cutoffTime || "8:00 AM"}</span> and save <span style={{ color: "#F05F4B" }}>{reward}</span>!
+                      </p>
+                      {p.description && <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description}</p>}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         }
 
         if (p.type === "FIRST_ORDER") {
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
-              <div className="relative px-4 py-3.5">
-                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
-                <div className="relative z-10 flex items-center gap-3">
-                  <span className="text-[22px]">&#x1F389;</span>
-                  <div>
-                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
-                      First order? Get <span style={{ color: "#F5C565" }}>{p.rewardType === "FREE_DELIVERY" ? "free delivery" : reward + " off"}</span>!
-                    </p>
-                    <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description || "Welcome to ChopDrop"}</p>
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              {p.imageUrl ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.imageUrl} alt={p.name} className="w-full object-cover" style={{ maxHeight: 180 }} />
+                  <div className="px-4 py-2.5" style={{ background: "#1a1a1a" }}>
+                    <span className="text-[11px] font-semibold text-white/90" style={{ fontFamily: "DM Sans, sans-serif" }}>
+                      {p.rewardType === "FREE_DELIVERY" ? "Free delivery on your first order!" : <>Get <span className="text-[#f5c565] font-bold">{reward} off</span> your first order</>}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="relative px-4 py-3.5">
+                  <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                  <div className="relative z-10 flex items-center gap-3">
+                    <span className="text-[22px]">&#x1F389;</span>
+                    <div>
+                      <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                        First order? Get <span style={{ color: "#F5C565" }}>{p.rewardType === "FREE_DELIVERY" ? "free delivery" : reward + " off"}</span>!
+                      </p>
+                      <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description || "Welcome to ChopDrop"}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         }
 
         if (p.type === "REFER") {
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
-              <div className="relative px-4 py-3.5">
-                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
-                <div className="relative z-10 flex items-center gap-3">
-                  <span className="text-[22px]">&#x1F91D;</span>
-                  <div>
-                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
-                      Share your office code &mdash; both get <span style={{ color: "#F5C565" }}>{reward} off</span>!
-                    </p>
-                    <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description || "Invite colleagues and save together"}</p>
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              {p.imageUrl ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.imageUrl} alt={p.name} className="w-full object-cover" style={{ maxHeight: 180 }} />
+                  <div className="px-4 py-2.5" style={{ background: "#1a1a1a" }}>
+                    <span className="text-[11px] font-semibold text-white/90" style={{ fontFamily: "DM Sans, sans-serif" }}>
+                      Share your office code &mdash; both get <span className="text-[#f5c565] font-bold">{reward} off</span>
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="relative px-4 py-3.5">
+                  <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                  <div className="relative z-10 flex items-center gap-3">
+                    <span className="text-[22px]">&#x1F91D;</span>
+                    <div>
+                      <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                        Share your office code &mdash; both get <span style={{ color: "#F5C565" }}>{reward} off</span>!
+                      </p>
+                      <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description || "Invite colleagues and save together"}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         }
@@ -458,32 +494,54 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           const weekOrders = p.progress.weeklyOrderCount;
           const target = p.minOrders;
           const remaining = Math.max(0, target - weekOrders);
-          const pct = Math.min(100, Math.round((weekOrders / target) * 100));
+          const dots = Array.from({ length: target }, (_, i) => i < weekOrders);
           return (
-            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
-              <div className="relative px-4 py-3.5">
-                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
-                <div className="absolute -left-6 -bottom-6 w-20 h-20 rounded-full bg-white/[0.03]" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[16px]">&#x1F525;</span>
-                    <span className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.08em]">Weekly Loyalty</span>
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ boxShadow: p.imageUrl ? "0 2px 12px rgba(0,0,0,0.08)" : undefined, background: p.imageUrl ? undefined : "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              {p.imageUrl ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.imageUrl} alt={p.name} className="w-full object-cover" style={{ maxHeight: 180 }} />
+                  <div className="px-4 py-3" style={{ background: "#1a1a1a" }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-semibold text-white/90" style={{ fontFamily: "DM Sans, sans-serif" }}>
+                        {remaining === 0 ? "Reward unlocked! Order to claim." : <>{remaining} more to unlock <span className="text-[#f5c565] font-bold">{reward} off</span></>}
+                      </span>
+                      <span className="text-[10px] font-bold text-white/40">{weekOrders}/{target}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {dots.map((filled, i) => (
+                        <div key={i} className="h-[5px] rounded-full flex-1 transition-all duration-500" style={{ background: filled ? (remaining === 0 ? "#0f4030" : "#f05f4b") : "rgba(255,255,255,0.12)" }} />
+                      ))}
+                    </div>
                   </div>
-                  <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
-                    {remaining === 0
-                      ? <>You earned <span style={{ color: "#F5C565" }}>{reward} off</span> your next order!</>
-                      : <><span style={{ color: "#F05F4B" }}>{weekOrders}</span> orders this week = <span style={{ color: "#F5C565" }}>{reward} off</span> next order!</>
-                    }
-                  </p>
-                  <div className="mt-2.5 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.15)" }}>
-                    <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, backgroundColor: "#F05F4B" }} />
-                  </div>
-                  <div className="flex items-center justify-between mt-1.5">
-                    <span className="text-white/40 text-[10px]" style={{ fontFamily: "DM Sans, sans-serif" }}>{weekOrders} of {target} orders</span>
-                    {remaining > 0 && <span className="text-[#F5C565] text-[10px] font-bold">{remaining} to go</span>}
+                </>
+              ) : (
+                <div className="relative px-4 py-3.5">
+                  <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                  <div className="absolute -left-6 -bottom-6 w-20 h-20 rounded-full bg-white/[0.03]" />
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[16px]">&#x1F525;</span>
+                      <span className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.08em]">Weekly Loyalty</span>
+                    </div>
+                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                      {remaining === 0
+                        ? <>You earned <span style={{ color: "#F5C565" }}>{reward} off</span> your next order!</>
+                        : <><span style={{ color: "#F05F4B" }}>{weekOrders}</span> orders this week = <span style={{ color: "#F5C565" }}>{reward} off</span> next order!</>
+                      }
+                    </p>
+                    <div className="mt-2.5 flex items-center gap-1.5">
+                      {dots.map((filled, i) => (
+                        <div key={i} className="h-[5px] rounded-full flex-1 transition-all duration-500" style={{ background: filled ? "#f05f4b" : "rgba(255,255,255,0.15)" }} />
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between mt-1.5">
+                      <span className="text-white/40 text-[10px]" style={{ fontFamily: "DM Sans, sans-serif" }}>{weekOrders} of {target} orders</span>
+                      {remaining > 0 && <span className="text-[#F5C565] text-[10px] font-bold">{remaining} to go</span>}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         }
