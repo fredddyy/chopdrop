@@ -21,6 +21,7 @@ export async function PUT(
   if (body.endDate !== undefined) data.endDate = body.endDate ? new Date(body.endDate) : null;
   if (body.officeOnly !== undefined) data.officeOnly = body.officeOnly;
   if (body.description !== undefined) data.description = body.description || null;
+  if (body.imageUrl !== undefined) data.imageUrl = body.imageUrl || null;
 
   const promo = await prisma.promo.update({
     where: { id },
