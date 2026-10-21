@@ -26,7 +26,7 @@ interface RestaurantReadiness {
   percent: number;
 }
 
-type OpsTab = "overview" | "restaurants" | "offices" | "meals" | "menu" | "items";
+type OpsTab = "overview" | "restaurants" | "offices" | "meals" | "menu" | "items" | "promos";
 
 interface RestaurantData {
   id: string;
@@ -178,6 +178,37 @@ export default function OpsPage() {
   const [newZoneAreas, setNewZoneAreas] = useState("");
   const [offZoneId, setOffZoneId] = useState("");
 
+  // Promo management
+  interface PromoData {
+    id: string;
+    name: string;
+    type: string;
+    isActive: boolean;
+    minOrders: number;
+    rewardAmount: number;
+    rewardType: string;
+    cutoffTime: string | null;
+    maxUses: number;
+    startDate: string | null;
+    endDate: string | null;
+    officeOnly: boolean;
+    description: string | null;
+  }
+  const [promos, setPromos] = useState<PromoData[]>([]);
+  const [showPromoForm, setShowPromoForm] = useState(false);
+  const [editingPromoId, setEditingPromoId] = useState<string | null>(null);
+  const [promoName, setPromoName] = useState("");
+  const [promoType, setPromoType] = useState("GROUP_CASHBACK");
+  const [promoRewardAmount, setPromoRewardAmount] = useState("");
+  const [promoRewardType, setPromoRewardType] = useState("CASHBACK");
+  const [promoMinOrders, setPromoMinOrders] = useState("5");
+  const [promoCutoffTime, setPromoCutoffTime] = useState("");
+  const [promoMaxUses, setPromoMaxUses] = useState("0");
+  const [promoStartDate, setPromoStartDate] = useState("");
+  const [promoEndDate, setPromoEndDate] = useState("");
+  const [promoOfficeOnly, setPromoOfficeOnly] = useState(true);
+  const [promoDescription, setPromoDescription] = useState("");
+
   const [needsLogin, setNeedsLogin] = useState(false);
   const [loginEmail, setLoginEmail] = useState("admin@chopdrop.ng");
   const [loginPassword, setLoginPassword] = useState("");
@@ -213,7 +244,8 @@ export default function OpsPage() {
         fetch("/api/admin/daily-menu?date=" + new Date().toISOString().split("T")[0]).then((r) => r.json()),
         fetch("/api/admin/time-slots").then((r) => r.json()),
         fetch("/api/admin/zones").then((r) => r.json()),
-      ]).then(([ordersData, restD, offData, mealsData, dmData, slotsData, zoneData]) => {
+        fetch("/api/admin/promos").then((r) => r.json()),
+      ]).then(([ordersData, restD, offData, mealsData, dmData, slotsData, zoneData, promoData]) => {
         if (ordersData.success) setOrders(ordersData.data.filter((o: OrderData) => o.paymentStatus === "SUCCESS"));
         if (restD.success) setRestaurants(restD.data);
         if (offData.success) setOffices(offData.data);
@@ -223,6 +255,7 @@ export default function OpsPage() {
           setTimeSlots(slotsData.data);
           if (slotsData.data.length > 0 && !menuSlotId) setMenuSlotId(slotsData.data[0].id);
         }
+        if (promoData?.success) setPromos(promoData.data);
         if (zoneData.success) setZones(zoneData.data);
         setLoading(false);
       });
@@ -544,6 +577,87 @@ export default function OpsPage() {
     loadMenuItems();
   }
 
+  // Promo functions
+  function resetPromoForm() {
+    setPromoName("");
+    setPromoType("GROUP_CASHBACK");
+    setPromoRewardAmount("");
+    setPromoRewardType("CASHBACK");
+    setPromoMinOrders("5");
+    setPromoCutoffTime("");
+    setPromoMaxUses("0");
+    setPromoStartDate("");
+    setPromoEndDate("");
+    setPromoOfficeOnly(true);
+    setPromoDescription("");
+    setEditingPromoId(null);
+    setShowPromoForm(false);
+  }
+
+  function startEditPromo(p: PromoData) {
+    setEditingPromoId(p.id);
+    setPromoName(p.name);
+    setPromoType(p.type);
+    setPromoRewardAmount(String(p.rewardAmount / 100));
+    setPromoRewardType(p.rewardType);
+    setPromoMinOrders(String(p.minOrders));
+    setPromoCutoffTime(p.cutoffTime || "");
+    setPromoMaxUses(String(p.maxUses));
+    setPromoStartDate(p.startDate ? p.startDate.split("T")[0] : "");
+    setPromoEndDate(p.endDate ? p.endDate.split("T")[0] : "");
+    setPromoOfficeOnly(p.officeOnly);
+    setPromoDescription(p.description || "");
+    setShowPromoForm(true);
+  }
+
+  async function savePromo() {
+    if (!promoName.trim()) return;
+    const payload = {
+      name: promoName.trim(),
+      type: promoType,
+      rewardAmount: Math.round(parseFloat(promoRewardAmount || "0") * 100),
+      rewardType: promoRewardType,
+      minOrders: parseInt(promoMinOrders) || 5,
+      cutoffTime: promoCutoffTime || null,
+      maxUses: parseInt(promoMaxUses) || 0,
+      startDate: promoStartDate || null,
+      endDate: promoEndDate || null,
+      officeOnly: promoOfficeOnly,
+      description: promoDescription.trim() || null,
+    };
+
+    if (editingPromoId) {
+      await fetch(`/api/admin/promos/${editingPromoId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } else {
+      await fetch("/api/admin/promos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }
+    resetPromoForm();
+    loadAll();
+  }
+
+  async function togglePromo(id: string, currentActive: boolean) {
+    await fetch(`/api/admin/promos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive: !currentActive }),
+    });
+    loadAll();
+  }
+
+  async function deletePromo(id: string) {
+    if (!confirm("Delete this promo?")) return;
+    await fetch(`/api/admin/promos/${id}`, { method: "DELETE" });
+    loadAll();
+  }
+
   const totalRevenue = orders.reduce((s, o) => s + o.totalAmount, 0);
   const totalBoxes = orders.reduce((s, o) => s + o.quantity, 0);
 
@@ -636,6 +750,7 @@ export default function OpsPage() {
             ["restaurants", "Restaurants", "M4 3v7a3 3 0 0 0 6 0V3M7 3v18M16 3v18M16 3c4 2 4 8 0 10"],
             ["offices", "Offices", "M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3"],
             ["items", "Menu Items", "M4 6h16M4 10h16M4 14h8M4 18h8"],
+            ["promos", "Promos", "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"],
           ] as const).map(([id, label, path]) => (
             <button
               key={id}
@@ -661,7 +776,7 @@ export default function OpsPage() {
 
         {/* Mobile tab switcher */}
         <div className="flex gap-2 mb-5 md:hidden overflow-x-auto hide-scrollbar">
-          {(["overview", "meals", "menu", "restaurants", "offices", "items"] as const).map((t) => (
+          {(["overview", "meals", "menu", "restaurants", "offices", "items", "promos"] as const).map((t) => (
             <button key={t} type="button" onClick={() => setTab(t)} className={`px-4 py-2 rounded-full text-xs font-bold capitalize flex-shrink-0 transition-colors ${tab === t ? "bg-ink text-white" : "bg-paper border border-line text-ink-soft"}`}>
               {t}
             </button>
@@ -1775,6 +1890,137 @@ export default function OpsPage() {
                 <div className="text-center py-12 text-ink-soft text-sm">Select a restaurant to manage its menu items</div>
               )}
             </div>
+          </>
+        )}
+
+        {/* Promos Tab */}
+        {tab === "promos" && (
+          <>
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.13em]">Promotions</div>
+                <h2 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-1">Promos</h2>
+                <p className="text-ink-soft text-[13px] mt-1">Manage discounts and promotions for ChopDrop orders.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => { resetPromoForm(); setShowPromoForm(true); }}
+                className="bg-coral text-white font-bold text-[12px] px-4 py-2.5 rounded-[10px] hover:bg-[#d95038] transition-colors"
+              >
+                + Create promo
+              </button>
+            </div>
+
+            {/* Create / Edit form */}
+            {showPromoForm && (
+              <div className="bg-paper border border-line rounded-[16px] p-5 mb-6 space-y-4">
+                <div className="font-display font-bold text-[17px]">{editingPromoId ? "Edit promo" : "New promo"}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">Name</label>
+                    <input type="text" value={promoName} onChange={(e) => setPromoName(e.target.value)} placeholder="e.g. Office Group Cashback" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">Type</label>
+                    <select value={promoType} onChange={(e) => setPromoType(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
+                      <option value="GROUP_CASHBACK">Group Cashback</option>
+                      <option value="REFER">Refer a Friend</option>
+                      <option value="EARLY_BIRD">Early Bird</option>
+                      <option value="WEEKLY_LOYALTY">Weekly Loyalty</option>
+                      <option value="FIRST_ORDER">First Order</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">Reward amount (in Naira)</label>
+                    <input type="number" value={promoRewardAmount} onChange={(e) => setPromoRewardAmount(e.target.value)} placeholder="e.g. 200" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">Reward type</label>
+                    <select value={promoRewardType} onChange={(e) => setPromoRewardType(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30">
+                      <option value="CASHBACK">Cashback</option>
+                      <option value="DISCOUNT">Discount</option>
+                      <option value="FREE_DELIVERY">Free Delivery</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">Min orders (for group)</label>
+                    <input type="number" value={promoMinOrders} onChange={(e) => setPromoMinOrders(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">Cutoff time (for early bird)</label>
+                    <input type="time" value={promoCutoffTime} onChange={(e) => setPromoCutoffTime(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">Max uses (0 = unlimited)</label>
+                    <input type="number" value={promoMaxUses} onChange={(e) => setPromoMaxUses(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">Start date</label>
+                    <input type="date" value={promoStartDate} onChange={(e) => setPromoStartDate(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-bold mb-1.5">End date</label>
+                    <input type="date" value={promoEndDate} onChange={(e) => setPromoEndDate(e.target.value)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                  </div>
+                  <div className="flex items-center gap-2 pt-6">
+                    <input type="checkbox" id="promoOfficeOnly" checked={promoOfficeOnly} onChange={(e) => setPromoOfficeOnly(e.target.checked)} className="w-4 h-4 rounded border-line" />
+                    <label htmlFor="promoOfficeOnly" className="text-[12px] font-bold">Office drops only</label>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[12px] font-bold mb-1.5">Description (optional)</label>
+                  <textarea value={promoDescription} onChange={(e) => setPromoDescription(e.target.value)} placeholder="Shown to customers on the promo banner" rows={2} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30 resize-none" />
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" onClick={savePromo} className="flex-1 bg-coral text-white font-bold py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors">
+                    {editingPromoId ? "Save changes" : "Create promo"}
+                  </button>
+                  <button type="button" onClick={resetPromoForm} className="flex-1 bg-cream text-ink-soft font-bold py-2.5 rounded-[10px] text-sm hover:bg-line transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Promos list */}
+            {promos.length === 0 ? (
+              <div className="text-center py-12 text-ink-soft text-sm">No promos yet. Create one to get started.</div>
+            ) : (
+              <div className="space-y-3">
+                {promos.map((p) => (
+                  <div key={p.id} className="bg-paper border border-line rounded-[16px] p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${p.isActive ? "bg-[#22c55e] shadow-[0_0_6px_rgba(34,197,94,0.4)]" : "bg-[#d1d5db]"}`} />
+                        <div>
+                          <strong className="text-[14px] block">{p.name}</strong>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.06em] px-2 py-0.5 rounded-full bg-green-soft text-green">{p.type.replace(/_/g, " ")}</span>
+                            <span className="text-ink-soft text-[11px]">{formatNaira(p.rewardAmount)} {p.rewardType.toLowerCase()}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button type="button" onClick={() => startEditPromo(p)} className="text-[10px] font-bold text-green hover:underline">Edit</button>
+                        <button type="button" onClick={() => togglePromo(p.id, p.isActive)} className={`text-[10px] font-bold px-3 py-1 rounded-full ${p.isActive ? "bg-[#22c55e]/10 text-[#22c55e]" : "bg-cream text-ink-soft"}`}>
+                          {p.isActive ? "Active" : "Paused"}
+                        </button>
+                        <button type="button" onClick={() => deletePromo(p.id)} className="text-[10px] font-bold text-coral hover:underline">Delete</button>
+                      </div>
+                    </div>
+                    {p.description && <p className="text-ink-soft text-[11px] mt-1">{p.description}</p>}
+                    <div className="flex flex-wrap gap-3 mt-2 text-[10px] text-ink-soft">
+                      {p.type === "GROUP_CASHBACK" && <span>Min orders: {p.minOrders}</span>}
+                      {p.cutoffTime && <span>Cutoff: {p.cutoffTime}</span>}
+                      {p.maxUses > 0 && <span>Max uses: {p.maxUses}</span>}
+                      {p.startDate && <span>Starts: {new Date(p.startDate).toLocaleDateString()}</span>}
+                      {p.endDate && <span>Ends: {new Date(p.endDate).toLocaleDateString()}</span>}
+                      {p.officeOnly && <span>Office drops only</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
 

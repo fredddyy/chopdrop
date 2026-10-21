@@ -49,6 +49,26 @@ function formatPrice(kobo: number): string {
   return "₦" + (kobo / 100).toLocaleString();
 }
 
+interface ActivePromo {
+  id: string;
+  name: string;
+  type: string;
+  rewardAmount: number;
+  rewardType: string;
+  minOrders: number;
+  cutoffTime: string | null;
+  description: string | null;
+  officeOnly: boolean;
+  progress: {
+    officeOrderCount: number;
+    weeklyOrderCount: number;
+  };
+}
+
+function formatPromoReward(kobo: number): string {
+  return "\u20A6" + (kobo / 100).toLocaleString();
+}
+
 export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [activeSlot, setActiveSlot] = useState(defaultSlotId);
   const [toast, setToast] = useState("");
@@ -58,6 +78,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [bannerDismissed, setBannerDismissed] = useState(true);
   const [reminderSet, setReminderSet] = useState(false);
   const [preorderToast, setPreorderToast] = useState("");
+  const [activePromo, setActivePromo] = useState<ActivePromo | null>(null);
   const cart = useCart();
 
   useEffect(() => {
@@ -77,9 +98,28 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         if (d.success && d.data?.office) {
           if (d.data.office.name) setOfficeName(d.data.office.name);
           if (d.data.office.assistantName) setCaptainName(d.data.office.assistantName);
+          // Fetch active promo with office context
+          const officeId = d.data.office.id || "";
+          const userId = d.data.id || "";
+          fetch(`/api/promos/active?officeId=${officeId}&userId=${userId}`)
+            .then((r2) => r2.json())
+            .then((p) => { if (p.success && p.data) setActivePromo(p.data); })
+            .catch(() => {});
+        } else {
+          // Fetch active promo without office context
+          fetch("/api/promos/active")
+            .then((r2) => r2.json())
+            .then((p) => { if (p.success && p.data) setActivePromo(p.data); })
+            .catch(() => {});
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // Fetch active promo even if auth fails
+        fetch("/api/promos/active")
+          .then((r2) => r2.json())
+          .then((p) => { if (p.success && p.data) setActivePromo(p.data); })
+          .catch(() => {});
+      });
   }, []);
 
   function dismissBanner() {
@@ -285,6 +325,144 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             </div>
           </>
         );
+      })()}
+
+      {/* ── Promo Banner ── */}
+      {activePromo && (() => {
+        const p = activePromo;
+        const reward = formatPromoReward(p.rewardAmount);
+        const rewardLabel = p.rewardType === "FREE_DELIVERY" ? "free delivery" : p.rewardType.toLowerCase();
+
+        if (p.type === "GROUP_CASHBACK") {
+          const current = p.progress.officeOrderCount;
+          const target = p.minOrders;
+          const remaining = Math.max(0, target - current);
+          const pct = Math.min(100, Math.round((current / target) * 100));
+          const unlocked = remaining === 0;
+          return (
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              <div className="relative px-4 py-3.5">
+                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                <div className="absolute -left-6 -bottom-6 w-20 h-20 rounded-full bg-white/[0.03]" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[16px]">&#x1F3AF;</span>
+                    <span className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.08em]">Office Group Deal</span>
+                  </div>
+                  {unlocked ? (
+                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                      You unlocked <span style={{ color: "#F5C565" }}>{reward} {rewardLabel}</span>!
+                    </p>
+                  ) : (
+                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                      <span style={{ color: "#F05F4B" }}>{current}/{target}</span> orders from your office &mdash; {remaining} more to unlock <span style={{ color: "#F5C565" }}>{reward} {rewardLabel}</span>!
+                    </p>
+                  )}
+                  <div className="mt-2.5 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.15)" }}>
+                    <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, backgroundColor: "#F05F4B" }} />
+                  </div>
+                  <div className="flex items-center justify-between mt-1.5">
+                    <span className="text-white/40 text-[10px]" style={{ fontFamily: "DM Sans, sans-serif" }}>{current} of {target} orders</span>
+                    {!unlocked && <span className="text-[#F5C565] text-[10px] font-bold">{remaining} to go</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        if (p.type === "EARLY_BIRD") {
+          return (
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              <div className="relative px-4 py-3.5">
+                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                <div className="relative z-10 flex items-center gap-3">
+                  <span className="text-[22px]">&#x2615;</span>
+                  <div>
+                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                      Order before <span style={{ color: "#F5C565" }}>{p.cutoffTime || "8:00 AM"}</span> and save <span style={{ color: "#F05F4B" }}>{reward}</span>!
+                    </p>
+                    {p.description && <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description}</p>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        if (p.type === "FIRST_ORDER") {
+          return (
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              <div className="relative px-4 py-3.5">
+                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                <div className="relative z-10 flex items-center gap-3">
+                  <span className="text-[22px]">&#x1F389;</span>
+                  <div>
+                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                      First order? Get <span style={{ color: "#F5C565" }}>{p.rewardType === "FREE_DELIVERY" ? "free delivery" : reward + " off"}</span>!
+                    </p>
+                    <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description || "Welcome to ChopDrop"}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        if (p.type === "REFER") {
+          return (
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              <div className="relative px-4 py-3.5">
+                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                <div className="relative z-10 flex items-center gap-3">
+                  <span className="text-[22px]">&#x1F91D;</span>
+                  <div>
+                    <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                      Share your office code &mdash; both get <span style={{ color: "#F5C565" }}>{reward} off</span>!
+                    </p>
+                    <p className="text-white/50 text-[11px] mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{p.description || "Invite colleagues and save together"}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        if (p.type === "WEEKLY_LOYALTY") {
+          const weekOrders = p.progress.weeklyOrderCount;
+          const target = p.minOrders;
+          const remaining = Math.max(0, target - weekOrders);
+          const pct = Math.min(100, Math.round((weekOrders / target) * 100));
+          return (
+            <div className="mx-5 mt-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "linear-gradient(135deg, #0F4030 0%, #0d3528 100%)" }}>
+              <div className="relative px-4 py-3.5">
+                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/[0.04]" />
+                <div className="absolute -left-6 -bottom-6 w-20 h-20 rounded-full bg-white/[0.03]" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[16px]">&#x1F525;</span>
+                    <span className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.08em]">Weekly Loyalty</span>
+                  </div>
+                  <p className="text-white text-[14px] font-bold leading-snug" style={{ fontFamily: "Manrope, sans-serif" }}>
+                    {remaining === 0
+                      ? <>You earned <span style={{ color: "#F5C565" }}>{reward} off</span> your next order!</>
+                      : <><span style={{ color: "#F05F4B" }}>{weekOrders}</span> orders this week = <span style={{ color: "#F5C565" }}>{reward} off</span> next order!</>
+                    }
+                  </p>
+                  <div className="mt-2.5 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.15)" }}>
+                    <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${pct}%`, backgroundColor: "#F05F4B" }} />
+                  </div>
+                  <div className="flex items-center justify-between mt-1.5">
+                    <span className="text-white/40 text-[10px]" style={{ fontFamily: "DM Sans, sans-serif" }}>{weekOrders} of {target} orders</span>
+                    {remaining > 0 && <span className="text-[#F5C565] text-[10px] font-bold">{remaining} to go</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        return null;
       })()}
 
       {/* ── Content ── */}

@@ -239,3 +239,21 @@ enum PaymentStatus {
   SUCCESS
   FAILED
 }
+
+model Promo {
+  id            String    @id @default(cuid())
+  name          String
+  type          String    // GROUP_CASHBACK | REFER | EARLY_BIRD | WEEKLY_LOYALTY | FIRST_ORDER
+  isActive      Boolean   @default(false)
+  minOrders     Int       @default(5)    // for GROUP_CASHBACK: min orders from same office
+  rewardAmount  Int       @default(0)    // in kobo (e.g., 20000 = ₦200)
+  rewardType    String    @default("CASHBACK") // CASHBACK | DISCOUNT | FREE_DELIVERY
+  cutoffTime    String?   // for EARLY_BIRD: e.g., "08:00"
+  maxUses       Int       @default(0)    // 0 = unlimited
+  startDate     DateTime?
+  endDate       DateTime?
+  officeOnly    Boolean   @default(true) // only applies to office drops
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
