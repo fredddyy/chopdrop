@@ -201,68 +201,85 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
   return (
     <main className="flex-1 max-w-[480px] lg:max-w-[1120px] mx-auto w-full pb-24 lg:pb-8 bg-white lg:bg-[#f8f8f6]">
-      {/* ── Header ── */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-black/[0.06]">
-        {/* Mobile header */}
-        <div className="flex items-center justify-between px-5 py-3 lg:hidden">
-          <div className="flex items-center gap-3">
-            <Logo size={24} />
-            <div className="h-4 w-px bg-black/[0.08]" />
-            <div>
-              <span className="text-[10px] text-[#9ca3af] font-medium block leading-none">{getGreeting()}</span>
-              {officeName ? (
-                <span className="text-[12px] font-semibold text-[#1a1a1a] leading-tight">{officeName}</span>
-              ) : (
-                <span className="text-[11px] text-[#9ca3af] leading-tight flex items-center gap-1">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="text-[#22c55e] flex-shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
-                  Serving Ikeja, Lagos
-                </span>
+      {/* ── Header — Workspace Dashboard ── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-[#f1f5f9]">
+        <div className="px-4 pt-3 pb-2.5 lg:max-w-[1120px] lg:mx-auto">
+          {/* Row 1: Office name + Countdown + Cart */}
+          <div className="flex justify-between items-center mb-2.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[16px]">🏢</span>
+              <h1 className="text-[16px] font-[900] text-[#0f172a] tracking-tight">{officeName || "ChopDrop"}</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              {slot && !slot.expired && (
+                <div className="flex items-center gap-1.5 bg-[#fff1f2] border border-[#fecdd3] px-2.5 py-1 rounded-full">
+                  <span className="text-[10px]">⏰</span>
+                  <CountdownTimer cutoffTime={slot.cutoffTime} compact />
+                </div>
               )}
+              <Link href="/cart" className="relative w-8 h-8 rounded-full bg-[#f1f5f9] flex items-center justify-center lg:hidden">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0f172a]"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                {cart.totalItems > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] bg-[#f05f4b] text-white text-[7px] font-bold rounded-full flex items-center justify-center px-0.5">{cart.totalItems}</span>}
+              </Link>
+              {/* Desktop nav */}
+              <nav className="hidden lg:flex items-center gap-1 ml-2">
+                <Link href="/orders" className="text-[12px] font-medium text-[#64748b] hover:text-[#0f172a] px-3 py-1.5 rounded-lg hover:bg-[#f1f5f9]">Orders</Link>
+                <Link href="/account" className="text-[12px] font-medium text-[#64748b] hover:text-[#0f172a] px-3 py-1.5 rounded-lg hover:bg-[#f1f5f9]">Account</Link>
+              </nav>
             </div>
           </div>
-          <Link href="/cart" className="relative w-9 h-9 rounded-full bg-[#f5f5f3] flex items-center justify-center hover:bg-[#eeedea] transition-colors">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#1a1a1a]">
-              <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
-            </svg>
-            {cart.totalItems > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] bg-[#f05f4b] text-white text-[8px] font-bold rounded-full flex items-center justify-center px-1 shadow-[0_2px_8px_rgba(240,95,75,0.35)]">
-                {cart.totalItems}
-              </span>
-            )}
-          </Link>
-        </div>
-        {/* Desktop header */}
-        <div className="hidden lg:block">
-          <div className="max-w-[1120px] mx-auto flex items-center justify-between px-5 py-4">
-            <div className="flex items-center gap-5">
-              <Link href="/menu" className="flex items-center">
-                <Logo size={30} />
-              </Link>
-              <div className="h-6 w-px bg-black/[0.08]" />
-              <div className="flex items-center gap-2 bg-[#f5f5f3] hover:bg-[#eeedea] transition-colors rounded-xl px-4 py-2 cursor-default">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-[#22c55e] flex-shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
-                <div>
-                  <div className="text-[10px] text-[#9ca3af] font-medium leading-none">Delivering to</div>
-                  <div className="text-[13px] font-semibold text-[#1a1a1a] leading-tight">{officeName || "Ikeja, Lagos"}</div>
-                </div>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" className="ml-1"><path d="m6 9 6 6 6-6" /></svg>
+
+          {/* Row 2: Micro-segmented meal toggle */}
+          {slots.length > 1 && (
+            <div className="w-full bg-[#f1f5f9] rounded-xl p-1 flex items-center mb-3">
+              {slots.map((s) => {
+                const isActive = s.id === activeSlot;
+                const orderCount = s.expired ? 0 : s.items.reduce((sum, i) => sum + Math.max(0, (i.tag === "DEAL" ? 20 : 50) - i.remaining), 0);
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setActiveSlot(s.id)}
+                    className={`flex-1 py-2 text-[11px] font-bold flex items-center justify-center gap-1.5 rounded-lg transition-all duration-200 ${
+                      isActive ? "bg-white text-[#0f172a] shadow-sm" : "text-[#94a3b8]"
+                    } ${s.expired && !isActive ? "cursor-default" : ""}`}
+                  >
+                    <span>{getSlotIcon(s.label)}</span>
+                    <span>{getSlotShortName(s.label)}</span>
+                    {s.expired ? (
+                      <span className="bg-[#e2e8f0] text-[9px] text-[#64748b] px-1.5 py-0.5 rounded-md font-medium">Closed</span>
+                    ) : isActive && orderCount > 0 ? (
+                      <span className="bg-[#22c55e] text-[9px] text-white px-1.5 py-0.5 rounded-md font-[800] tracking-wide">{orderCount} LIVE</span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Row 3: Horizontal tier chip track */}
+          {slot && !slot.expired && slot.restaurants.length > 0 && (
+            <div>
+              <p className="text-[9px] font-[800] text-[#94a3b8] uppercase tracking-[0.12em] mb-1.5">Live tier tracking</p>
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+                {slot.restaurants.map((r) => {
+                  const rOrders = poolData.officeOrderCount; // TODO: per-vendor counts
+                  const discountPct = rOrders >= 15 ? 30 : rOrders >= 10 ? 20 : rOrders >= 5 ? 10 : 0;
+                  const chipBg = discountPct >= 20 ? "bg-[#f0fdf4] border-[#bbf7d0]" : discountPct >= 10 ? "bg-[#fffbeb] border-[#fde68a]" : "bg-[#f8fafc] border-[#e2e8f0]";
+                  const dotColor = discountPct >= 20 ? "bg-[#22c55e]" : discountPct >= 10 ? "bg-[#f59e0b]" : "bg-[#94a3b8]";
+                  const textColor = discountPct >= 20 ? "text-[#15803d]" : discountPct >= 10 ? "text-[#92400e]" : "text-[#64748b]";
+                  const badgeBg = discountPct >= 20 ? "bg-[#dcfce7]" : discountPct >= 10 ? "bg-[#fef3c7]" : "bg-[#e2e8f0]";
+                  return (
+                    <div key={r.id} className={`flex-none flex items-center gap-1.5 ${chipBg} border px-3 py-1.5 rounded-full`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
+                      <span className="text-[11px] font-bold text-[#0f172a]">{r.name.split(" ")[0]}</span>
+                      <span className={`text-[10px] font-[900] ${textColor} ${badgeBg} px-1.5 py-0.5 rounded-md`}>{discountPct}% OFF</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-            <nav className="flex items-center gap-1">
-              <Link href="/menu" className="flex items-center gap-2 text-[13px] font-semibold text-[#1a1a1a] bg-[#f05f4b]/[0.08] px-4 py-2 rounded-xl transition-colors">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f05f4b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" /></svg>
-                <span className="text-[#f05f4b]">Menu</span>
-              </Link>
-              <Link href="/orders" className="flex items-center gap-2 text-[13px] font-medium text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f5f5f3] px-4 py-2 rounded-xl transition-colors">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /></svg>
-                Orders
-              </Link>
-              <Link href="/account" className="flex items-center gap-2 text-[13px] font-medium text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f5f5f3] px-4 py-2 rounded-xl transition-colors">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
-                Account
-              </Link>
-            </nav>
-          </div>
+          )}
         </div>
       </header>
 
@@ -326,26 +343,28 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </div>
       )}
 
-      {/* ── FIX #1: Tabs — solid dark active, no borders ── */}
-      {slots.length > 1 && (
-        <div className="flex mx-5 lg:mx-6 mt-3 gap-2 lg:inline-flex">
+      {/* Slot tabs moved into header — social proof bar instead */}
+      {slot && !slot.expired && poolData.officeOrderCount > 0 && (
+        <div className="mx-5 mt-2 flex items-center gap-2 bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl px-3.5 py-2">
+          <div className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22c55e]" />
+          </div>
+          <span className="text-[11px] font-bold text-[#15803d]">{poolData.officeOrderCount} colleagues ordering today</span>
+        </div>
+      )}
+
+      {/* Legacy tab removal marker — tabs now in header */}
+      {false && slots.length > 1 && (
+        <div className="hidden">
           {slots.map((s) => {
             const isActive = s.id === activeSlot;
             return (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => setActiveSlot(s.id)}
-                className={`flex-1 lg:flex-initial flex items-center justify-center gap-1.5 py-2.5 lg:px-6 rounded-full text-[13px] font-semibold transition-all duration-200 ${
-                  isActive
-                    ? "bg-[#1a1a1a] text-white"
-                    : "bg-[#f5f5f3] text-[#9ca3af] hover:text-[#6b7280]"
-                }`}
-              >
-                <span className="text-[14px]">{getSlotIcon(s.label)}</span>
+              <button key={s.id} type="button" onClick={() => setActiveSlot(s.id)} className="hidden">
+                <span>{getSlotIcon(s.label)}</span>
                 <span>{getSlotShortName(s.label)}</span>
-                {s.expired && <span className="text-[8px] font-bold text-[#f05f4b] bg-[#f05f4b]/10 px-1.5 py-0.5 rounded-full ml-0.5">Closed</span>}
-                {!s.expired && !isActive && <span className="text-[10px] font-normal">{getSlotDropTime(s.label)}</span>}
+                {s.expired && <span>Closed</span>}
+                {!s.expired && !isActive && <span>{getSlotDropTime(s.label)}</span>}
               </button>
             );
           })}
@@ -1054,7 +1073,99 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </div>
       ) : slot && (
         <>
-          {/* ── FIX #4 & #5: Drop combos on tinted bg, narrower cards ── */}
+          {/* ── VENDOR POOL CARDS — the new world-class layout ── */}
+          <section className="px-4 lg:px-6 pt-4 pb-4">
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+              {slot.restaurants.map((r) => {
+                // Calculate per-vendor stats
+                const vendorMeals = slot.items.filter((i) => i.restaurantId === r.id);
+                const cheapestPrice = vendorMeals.length > 0 ? Math.min(...vendorMeals.map((m) => m.price)) : 0;
+                const cuisineTags = [...new Set(vendorMeals.map((m) => m.name.split(/[+&·,]/).map(p => p.trim())).flat().filter(t => t.length > 2).slice(0, 3))].join(" · ");
+                const rOrders = poolData.officeOrderCount;
+                const discountPct = rOrders >= 15 ? 30 : rOrders >= 10 ? 20 : rOrders >= 5 ? 10 : 0;
+                const nextTierMin = discountPct >= 30 ? 0 : discountPct >= 20 ? 20 : discountPct >= 10 ? 15 : 5;
+                const nextTierPct = discountPct >= 30 ? 30 : discountPct >= 20 ? 30 : discountPct >= 10 ? 20 : 10;
+                const moreNeeded = nextTierMin > 0 ? Math.max(0, nextTierMin - rOrders) : 0;
+                const progressPct = nextTierMin > 0 ? Math.min(100, (rOrders / nextTierMin) * 100) : 100;
+
+                return (
+                  <div key={r.id} className="bg-white rounded-2xl border border-[#f1f5f9] shadow-sm p-4">
+                    {/* Vendor header */}
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f1f5f9] flex-shrink-0">
+                          {r.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={r.imageUrl} alt={r.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#64748b]">
+                              {r.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="text-[15px] font-[800] text-[#0f172a] tracking-tight">{r.name}</h3>
+                          <p className="text-[10px] text-[#64748b] font-medium mt-0.5">{cuisineTags || `${r.mealCount} meals`}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 bg-[#fffbeb] px-2 py-1 rounded-lg">
+                        <span className="text-[#f59e0b] text-[10px] font-bold">⭐ 4.8</span>
+                      </div>
+                    </div>
+
+                    {/* Discount milestone banner */}
+                    {discountPct > 0 ? (
+                      <div className="w-full bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-3 my-3 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22c55e]" />
+                          </span>
+                          <p className="text-[11px] font-bold text-[#15803d]">🎉 {discountPct}% DISCOUNT UNLOCKED</p>
+                        </div>
+                        <span className="text-[10px] font-[800] text-[#15803d] bg-white px-2 py-0.5 rounded-md shadow-sm">{rOrders} Orders</span>
+                      </div>
+                    ) : (
+                      <div className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-3 my-3 flex justify-between items-center">
+                        <p className="text-[11px] font-bold text-[#64748b]">No discount yet — {moreNeeded} more to unlock {nextTierPct}% OFF</p>
+                        <span className="text-[10px] font-[800] text-[#64748b] bg-white px-2 py-0.5 rounded-md">{rOrders} Orders</span>
+                      </div>
+                    )}
+
+                    {/* Progress bar */}
+                    <div className="mb-2">
+                      <div className="w-full bg-[#f1f5f9] h-2.5 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${Math.max(progressPct, 3)}%`, background: discountPct > 0 ? "linear-gradient(90deg, #22c55e, #16a34a)" : "linear-gradient(90deg, #94a3b8, #64748b)" }} />
+                      </div>
+                      {moreNeeded > 0 && (
+                        <div className="flex justify-between items-center mt-1.5">
+                          <p className="text-[10px] font-semibold text-[#475569]">🔥 {moreNeeded} more to unlock <span className="text-[#16a34a] font-bold">{nextTierPct}% OFF</span></p>
+                          <span className="text-[9px] text-[#94a3b8] font-medium">Next: {nextTierMin} orders</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Price + CTA */}
+                    <div className="flex justify-between items-center mt-4 pt-3 border-t border-[#f8fafc]">
+                      <div>
+                        <p className="text-[9px] font-bold text-[#94a3b8] uppercase tracking-wider">Custom plates</p>
+                        <p className="text-[17px] font-[900] text-[#0f172a]">From <span className="text-[19px]">{formatPrice(cheapestPrice || r.mealCount * 10000)}</span></p>
+                      </div>
+                      <Link
+                        href={`/restaurant/${r.id}`}
+                        className="bg-[#f05f4b] hover:bg-[#dc4a37] text-white text-[11px] font-bold py-3 px-5 rounded-xl shadow-md active:scale-95 transition-all flex items-center gap-1"
+                      >
+                        <span>Build Your Plate</span>
+                        <span>→</span>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Keep combo deals below vendor cards for users who want pre-built options */}
           {slot.items.some((i) => i.tag === "DEAL") && (
             <section className="mt-5 bg-[#faf9f7] lg:bg-transparent py-5">
               <div className="px-5 lg:px-6 flex items-center gap-2 mb-3 lg:mb-4">
@@ -1152,63 +1263,6 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             </section>
           )}
 
-          {/* Divider */}
-          <div className="mx-5 lg:mx-6 mt-5 lg:mt-6 h-px bg-black/[0.06]" />
-
-          {/* Restaurants */}
-          <section className="mt-5 px-5 lg:px-6 pb-4">
-            <div className="flex justify-between items-baseline mb-3 lg:mb-4">
-              <h2 className="font-display font-bold text-[16px] lg:text-[20px] text-[#1a1a1a] tracking-[-0.02em]">
-                Pick your {getSlotShortName(slot.label).toLowerCase()}
-              </h2>
-              <span className="text-[11px] text-[#9ca3af]">
-                {slot.restaurants.length} kitchen{slot.restaurants.length !== 1 ? "s" : ""}
-              </span>
-            </div>
-
-            <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-              {slot.restaurants.map((r) => {
-                const initials = r.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-                return (
-                  <Link
-                    key={r.id}
-                    href={`/restaurant/${r.id}`}
-                    className="group block rounded-2xl overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.07),0_8px_24px_rgba(0,0,0,0.06)] transition-shadow duration-300"
-                  >
-                    {/* FIX #6: Shorter image so card is fully visible */}
-                    <div className="relative h-[150px] lg:h-[180px] overflow-hidden">
-                      {(r.imageUrl || r.previewImage) ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={(r.imageUrl || r.previewImage)!}
-                          alt={r.name}
-                          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-[#e8f5e9] to-[#f5f5f3] flex items-center justify-center">
-                          <span className="text-[#0f4030]/15 text-[48px] font-display font-extrabold">{initials}</span>
-                        </div>
-                      )}
-                      {/* Gradient overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
-                      {/* Meal count on image */}
-                      <div className="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-sm text-[#1a1a1a] text-[10px] font-semibold px-2 py-0.5 rounded-md">
-                        {r.mealCount} meal{r.mealCount !== 1 ? "s" : ""}
-                      </div>
-                      <div className="absolute top-2.5 right-2.5 w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#1a1a1a]"><path d="m9 18 6-6-6-6" /></svg>
-                      </div>
-                    </div>
-                    <div className="px-3.5 py-3">
-                      <h3 className="font-display font-bold text-[14px] text-[#1a1a1a] tracking-[-0.01em]">{r.name}</h3>
-                      <p className="text-[11px] text-[#9ca3af] mt-0.5">{r.address}</p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
         </>
       )}
 
