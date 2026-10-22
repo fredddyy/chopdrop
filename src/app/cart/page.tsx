@@ -27,6 +27,7 @@ export default function CartPage() {
   const [orderingClosed, setOrderingClosed] = useState(false);
   const [isFirstOrder, setIsFirstOrder] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [poolData, setPoolData] = useState<{ officeOrderCount: number; meals: Record<string, { poolPrice: number; basePrice: number; savings: number }> }>({ officeOrderCount: 0, meals: {} });
 
   useEffect(() => {
     const profile = getCustomerProfile();
@@ -53,6 +54,15 @@ export default function CartPage() {
       }
     }).catch(() => setIsAuthenticated(false));
   }, []);
+
+  // Fetch pool pricing when office is known
+  useEffect(() => {
+    if (!officeId) return;
+    fetch(`/api/pool-price?officeId=${officeId}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.success && d.data) setPoolData(d.data); })
+      .catch(() => {});
+  }, [officeId]);
 
   const EXPRESS_FEE = 120000;
   const deliveryFee = isFirstOrder ? 0 : fulfillment === "delivery" ? EXPRESS_FEE : 0;
@@ -281,6 +291,28 @@ export default function CartPage() {
                 <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
                 <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
               </div>
+              {/* Pool savings callout — only when discount is active */}
+              {cart.items.some(item => {
+                const key = item.realDailyMenuId || item.dailyMenuId;
+                return poolData?.meals?.[key]?.savings > 0;
+              }) && (() => {
+                const totalSaved = cart.items.reduce((sum, item) => {
+                  const key = item.realDailyMenuId || item.dailyMenuId;
+                  const pool = poolData?.meals?.[key];
+                  return sum + (pool ? pool.savings * item.quantity : 0);
+                }, 0);
+                return totalSaved > 0 ? (
+                  <div className="flex items-center gap-2 p-3 rounded-[12px] mt-1 mb-1" style={{ background: "rgba(13,159,95,0.08)" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                    <div className="flex-1">
+                      <span className="text-[14px] font-bold" style={{ color: "var(--emerald)" }}>Saving {formatNaira(totalSaved)} with pool pricing</span>
+                      {poolData.officeOrderCount > 0 && (
+                        <span className="text-[12px] ml-1" style={{ color: "var(--text-muted)" }}>· {poolData.officeOrderCount} orders in pool</span>
+                      )}
+                    </div>
+                  </div>
+                ) : null;
+              })()}
               <div className="flex justify-between items-center pt-3" style={{ borderTop: "2px solid var(--border)" }}>
                 <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Total</span>
                 <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
