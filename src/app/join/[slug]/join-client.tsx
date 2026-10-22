@@ -58,62 +58,135 @@ function PoolCountdown({ cutoffTime }: { cutoffTime: string }) {
 }
 
 export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: JoinClientProps) {
-  const [step, setStep] = useState<"preview" | "phone" | "name" | "welcome" | "done">("preview");
+  const [step, setStep] = useState<"preview" | "phone" | "otp" | "name" | "welcome">("preview");
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
-  const [password, setPassword] = useState("");
+  const [otpToken, setOtpToken] = useState("");
+  const [otpCode, setOtpCode] = useState(["", "", "", ""]);
+  const [testCode, setTestCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
 
-  async function handleSignup() {
-    if (!firstName.trim() || !password.trim()) { setError("Please fill in all fields"); return; }
+  // Resend countdown
+  useEffect(() => {
+    if (resendTimer <= 0) return;
+    const t = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendTimer]);
+
+  async function handleSendOtp() {
+    const cleanPhone = phone.trim().replace(/\s/g, "");
+    if (cleanPhone.length < 10) return;
     setLoading(true);
     setError("");
 
-    const cleanPhone = phone.trim().replace(/\s/g, "");
-    const fakeEmail = `${cleanPhone}@chopdrop.ng`;
-
     try {
-      // Create account
-      const signupRes = await fetch("/api/auth/signup", {
+      const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: firstName.trim(),
-          lastName: firstName.trim(),
-          email: fakeEmail,
-          phone: cleanPhone,
-          password: password.trim(),
-        }),
+        body: JSON.stringify({ phone: cleanPhone }),
       });
-      const signupData = await signupRes.json();
+      const data = await res.json();
 
-      if (!signupData.success) {
-        if (signupData.error?.includes("already")) {
-          const signinRes = await fetch("/api/auth/signin", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: fakeEmail, password: password.trim() }),
-          });
-          const signinData = await signinRes.json();
-          if (!signinData.success) { setError("Account exists. Check your PIN."); setLoading(false); return; }
-        } else { setError(signupData.error || "Signup failed"); setLoading(false); return; }
-      }
+      if (!data.success) { setError(data.error || "Failed to send code"); setLoading(false); return; }
 
-      // Connect to office
-      await fetch("/api/auth/connect-office", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: office.code }),
-      });
-
-      setStep("welcome");
-      // Auto-redirect after 2.5 seconds
-      setTimeout(() => { window.location.href = "/menu"; }, 2500);
+      setOtpToken(data.data.otpToken);
+      if (data.data.testCode) setTestCode(data.data.testCode);
+      setResendTimer(60);
+      setStep("otp");
     } catch {
       setError("Network error. Try again.");
     }
     setLoading(false);
+  }
+
+  async function handleVerifyOtp(codeString: string) {
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          otpToken,
+          code: codeString,
+          firstName: firstName.trim() || undefined,
+          officeCode: office.code,
+        }),
+      });
+      const data = await res.json();
+
+      if (!data.success) { setError(data.error || "Verification failed"); setLoading(false); return; }
+
+      // If user already has a name, skip name step
+      if (data.data.firstName && data.data.firstName !== "User") {
+        setFirstName(data.data.firstName);
+        setStep("welcome");
+        setTimeout(() => { window.location.href = "/menu"; }, 2500);
+      } else {
+        setStep("name");
+      }
+    } catch {
+      setError("Network error. Try again.");
+    }
+    setLoading(false);
+  }
+
+  async function handleSetName() {
+    if (!firstName.trim()) return;
+    setLoading(true);
+
+    try {
+      // Update name via verify-otp again (it updates if placeholder)
+      await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          otpToken,
+          code: otpCode.join(""),
+          firstName: firstName.trim(),
+          officeCode: office.code,
+        }),
+      });
+
+      setStep("welcome");
+      setTimeout(() => { window.location.href = "/menu"; }, 2500);
+    } catch {
+      // Name update failed but user is already authenticated — proceed anyway
+      setStep("welcome");
+      setTimeout(() => { window.location.href = "/menu"; }, 2500);
+    }
+    setLoading(false);
+  }
+
+  function handleOtpInput(index: number, value: string) {
+    if (!/^\d*$/.test(value)) return;
+    const newCode = [...otpCode];
+    newCode[index] = value.slice(-1);
+    setOtpCode(newCode);
+
+    // Auto-focus next input
+    if (value && index < 3) {
+      const next = document.getElementById(`otp-${index + 1}`);
+      next?.focus();
+    }
+
+    // Auto-submit on last digit
+    if (value && index === 3) {
+      const fullCode = newCode.join("");
+      if (fullCode.length === 4) {
+        handleVerifyOtp(fullCode);
+      }
+    }
+  }
+
+  function handleOtpKeyDown(index: number, key: string) {
+    if (key === "Backspace" && !otpCode[index] && index > 0) {
+      const prev = document.getElementById(`otp-${index - 1}`);
+      prev?.focus();
+    }
   }
 
   // ═══════════════════════════════════════════════════
@@ -296,15 +369,15 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
 
           <button
             type="button"
-            onClick={() => { if (phone.replace(/\s/g, "").length >= 10) setStep("name"); }}
-            disabled={phone.replace(/\s/g, "").length < 10}
+            onClick={handleSendOtp}
+            disabled={loading || phone.replace(/\s/g, "").length < 10}
             className="w-full bg-[#f05f4b] text-white font-bold text-[14px] py-3.5 rounded-xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] disabled:opacity-40 disabled:shadow-none active:scale-[0.98] transition-all"
           >
-            Continue
+            {loading ? "Sending code..." : "Send Code"}
           </button>
 
           <p className="text-[9px] text-[#9ca3af] text-center mt-3">
-            By continuing you agree to our Terms &amp; Privacy Policy
+            We&apos;ll send a verification code to this number
           </p>
         </div>
       </main>
@@ -312,52 +385,97 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
   }
 
   // ═══════════════════════════════════════════════════
-  // STEP 3: NAME + PIN (minimal)
+  // STEP 3: OTP VERIFICATION
+  // ═══════════════════════════════════════════════════
+  if (step === "otp") {
+    return (
+      <main className="min-h-screen bg-[#fafaf8]">
+        <div className="max-w-[480px] mx-auto px-5 py-6">
+          <button type="button" onClick={() => { setStep("phone"); setOtpCode(["", "", "", ""]); setError(""); }} className="flex items-center gap-1 text-[12px] text-[#9ca3af] mb-6">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+            Back
+          </button>
+
+          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-1">Enter the code</h2>
+          <p className="text-[13px] text-[#9ca3af] mb-6">Sent to <span className="font-semibold text-[#1a1a1a]">{phone}</span></p>
+
+          {/* Test mode: show the code */}
+          {testCode && (
+            <div className="bg-[#fffbf0] border border-[#f5c565]/30 rounded-xl px-4 py-3 mb-4 text-center">
+              <div className="text-[9px] font-bold text-[#92702a] uppercase tracking-[0.08em] mb-1">Test Mode — Your code is:</div>
+              <div className="font-display font-bold text-[28px] text-[#1a1a1a] tracking-[0.2em]">{testCode}</div>
+            </div>
+          )}
+
+          {error && <div className="bg-[#fee2e2] text-[#f05f4b] text-[12px] font-medium px-4 py-2.5 rounded-xl mb-4">{error}</div>}
+
+          {/* OTP input boxes */}
+          <div className="flex justify-center gap-3 mb-6">
+            {otpCode.map((digit, i) => (
+              <input
+                key={i}
+                id={`otp-${i}`}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleOtpInput(i, e.target.value)}
+                onKeyDown={(e) => handleOtpKeyDown(i, e.key)}
+                className="w-14 h-14 text-center text-[22px] font-display font-bold border-2 border-[#e5e5e3] rounded-xl focus:outline-none focus:border-[#f05f4b] focus:ring-2 focus:ring-[#f05f4b]/20 transition-colors"
+                autoFocus={i === 0}
+              />
+            ))}
+          </div>
+
+          {loading && <p className="text-[12px] text-[#9ca3af] text-center mb-4">Verifying...</p>}
+
+          {/* Resend options */}
+          <div className="text-center">
+            {resendTimer > 0 ? (
+              <p className="text-[11px] text-[#9ca3af]">Resend code in <span className="font-semibold">{resendTimer}s</span></p>
+            ) : (
+              <div className="flex items-center justify-center gap-3">
+                <button type="button" onClick={handleSendOtp} className="text-[12px] font-semibold text-[#f05f4b]">
+                  Resend code
+                </button>
+                <span className="text-[#d1d5db]">·</span>
+                <button type="button" onClick={handleSendOtp} className="text-[12px] font-semibold text-[#22c55e]">
+                  Resend via WhatsApp
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // ═══════════════════════════════════════════════════
+  // STEP 4: NAME (only shown for new users)
   // ═══════════════════════════════════════════════════
   if (step === "name") {
     return (
       <main className="min-h-screen bg-[#fafaf8]">
         <div className="max-w-[480px] mx-auto px-5 py-6">
-          <button type="button" onClick={() => setStep("phone")} className="flex items-center gap-1 text-[12px] text-[#9ca3af] mb-6">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-            Back
-          </button>
-
           <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-1">What&apos;s your first name?</h2>
           <p className="text-[13px] text-[#9ca3af] mb-6">This goes on your lunch bag so you can find it at pickup</p>
 
-          {error && <div className="bg-[#fee2e2] text-[#f05f4b] text-[12px] font-medium px-4 py-2.5 rounded-xl mb-4">{error}</div>}
-
-          <div className="space-y-3 mb-5">
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="e.g. Tunde"
-              className="w-full px-4 py-3.5 border border-[#e5e5e3] rounded-xl text-[15px] focus:outline-none focus:ring-2 focus:ring-[#f05f4b]/30 focus:border-[#f05f4b]"
-              autoFocus
-            />
-            <div>
-              <label className="block text-[11px] font-medium text-[#9ca3af] mb-1.5">Create a 6-digit PIN</label>
-              <input
-                type="password"
-                inputMode="numeric"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••"
-                maxLength={20}
-                className="w-full px-4 py-3.5 border border-[#e5e5e3] rounded-xl text-[15px] tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-[#f05f4b]/30 focus:border-[#f05f4b]"
-              />
-            </div>
-          </div>
+          <input
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="e.g. Tunde"
+            className="w-full px-4 py-3.5 border border-[#e5e5e3] rounded-xl text-[15px] focus:outline-none focus:ring-2 focus:ring-[#f05f4b]/30 focus:border-[#f05f4b] mb-5"
+            autoFocus
+          />
 
           <button
             type="button"
-            onClick={handleSignup}
-            disabled={loading || !firstName.trim() || password.length < 6}
+            onClick={handleSetName}
+            disabled={loading || !firstName.trim()}
             className="w-full bg-[#f05f4b] text-white font-bold text-[14px] py-3.5 rounded-xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] disabled:opacity-40 disabled:shadow-none active:scale-[0.98] transition-all"
           >
-            {loading ? "Setting up..." : "Join " + office.name}
+            {loading ? "Setting up..." : "Continue"}
           </button>
         </div>
       </main>
