@@ -302,18 +302,22 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </div>
             </div>
 
-            {/* Empty pool state */}
-            {orders === 0 && (
-              <div className="px-4 pb-4 -mt-1">
-                <div className="flex items-center gap-3 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-                  <div>
-                    <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Be the first to order</p>
-                    <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>Prices drop as your office joins</p>
-                  </div>
-                </div>
+            {/* Contextual message below tiers */}
+            <div className="px-4 pb-4 -mt-1">
+              <div className="flex items-center gap-3 p-3 rounded-[12px]" style={{ background: orders === 0 ? "var(--sand)" : "var(--emerald)", opacity: orders === 0 ? 1 : 0.1 }}>
+                {orders === 0 ? (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                    <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Order first — your colleagues will follow</p>
+                  </>
+                ) : orders >= 15 ? (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                    <p className="text-[13px] font-bold text-white">Best price unlocked for everyone!</p>
+                  </>
+                ) : null}
               </div>
-            )}
+            </div>
           </div>
         );
       })()}
@@ -434,7 +438,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             }
 
             return Array.from(byRestaurant.entries()).map(([rId, rData]) => (
-              <section key={rId} className="mt-6 px-5">
+              <section key={rId} className="mt-8 px-5">
                 {/* Vendor header — bold with background */}
                 <div className="flex items-center gap-3 mb-3 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
                   <div className="w-11 h-11 rounded-[12px] overflow-hidden shrink-0 border-2 border-white">
@@ -582,7 +586,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   const hasDiscount = deal.originalPrice && deal.originalPrice > deal.price;
 
                   return (
-                    <div key={deal.id} className="flex-shrink-0 w-[200px] lg:w-auto rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)" }} onClick={() => handleAddFixed(deal)}>
+                    <div key={deal.id} className="flex-shrink-0 w-[220px] lg:w-auto rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid rgba(255,255,255,0.1)" }} onClick={() => handleAddFixed(deal)}>
                       <div className="relative h-[120px]" style={{ background: "var(--sand)" }}>
                         {deal.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -593,42 +597,42 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           </div>
                         )}
                         {hasDiscount && (
-                          <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center text-[11px] font-bold" style={{ background: "var(--card)", color: "var(--emerald)" }}>
+                          <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center text-[11px] font-bold text-white" style={{ background: "var(--emerald)" }}>
                             Save {formatPrice((deal.originalPrice || 0) - deal.price)}
                           </div>
                         )}
                         <div className="absolute bottom-2 right-2" onClick={(e) => e.stopPropagation()}>
                           {cartQty > 0 ? (
-                            <div className="flex items-center rounded-full h-7" style={{ background: "var(--coral)" }}>
-                              <button type="button" onClick={() => cart.changeQuantity(deal.id, -1)} className="w-7 h-7 flex items-center justify-center text-white cursor-pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg></button>
-                              <span className="text-white text-[11px] font-bold min-w-[14px] text-center">{cartQty}</span>
-                              <button type="button" onClick={() => handleAddFixed(deal)} className="w-7 h-7 flex items-center justify-center text-white cursor-pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
+                            <div className="flex items-center rounded-full h-8" style={{ background: "var(--coral)" }}>
+                              <button type="button" onClick={() => cart.changeQuantity(deal.id, -1)} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg></button>
+                              <span className="text-white text-[12px] font-bold min-w-[16px] text-center">{cartQty}</span>
+                              <button type="button" onClick={() => handleAddFixed(deal)} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
                             </div>
                           ) : (
-                            <button type="button" onClick={() => handleAddFixed(deal)} className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text)" }}>
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                            <button type="button" onClick={() => handleAddFixed(deal)} className="w-9 h-9 rounded-full flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--coral)" }}>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                             </button>
                           )}
                         </div>
                       </div>
                       <div className="p-3">
-                        <h3 className="text-[13px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        <h3 className="text-[14px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                           {deal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
                         </h3>
                         <div className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{deal.restaurantName}</div>
-                        <div className="flex items-baseline gap-2 mt-1">
-                          <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(getEffectivePrice(deal.id, deal.price))}</span>
+                        <div className="flex items-baseline gap-2 mt-1.5">
+                          <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(getEffectivePrice(deal.id, deal.price))}</span>
                           {deal.originalPrice && deal.originalPrice > deal.price && (
                             <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(deal.originalPrice)}</span>
                           )}
                         </div>
-                        {/* Claimed bar */}
-                        <div className="mt-2">
-                          <div className="h-1 rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                        {/* Claimed bar + urgency */}
+                        <div className="mt-2.5">
+                          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
                             <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pctClaimed, 5)}%`, background: pctClaimed > 80 ? "var(--coral)" : "var(--gold)" }} />
                           </div>
-                          <div className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
-                            {claimed > 0 ? `${claimed}/${maxSpots} claimed` : `${maxSpots} spots available`}
+                          <div className="text-[11px] font-semibold mt-1" style={{ color: deal.remaining <= 3 ? "var(--coral)" : "var(--text-muted)" }}>
+                            {deal.remaining <= 0 ? "Sold out" : deal.remaining <= 3 ? `Only ${deal.remaining} left!` : deal.remaining <= 5 ? `${deal.remaining} spots left` : `${maxSpots - claimed} spots open`}
                           </div>
                         </div>
                       </div>
