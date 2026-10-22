@@ -33,6 +33,7 @@ export async function GET(
   return NextResponse.json({
     success: true,
     data: {
+      id: order.id,
       orderCode: order.orderCode,
       status: order.status,
       paymentStatus: order.paymentStatus,

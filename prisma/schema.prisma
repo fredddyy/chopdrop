@@ -193,6 +193,7 @@ model Order {
   dropPoint  DropPoint?  @relation(fields: [dropPointId], references: [id])
   user       User?       @relation(fields: [userId], references: [id])
   items      OrderItem[]
+  rating     Rating?
 }
 
 model OrderItem {
@@ -239,6 +240,17 @@ enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  score     Int      // 1-5 (😟=1, 😐=2, 🙂=3, 😋=4, 🤩=5)
+  issues    String?  // comma-separated: "portion_small,cold,wrong_order,late,other"
+  comment   String?
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
 }
 
 model Promo {

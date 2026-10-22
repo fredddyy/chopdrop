@@ -7,6 +7,7 @@ import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 
 interface OrderData {
+  id: string;
   orderCode: string;
   status: string;
   paymentStatus: string;
@@ -44,6 +45,9 @@ function ConfirmationContent() {
   const [officeConnectError, setOfficeConnectError] = useState("");
   const [officeConnected, setOfficeConnected] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [ratingScore, setRatingScore] = useState(0);
+  const [ratingIssues, setRatingIssues] = useState<string[]>([]);
+  const [ratingSubmitted, setRatingSubmitted] = useState(false);
 
   useEffect(() => {
     async function loadOrder() {
@@ -98,6 +102,33 @@ function ConfirmationContent() {
       setOfficeConnected(true);
       setOfficeConnectLoading(false);
     } catch { setOfficeConnectError("Network error."); setOfficeConnectLoading(false); }
+  }
+
+  async function handleRate(score: number) {
+    setRatingScore(score);
+    if (score >= 3) {
+      // Positive — submit immediately
+      await fetch("/api/orders/rate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: order?.id, score }),
+      });
+      setRatingSubmitted(true);
+    }
+    // Negative (1-2) — wait for issue selection before submitting
+  }
+
+  async function handleRateWithIssues() {
+    await fetch("/api/orders/rate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId: order?.id, score: ratingScore, issues: ratingIssues.join(",") }),
+    });
+    setRatingSubmitted(true);
+  }
+
+  function toggleIssue(issue: string) {
+    setRatingIssues((prev) => prev.includes(issue) ? prev.filter((i) => i !== issue) : [...prev, issue]);
   }
 
   function handleShare() {
@@ -183,37 +214,111 @@ function ConfirmationContent() {
           </p>
         </div>
 
-        {/* ── What happens next ── */}
-        {isConfirmed && (
-          <div className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-3">
-            <h2 className="text-[11px] font-bold text-[#9ca3af] uppercase tracking-[0.06em] mb-3">What happens next</h2>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">1</div>
-                <div>
-                  <div className="text-[12px] font-semibold text-[#1a1a1a]">Restaurant prepares your food</div>
-                  <div className="text-[10px] text-[#9ca3af] mt-0.5">{order.restaurant.name} gets your order now</div>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">2</div>
-                <div>
-                  <div className="text-[12px] font-semibold text-[#1a1a1a]">
-                    {isOffice ? `Delivery to ${order.office!.name}` : "Your food is delivered"}
-                  </div>
-                  <div className="text-[10px] text-[#9ca3af] mt-0.5">Arrives at {dropTime}</div>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">3</div>
-                <div>
-                  <div className="text-[12px] font-semibold text-[#1a1a1a]">
-                    {isOffice ? `Collect from ${order.office!.collectionPoint}` : "Collect with your code"}
-                  </div>
-                  <div className="text-[10px] text-[#9ca3af] mt-0.5">Show code <strong className="text-[#1a1a1a]">{order.orderCode}</strong></div>
-                </div>
+        {/* ── Order Status Tracker ── */}
+        {isConfirmed && (() => {
+          const statusMap: Record<string, number> = { PENDING: 0, CONFIRMED: 1, READY: 2, COMPLETED: 3 };
+          const currentStep = statusMap[order.status] ?? 0;
+          const steps = [
+            { label: "Order placed", sub: "Payment confirmed", icon: "✓" },
+            { label: "Preparing", sub: `${order.restaurant.name} is cooking`, icon: "🍳" },
+            { label: "On the way", sub: `Arriving by ${dropTime}`, icon: "🏍️" },
+            { label: isOffice ? "At reception" : "Ready", sub: isOffice ? order.office!.collectionPoint : "Collect with your code", icon: "📍" },
+          ];
+          return (
+            <div className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-3">
+              <h2 className="text-[11px] font-bold text-[#9ca3af] uppercase tracking-[0.06em] mb-4">Order status</h2>
+              <div className="space-y-0">
+                {steps.map((s, i) => {
+                  const isDone = i <= currentStep;
+                  const isActive = i === currentStep;
+                  return (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] flex-shrink-0 transition-all ${
+                          isDone ? "bg-[#0f4030] text-white" : "bg-[#f5f5f3] text-[#9ca3af]"
+                        } ${isActive ? "ring-2 ring-[#0f4030]/20" : ""}`}>
+                          {isDone ? <span>{s.icon}</span> : <span className="text-[10px] font-bold">{i + 1}</span>}
+                        </div>
+                        {i < steps.length - 1 && (
+                          <div className={`w-0.5 h-8 my-1 rounded-full ${i < currentStep ? "bg-[#0f4030]" : "bg-[#e5e5e3]"}`} />
+                        )}
+                      </div>
+                      <div className={`pt-1 ${i < steps.length - 1 ? "pb-3" : ""}`}>
+                        <div className={`text-[12px] font-semibold ${isDone ? "text-[#1a1a1a]" : "text-[#9ca3af]"}`}>{s.label}</div>
+                        <div className="text-[10px] text-[#9ca3af] mt-0.5">{s.sub}</div>
+                        {isActive && i < 3 && (
+                          <div className="flex items-center gap-1.5 mt-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
+                            <span className="text-[9px] font-medium text-[#22c55e]">In progress</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
+          );
+        })()}
+
+        {/* ── Emoji Rating ── */}
+        {isConfirmed && (order.status === "COMPLETED" || order.status === "READY") && !ratingSubmitted && (
+          <div className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] mb-3">
+            {ratingScore === 0 ? (
+              <>
+                <h3 className="text-[13px] font-semibold text-[#1a1a1a] text-center mb-1">How was your {order.meal.name.toLowerCase().split(" ")[0]}?</h3>
+                <p className="text-[10px] text-[#9ca3af] text-center mb-3">{order.restaurant.name}</p>
+                <div className="flex justify-center gap-4">
+                  {[
+                    { emoji: "😟", score: 1 },
+                    { emoji: "😐", score: 2 },
+                    { emoji: "🙂", score: 3 },
+                    { emoji: "😋", score: 4 },
+                    { emoji: "🤩", score: 5 },
+                  ].map((r) => (
+                    <button key={r.score} type="button" onClick={() => handleRate(r.score)} className="text-[28px] hover:scale-125 active:scale-95 transition-transform">
+                      {r.emoji}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : ratingScore <= 2 ? (
+              <>
+                <h3 className="text-[13px] font-semibold text-[#1a1a1a] mb-3">Sorry about that. What went wrong?</h3>
+                <div className="space-y-2 mb-4">
+                  {[
+                    { id: "portion_small", label: "Portion too small" },
+                    { id: "cold", label: "Food was cold" },
+                    { id: "taste", label: "Didn't taste good" },
+                    { id: "wrong_order", label: "Wrong order" },
+                    { id: "late", label: "Arrived late" },
+                    { id: "other", label: "Something else" },
+                  ].map((issue) => (
+                    <button
+                      key={issue.id}
+                      type="button"
+                      onClick={() => toggleIssue(issue.id)}
+                      className={`w-full text-left px-3.5 py-2.5 rounded-xl text-[12px] font-medium border transition-colors ${
+                        ratingIssues.includes(issue.id)
+                          ? "bg-[#fee2e2] border-[#f05f4b]/30 text-[#f05f4b]"
+                          : "bg-[#f5f5f3] border-transparent text-[#6b7280]"
+                      }`}
+                    >
+                      {ratingIssues.includes(issue.id) ? "✓ " : ""}{issue.label}
+                    </button>
+                  ))}
+                </div>
+                <button type="button" onClick={handleRateWithIssues} className="w-full bg-[#1a1a1a] text-white font-bold text-[13px] py-3 rounded-xl active:scale-[0.98] transition-transform">
+                  Submit feedback
+                </button>
+              </>
+            ) : null}
+          </div>
+        )}
+
+        {ratingSubmitted && (
+          <div className="bg-[#f0fdf4] rounded-2xl p-4 mb-3 text-center">
+            <span className="text-[13px] font-semibold text-[#0f4030]">Thanks for the feedback! 🙏</span>
           </div>
         )}
 

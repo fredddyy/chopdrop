@@ -83,6 +83,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [activePromo, setActivePromo] = useState<ActivePromo | null>(null);
   const [poolData, setPoolData] = useState<{ officeOrderCount: number; meals: Record<string, { poolPrice: number; basePrice: number; savings: number; nextTier: { min: number; price: number } | null; tiers: { min: number; price: number }[] }> }>({ officeOrderCount: 0, meals: {} });
   const [userOfficeId, setUserOfficeId] = useState("");
+  const [lastOrder, setLastOrder] = useState<{ name: string; price: number; imageUrl: string | null; restaurantName: string; dailyMenuId: string } | null>(null);
   const cart = useCart();
 
   useEffect(() => {
@@ -104,6 +105,22 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           if (d.data.office.assistantName) setCaptainName(d.data.office.assistantName);
           const officeId = d.data.office.id || "";
           setUserOfficeId(officeId);
+          // Fetch last order for quick reorder
+          fetch("/api/orders/mine")
+            .then((r3) => r3.json())
+            .then((o) => {
+              if (o.success && o.data?.length > 0) {
+                const last = o.data[0];
+                setLastOrder({
+                  name: last.dailyMenu.meal.name,
+                  price: last.totalAmount / last.quantity,
+                  imageUrl: last.dailyMenu.meal.imageUrl,
+                  restaurantName: last.dailyMenu.meal.restaurant.name,
+                  dailyMenuId: last.dailyMenuId,
+                });
+              }
+            })
+            .catch(() => {});
           // Fetch active promo with office context
           const userId = d.data.id || "";
           fetch(`/api/promos/active?officeId=${officeId}&userId=${userId}`)
@@ -630,6 +647,53 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           </div>
         );
       })()}
+
+      {/* ── Quick Reorder ── */}
+      {lastOrder && !allExpired && slot && !slot.expired && (
+        <div className="mx-5 lg:mx-6 mt-3">
+          <div
+            className="bg-gradient-to-r from-[#0f4030] to-[#0d3528] rounded-2xl p-4 cursor-pointer active:scale-[0.98] transition-transform relative overflow-hidden"
+            onClick={() => {
+              // Find the matching daily menu item in current slot
+              const match = slot.items.find((i) => i.name === lastOrder.name);
+              if (match) {
+                handleAddFixed(match);
+              } else {
+                cart.addItem({
+                  dailyMenuId: lastOrder.dailyMenuId,
+                  name: lastOrder.name,
+                  description: "",
+                  imageUrl: lastOrder.imageUrl,
+                  restaurantName: lastOrder.restaurantName,
+                  price: lastOrder.price,
+                });
+                setToast(lastOrder.name);
+                setTimeout(() => setToast(""), 2000);
+              }
+            }}
+          >
+            <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/[0.04]" />
+            <div className="relative flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl overflow-hidden bg-white/10 flex-shrink-0">
+                {lastOrder.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={lastOrder.imageUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[20px]">🍽️</div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[9px] font-bold text-[#6ee7b7] uppercase tracking-[0.08em]">Quick reorder</div>
+                <div className="text-[13px] font-semibold text-white truncate">{lastOrder.name}</div>
+                <div className="text-[10px] text-white/50">{lastOrder.restaurantName} · {formatPrice(lastOrder.price)}</div>
+              </div>
+              <div className="flex-shrink-0 bg-[#f05f4b] text-white text-[11px] font-bold px-3.5 py-2 rounded-xl shadow-[0_2px_8px_rgba(240,95,75,0.3)]">
+                + Add
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Content ── */}
       {allExpired ? (
