@@ -249,9 +249,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         ];
         const orders = poolData.officeOrderCount;
         const currentTierIdx = orders >= 15 ? 3 : orders >= 10 ? 2 : orders >= 5 ? 1 : 0;
-        // Average meal price for realistic savings display
+        // Average meal price — rounded to nearest ₦50 for clean display
         const mealPrices = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).map(i => i.price);
-        const examplePrice = mealPrices.length > 0 ? Math.round(mealPrices.reduce((a, b) => a + b, 0) / mealPrices.length) : 200000;
+        const rawAvg = mealPrices.length > 0 ? mealPrices.reduce((a, b) => a + b, 0) / mealPrices.length : 200000;
+        const examplePrice = Math.round(rawAvg / 5000) * 5000; // round to nearest ₦50
 
         return (
           <div className="mx-5 mt-3 rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
@@ -326,7 +327,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 const nextPct = nextTier ? nextTier.pct : 0;
                 const currentPct = tiers[currentTierIdx].pct;
                 const moreNeeded = nextTier ? nextTier.min - orders : 0;
-                const potentialSavings = Math.round(examplePrice * (nextPct - currentPct) / 100);
+                const potentialSavings = Math.round(examplePrice * (nextPct - currentPct) / 100 / 5000) * 5000; // round to nearest ₦50
                 return (
                   <div className="p-3.5 rounded-[14px]" style={{ background: "var(--dark)" }}>
                     <div className="flex items-center gap-2 mb-1.5">
