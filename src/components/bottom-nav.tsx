@@ -18,7 +18,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-black/[0.06] z-50 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl z-50 md:hidden" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-lg mx-auto grid grid-cols-4 py-2 px-4">
         {links.map((link) => {
           const active = pathname === link.href || pathname.startsWith(link.href + "/");
@@ -27,31 +27,26 @@ export function BottomNav() {
               key={link.href}
               href={link.href}
               className={`relative flex flex-col items-center gap-1 py-1 transition-colors ${
-                active ? "text-[#0f4030]" : "text-[#9ca3af]"
+                active ? "text-[var(--coral)]" : "text-[var(--text-muted)]"
               }`}
             >
-              {/* Active indicator bar */}
               {active && (
-                <span className="absolute -top-2 w-8 h-[3px] bg-[#0f4030] rounded-full" />
+                <span className="absolute -top-2 w-8 h-[3px] rounded-full" style={{ background: "var(--coral)" }} />
               )}
               <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
+                width="22" height="22" viewBox="0 0 24 24"
                 fill={active ? "currentColor" : "none"}
                 stroke="currentColor"
                 strokeWidth={active ? "0" : "1.6"}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="transition-all"
+                strokeLinecap="round" strokeLinejoin="round"
               >
                 <path d={link.icon} />
               </svg>
-              <span className={`text-[10px] transition-all ${active ? "font-bold" : "font-medium"}`}>
+              <span className={`text-[11px] transition-all ${active ? "font-bold" : "font-medium"}`}>
                 {link.label}
               </span>
               {link.count > 0 && (
-                <span className="absolute -top-0.5 right-1/2 translate-x-4 min-w-[18px] h-[18px] bg-[#f05f4b] text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1 shadow-[0_2px_8px_rgba(240,95,75,0.4)]">
+                <span className="absolute -top-0.5 right-1/2 translate-x-4 min-w-[18px] h-[18px] text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1" style={{ background: "var(--coral)" }}>
                   {link.count}
                 </span>
               )}
@@ -59,7 +54,6 @@ export function BottomNav() {
           );
         })}
       </div>
-      {/* Safe area for phones with home indicators */}
       <div className="h-[env(safe-area-inset-bottom)]" />
     </nav>
   );

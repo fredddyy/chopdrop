@@ -99,3 +99,21 @@ a:focus-visible, button:focus-visible {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* Menu page animations (moved from style jsx to avoid Turbopack crash) */
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 12px) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+@keyframes reminderConfirm {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes preorderBarIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes preorderToastIn {
+  from { opacity: 0; transform: translate(-50%, 8px) scale(0.92); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
