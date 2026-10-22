@@ -19,6 +19,7 @@ export default function StartPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [officeData, setOfficeData] = useState<{ name: string; code: string; slug: string; joinLink: string; captainLink: string } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (resendTimer <= 0) return;
@@ -416,7 +417,6 @@ export default function StartPage() {
     const joinUrl = `${appUrl}/join/${officeData.slug}`;
     const waText = encodeURIComponent(`I set up ChopDrop for our office! Order lunch together & save up to 40%. ₦0 delivery.\n\nJoin here: ${joinUrl}\n\nPick your own meal, pay on your phone. Food arrives together.`);
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(joinUrl)}&color=1A1A19&bgcolor=FAFAF8`;
-    const [copied, setCopied] = useState(false);
 
     return (
       <main className="min-h-svh flex flex-col" style={{ background: "var(--dark)" }}>
