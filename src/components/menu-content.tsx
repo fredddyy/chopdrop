@@ -62,6 +62,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [poolData, setPoolData] = useState<{ officeOrderCount: number; meals: Record<string, { poolPrice: number; basePrice: number; savings: number; nextTier: { min: number; price: number } | null; tiers: { min: number; price: number }[] }> }>({ officeOrderCount: 0, meals: {} });
   const [userOfficeId, setUserOfficeId] = useState("");
   const [lastOrder, setLastOrder] = useState<{ name: string; price: number; imageUrl: string | null; restaurantName: string; dailyMenuId: string } | null>(null);
+  const [creditBalance, setCreditBalance] = useState(0);
   const cart = useCart();
 
   useEffect(() => {
@@ -86,6 +87,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         }).catch(() => {});
         const userId = d.data.id || "";
         fetch(`/api/promos/active?officeId=${officeId}&userId=${userId}`).then((r2) => r2.json()).then((p) => { if (p.success && p.data) setActivePromo(p.data); }).catch(() => {});
+        fetch("/api/credits").then((r4) => r4.json()).then((c) => { if (c.success && c.data?.balance > 0) setCreditBalance(c.data.balance); }).catch(() => {});
       } else {
         fetch("/api/promos/active").then((r2) => r2.json()).then((p) => { if (p.success && p.data) setActivePromo(p.data); }).catch(() => {});
       }
@@ -224,6 +226,19 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </div>
       )}
 
+      {/* ── Credit balance banner — show when user has credits ── */}
+      {creditBalance > 0 && (
+        <div className="mx-5 mt-4 p-3.5 rounded-[14px] flex items-center gap-3" style={{ background: "rgba(13,159,95,0.08)", border: "1px solid rgba(13,159,95,0.12)" }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+          </div>
+          <div className="flex-1">
+            <div className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(creditBalance)} credit</div>
+            <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>From pool refunds — auto-applied at checkout</p>
+          </div>
+        </div>
+      )}
+
       {/* ── PRICE TIER LADDER — makes pool pricing crystal clear ── */}
       {slot && !slot.expired && (() => {
         const tiers = [
@@ -302,19 +317,47 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </div>
             </div>
 
-            {/* How it works explanation */}
+            {/* Credit explanation — LOUD, specific, not passive */}
             <div className="px-4 pb-4 -mt-1">
-              <div className="flex items-start gap-2.5 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {orders === 0
-                    ? "Order now at full price. As colleagues join, you get the difference as credit for your next meal."
-                    : orders >= 15
-                    ? "Best tier reached! Everyone who ordered today gets credits for the discount."
-                    : "You pay now. When the pool closes, you get credit for any price drop."
-                  }
-                </p>
-              </div>
+              {orders > 0 && orders < 15 && (() => {
+                const nextTierIdx = currentTierIdx + 1;
+                const nextTier = nextTierIdx < tiers.length ? tiers[nextTierIdx] : null;
+                const nextPct = nextTier ? nextTier.pct : 0;
+                const currentPct = tiers[currentTierIdx].pct;
+                const moreNeeded = nextTier ? nextTier.min - orders : 0;
+                const potentialSavings = Math.round(examplePrice * (nextPct - currentPct) / 100);
+                return (
+                  <div className="p-3.5 rounded-[14px]" style={{ background: "var(--dark)" }}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      <span className="text-[14px] font-bold text-white">Pool refund guarantee</span>
+                    </div>
+                    <p className="text-[13px] text-white/70 leading-relaxed">
+                      {moreNeeded > 0
+                        ? <>If <span className="font-bold text-white">{moreNeeded} more</span> colleague{moreNeeded !== 1 ? "s" : ""} order{moreNeeded === 1 ? "s" : ""}, you get <span className="font-bold" style={{ color: "var(--emerald)" }}>₦{(potentialSavings / 100).toLocaleString()} credit</span> back on this meal.</>
+                        : <>You&apos;re at the best tier! Credits will be calculated when the pool closes.</>
+                      }
+                    </p>
+                  </div>
+                );
+              })()}
+              {orders === 0 && (
+                <div className="p-3.5 rounded-[14px]" style={{ background: "var(--dark)" }}>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span className="text-[14px] font-bold text-white">Pool refund guarantee</span>
+                  </div>
+                  <p className="text-[13px] text-white/70 leading-relaxed">
+                    Order at full price now. As colleagues join, the price drops — you get the <span className="font-bold" style={{ color: "var(--emerald)" }}>difference as credit</span> for your next meal.
+                  </p>
+                </div>
+              )}
+              {orders >= 15 && (
+                <div className="p-3 rounded-[14px] flex items-center gap-2" style={{ background: "rgba(13,159,95,0.1)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                  <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>Best tier reached! Everyone gets max credit when pool closes.</span>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -372,7 +415,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>Reorder</div>
-              <div className="text-[15px] font-bold truncate" style={{ color: "var(--text)" }}>{lastOrder.name}</div>
+              <div className="text-[15px] font-bold truncate" style={{ color: "var(--text)" }}>{lastOrder.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}</div>
               <div className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{lastOrder.restaurantName} · {formatPrice(lastOrder.price)}</div>
             </div>
             <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral)" }}>
