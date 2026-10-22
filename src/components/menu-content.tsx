@@ -169,16 +169,21 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             </div>
           </div>
 
-          {/* Row 2: Slot tabs — compact pills */}
+          {/* Row 2: Slot tabs — segmented control */}
           {slots.length > 1 && (
-            <div className="flex gap-2 mt-2.5">
+            <div className="flex mt-2.5 rounded-full p-[3px]" style={{ background: "rgba(255,255,255,0.08)" }}>
               {slots.map((s) => {
                 const isActive = s.id === activeSlot;
+                const itemCount = s.items.filter(i => i.type !== "BUILD_YOUR_PLATE").length;
                 return (
                   <button key={s.id} type="button" onClick={() => setActiveSlot(s.id)}
-                    className={`h-8 px-4 rounded-full text-[13px] font-semibold transition-all cursor-pointer ${isActive ? "bg-white text-[var(--dark)]" : "bg-white/10 text-white/50"}`}>
+                    className={`flex-1 h-9 rounded-full text-[13px] font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${isActive ? "bg-white text-[var(--dark)]" : "text-white/60 hover:text-white/80"}`}>
                     {getSlotShortName(s.label)}
-                    {s.expired && <span className="ml-1.5 text-[11px] opacity-50">Closed</span>}
+                    {s.expired ? (
+                      <span className="text-[10px] font-medium opacity-50">Closed</span>
+                    ) : (
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? "bg-[var(--coral)] text-white" : "bg-white/15 text-white/60"}`}>{itemCount}</span>
+                    )}
                   </button>
                 );
               })}
@@ -330,22 +335,22 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
             return Array.from(byRestaurant.entries()).map(([rId, rData]) => (
               <section key={rId} className="mt-6 px-5">
-                {/* Vendor header */}
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
+                {/* Vendor header — bold with background */}
+                <div className="flex items-center gap-3 mb-3 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
+                  <div className="w-11 h-11 rounded-[12px] overflow-hidden shrink-0 border-2 border-white">
                     {rData.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>{rData.name.charAt(0)}</div>
+                      <div className="w-full h-full flex items-center justify-center text-[13px] font-bold" style={{ background: "var(--card)", color: "var(--text-muted)" }}>{rData.name.charAt(0)}</div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-[16px] font-bold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
-                    <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " + build your plate" : ""}</p>
+                    <h2 className="text-[16px] font-extrabold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
+                    <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""}</p>
                   </div>
                   {rData.hasBuild && (
-                    <Link href={`/restaurant/${rId}`} className="h-8 px-4 rounded-full text-[12px] font-bold flex items-center transition-colors cursor-pointer" style={{ background: "var(--sand)", color: "var(--text)" }}>
+                    <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-full text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
                       Build Plate
                     </Link>
                   )}
@@ -397,10 +402,15 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         </div>
                         {/* Info */}
                         <div className="p-3">
-                          <h3 className="text-[14px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{meal.name}</h3>
-                          <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
+                          <h3 className="text-[14px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                            {meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
+                          </h3>
+                          <div className="flex items-baseline gap-2 mt-1.5">
+                            <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
                             {hasPoolDiscount && <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(poolData.meals[meal.id].basePrice)}</span>}
+                            {meal.originalPrice && meal.originalPrice > meal.price && !hasPoolDiscount && (
+                              <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(meal.originalPrice)}</span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -411,11 +421,17 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             ));
           })()}
 
-          {/* Combo deals */}
+          {/* Combo deals — visually distinct section */}
           {slot.items.some((i) => i.tag === "DEAL") && (
-            <section className="mt-8 pb-4">
-              <h2 className="px-5 text-[18px] font-bold mb-3" style={{ color: "var(--text)" }}>Today&apos;s deals</h2>
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-1 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible lg:px-5">
+            <section className="mt-8 pb-4 pt-5 mx-5 rounded-[20px]" style={{ background: "var(--dark)" }}>
+              <div className="flex items-center justify-between px-5 mb-3">
+                <h2 className="text-[18px] font-extrabold text-white">Today&apos;s deals</h2>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: "var(--coral)" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span className="text-[10px] font-bold text-white">Limited</span>
+                </div>
+              </div>
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-5 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible lg:px-5">
                 {slot.items.filter((i) => i.tag === "DEAL").map((deal) => {
                   const cartQty = cart.items.find((i) => i.dailyMenuId === deal.id)?.quantity || 0;
                   const maxSpots = deal.maxDeals || 20;
@@ -455,9 +471,16 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         </div>
                       </div>
                       <div className="p-3">
-                        <h3 className="text-[13px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{deal.name}</h3>
-                        <div className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{deal.restaurantName}</div>
-                        <div className="text-[15px] font-extrabold mt-1 tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(getEffectivePrice(deal.id, deal.price))}</div>
+                        <h3 className="text-[13px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          {deal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
+                        </h3>
+                        <div className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{deal.restaurantName}</div>
+                        <div className="flex items-baseline gap-2 mt-1">
+                          <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(getEffectivePrice(deal.id, deal.price))}</span>
+                          {deal.originalPrice && deal.originalPrice > deal.price && (
+                            <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(deal.originalPrice)}</span>
+                          )}
+                        </div>
                         {/* Claimed bar */}
                         <div className="mt-2">
                           <div className="h-1 rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
