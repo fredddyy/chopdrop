@@ -299,18 +299,14 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </div>
       )}
 
-      {/* Slot tabs moved into header — social proof bar instead */}
-      {slot && !slot.expired && poolData.officeOrderCount > 0 && (
-        <div className="mx-5 mt-2 flex items-center gap-2 bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl px-3.5 py-2">
-          <div className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22c55e]" />
-          </div>
-          <span className="text-[11px] font-bold text-[#15803d]">{poolData.officeOrderCount} colleagues ordering today</span>
+      {/* Personal greeting */}
+      {!allExpired && (
+        <div className="px-5 pt-3">
+          <p className="text-[13px] text-[#64748b]">{getGreeting()}{captainName ? `, ${captainName.split(" ")[0]}` : ""}</p>
         </div>
       )}
 
-      {/* Legacy tab removal marker — tabs now in header */}
+      {/* Legacy dead code cleaned */}
       {false && slots.length > 1 && (
         <div className="hidden">
           {slots.map((s) => {
@@ -335,43 +331,26 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         }, 0);
         return (
           <>
-            {/* ── Countdown — light card, not dark ── */}
-            <div className="mx-5 lg:mx-6 mt-3 bg-white rounded-2xl border border-[#f0efeb] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#0f4030] flex items-center justify-center flex-shrink-0">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                  </div>
-                  <div>
-                    <div className="text-[12px] font-bold text-[#1a1a1a]">Time left to order</div>
-                    <div className="text-[10px] text-[#9ca3af]">Food arrives {getSlotDropTime(slot.label) || `by ${slot.startTime}`}</div>
-                  </div>
+            {/* ── Pool status card — ONE timer, human-readable ── */}
+            <div className="mx-5 lg:mx-6 mt-3 bg-white rounded-2xl border border-black/[0.04] px-4 py-4" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[14px]">⏰</span>
+                <div>
+                  <div className="text-[13px] font-[700] text-[#0f172a]">Pool closes in <CountdownTimer cutoffTime={slot.cutoffTime} compact /></div>
+                  <div className="text-[11px] text-[#64748b]">Food arrives {getSlotDropTime(slot.label) || `by ${slot.startTime}`}</div>
                 </div>
-                <CountdownTimer cutoffTime={slot.cutoffTime} compact />
               </div>
-            </div>
-            {/* FIX #3: Social proof as separate pill */}
-            <div className="mx-5 mt-2 flex items-center justify-between text-[11px] text-[#6b7280]">
-              <div className="flex items-center gap-2">
+              {/* Social proof — one line */}
+              <div className="flex items-center gap-2 text-[11px]">
                 {totalOrdered > 0 ? (
                   <>
                     <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full animate-pulse" />
-                    <span>{totalOrdered} {totalOrdered !== 1 ? "people" : "person"} ordered so far</span>
+                    <span className="text-[#15803d] font-semibold">{totalOrdered} colleague{totalOrdered !== 1 ? "s" : ""} ordering today</span>
                   </>
-                ) : officeName ? (
-                  <span>Be the first from {officeName} to order today</span>
                 ) : (
-                  <span>Be the first to order today</span>
+                  <span className="text-[#64748b]">Pool just opened! First orders unlock deals for everyone.</span>
                 )}
               </div>
-              {captainName && (
-                <div className="flex items-center gap-1.5">
-                  <div className="w-5 h-5 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[8px] font-bold flex-shrink-0">
-                    {captainName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
-                  </div>
-                  <span className="text-[10px] text-[#0f4030] font-medium">{captainName}</span>
-                </div>
-              )}
             </div>
           </>
         );
