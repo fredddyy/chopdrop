@@ -17,8 +17,10 @@ model User {
   officeId     String?
   createdAt    DateTime @default(now())
 
-  office Office? @relation(fields: [officeId], references: [id])
-  orders Order[]
+  office   Office?       @relation(fields: [officeId], references: [id])
+  orders   Order[]
+  walletId String?
+  wallet   CreditWallet? @relation(fields: [walletId], references: [id])
 }
 
 model Admin {
@@ -188,12 +190,16 @@ model Order {
   paidAt          DateTime?
   createdAt       DateTime        @default(now())
 
-  dailyMenu  DailyMenu   @relation(fields: [dailyMenuId], references: [id])
-  office     Office?     @relation(fields: [officeId], references: [id])
-  dropPoint  DropPoint?  @relation(fields: [dropPointId], references: [id])
-  user       User?       @relation(fields: [userId], references: [id])
-  items      OrderItem[]
-  rating     Rating?
+  creditsApplied Int      @default(0) // kobo — credit used on this order
+  poolRefunded   Boolean  @default(false) // whether pool credit has been calculated for this order
+
+  dailyMenu          DailyMenu          @relation(fields: [dailyMenuId], references: [id])
+  office             Office?            @relation(fields: [officeId], references: [id])
+  dropPoint          DropPoint?         @relation(fields: [dropPointId], references: [id])
+  user               User?              @relation(fields: [userId], references: [id])
+  items              OrderItem[]
+  rating             Rating?
+  creditTransactions CreditTransaction[]
 }
 
 model OrderItem {
@@ -240,6 +246,29 @@ enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
+}
+
+model CreditWallet {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Int      @default(0) // kobo
+  updatedAt DateTime @updatedAt
+
+  user         User[]
+  transactions CreditTransaction[]
+}
+
+model CreditTransaction {
+  id          String   @id @default(cuid())
+  walletId    String
+  orderId     String?
+  amount      Int      // kobo (positive = credit, negative = debit)
+  type        String   // POOL_REFUND | APPLIED | MANUAL
+  description String?
+  createdAt   DateTime @default(now())
+
+  wallet CreditWallet @relation(fields: [walletId], references: [id])
+  order  Order?       @relation(fields: [orderId], references: [id])
 }
 
 model Rating {

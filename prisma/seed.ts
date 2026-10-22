@@ -83,33 +83,42 @@ async function main() {
   });
   console.log("Restaurants: Ajisafe, The Place, Kilimanjaro, Mama Tola's, Tantalizers");
 
-  // ── Fixed meals ──
+  // Pool tier generator: 10% off at 5 orders, 20% at 10, 30% at 15
+  function tiers(base: number) {
+    return [
+      { min: 5, price: Math.round(base * 0.9) },
+      { min: 10, price: Math.round(base * 0.8) },
+      { min: 15, price: Math.round(base * 0.7) },
+    ];
+  }
+
+  // ── Fixed meals (all REGULAR meals get pool tiers, DEALs don't) ──
   const meals = await Promise.all([
     // Ajisafe
-    prisma.meal.create({ data: { restaurantId: ajisafe.id, name: "Jollof Rice + Chicken", description: "Smoky party jollof with grilled chicken, plantain and coleslaw", price: 250000, tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1603496987674-79600a000f55?w=400&fit=crop" } }),
-    prisma.meal.create({ data: { restaurantId: ajisafe.id, name: "Pepper Rice + Turkey", description: "Signature Ajisafe pepper rice with smoked turkey", price: 300000, tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?w=400&fit=crop" } }),
-    prisma.meal.create({ data: { restaurantId: ajisafe.id, name: "Fried Rice + Fish", description: "Nigerian fried rice with crispy fried fish", price: 220000, tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: ajisafe.id, name: "Jollof Rice + Chicken", description: "Smoky party jollof with grilled chicken, plantain and coleslaw", price: 250000, poolTiers: tiers(250000), tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1603496987674-79600a000f55?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: ajisafe.id, name: "Pepper Rice + Turkey", description: "Signature Ajisafe pepper rice with smoked turkey", price: 300000, poolTiers: tiers(300000), tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: ajisafe.id, name: "Fried Rice + Fish", description: "Nigerian fried rice with crispy fried fish", price: 220000, poolTiers: tiers(220000), tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&fit=crop" } }),
 
     // The Place
-    prisma.meal.create({ data: { restaurantId: thePlace.id, name: "Amala + Ewedu + Gbegiri", description: "Classic Amala combo with assorted meat", price: 200000, tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&fit=crop" } }),
-    prisma.meal.create({ data: { restaurantId: thePlace.id, name: "Pounded Yam + Egusi", description: "Fresh pounded yam with rich egusi soup and stockfish", price: 280000, tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&fit=crop" } }),
-    prisma.meal.create({ data: { restaurantId: thePlace.id, name: "Semo + Ogbono", description: "Semovita with ogbono soup and assorted meat", price: 250000, tag: "REGULAR", type: "FIXED" } }),
-    prisma.meal.create({ data: { restaurantId: thePlace.id, name: "White Rice + Stew + Chicken", description: "Steamed white rice with tomato stew and grilled chicken", price: 200000, tag: "DEAL", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: thePlace.id, name: "Amala + Ewedu + Gbegiri", description: "Classic Amala combo with assorted meat", price: 200000, poolTiers: tiers(200000), tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: thePlace.id, name: "Pounded Yam + Egusi", description: "Fresh pounded yam with rich egusi soup and stockfish", price: 280000, poolTiers: tiers(280000), tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: thePlace.id, name: "Semo + Ogbono", description: "Semovita with ogbono soup and assorted meat", price: 250000, poolTiers: tiers(250000), tag: "REGULAR", type: "FIXED" } }),
+    prisma.meal.create({ data: { restaurantId: thePlace.id, name: "White Rice + Stew + Chicken", description: "Steamed white rice with tomato stew and grilled chicken", price: 200000, poolTiers: tiers(200000), tag: "DEAL", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?w=400&fit=crop" } }),
 
     // Kilimanjaro
-    prisma.meal.create({ data: { restaurantId: kilimanjaro.id, name: "Chicken Shawarma", description: "Large chicken shawarma with garlic sauce and fries", price: 180000, tag: "DEAL", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1567364816519-cbc9c4ffe1eb?w=400&fit=crop" } }),
-    prisma.meal.create({ data: { restaurantId: kilimanjaro.id, name: "Chicken & Chips", description: "Two pieces of fried chicken with chips and coleslaw", price: 200000, tag: "REGULAR", type: "FIXED" } }),
-    prisma.meal.create({ data: { restaurantId: kilimanjaro.id, name: "Burger Meal", description: "Beef burger with fries and drink", price: 250000, tag: "REGULAR", type: "FIXED" } }),
+    prisma.meal.create({ data: { restaurantId: kilimanjaro.id, name: "Chicken Shawarma", description: "Large chicken shawarma with garlic sauce and fries", price: 180000, poolTiers: tiers(180000), tag: "DEAL", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1567364816519-cbc9c4ffe1eb?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: kilimanjaro.id, name: "Chicken & Chips", description: "Two pieces of fried chicken with chips and coleslaw", price: 200000, poolTiers: tiers(200000), tag: "REGULAR", type: "FIXED" } }),
+    prisma.meal.create({ data: { restaurantId: kilimanjaro.id, name: "Burger Meal", description: "Beef burger with fries and drink", price: 250000, poolTiers: tiers(250000), tag: "REGULAR", type: "FIXED" } }),
 
     // Mama Tola
-    prisma.meal.create({ data: { restaurantId: mamaTola.id, name: "Ofada Rice + Sauce", description: "Local Ofada rice with spicy Ofada sauce and assorted", price: 230000, tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&fit=crop" } }),
-    prisma.meal.create({ data: { restaurantId: mamaTola.id, name: "Beans + Plantain + Fish", description: "Nigerian beans with fried plantain and grilled fish", price: 180000, tag: "DEAL", type: "FIXED" } }),
-    prisma.meal.create({ data: { restaurantId: mamaTola.id, name: "Yam Porridge + Turkey", description: "Spicy yam porridge with smoked turkey", price: 200000, tag: "REGULAR", type: "FIXED" } }),
+    prisma.meal.create({ data: { restaurantId: mamaTola.id, name: "Ofada Rice + Sauce", description: "Local Ofada rice with spicy Ofada sauce and assorted", price: 230000, poolTiers: tiers(230000), tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: mamaTola.id, name: "Beans + Plantain + Fish", description: "Nigerian beans with fried plantain and grilled fish", price: 180000, poolTiers: tiers(180000), tag: "DEAL", type: "FIXED" } }),
+    prisma.meal.create({ data: { restaurantId: mamaTola.id, name: "Yam Porridge + Turkey", description: "Spicy yam porridge with smoked turkey", price: 200000, poolTiers: tiers(200000), tag: "REGULAR", type: "FIXED" } }),
 
     // Tantalizers
-    prisma.meal.create({ data: { restaurantId: tantalizers.id, name: "Meat Pie + Drink", description: "Signature Tantalizers meat pie with a soft drink", price: 120000, tag: "DEAL", type: "FIXED" } }),
-    prisma.meal.create({ data: { restaurantId: tantalizers.id, name: "Chicken Pie Combo", description: "Chicken pie, sausage roll and drink", price: 150000, tag: "REGULAR", type: "FIXED" } }),
-    prisma.meal.create({ data: { restaurantId: tantalizers.id, name: "Rice Box Meal", description: "Jollof or fried rice with chicken and plantain in a box", price: 200000, tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&fit=crop" } }),
+    prisma.meal.create({ data: { restaurantId: tantalizers.id, name: "Meat Pie + Drink", description: "Signature Tantalizers meat pie with a soft drink", price: 120000, poolTiers: tiers(120000), tag: "DEAL", type: "FIXED" } }),
+    prisma.meal.create({ data: { restaurantId: tantalizers.id, name: "Chicken Pie Combo", description: "Chicken pie, sausage roll and drink", price: 150000, poolTiers: tiers(150000), tag: "REGULAR", type: "FIXED" } }),
+    prisma.meal.create({ data: { restaurantId: tantalizers.id, name: "Rice Box Meal", description: "Jollof or fried rice with chicken and plantain in a box", price: 200000, poolTiers: tiers(200000), tag: "REGULAR", type: "FIXED", imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&fit=crop" } }),
   ]);
   console.log(`${meals.length} meals created`);
 

@@ -302,20 +302,18 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </div>
             </div>
 
-            {/* Contextual message below tiers */}
+            {/* How it works explanation */}
             <div className="px-4 pb-4 -mt-1">
-              <div className="flex items-center gap-3 p-3 rounded-[12px]" style={{ background: orders === 0 ? "var(--sand)" : "var(--emerald)", opacity: orders === 0 ? 1 : 0.1 }}>
-                {orders === 0 ? (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                    <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Order first — your colleagues will follow</p>
-                  </>
-                ) : orders >= 15 ? (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-                    <p className="text-[13px] font-bold text-white">Best price unlocked for everyone!</p>
-                  </>
-                ) : null}
+              <div className="flex items-start gap-2.5 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  {orders === 0
+                    ? "Order now at full price. As colleagues join, you get the difference as credit for your next meal."
+                    : orders >= 15
+                    ? "Best tier reached! Everyone who ordered today gets credits for the discount."
+                    : "You pay now. When the pool closes, you get credit for any price drop."
+                  }
+                </p>
               </div>
             </div>
           </div>

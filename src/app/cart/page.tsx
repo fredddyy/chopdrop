@@ -28,6 +28,7 @@ export default function CartPage() {
   const [isFirstOrder, setIsFirstOrder] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [poolData, setPoolData] = useState<{ officeOrderCount: number; meals: Record<string, { poolPrice: number; basePrice: number; savings: number }> }>({ officeOrderCount: 0, meals: {} });
+  const [creditBalance, setCreditBalance] = useState(0);
 
   useEffect(() => {
     const profile = getCustomerProfile();
@@ -55,7 +56,7 @@ export default function CartPage() {
     }).catch(() => setIsAuthenticated(false));
   }, []);
 
-  // Fetch pool pricing when office is known
+  // Fetch pool pricing + credits when office is known
   useEffect(() => {
     if (!officeId) return;
     fetch(`/api/pool-price?officeId=${officeId}`)
@@ -64,9 +65,17 @@ export default function CartPage() {
       .catch(() => {});
   }, [officeId]);
 
+  useEffect(() => {
+    fetch("/api/credits")
+      .then((r) => r.json())
+      .then((d) => { if (d.success && d.data) setCreditBalance(d.data.balance); })
+      .catch(() => {});
+  }, []);
+
   const EXPRESS_FEE = 120000;
   const deliveryFee = isFirstOrder ? 0 : fulfillment === "delivery" ? EXPRESS_FEE : 0;
-  const orderTotal = cart.subtotal + deliveryFee;
+  const creditsToApply = Math.min(creditBalance, cart.subtotal + deliveryFee);
+  const orderTotal = cart.subtotal + deliveryFee - creditsToApply;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
   const hasContact = customerName.trim() && customerPhone.trim();
 
@@ -97,7 +106,7 @@ export default function CartPage() {
     const totalQuantity = cart.items.reduce((sum, i) => sum + i.quantity, 0);
     const allCustomItems = cart.items.filter((i) => i.customItems?.length).flatMap((i) => i.customItems || []);
     try {
-      const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyMenuId: realDailyMenuId, officeId: fulfillment === "office" ? officeId : undefined, customerName: customerName.trim(), customerPhone: customerPhone.trim(), customerEmail: "", fulfillmentType: fulfillment === "delivery" ? "DELIVERY" : "PICKUP", deliveryAddress: fulfillment === "delivery" ? deliveryAddress.trim() : undefined, quantity: totalQuantity, subtotal: cart.subtotal, captainTip: 0, serviceFee: 0, items: allCustomItems.length > 0 ? allCustomItems : undefined }) });
+      const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyMenuId: realDailyMenuId, officeId: fulfillment === "office" ? officeId : undefined, customerName: customerName.trim(), customerPhone: customerPhone.trim(), customerEmail: "", fulfillmentType: fulfillment === "delivery" ? "DELIVERY" : "PICKUP", deliveryAddress: fulfillment === "delivery" ? deliveryAddress.trim() : undefined, quantity: totalQuantity, subtotal: cart.subtotal, captainTip: 0, serviceFee: 0, creditsApplied: creditsToApply, items: allCustomItems.length > 0 ? allCustomItems : undefined }) });
       const data = await res.json();
       if (!data.success) { if (data.error === "Menu item not found") { setError("Cart expired. Re-add from menu."); cart.clearCart(); } else { setError(data.error || "Something went wrong"); } setLoading(false); return; }
       const redirectUrl = data.data.authorizationUrl;
@@ -291,6 +300,12 @@ export default function CartPage() {
                 <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
                 <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
               </div>
+              {creditsToApply > 0 && (
+                <div className="flex justify-between">
+                  <span style={{ color: "var(--emerald)" }}>Pool credits applied</span>
+                  <span className="font-bold" style={{ color: "var(--emerald)" }}>-{formatNaira(creditsToApply)}</span>
+                </div>
+              )}
               {/* Pool savings callout — only when discount is active */}
               {cart.items.some(item => {
                 const key = item.realDailyMenuId || item.dailyMenuId;
@@ -318,6 +333,17 @@ export default function CartPage() {
                 <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
               </div>
             </div>
+
+            {/* Pool refund guarantee */}
+            {officeId && (
+              <div className="flex items-start gap-2.5 mt-3 p-3 rounded-[12px]" style={{ background: "rgba(212,162,78,0.08)", border: "1px solid rgba(212,162,78,0.15)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div>
+                  <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Pool refund guarantee</span>
+                  <p className="text-[12px] mt-0.5" style={{ color: "var(--text-secondary)" }}>If more colleagues order, the price drops. You get the difference as credit for your next meal.</p>
+                </div>
+              </div>
+            )}
 
             {/* Delivery info */}
             {officeId && (
