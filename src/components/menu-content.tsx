@@ -224,50 +224,99 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </div>
       )}
 
-      {/* ── Pool progress meter with colleague context ── */}
-      {slot && !slot.expired && (poolData.officeOrderCount > 0 || totalOrdered === 0) && (
-        <div className="mx-5 mt-3 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-          {poolData.officeOrderCount > 0 ? (
-            <>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={nextDiscount > 0 ? "var(--emerald)" : "var(--gold)"} strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>
-                    {nextDiscount > 0 ? `${nextDiscount}% pool discount` : "Building your pool"}
-                  </span>
-                </div>
-                <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--emerald)" }}>
-                  {poolData.officeOrderCount} orders
-                </span>
+      {/* ── PRICE TIER LADDER — makes pool pricing crystal clear ── */}
+      {slot && !slot.expired && (() => {
+        const tiers = [
+          { min: 0, pct: 0, label: "Full price" },
+          { min: 5, pct: 10, label: "10% off" },
+          { min: 10, pct: 20, label: "20% off" },
+          { min: 15, pct: 30, label: "30% off" },
+        ];
+        const orders = poolData.officeOrderCount;
+        const currentTierIdx = orders >= 15 ? 3 : orders >= 10 ? 2 : orders >= 5 ? 1 : 0;
+        // Example meal price for context (use cheapest available)
+        const examplePrice = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).sort((a, b) => a.price - b.price)[0]?.price || 200000;
+
+        return (
+          <div className="mx-5 mt-3 rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            {/* Header */}
+            <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span className="text-[15px] font-extrabold" style={{ color: "var(--text)" }}>Pool pricing</span>
               </div>
-              <div className="h-2.5 rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(poolPct, 5)}%`, background: nextDiscount >= 20 ? "var(--emerald)" : nextDiscount >= 10 ? "var(--gold)" : "var(--coral)" }} />
-              </div>
-              {moreForNextTier > 0 && (
-                <p className="text-[13px] mt-2" style={{ color: "var(--text-secondary)" }}>
-                  {moreForNextTier} more from your office → <span className="font-bold" style={{ color: "var(--emerald)" }}>everyone saves more</span>
-                </p>
-              )}
-              {nextDiscount >= 20 && (
-                <p className="text-[13px] mt-2 font-bold" style={{ color: "var(--emerald)" }}>
-                  Best price unlocked for your whole office!
-                </p>
-              )}
-            </>
-          ) : (
-            /* Empty pool — encourage first order */
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              </div>
-              <div>
-                <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Be the first to order today</p>
-                <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>Start the pool — prices drop as colleagues join</p>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--emerald)" }} />
+                <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--emerald)" }}>{orders} orders now</span>
               </div>
             </div>
-          )}
-        </div>
-      )}
+
+            {/* Tier steps */}
+            <div className="px-4 pb-4">
+              <div className="flex gap-1.5">
+                {tiers.map((tier, i) => {
+                  const isActive = i === currentTierIdx;
+                  const isUnlocked = i <= currentTierIdx;
+                  const isNext = i === currentTierIdx + 1;
+                  const moreNeeded = isNext ? tier.min - orders : 0;
+                  const tierPrice = Math.round(examplePrice * (1 - tier.pct / 100));
+
+                  return (
+                    <div key={i} className="flex-1">
+                      {/* Bar segment */}
+                      <div className="h-2 rounded-full mb-2" style={{
+                        background: isUnlocked
+                          ? (i === 3 ? "var(--emerald)" : i === 2 ? "var(--emerald)" : i === 1 ? "var(--gold)" : "var(--coral)")
+                          : "var(--sand)",
+                        opacity: isUnlocked ? 1 : 0.5,
+                      }} />
+                      {/* Label */}
+                      <div className={`rounded-[10px] p-2 text-center transition-all ${isActive ? "ring-2 ring-[var(--coral)]" : ""}`} style={{
+                        background: isActive ? (i >= 2 ? "var(--emerald)" : i === 1 ? "var(--gold)" : "var(--sand)") : "var(--sand)",
+                        opacity: isUnlocked || isNext ? 1 : 0.5,
+                      }}>
+                        <div className="text-[11px] font-extrabold" style={{ color: isActive && i >= 1 ? "white" : "var(--text)" }}>
+                          {tier.pct === 0 ? "0%" : `${tier.pct}%`}
+                        </div>
+                        <div className="text-[10px] font-bold tabular-nums mt-0.5" style={{ color: isActive && i >= 1 ? "white/80" : "var(--text-secondary)" }}>
+                          {formatPrice(tierPrice)}
+                        </div>
+                        <div className="text-[9px] mt-0.5" style={{ color: isActive && i >= 1 ? "white/60" : "var(--text-muted)" }}>
+                          {tier.min === 0 ? "1-4" : `${tier.min}+`}
+                        </div>
+                      </div>
+                      {/* "Next" indicator */}
+                      {isNext && moreNeeded > 0 && (
+                        <div className="text-center mt-1.5">
+                          <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>{moreNeeded} more</span>
+                        </div>
+                      )}
+                      {isActive && (
+                        <div className="text-center mt-1.5">
+                          <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>You&apos;re here</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Empty pool state */}
+            {orders === 0 && (
+              <div className="px-4 pb-4 -mt-1">
+                <div className="flex items-center gap-3 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                  <div>
+                    <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Be the first to order</p>
+                    <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>Prices drop as your office joins</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── How it works — first-time ONLY, compact ── */}
       {!bannerDismissed && (
