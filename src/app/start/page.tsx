@@ -154,7 +154,7 @@ export default function StartPage() {
           </div>
 
           <button type="button" onClick={() => setStep("phone")} className={btnCls} style={btnShadow}>Get started — free forever</button>
-          <p className="text-[12px] text-[#6b7280] text-center mt-4">Already have an office? <a href="/menu" className="text-[#f05f4b] font-semibold underline">Go to menu</a></p>
+          <p className="text-[12px] text-[#6b7280] text-center mt-4">Already have an account? <a href="/auth" className="text-[#f05f4b] font-bold">Log in</a></p>
         </div>
       </main>
     );
