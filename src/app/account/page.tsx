@@ -155,7 +155,7 @@ export default function AccountPage() {
     clearCustomerProfile();
     localStorage.removeItem("chopdrop-cart");
     localStorage.removeItem("chopdrop-banner-dismissed");
-    router.push("/menu");
+    router.push("/");
   }
 
   const initials = profile.name
