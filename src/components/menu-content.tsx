@@ -464,11 +464,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       })()}
 
       {/* ═══════════════════════════════════════════════ */}
-      {/*  ACTIVE SLOT — Food-first meal cards             */}
+      {/*  ACTIVE SLOT — Adaptive layout by meal count     */}
       {/* ═══════════════════════════════════════════════ */}
       {slot && !slot.expired && !allExpired && (
         <>
-          {/* Section: Vendor restaurants with individual meals */}
           {(() => {
             const byRestaurant = new Map<string, { name: string; imageUrl: string | null; items: MenuItem[]; hasBuild: boolean; }>();
             for (const item of slot.items) {
@@ -478,9 +477,74 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               r.items.push(item);
             }
 
-            return Array.from(byRestaurant.entries()).map(([rId, rData]) => (
+            // Split: single-meal vendors go into "Quick picks", rest get full sections
+            const quickPicks: { rId: string; rData: { name: string; imageUrl: string | null; items: MenuItem[]; hasBuild: boolean } }[] = [];
+            const fullVendors: [string, { name: string; imageUrl: string | null; items: MenuItem[]; hasBuild: boolean }][] = [];
+
+            for (const [rId, rData] of byRestaurant) {
+              if (rData.items.length === 1 && !rData.hasBuild) {
+                quickPicks.push({ rId, rData });
+              } else {
+                fullVendors.push([rId, rData]);
+              }
+            }
+
+            return (
+              <>
+                {/* Quick picks — horizontal scroll for single-meal vendors */}
+                {quickPicks.length > 0 && (
+                  <section className="mt-6 px-5">
+                    <h2 className="text-[16px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Quick picks</h2>
+                    <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-5 px-5 pb-1">
+                      {quickPicks.map(({ rId, rData }) => {
+                        const meal = rData.items[0];
+                        const cartQty = cart.items.find((i) => i.dailyMenuId === meal.id)?.quantity || 0;
+                        const effectivePrice = getEffectivePrice(meal.id, meal.price);
+                        return (
+                          <div key={rId} className="shrink-0 w-[260px] rounded-[16px] overflow-hidden flex cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: cartQty > 0 ? "2px solid var(--coral)" : "1px solid var(--border)" }} onClick={() => handleAddFixed(meal)}>
+                            <div className="w-[90px] h-[90px] shrink-0" style={{ background: "var(--sand)" }}>
+                              {meal.imageUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={meal.imageUrl} alt={meal.name} className="w-full h-full object-cover" loading="lazy" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
+                              <div>
+                                <h3 className="text-[14px] font-bold leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}</h3>
+                                <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{rData.name}</p>
+                              </div>
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  {cartQty > 0 ? (
+                                    <div className="flex items-center rounded-full h-7" style={{ background: "var(--coral)" }}>
+                                      <button type="button" onClick={() => cart.changeQuantity(meal.id, -1)} className="w-7 h-7 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg></button>
+                                      <span className="text-white text-[12px] font-bold min-w-[14px] text-center">{cartQty}</span>
+                                      <button type="button" onClick={() => handleAddFixed(meal)} className="w-7 h-7 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
+                                    </div>
+                                  ) : (
+                                    <button type="button" onClick={() => handleAddFixed(meal)} className="w-8 h-8 rounded-full flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--coral)" }}>
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
+
+                {/* Full vendor sections — adaptive by meal count */}
+                {fullVendors.map(([rId, rData]) => (
               <section key={rId} className="mt-8 px-5">
-                {/* Vendor header — bold with background */}
+                {/* Vendor header */}
                 <div className="flex items-center gap-3 mb-3 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
                   <div className="w-11 h-11 rounded-[12px] overflow-hidden shrink-0 border-2 border-white">
                     {rData.imageUrl ? (
@@ -501,9 +565,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   )}
                 </div>
 
-                {/* Meal cards — FOOD FIRST, large photos */}
+                {/* Meal cards — grid, capped at 4 visible for 5+ meals */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                  {rData.items.map((meal) => {
+                  {rData.items.slice(0, 4).map((meal) => {
                     const cartQty = cart.items.find((i) => i.dailyMenuId === meal.id)?.quantity || 0;
                     const effectivePrice = getEffectivePrice(meal.id, meal.price);
                     const hasPoolDiscount = poolData.meals[meal.id] && poolData.meals[meal.id].savings > 0;
@@ -572,8 +636,17 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     );
                   })}
                 </div>
+                {/* "See all" link for vendors with 5+ meals */}
+                {rData.items.length > 4 && (
+                  <Link href={`/restaurant/${rId}`} className="mt-3 w-full h-10 rounded-full text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
+                    See all {rData.items.length} meals
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                  </Link>
+                )}
               </section>
-            ));
+                ))}
+              </>
+            );
           })()}
 
           {/* ── INVITE NUDGE — selfish incentive to share ── */}
