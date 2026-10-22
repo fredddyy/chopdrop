@@ -163,85 +163,82 @@ export default function CartPage() {
             </section>
           )}
 
-          {/* Delivery — simplified, office-only focus */}
+          {/* Delivery */}
           {isAuthenticated && (
             <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <h2 className="text-[16px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Delivery</h2>
 
-              {/* Office Drop — primary */}
-              <button type="button" onClick={() => setFulfillment("office")} className="w-full text-left p-4 rounded-[14px] transition-all cursor-pointer mb-2" style={{
-                border: fulfillment === "office" ? "2px solid var(--emerald)" : "1px solid var(--border)",
-                background: fulfillment === "office" ? "rgba(13,159,95,0.04)" : "var(--card)",
-              }}>
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: fulfillment === "office" ? "var(--emerald)" : "var(--border)" }}>
-                    {fulfillment === "office" && <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--emerald)" }} />}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Office Drop</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>FREE</span>
+              {officeId ? (
+                /* Connected to office — just show confirmation, no radio */
+                <div className="p-4 rounded-[14px]" style={{ background: "rgba(13,159,95,0.04)", border: "1px solid rgba(13,159,95,0.15)" }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 21V4h11v17M15 9h5v12" /></svg>
                     </div>
-                    {officeId ? (
-                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-secondary)" }}>{officeName} · {collectionPoint}</p>
-                    ) : (
-                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>Arrives by 1:00 PM at your office</p>
-                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>{officeName}</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>FREE</span>
+                      </div>
+                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-secondary)" }}>Arrives by 1:00 PM at {collectionPoint || "reception"}</p>
+                    </div>
                   </div>
-                  <span className="text-[15px] font-extrabold shrink-0" style={{ color: "var(--emerald)" }}>₦0</span>
                 </div>
-                {fulfillment === "office" && officeId && (
-                  <div className="mt-2.5 flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-                    Connected — arrives at {collectionPoint || "reception"}
-                  </div>
-                )}
-                {fulfillment === "office" && !officeId && (
-                  <div className="mt-3" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex gap-2">
-                      <input type="text" value={codeInput} onChange={(e) => setCodeInput(e.target.value)} placeholder="Office code e.g. STERL-001" className="flex-1 px-4 h-10 rounded-[10px] text-[14px] focus:outline-none uppercase" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
-                      <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="h-10 px-5 rounded-[10px] text-[13px] font-bold text-white disabled:opacity-50 cursor-pointer" style={{ background: "var(--dark)" }}>{codeLoading ? "..." : "Join"}</button>
-                    </div>
-                    {codeError && <p className="text-[12px] mt-1.5" style={{ color: "var(--coral)" }}>{codeError}</p>}
-                    {!isFirstOrder && (
-                      <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
-                        No code? <a href="https://wa.me/2349120532827?text=I%20need%20an%20office%20code" target="_blank" rel="noopener noreferrer" className="font-bold underline" style={{ color: "var(--text-secondary)" }}>Get one via WhatsApp</a>
-                      </p>
-                    )}
-                    {isFirstOrder && (
-                      <div className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-                        First order — delivery is free everywhere!
+              ) : (
+                /* Not connected — show office code input + express fallback */
+                <div className="space-y-3">
+                  {/* Office code input */}
+                  <div className="p-4 rounded-[14px]" style={{ border: fulfillment === "office" ? "2px solid var(--emerald)" : "1px solid var(--border)", background: fulfillment === "office" ? "rgba(13,159,95,0.04)" : "var(--card)" }}>
+                    <button type="button" onClick={() => setFulfillment("office")} className="w-full text-left cursor-pointer">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Office Drop</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>FREE</span>
+                      </div>
+                    </button>
+                    {fulfillment === "office" && (
+                      <div>
+                        <p className="text-[13px] mb-3" style={{ color: "var(--text-secondary)" }}>Enter your office code for free delivery</p>
+                        <div className="flex gap-2">
+                          <input type="text" value={codeInput} onChange={(e) => setCodeInput(e.target.value)} placeholder="e.g. STERL-001" className="flex-1 px-4 h-11 rounded-[10px] text-[14px] focus:outline-none uppercase" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
+                          <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="h-11 px-5 rounded-[10px] text-[14px] font-bold text-white disabled:opacity-50 cursor-pointer" style={{ background: "var(--dark)" }}>{codeLoading ? "..." : "Join"}</button>
+                        </div>
+                        {codeError && <p className="text-[12px] mt-1.5" style={{ color: "var(--coral)" }}>{codeError}</p>}
+                        {isFirstOrder && (
+                          <div className="mt-2.5 flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                            First order — delivery is free!
+                          </div>
+                        )}
+                        {!isFirstOrder && (
+                          <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
+                            No code? <a href="https://wa.me/2349120532827?text=I%20need%20an%20office%20code" target="_blank" rel="noopener noreferrer" className="font-bold underline" style={{ color: "var(--text-secondary)" }}>Get one via WhatsApp</a>
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
-                )}
-              </button>
 
-              {/* Express — secondary, de-emphasized */}
-              {!officeId && (
-                <button type="button" onClick={() => setFulfillment("delivery")} className="w-full text-left p-4 rounded-[14px] transition-all cursor-pointer" style={{
-                  border: fulfillment === "delivery" ? "2px solid var(--coral)" : "1px solid var(--border)",
-                  background: fulfillment === "delivery" ? "rgba(232,96,76,0.04)" : "var(--card)",
-                }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: fulfillment === "delivery" ? "var(--coral)" : "var(--border)" }}>
-                      {fulfillment === "delivery" && <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--coral)" }} />}
+                  {/* Express fallback */}
+                  <button type="button" onClick={() => setFulfillment("delivery")} className="w-full text-left p-4 rounded-[14px] transition-all cursor-pointer" style={{
+                    border: fulfillment === "delivery" ? "2px solid var(--coral)" : "1px solid var(--border)",
+                    background: fulfillment === "delivery" ? "rgba(232,96,76,0.04)" : "var(--card)",
+                  }}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Express Delivery</span>
+                        <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>45 min to your address</p>
+                      </div>
+                      <span className="text-[15px] font-extrabold shrink-0" style={{ color: isFirstOrder ? "var(--emerald)" : "var(--text)" }}>
+                        {isFirstOrder ? "₦0" : formatNaira(EXPRESS_FEE)}
+                      </span>
                     </div>
-                    <div className="flex-1">
-                      <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Express Delivery</span>
-                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>45 min to your address</p>
-                    </div>
-                    <span className="text-[15px] font-extrabold shrink-0" style={{ color: isFirstOrder ? "var(--emerald)" : "var(--text)" }}>
-                      {isFirstOrder ? "₦0" : formatNaira(EXPRESS_FEE)}
-                    </span>
-                  </div>
-                  {fulfillment === "delivery" && (
-                    <div className="mt-3" onClick={(e) => e.stopPropagation()}>
-                      <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter delivery address" className="w-full px-4 h-10 rounded-[10px] text-[14px] focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
-                    </div>
-                  )}
-                </button>
+                    {fulfillment === "delivery" && (
+                      <div className="mt-3">
+                        <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter delivery address" className="w-full px-4 h-11 rounded-[10px] text-[14px] focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()} />
+                      </div>
+                    )}
+                  </button>
+                </div>
               )}
             </section>
           )}
