@@ -69,6 +69,18 @@ export default async function CaptainPage({ params, searchParams }: PageProps) {
   const totalBoxes = batches.reduce((s, b) => s + b.totalBoxes, 0);
   const totalRevenue = orders.reduce((s, o) => s + o.totalAmount, 0);
 
+  // Get member count and today's menu for share message
+  const memberCount = await prisma.user.count({ where: { officeId: office.id } });
+  const todayMenus = await prisma.dailyMenu.findMany({
+    where: { date: today, meal: { isAvailable: true } },
+    include: { meal: true },
+    take: 5,
+  });
+  const menuItems = todayMenus.map((dm) => `${dm.meal.name} ₦${(dm.meal.price / 100).toLocaleString()}`);
+
+  // Unique orderers today
+  const ordererNames = [...new Set(orders.map((o) => o.customerName))];
+
   return (
     <CaptainDashboard
       office={{
@@ -80,6 +92,9 @@ export default async function CaptainPage({ params, searchParams }: PageProps) {
         collectionPoint: office.collectionPoint,
         assistantName: office.assistantName,
       }}
+      memberCount={memberCount}
+      ordererNames={ordererNames}
+      menuItems={menuItems}
       orders={orders.map((o) => ({
         id: o.id,
         orderCode: o.orderCode,
