@@ -6,7 +6,7 @@ interface DropMarkProps {
   smile?: string;
 }
 
-export function DropMark({ size = 32, fill = "#E8604C", smile = "#ffffff" }: DropMarkProps) {
+export function DropMark({ size = 32, fill = "#C4572A", smile = "#ffffff" }: DropMarkProps) {
   return (
     <svg viewBox="0 0 100 110" width={size} height={size * 1.1} aria-hidden="true">
       <path
@@ -32,7 +32,7 @@ interface LogoProps {
 
 export function Logo({ size = 32, variant = "light", compact = false }: LogoProps) {
   const textColor = variant === "dark" || variant === "white" ? "#FFFFFF" : "#1C2B24";
-  const markFill = variant === "white" ? "#FFFFFF" : "#E8604C";
+  const markFill = variant === "white" ? "#FFFFFF" : "#C4572A";
   const markSmile = variant === "white" ? "#1A3C2A" : "#ffffff";
 
   return (
