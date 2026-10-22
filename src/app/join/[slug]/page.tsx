@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Logo } from "@/components/logo";
+import { isSlotExpired } from "@/lib/utils";
 import { JoinClient } from "./join-client";
 
 export const dynamic = "force-dynamic";
@@ -7,12 +8,11 @@ export const dynamic = "force-dynamic";
 export default async function JoinPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  // Find the office by slug
   const office = await prisma.office.findUnique({
     where: { slug },
     include: {
       zone: true,
-      _count: { select: { users: true } },
+      _count: { select: { users: true, orders: true } },
     },
   });
 
@@ -31,7 +31,7 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
     );
   }
 
-  // Get today's menu items for this office's zone
+  // Get today's menu + time slots
   const todayStr = new Date().toLocaleDateString("en-CA");
   const today = new Date(todayStr + "T00:00:00.000Z");
 
@@ -44,7 +44,6 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
       meal: { include: { restaurant: true } },
       timeSlot: true,
     },
-    take: 6,
   });
 
   // Count today's orders from this office
@@ -61,14 +60,28 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
     },
   });
 
-  const menuPreview = dailyMenus.map((dm) => ({
+  // Find the active (non-expired) time slot for the pool timer
+  const activeSlot = dailyMenus
+    .map((dm) => dm.timeSlot)
+    .find((ts) => !isSlotExpired(ts.cutoffTime));
+
+  // Build menu preview — only show deals/combos first, then regular items
+  const deals = dailyMenus.filter((dm) => dm.meal.tag === "DEAL");
+  const regulars = dailyMenus.filter((dm) => dm.meal.tag !== "DEAL" && dm.meal.type !== "BUILD_YOUR_PLATE");
+  const previewItems = [...deals, ...regulars].slice(0, 4);
+
+  const menuPreview = previewItems.map((dm) => ({
     id: dm.id,
     name: dm.meal.name,
     price: dm.meal.price,
+    originalPrice: dm.meal.originalPrice,
     imageUrl: dm.meal.imageUrl,
     restaurantName: dm.meal.restaurant.name,
     tag: dm.meal.tag,
   }));
+
+  // Get unique restaurant count
+  const restaurantCount = new Set(dailyMenus.map((dm) => dm.meal.restaurant.id)).size;
 
   return (
     <JoinClient
@@ -78,10 +91,14 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
         code: office.code,
         address: office.address,
         collectionPoint: office.collectionPoint,
+        captainName: office.assistantName || null,
         memberCount: office._count.users,
+        totalOrders: office._count.orders,
         todayOrders,
       }}
       menuPreview={menuPreview}
+      poolTimer={activeSlot ? { cutoffTime: activeSlot.cutoffTime, label: activeSlot.label } : null}
+      restaurantCount={restaurantCount}
     />
   );
 }
