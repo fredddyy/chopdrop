@@ -7,7 +7,8 @@ import { formatNaira } from "@/lib/utils";
 import { BottomNav } from "@/components/bottom-nav";
 import Link from "next/link";
 
-type FulfillmentMode = "office" | "building" | "delivery";
+type FulfillmentMode = "office" | "delivery";
+
 export default function CartPage() {
   const cart = useCart();
   const [customerName, setCustomerName] = useState("");
@@ -20,33 +21,14 @@ export default function CartPage() {
   const [codeInput, setCodeInput] = useState("");
   const [codeLoading, setCodeLoading] = useState(false);
   const [codeError, setCodeError] = useState("");
-  const [captainTip, setCaptainTip] = useState(10000);
-  const [showCustomTip, setShowCustomTip] = useState(false);
-  const [customTipValue, setCustomTipValue] = useState("");
   const [editContact, setEditContact] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderingClosed, setOrderingClosed] = useState(false);
-
-  // Building Drop state
-  const [buildingSearch, setBuildingSearch] = useState("");
-  const [buildingResults, setBuildingResults] = useState<Array<{ id: string; name: string; address: string; todayOrders: number; isFreeDelivery: boolean }>>([]);
-  const [selectedDropPoint, setSelectedDropPoint] = useState<{ id: string; name: string; address: string; todayOrders: number; isFreeDelivery: boolean } | null>(null);
-  const [buildingSearching, setBuildingSearching] = useState(false);
-  const [newBuildingName, setNewBuildingName] = useState("");
-  const [newBuildingAddress, setNewBuildingAddress] = useState("");
-  const [showNewBuilding, setShowNewBuilding] = useState(false);
-  const [activeDrops, setActiveDrops] = useState<Array<{ id: string; name: string; address: string; todayOrders: number; isFreeDelivery: boolean }>>([]);
-  const [activeDropsLoaded, setActiveDropsLoaded] = useState(false);
-
-  // First-order state
   const [isFirstOrder, setIsFirstOrder] = useState(false);
-
-  // Auth state
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Only load office/delivery prefs from localStorage — contact comes from auth check
     const profile = getCustomerProfile();
     if (profile) {
       setDeliveryAddress(profile.deliveryAddress || "");
@@ -57,99 +39,26 @@ export default function CartPage() {
         setFulfillment("office");
       }
     }
-
-    // Check if ordering is closed
-    fetch("/api/menu/status")
-      .then((r) => r.json())
-      .then((d) => { if (d.allExpired) setOrderingClosed(true); })
-      .catch(() => {});
-
-    // Check auth status from server (cookie is httpOnly, can't check client-side)
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((d) => {
-        setIsAuthenticated(!!d.success);
-        if (d.success && d.data) {
-          const u = d.data;
-          if (u.firstName) setCustomerName(`${u.firstName} ${u.lastName || ""}`);
-          if (u.phone) setCustomerPhone(u.phone);
-          // Also set office from server if available
-          if (u.office?.id) {
-            setOfficeId(u.office.id);
-            setOfficeName(u.office.name || "");
-            setCollectionPoint(u.office.collectionPoint || "");
-            setFulfillment("office");
-          }
-        } else {
-          // Not authenticated — clear contact fields loaded from stale localStorage
-          setCustomerName("");
-          setCustomerPhone("");
-        }
-        if (d.success) {
-          fetch("/api/orders/mine")
-            .then((r) => r.json())
-            .then((od) => {
-              if (od.success && (!od.data || od.data.length === 0)) {
-                setIsFirstOrder(true);
-              }
-            })
-            .catch(() => {});
-        }
-      })
-      .catch(() => setIsAuthenticated(false));
+    fetch("/api/menu/status").then((r) => r.json()).then((d) => { if (d.allExpired) setOrderingClosed(true); }).catch(() => {});
+    fetch("/api/auth/me").then((r) => r.json()).then((d) => {
+      setIsAuthenticated(!!d.success);
+      if (d.success && d.data) {
+        const u = d.data;
+        if (u.firstName) setCustomerName(`${u.firstName} ${u.lastName || ""}`);
+        if (u.phone) setCustomerPhone(u.phone);
+        if (u.office?.id) { setOfficeId(u.office.id); setOfficeName(u.office.name || ""); setCollectionPoint(u.office.collectionPoint || ""); setFulfillment("office"); }
+      } else { setCustomerName(""); setCustomerPhone(""); }
+      if (d.success) {
+        fetch("/api/orders/mine").then((r) => r.json()).then((od) => { if (od.success && (!od.data || od.data.length === 0)) setIsFirstOrder(true); }).catch(() => {});
+      }
+    }).catch(() => setIsAuthenticated(false));
   }, []);
 
-
   const EXPRESS_FEE = 120000;
-  const SERVICE_FEE = Math.min(50000, Math.max(10000, Math.round(cart.subtotal * 0.05))); // 5%, min ₦100, max ₦500
-  const deliveryFee = isFirstOrder ? 0 :
-    fulfillment === "delivery" ? EXPRESS_FEE :
-    (fulfillment === "building" && selectedDropPoint && !selectedDropPoint.isFreeDelivery) ? EXPRESS_FEE : 0;
-  const effectiveTip = (fulfillment === "office" && officeId) ? captainTip : 0;
-  const orderTotal = cart.subtotal + deliveryFee + SERVICE_FEE + effectiveTip;
-  const belowMinimum = false; // No minimum order — drop model handles unit economics
+  const deliveryFee = isFirstOrder ? 0 : fulfillment === "delivery" ? EXPRESS_FEE : 0;
+  const orderTotal = cart.subtotal + deliveryFee;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
   const hasContact = customerName.trim() && customerPhone.trim();
-
-  // Load active drop points when building fulfillment is selected
-  useEffect(() => {
-    if (fulfillment === "building" && !activeDropsLoaded) {
-      fetch("/api/drop-points/active")
-        .then((r) => r.json())
-        .then((d) => { if (d.success) setActiveDrops(d.data); setActiveDropsLoaded(true); })
-        .catch(() => setActiveDropsLoaded(true));
-    }
-  }, [fulfillment, activeDropsLoaded]);
-
-  async function searchBuildings(query: string) {
-    setBuildingSearch(query);
-    if (query.length < 2) { setBuildingResults([]); return; }
-    setBuildingSearching(true);
-    try {
-      const res = await fetch(`/api/drop-points/lookup?q=${encodeURIComponent(query)}`);
-      const data = await res.json() as { success: boolean; data: Array<{ id: string; name: string; address: string; todayOrders: number; isFreeDelivery: boolean }> };
-      if (data.success) setBuildingResults(data.data);
-    } catch { /* ignore */ }
-    setBuildingSearching(false);
-  }
-
-  async function createNewBuilding() {
-    if (!newBuildingName.trim() || !newBuildingAddress.trim()) return;
-    try {
-      const res = await fetch("/api/drop-points/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newBuildingName.trim(), address: newBuildingAddress.trim() }),
-      });
-      const data = await res.json() as { success: boolean; data: { id: string; name: string; address: string } };
-      if (data.success) {
-        setSelectedDropPoint({ ...data.data, todayOrders: 0, isFreeDelivery: false });
-        setShowNewBuilding(false);
-        setNewBuildingName("");
-        setNewBuildingAddress("");
-      }
-    } catch { /* ignore */ }
-  }
 
   async function handleConnectOffice() {
     if (!codeInput.trim()) return;
@@ -167,372 +76,277 @@ export default function CartPage() {
   }
 
   async function handlePay() {
-    if (!customerName.trim() || !customerPhone.trim()) { setError("Name and phone are required"); setEditContact(true); return; }
+    if (!customerName.trim() || !customerPhone.trim()) { setError("Name and phone required"); setEditContact(true); return; }
     if (cart.items.length === 0) return;
-    if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your office code for free delivery, or switch to Express Delivery"); return; }
-    if (fulfillment === "office" && !officeId && isFirstOrder && !deliveryAddress.trim()) { setError("Enter your delivery address so we know where to bring your food"); return; }
-    if (fulfillment === "delivery" && !deliveryAddress.trim()) { setError("Enter your delivery address"); return; }
-    if (fulfillment === "building" && !selectedDropPoint) { setError("Select your building to continue"); return; }
-
+    if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your office code for free delivery"); return; }
+    if (fulfillment === "delivery" && !deliveryAddress.trim()) { setError("Enter delivery address"); return; }
     setError(null); setLoading(true);
     saveCustomerProfile({ name: customerName.trim(), phone: customerPhone.trim(), email: "", deliveryAddress: deliveryAddress.trim(), preferredFulfillment: "DELIVERY", officeId, officeName, collectionPoint });
-
-    // Find the real dailyMenuId — combo items store it directly, individual items have it in realDailyMenuId
     const primaryItem = cart.items[0];
     const realDailyMenuId = primaryItem.realDailyMenuId || primaryItem.dailyMenuId;
-
     const totalQuantity = cart.items.reduce((sum, i) => sum + i.quantity, 0);
     const allCustomItems = cart.items.filter((i) => i.customItems?.length).flatMap((i) => i.customItems || []);
-
     try {
-      const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyMenuId: realDailyMenuId, officeId: fulfillment === "office" ? officeId : undefined, dropPointId: fulfillment === "building" ? selectedDropPoint?.id : undefined, customerName: customerName.trim(), customerPhone: customerPhone.trim(), customerEmail: "", fulfillmentType: fulfillment === "delivery" ? "DELIVERY" : "PICKUP", deliveryAddress: fulfillment === "delivery" ? deliveryAddress.trim() : undefined, quantity: totalQuantity, subtotal: cart.subtotal, captainTip: effectiveTip, serviceFee: SERVICE_FEE, items: allCustomItems.length > 0 ? allCustomItems : undefined }) });
+      const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyMenuId: realDailyMenuId, officeId: fulfillment === "office" ? officeId : undefined, customerName: customerName.trim(), customerPhone: customerPhone.trim(), customerEmail: "", fulfillmentType: fulfillment === "delivery" ? "DELIVERY" : "PICKUP", deliveryAddress: fulfillment === "delivery" ? deliveryAddress.trim() : undefined, quantity: totalQuantity, subtotal: cart.subtotal, captainTip: 0, serviceFee: 0, items: allCustomItems.length > 0 ? allCustomItems : undefined }) });
       const data = await res.json();
-      if (!data.success) { if (data.error === "Menu item not found") { setError("Cart expired. Please re-add from menu."); cart.clearCart(); } else { setError(data.error || "Something went wrong"); } setLoading(false); return; }
-      // Clear cart only after successful redirect — store the URL first
+      if (!data.success) { if (data.error === "Menu item not found") { setError("Cart expired. Re-add from menu."); cart.clearCart(); } else { setError(data.error || "Something went wrong"); } setLoading(false); return; }
       const redirectUrl = data.data.authorizationUrl;
-      if (redirectUrl) {
-        // Clear localStorage directly — don't update React state (causes flash of empty cart)
-        localStorage.removeItem("chopdrop-cart");
-        window.location.href = redirectUrl;
-      } else {
-        setError("Payment initialization failed. Please try again.");
-        setLoading(false);
-      }
+      if (redirectUrl) { localStorage.removeItem("chopdrop-cart"); window.location.href = redirectUrl; }
+      else { setError("Payment failed. Try again."); setLoading(false); }
     } catch { setError("Network error."); setLoading(false); }
   }
 
+  function cleanName(name: string): string {
+    return name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "");
+  }
+
   return (
-    <main className="flex-1 max-w-[480px] lg:max-w-[640px] mx-auto w-full pb-48 lg:pb-8 bg-[#fafaf8]">
-      {/* ── FIX #1: Compact header — no progress stepper ── */}
-      <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+    <main className="flex-1 max-w-[480px] lg:max-w-[640px] mx-auto w-full pb-48 lg:pb-8" style={{ background: "var(--bg)" }}>
+      {/* Header */}
+      <div className="px-5 pt-6 pb-4 flex items-center justify-between">
         <div>
-          <h1 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em]">Checkout</h1>
-          <p className="text-[#9ca3af] text-[11px] mt-0.5">{portionCount} item{portionCount !== 1 ? "s" : ""} · {formatNaira(cart.subtotal)}</p>
+          <h1 className="text-[24px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>Checkout</h1>
+          <p className="text-[14px] mt-0.5" style={{ color: "var(--text-muted)" }}>{portionCount} item{portionCount !== 1 ? "s" : ""} · {formatNaira(cart.subtotal)}</p>
         </div>
-        <Link href="/menu" className="text-[#0f4030] text-[12px] font-semibold hover:underline">+ Add more</Link>
+        <Link href="/menu" className="text-[14px] font-bold" style={{ color: "var(--coral)" }}>+ Add more</Link>
       </div>
 
       {cart.items.length === 0 ? (
         <div className="flex flex-col items-center py-16 px-6">
-          <div className="w-16 h-16 bg-[#f5f5f3] rounded-full flex items-center justify-center mb-4">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#9ca3af]"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
           </div>
-          <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] mb-1">Your cart is empty</h2>
-          <p className="text-[#9ca3af] text-[13px] mb-5">Browse meals and add something tasty</p>
-          <Link href="/menu" className="bg-[#f05f4b] text-white text-[13px] font-bold px-6 py-2.5 rounded-full shadow-[0_2px_10px_rgba(240,95,75,0.3)]">Browse meals</Link>
+          <h2 className="text-[18px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Your plate is empty</h2>
+          <p className="text-[14px] mb-6" style={{ color: "var(--text-muted)" }}>Browse meals and add something tasty</p>
+          <Link href="/menu" className="h-11 px-6 rounded-full text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse meals</Link>
         </div>
       ) : (
-        <div className="px-5 space-y-3">
-          {/* ── FIX #2: Meals — tighter padding ── */}
-          <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <div className="px-5 space-y-4">
+          {/* Items */}
+          <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             {cart.items.map((item, idx) => (
-              <div key={item.dailyMenuId} className={`flex items-center gap-3 py-3 ${idx > 0 ? "border-t border-[#f0efeb]" : ""}`}>
-                <div className="relative flex-shrink-0">
-                  <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f5f5f3]">
+              <div key={item.dailyMenuId} className={`flex items-center gap-3 py-3.5 ${idx > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--border)" }}>
+                <div className="relative shrink-0">
+                  <div className="w-12 h-12 rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[14px]">🍽️</div>}
+                    {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
+                      </div>
+                    )}
                   </div>
-                  <span className="absolute -top-1.5 -left-1.5 text-[9px] font-bold text-white bg-[#0f4030] w-5 h-5 rounded-md flex items-center justify-center">{item.quantity}x</span>
+                  <span className="absolute -top-1.5 -left-1.5 text-[10px] font-bold text-white w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "var(--dark)" }}>{item.quantity}x</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[13px] font-semibold text-[#1a1a1a] leading-tight truncate">{item.name}</h3>
-                  <p className="text-[10px] text-[#9ca3af] mt-0.5">{item.restaurantName}</p>
+                  <h3 className="text-[15px] font-bold leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanName(item.name)}</h3>
+                  <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
                 </div>
-                <span className="font-display font-bold text-[14px] text-[#1a1a1a] flex-shrink-0">{formatNaira(item.price * item.quantity)}</span>
+                <span className="text-[16px] font-extrabold tabular-nums shrink-0" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
               </div>
             ))}
-            <div className="pt-2 border-t border-[#f0efeb]">
-              <Link href="/menu" className="text-[11px] font-semibold text-[#f05f4b] active:opacity-70">Edit items</Link>
+            <div className="pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+              <Link href="/menu" className="text-[13px] font-semibold" style={{ color: "var(--text-secondary)" }}>Edit items</Link>
             </div>
           </section>
 
-          {/* ── Not authenticated — redirect to /auth ── */}
-          {isAuthenticated === false && cart.items.length > 0 && (
-            <section className="bg-white rounded-2xl p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] text-center">
-              <div className="w-12 h-12 rounded-full bg-[#f05f4b]/10 flex items-center justify-center mx-auto mb-3">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f05f4b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
+          {/* Not authenticated */}
+          {isAuthenticated === false && (
+            <section className="rounded-[20px] p-6 text-center" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "var(--coral)", opacity: 0.1 }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="4" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
               </div>
-              <h2 className="font-display font-bold text-[15px] text-[#1a1a1a] mb-1">Log in to checkout</h2>
-              <p className="text-[12px] text-[#6b7280] mb-4">Verify your phone number to complete your order</p>
-              <a href="/auth?returnTo=/cart" className="block w-full bg-[#f05f4b] text-white font-bold text-[14px] py-3.5 rounded-xl active:scale-[0.98] transition-transform" style={{ boxShadow: "0 4px 16px rgba(240,95,75,0.28)" }}>
+              <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Log in to checkout</h2>
+              <p className="text-[14px] mb-5" style={{ color: "var(--text-secondary)" }}>Verify your phone to complete your order</p>
+              <a href="/auth?returnTo=/cart" className="w-full h-12 rounded-full text-[15px] font-bold text-white flex items-center justify-center" style={{ background: "var(--coral)" }}>
                 Log in with phone number
               </a>
             </section>
           )}
 
-          {/* ── Fulfillment — only show when authenticated ── */}
+          {/* Delivery — simplified, office-only focus */}
           {isAuthenticated && (
-          <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-            <h2 className="font-display font-bold text-[14px] text-[#1a1a1a] mb-3">Delivery</h2>
-            <div className="space-y-2">
-              {/* Office Drop */}
-              <button type="button" onClick={() => setFulfillment("office")} className={`w-full text-left p-3 rounded-xl border-[1.5px] transition-all ${fulfillment === "office" ? "border-[#0f4030] bg-[#0f4030]/[0.03]" : "border-[#f0efeb] hover:border-[#d1d5db]"}`}>
+            <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <h2 className="text-[16px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Delivery</h2>
+
+              {/* Office Drop — primary */}
+              <button type="button" onClick={() => setFulfillment("office")} className="w-full text-left p-4 rounded-[14px] transition-all cursor-pointer mb-2" style={{
+                border: fulfillment === "office" ? "2px solid var(--emerald)" : "1px solid var(--border)",
+                background: fulfillment === "office" ? "rgba(13,159,95,0.04)" : "var(--card)",
+              }}>
                 <div className="flex items-center gap-3">
-                  <div className={`w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0 ${fulfillment === "office" ? "border-[#0f4030]" : "border-[#d1d5db]"}`}>
-                    {fulfillment === "office" && <div className="w-2 h-2 bg-[#0f4030] rounded-full" />}
+                  <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: fulfillment === "office" ? "var(--emerald)" : "var(--border)" }}>
+                    {fulfillment === "office" && <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--emerald)" }} />}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-semibold text-[#1a1a1a]">Office Drop</span>
-                      <span className="bg-[#0f4030]/10 text-[#0f4030] text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">Free</span>
+                      <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Office Drop</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>FREE</span>
                     </div>
                     {officeId ? (
-                      <p className="text-[10px] text-[#6b7280] mt-0.5">{officeName} · {collectionPoint}</p>
+                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-secondary)" }}>{officeName} · {collectionPoint}</p>
                     ) : (
-                      <p className="text-[10px] text-[#9ca3af] mt-0.5">Arrives on or before 12:00 PM</p>
+                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>Arrives by 1:00 PM at your office</p>
                     )}
                   </div>
-                  <span className="text-[13px] font-bold text-[#22c55e] flex-shrink-0">FREE</span>
+                  <span className="text-[15px] font-extrabold shrink-0" style={{ color: "var(--emerald)" }}>₦0</span>
                 </div>
-                {/* Office code input — required for free delivery */}
-                {fulfillment === "office" && !officeId && (
-                  <div className="mt-2.5">
-                    <div className="flex gap-2">
-                      <input type="text" value={codeInput} onChange={(e) => setCodeInput(e.target.value)} placeholder="Office code e.g. NORTH-241" className="flex-1 px-3 py-2 bg-[#f5f5f3] rounded-lg text-[11px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30 uppercase" onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
-                      <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="bg-[#0f4030] text-white font-bold px-4 py-2 rounded-lg text-[11px] disabled:opacity-50 active:scale-95 transition-transform">{codeLoading ? "..." : "Join"}</button>
-                    </div>
-                    {isFirstOrder ? (
-                      <div className="mt-2 space-y-2">
-                        <div className="flex items-center gap-1.5 text-[10px] text-[#22c55e] font-semibold">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m5 12 4 4L19 6" /></svg>
-                          First order — delivery is free!
-                        </div>
-                        <div>
-                          <label className="text-[10px] text-[#6b7280] font-medium block mb-1">Where should we deliver?</label>
-                          <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="e.g. Sterling Towers, 15 Allen Avenue, Ikeja" className="w-full px-3 py-2 bg-[#f5f5f3] rounded-lg text-[11px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <p className="text-[10px] text-[#9ca3af] mt-1.5">Office code required for free delivery.</p>
-                        <div className="mt-3 pt-3 border-t border-[#f0efeb]">
-                          <p className="text-[10px] font-bold text-[#6b7280] mb-1.5">Don&apos;t have a code?</p>
-                          <a
-                            href="https://wa.me/2349120532827?text=Hi!%20I%20need%20an%20office%20code%20for%20ChopDrop.%20My%20office%20is%20at%20"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2.5 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-xl px-3.5 py-3 active:scale-[0.98] transition-transform"
-                          >
-                            <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center flex-shrink-0">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" /></svg>
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-[12px] font-bold text-[#1a1a1a]">Get one via WhatsApp</div>
-                              <div className="text-[10px] text-[#6b7280]">Takes 2 minutes</div>
-                            </div>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" className="flex-shrink-0"><path d="m9 18 6-6-6-6" /></svg>
-                          </a>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
                 {fulfillment === "office" && officeId && (
-                  <div className="mt-2 flex items-center gap-1.5 text-[10px] text-[#22c55e] font-semibold">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m5 12 4 4L19 6" /></svg>
-                    Connected — free delivery
+                  <div className="mt-2.5 flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                    Connected — arrives at {collectionPoint || "reception"}
                   </div>
                 )}
-                {codeError && <p className="text-[#f05f4b] text-[10px] mt-1 ml-7">{codeError}</p>}
-              </button>
-
-              {/* Building Drop — hidden for launch, re-enable when 10+ offices */}
-
-              {/* Express */}
-              <button type="button" onClick={() => setFulfillment("delivery")} className={`w-full text-left p-3 rounded-xl border-[1.5px] transition-all ${fulfillment === "delivery" ? "border-[#0f4030] bg-[#0f4030]/[0.03]" : "border-[#f0efeb] hover:border-[#d1d5db]"}`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0 ${fulfillment === "delivery" ? "border-[#0f4030]" : "border-[#d1d5db]"}`}>
-                    {fulfillment === "delivery" && <div className="w-2 h-2 bg-[#0f4030] rounded-full" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[13px] font-semibold text-[#1a1a1a]">Express Delivery</span>
-                    <p className="text-[10px] text-[#9ca3af] mt-0.5">Delivered within 45 min to your address</p>
-                  </div>
-                  <span className="text-[13px] font-bold flex-shrink-0">
-                    {isFirstOrder ? (
-                      <><span className="text-[#22c55e]">FREE</span> <span className="text-[10px] text-[#d1d5db] line-through">{formatNaira(EXPRESS_FEE)}</span></>
-                    ) : (
-                      <span className="text-[#f05f4b]">{formatNaira(EXPRESS_FEE)}</span>
+                {fulfillment === "office" && !officeId && (
+                  <div className="mt-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-2">
+                      <input type="text" value={codeInput} onChange={(e) => setCodeInput(e.target.value)} placeholder="Office code e.g. STERL-001" className="flex-1 px-4 h-10 rounded-[10px] text-[14px] focus:outline-none uppercase" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
+                      <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="h-10 px-5 rounded-[10px] text-[13px] font-bold text-white disabled:opacity-50 cursor-pointer" style={{ background: "var(--dark)" }}>{codeLoading ? "..." : "Join"}</button>
+                    </div>
+                    {codeError && <p className="text-[12px] mt-1.5" style={{ color: "var(--coral)" }}>{codeError}</p>}
+                    {!isFirstOrder && (
+                      <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
+                        No code? <a href="https://wa.me/2349120532827?text=I%20need%20an%20office%20code" target="_blank" rel="noopener noreferrer" className="font-bold underline" style={{ color: "var(--text-secondary)" }}>Get one via WhatsApp</a>
+                      </p>
                     )}
-                  </span>
-                </div>
-                {fulfillment === "delivery" && (
-                  <div className="mt-2.5">
-                    <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter delivery address" className="w-full px-3 py-2 bg-[#f5f5f3] rounded-lg text-[11px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
+                    {isFirstOrder && (
+                      <div className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                        First order — delivery is free everywhere!
+                      </div>
+                    )}
                   </div>
                 )}
               </button>
-            </div>
-          </section>
-          )}
 
-          {/* ── Tip — only show when office is connected ── */}
-          {isAuthenticated && fulfillment === "office" && officeId && (
-            <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center justify-between mb-2.5">
-                <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">ChopDropper tip</h2>
-                <span className="text-[10px] text-[#9ca3af]">100% to your assistant</span>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                {[0, 10000, 20000, 50000, 100000].map((amount) => (
-                  <button
-                    key={amount}
-                    type="button"
-                    onClick={() => { setCaptainTip(amount); setShowCustomTip(false); setCustomTipValue(""); }}
-                    className={`px-3.5 py-2 rounded-lg text-[12px] font-semibold transition-all active:scale-95 ${
-                      captainTip === amount && !showCustomTip
-                        ? "bg-[#1a1a1a] text-white"
-                        : "bg-[#f5f5f3] text-[#1a1a1a] hover:bg-[#eeedea]"
-                    }`}
-                  >
-                    {formatNaira(amount)}
-                  </button>
-                ))}
-                {showCustomTip ? (
-                  <div className="flex items-center bg-[#1a1a1a] rounded-lg px-3 py-1.5">
-                    <span className="text-[12px] text-white/60 mr-1">₦</span>
-                    <input
-                      type="number"
-                      autoFocus
-                      value={customTipValue}
-                      onChange={(e) => {
-                        setCustomTipValue(e.target.value);
-                        const val = Math.max(100, parseInt(e.target.value) || 100);
-                        setCaptainTip(val * 100);
-                      }}
-                      onBlur={() => { if (!customTipValue) setShowCustomTip(false); }}
-                      placeholder="Amount"
-                      className="w-16 bg-transparent text-[12px] font-semibold text-white outline-none placeholder:text-white/40"
-                      min="100"
-                    />
+              {/* Express — secondary, de-emphasized */}
+              {!officeId && (
+                <button type="button" onClick={() => setFulfillment("delivery")} className="w-full text-left p-4 rounded-[14px] transition-all cursor-pointer" style={{
+                  border: fulfillment === "delivery" ? "2px solid var(--coral)" : "1px solid var(--border)",
+                  background: fulfillment === "delivery" ? "rgba(232,96,76,0.04)" : "var(--card)",
+                }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: fulfillment === "delivery" ? "var(--coral)" : "var(--border)" }}>
+                      {fulfillment === "delivery" && <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--coral)" }} />}
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Express Delivery</span>
+                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>45 min to your address</p>
+                    </div>
+                    <span className="text-[15px] font-extrabold shrink-0" style={{ color: isFirstOrder ? "var(--emerald)" : "var(--text)" }}>
+                      {isFirstOrder ? "₦0" : formatNaira(EXPRESS_FEE)}
+                    </span>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowCustomTip(true)}
-                    className="px-3.5 py-2 rounded-lg text-[12px] font-semibold bg-[#f5f5f3] text-[#1a1a1a] hover:bg-[#eeedea] transition-all active:scale-95"
-                  >
-                    Custom
-                  </button>
-                )}
-              </div>
+                  {fulfillment === "delivery" && (
+                    <div className="mt-3" onClick={(e) => e.stopPropagation()}>
+                      <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter delivery address" className="w-full px-4 h-10 rounded-[10px] text-[14px] focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
+                    </div>
+                  )}
+                </button>
+              )}
             </section>
           )}
 
-          {/* ── Contact — only show after auth check completes ── */}
+          {/* Contact */}
           {isAuthenticated !== null && (
-            <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+            <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <div className="flex items-center justify-between">
-                <h2 className="font-display font-bold text-[14px] text-[#1a1a1a]">Contact</h2>
+                <h2 className="text-[16px] font-extrabold" style={{ color: "var(--text)" }}>Contact</h2>
                 {isAuthenticated && hasContact && !editContact ? (
-                  <button type="button" onClick={() => setEditContact(true)} className="text-[11px] text-[#0f4030] font-semibold">Edit</button>
+                  <button type="button" onClick={() => setEditContact(true)} className="text-[13px] font-semibold cursor-pointer" style={{ color: "var(--text-secondary)" }}>Edit</button>
                 ) : isAuthenticated && hasContact && editContact ? (
-                  <button type="button" onClick={() => setEditContact(false)} className="text-[11px] text-[#22c55e] font-semibold">Done</button>
+                  <button type="button" onClick={() => setEditContact(false)} className="text-[13px] font-semibold cursor-pointer" style={{ color: "var(--emerald)" }}>Done</button>
                 ) : null}
               </div>
               {isAuthenticated && hasContact && !editContact ? (
-                <div className="flex items-center gap-2 mt-2 text-[12px] text-[#6b7280]">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-[#22c55e] flex-shrink-0"><path d="m5 12 4 4L19 6" /></svg>
-                  <span className="text-[#1a1a1a] font-medium">{customerName}</span>
+                <div className="flex items-center gap-2 mt-3 text-[14px]" style={{ color: "var(--text-secondary)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                  <span className="font-semibold" style={{ color: "var(--text)" }}>{customerName}</span>
                   <span>·</span>
                   <span>{customerPhone}</span>
                 </div>
               ) : (
-                <div className="mt-3 space-y-2.5">
-                  <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Full name" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
-                  <input type="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="Phone number" className="w-full px-3 py-2.5 bg-[#f5f5f3] rounded-lg text-[12px] text-[#1a1a1a] placeholder:text-[#9ca3af] focus:outline-none focus:ring-1 focus:ring-[#0f4030]/30" />
+                <div className="mt-3 space-y-3">
+                  <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Full name" className="w-full px-4 h-12 rounded-[12px] text-[15px] focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
+                  <input type="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="Phone number" className="w-full px-4 h-12 rounded-[12px] text-[15px] focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
                 </div>
               )}
             </section>
           )}
 
-          {/* ── Order summary ── */}
-          <section className="bg-white rounded-2xl p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-            <h2 className="font-display font-bold text-[14px] text-[#1a1a1a] mb-3">Summary</h2>
-            <div className="space-y-2 text-[12px]">
-              <div className="flex justify-between"><span className="text-[#6b7280]">Subtotal ({portionCount} item{portionCount !== 1 ? "s" : ""})</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(cart.subtotal)}</span></div>
-              <div className="flex justify-between"><span className="text-[#6b7280]">Delivery</span><span className={`font-semibold ${deliveryFee === 0 ? "text-[#22c55e]" : "text-[#1a1a1a]"}`}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span></div>
-              <div className="flex justify-between"><span className="text-[#6b7280]">Service fee (5%)</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(SERVICE_FEE)}</span></div>
-              {effectiveTip > 0 && <div className="flex justify-between"><span className="text-[#6b7280]">ChopDropper tip</span><span className="font-semibold text-[#1a1a1a]">{formatNaira(effectiveTip)}</span></div>}
-              <div className="flex justify-between items-center border-t border-[#f0efeb] pt-3 mt-1">
-                <span className="text-[13px] font-semibold text-[#1a1a1a]">Total</span>
-                <span className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.02em]">{formatNaira(orderTotal)}</span>
+          {/* Order summary — transparent breakdown */}
+          <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="space-y-3 text-[14px]">
+              <div className="flex justify-between">
+                <span style={{ color: "var(--text-secondary)" }}>Subtotal ({portionCount} item{portionCount !== 1 ? "s" : ""})</span>
+                <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(cart.subtotal)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
+                <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
+              </div>
+              <div className="flex justify-between items-center pt-3" style={{ borderTop: "2px solid var(--border)" }}>
+                <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Total</span>
+                <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
               </div>
             </div>
-            {(fulfillment === "office" || (fulfillment === "building" && selectedDropPoint?.isFreeDelivery)) && (
-              <div className="flex items-center gap-1.5 bg-[#0f4030]/[0.06] rounded-lg px-3 py-2 mt-3 text-[#0f4030] text-[10px] font-semibold">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m5 12 4 4L19 6" /></svg>
-                You&apos;re saving {formatNaira(EXPRESS_FEE)} on delivery
+
+            {/* Delivery info */}
+            {officeId && (
+              <div className="flex items-center gap-2 mt-3 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>Arriving by 1:00 PM at {collectionPoint || "reception"}</span>
               </div>
             )}
-          </section>
 
+            {/* Collection code preview */}
+            <div className="flex items-center gap-2 mt-2 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+              <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>You&apos;ll get a unique code to collect your food</span>
+            </div>
+          </section>
 
           {/* Error */}
           {error && (
-            <div className="bg-[#fef2f2] text-[#f05f4b] text-[11px] font-semibold p-3 rounded-xl flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>
-              {error}
+            <div className="flex items-center gap-2 p-3 rounded-[14px]" style={{ background: "#FEF2F2", color: "var(--coral)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>
+              <span className="text-[13px] font-semibold">{error}</span>
             </div>
           )}
         </div>
       )}
 
-      {/* ── FIX #6 & #7: Sticky bottom — clean total + full-width button ── */}
+      {/* Sticky bottom CTA */}
       {cart.items.length > 0 && (
-        <div className="fixed bottom-[52px] left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-black/[0.06] px-5 py-3 md:hidden">
+        <div className="fixed bottom-[52px] left-0 right-0 z-40 bg-white/95 backdrop-blur-lg px-5 py-4 md:hidden" style={{ borderTop: "1px solid var(--border)" }}>
           <div className="max-w-[480px] mx-auto">
             {orderingClosed ? (
-              <>
-                {/* Pre-order saved confirmation — no payment */}
-                <div className="flex items-center gap-3 bg-[#0f4030] rounded-xl p-3 mb-2">
-                  <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-[12px] font-bold text-white">Pre-order saved!</div>
-                    <div className="text-[10px] text-white/60">Your {cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""} ({formatNaira(cart.subtotal)}) will be ready at <span className="text-[#f5c565] font-bold">7:00 AM</span></div>
-                  </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                  <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Pre-order saved!</span>
                 </div>
-                <Link
-                  href="/menu"
-                  className="w-full font-bold py-3 rounded-xl text-[13px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all bg-[#f5f5f3] text-[#1a1a1a]"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6" /></svg>
+                <p className="text-[13px] mb-3" style={{ color: "var(--text-muted)" }}>Ready when orders open at 7:00 AM</p>
+                <Link href="/menu" className="w-full h-12 rounded-full text-[14px] font-bold flex items-center justify-center" style={{ background: "var(--sand)", color: "var(--text)" }}>
                   Back to menu
                 </Link>
-              </>
+              </div>
             ) : (
               <>
-                {error && (
-                  <div className="bg-[#fef2f2] text-[#f05f4b] text-[11px] font-semibold p-2 rounded-lg mb-2 text-center">{error}</div>
-                )}
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-[12px] text-[#6b7280]">Total</span>
-                  <span className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.02em]">{formatNaira(orderTotal)}</span>
+                {error && <div className="text-[12px] font-semibold p-2 rounded-[10px] mb-2 text-center" style={{ background: "#FEF2F2", color: "var(--coral)" }}>{error}</div>}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[14px]" style={{ color: "var(--text-secondary)" }}>Total</span>
+                  <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isAuthenticated === false) {
-                      window.location.href = "/auth?returnTo=/cart";
-                      return;
-                    }
-                    handlePay();
-                  }}
-                  disabled={loading || belowMinimum || (fulfillment === "building" && !selectedDropPoint) || (fulfillment === "office" && !officeId && !isFirstOrder)}
-                  className={`w-full font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
-                    isAuthenticated === false
-                      ? "bg-[#1a1a1a] text-white shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
-                      : "bg-[#f05f4b] text-white shadow-[0_4px_16px_rgba(240,95,75,0.3)] hover:bg-[#e0503d]"
-                  }`}
-                >
-                  {loading ? "Processing..." : isAuthenticated === false ? "Log in to pay →" : fulfillment === "office" && !officeId && !isFirstOrder ? "Enter office code to continue" : fulfillment === "building" && !selectedDropPoint ? "Select your building" : "Continue to payment"}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+                <button type="button"
+                  onClick={() => { if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; } handlePay(); }}
+                  disabled={loading || (fulfillment === "office" && !officeId && !isFirstOrder)}
+                  className="w-full h-14 rounded-full text-[16px] font-bold text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ background: isAuthenticated === false ? "var(--dark)" : "var(--coral)" }}>
+                  {loading ? "Processing..." : isAuthenticated === false ? "Log in to pay" : fulfillment === "office" && !officeId && !isFirstOrder ? "Enter office code" : "Continue to payment →"}
                 </button>
-                <p className="text-[9px] text-[#9ca3af] text-center mt-2 flex items-center justify-center gap-1">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#22c55e]"><path d="m5 12 4 4L19 6" /></svg>
-                  Secure prepaid checkout · Powered by Paystack
+                <p className="text-[11px] text-center mt-2 flex items-center justify-center gap-1" style={{ color: "var(--text-muted)" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                  Secure checkout · Powered by Paystack
                 </p>
               </>
             )}
