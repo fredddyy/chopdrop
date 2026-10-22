@@ -249,8 +249,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         ];
         const orders = poolData.officeOrderCount;
         const currentTierIdx = orders >= 15 ? 3 : orders >= 10 ? 2 : orders >= 5 ? 1 : 0;
-        // Example meal price for context (use cheapest available)
-        const examplePrice = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).sort((a, b) => a.price - b.price)[0]?.price || 200000;
+        // Average meal price for realistic savings display
+        const mealPrices = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).map(i => i.price);
+        const examplePrice = mealPrices.length > 0 ? Math.round(mealPrices.reduce((a, b) => a + b, 0) / mealPrices.length) : 200000;
 
         return (
           <div className="mx-5 mt-3 rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
@@ -334,7 +335,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     </div>
                     <p className="text-[13px] text-white/70 leading-relaxed">
                       {moreNeeded > 0
-                        ? <>If <span className="font-bold text-white">{moreNeeded} more</span> colleague{moreNeeded !== 1 ? "s" : ""} order{moreNeeded === 1 ? "s" : ""}, you get <span className="font-bold" style={{ color: "var(--emerald)" }}>₦{(potentialSavings / 100).toLocaleString()} credit</span> back on this meal.</>
+                        ? <>If <span className="font-bold text-white">{moreNeeded} more</span> colleague{moreNeeded !== 1 ? "s" : ""} order{moreNeeded === 1 ? "s" : ""}, you save <span className="font-bold" style={{ color: "var(--emerald)" }}>~₦{(potentialSavings / 100).toLocaleString()} per plate</span> as credit.</>
                         : <>You&apos;re at the best tier! Credits will be calculated when the pool closes.</>
                       }
                     </p>
