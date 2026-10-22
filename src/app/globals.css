@@ -1,75 +1,101 @@
-@import url("https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop Design System v2 ── */
-  /* Primary palette */
-  --background: #FAF7F2;
+  /* ── ChopDrop v4 — Nigerian Food Money ── */
+  --bg: #FAFAF8;
   --card: #FFFFFF;
-  --border: #E8E2DA;
-  --terracotta: #C4572A;
-  --terracotta-dark: #A8471F;
-  --forest: #1A7D4B;
+  --border: #E5E4E1;
+  --coral: #E8604C;
+  --coral-dark: #D14E3B;
+  --emerald: #0D9F5F;
   --gold: #D4A24E;
-  --charcoal: #2D2A26;
-  --secondary: #6B6560;
-  --muted: #9C9590;
-  --sand: #F0EBE4;
+  --dark: #141413;
+  --text: #1A1A19;
+  --text-secondary: #71706E;
+  --text-muted: #A3A09D;
+  --sand: #F2F0EC;
 
   /* Legacy compat */
-  --ink: #2D2A26;
-  --ink-soft: #6B6560;
-  --cream: #FAF7F2;
-  --paper: #FFFFFF;
-  --line: #E8E2DA;
-  --green: #1A7D4B;
+  --ink: var(--text);
+  --ink-soft: var(--text-secondary);
+  --cream: var(--bg);
+  --paper: var(--card);
+  --line: var(--border);
+  --green: var(--emerald);
   --green-soft: #e4f1e9;
   --lime: #dff24d;
-  --coral: #C4572A;
-  --amber: #D4A24E;
+  --amber: var(--gold);
   --amber-soft: #fff1c9;
   --red-soft: #fee7e1;
+  --background: var(--bg);
+  --charcoal: var(--text);
+  --secondary: var(--text-secondary);
+  --muted: var(--text-muted);
+  --terracotta: var(--coral);
+  --terracotta-dark: var(--coral-dark);
+  --forest: var(--emerald);
 }
 
 @theme inline {
-  --color-ink: var(--charcoal);
-  --color-ink-soft: var(--secondary);
-  --color-cream: var(--background);
+  --color-ink: var(--text);
+  --color-ink-soft: var(--text-secondary);
+  --color-cream: var(--bg);
   --color-paper: var(--card);
   --color-line: var(--border);
-  --color-green: var(--forest);
+  --color-green: var(--emerald);
   --color-green-soft: var(--green-soft);
   --color-lime: var(--lime);
-  --color-coral: var(--terracotta);
+  --color-coral: var(--coral);
   --color-amber: var(--gold);
   --color-amber-soft: var(--amber-soft);
   --color-red-soft: var(--red-soft);
-  --font-sans: "Inter", "DM Sans", sans-serif;
-  --font-display: "Plus Jakarta Sans", "Manrope", sans-serif;
+  --color-sand: var(--sand);
+  --font-sans: "Outfit", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--charcoal);
-  font-family: "Inter", "DM Sans", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html { scroll-behavior: smooth; }
 
-.font-display { font-family: "Plus Jakarta Sans", "Manrope", sans-serif; }
+.font-display { font-family: "Outfit", system-ui, sans-serif; }
 
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Tabular numbers for prices */
 .tabular-nums { font-variant-numeric: tabular-nums; }
 
 @keyframes slideDown {
   from { transform: translateY(-100%); }
   to { transform: translateY(0); }
+}
+
+@keyframes fu {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+  border-radius: 4px;
 }

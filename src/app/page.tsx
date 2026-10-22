@@ -1,897 +1,409 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Logo } from "@/components/logo";
 
-const WA_LINK =
-  "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20set%20up%20my%20office";
+const WA = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20set%20up%20my%20office";
 
-/* ── Food photography (to be replaced with project's own) ── */
-const PHOTOS = [
-  "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=900&h=1350&fit=crop",
-  "https://images.unsplash.com/photo-1603496987674-79600a000f55?w=900&h=1350&fit=crop",
-  "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?w=900&h=1350&fit=crop",
-];
-const PHOTO_CTA =
-  "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=1600&h=900&fit=crop";
-const PHOTO_FOOTER =
-  "https://images.unsplash.com/photo-1603496987674-79600a000f55?w=800&h=1200&fit=crop";
+/* ── Imagery ── */
+const HERO = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=1400&q=90&fit=crop";
+const F1 = "https://images.unsplash.com/photo-1603496987674-79600a000f55?w=600&q=80&fit=crop";
+const F2 = "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?w=600&q=80&fit=crop";
+const F3 = "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80&fit=crop";
+const F4 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80&fit=crop";
+const F5 = "https://images.unsplash.com/photo-1567364816519-cbc9c4ffe1eb?w=800&q=80&fit=crop";
+const F6 = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80&fit=crop";
 
-/* ── CSS custom properties for the Three Stones palette ── */
-const PAGE_VARS: Record<string, string> = {
-  "--bg": "#eeecea",
-  "--surface": "#e4e1dd",
-  "--ink": "#333231",
-  "--muted": "#6b6763",
-  "--accent": "#5c6b54",
-  "--accent-ink": "#ffffff",
-  "--field": "#cdc3b6",
-  "--field-ink": "#333231",
-  "--step-small": "clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem)",
-  "--step-body": "clamp(1.125rem, 1.05rem + 0.3vw, 1.3125rem)",
-  "--step-lead": "clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem)",
-  "--step-head": "clamp(2rem, 1.3rem + 3.2vw, 4rem)",
-};
-
-/* ── Crossfading food photos (signature move) ── */
-function Crossfade() {
-  const [idx, setIdx] = useState(0);
+/* ── Scroll reveal ── */
+function useReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [v, setV] = useState(false);
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % PHOTOS.length), 5500);
-    return () => clearInterval(t);
+    const el = ref.current;
+    if (!el) return;
+    const ob = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setV(true); ob.disconnect(); } }, { threshold: 0.08 });
+    ob.observe(el);
+    return () => ob.disconnect();
   }, []);
-  return (
-    <div className="relative w-full h-full">
-      {PHOTOS.map((src, i) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={src}
-          src={src}
-          alt="Nigerian food"
-          width={900}
-          height={1350}
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{
-            opacity: i === idx ? 1 : 0,
-            transition: "opacity 1.6s ease",
-          }}
-          loading={i === 0 ? "eager" : "lazy"}
-        />
-      ))}
-    </div>
-  );
+  return { ref, v };
 }
 
-/* ── Stripe motif (from the bukateria awning) ── */
-function Stripe({
-  h = 56,
-  w = 28,
-  round = true,
-}: {
-  h?: number;
-  w?: number;
-  round?: boolean;
-}) {
-  return (
-    <div
-      className={`flex overflow-hidden ${round ? "rounded-t-[16px]" : ""}`}
-      style={{ height: h }}
-    >
-      {Array.from({ length: 30 }, (_, i) => (
-        <div
-          key={i}
-          className="shrink-0 h-full"
-          style={{
-            width: w,
-            background: i % 2 === 0 ? "var(--ink)" : "var(--bg)",
-          }}
-        />
-      ))}
-    </div>
-  );
+function R({ children, d = 0, c = "" }: { children: React.ReactNode; d?: number; c?: string }) {
+  const { ref, v } = useReveal();
+  return <div ref={ref} className={c} style={{ opacity: v ? 1 : 0, transform: v ? "none" : "translateY(20px)", transition: `opacity 0.5s ease ${d}ms, transform 0.5s ease ${d}ms` }}>{children}</div>;
 }
 
-/* ── Pool calculator (the live thing) ── */
-function PoolCalc() {
+/* ── Pool calculator ── */
+function Calc() {
   const [n, setN] = useState(20);
-  const price =
-    n >= 25 ? 1200 : n >= 15 ? 1400 : n >= 10 ? 1600 : n >= 5 ? 1800 : 2000;
+  const price = n >= 25 ? 1200 : n >= 15 ? 1400 : n >= 10 ? 1600 : n >= 5 ? 1800 : 2000;
   const saved = (2000 - price) * n * 20;
   const pct = Math.round(((2000 - price) / 2000) * 100);
 
   return (
-    <div
-      className="rounded-[16px] p-6 lg:p-8"
-      style={{ background: "var(--surface)" }}
-    >
-      <label
-        className="block mb-4"
-        style={{ fontSize: "var(--step-body)", fontWeight: 500 }}
-      >
+    <div className="bg-[var(--dark)] rounded-[20px] p-6 lg:p-8 text-white">
+      <label htmlFor="calc" className="block text-[18px] font-medium mb-5">
         How many people in your office?
       </label>
-      <input
-        type="range"
-        min={3}
-        max={50}
-        value={n}
-        onChange={(e) => setN(+e.target.value)}
-        className="w-full mb-6 h-2 appearance-none rounded-none"
-        style={{
-          accentColor: "var(--accent)",
-          background: "var(--muted)",
-        }}
-      />
-      <div className="flex justify-between items-baseline mb-6">
-        <span style={{ fontSize: "var(--step-body)", color: "var(--muted)" }}>
-          {n} people
-        </span>
-        <span
-          style={{
-            fontSize: "var(--step-lead)",
-            fontWeight: 600,
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          ₦{price.toLocaleString()}/plate
-        </span>
-      </div>
-      <div className="flex justify-between items-baseline">
-        <span style={{ fontSize: "var(--step-body)", color: "var(--muted)" }}>
-          {pct}% off
-        </span>
+      <input id="calc" type="range" min={3} max={50} value={n}
+        aria-label={`${n} people`} onChange={(e) => setN(+e.target.value)}
+        className="w-full h-1.5 rounded-full appearance-none mb-8 cursor-pointer"
+        style={{ accentColor: "var(--coral)", background: "rgba(255,255,255,0.15)" }} />
+      <div className="flex items-end justify-between">
+        <div>
+          <div className="text-[14px] text-white/50">{n} people</div>
+          <div className="text-[20px] font-bold tabular-nums mt-1">₦{price.toLocaleString()}<span className="text-[14px] font-normal text-white/50">/plate</span></div>
+        </div>
         <div className="text-right">
-          <div
-            style={{
-              fontSize: "var(--step-head)",
-              fontWeight: 600,
-              letterSpacing: "-0.02em",
-              lineHeight: 1,
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
+          <div className="text-[14px] text-[var(--emerald)] font-semibold">{pct}% cheaper</div>
+          <div className="text-[36px] lg:text-[48px] font-extrabold text-[var(--emerald)] leading-none tabular-nums mt-1">
             ₦{saved.toLocaleString()}
           </div>
-          <div
-            style={{
-              fontSize: "var(--step-small)",
-              color: "var(--muted)",
-              marginTop: 4,
-            }}
-          >
-            saved per month
-          </div>
+          <div className="text-[13px] text-white/40 mt-1">saved per month</div>
         </div>
       </div>
     </div>
   );
 }
 
-/* ── Itinerary row ── */
-function ItRow({ left, right }: { left: string; right: string }) {
-  return (
-    <div
-      className="flex items-baseline gap-2 py-3"
-      style={{ fontSize: "var(--step-body)" }}
-    >
-      <span className="shrink-0">{left}</span>
-      <span
-        className="flex-1 self-end mb-1"
-        style={{
-          borderBottom: "3px dotted var(--muted)",
-          opacity: 0.3,
-          minWidth: 20,
-        }}
-      />
-      <span
-        className="shrink-0"
-        style={{ fontVariantNumeric: "tabular-nums", color: "var(--muted)" }}
-      >
-        {right}
-      </span>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════ */
-/* PAGE                                             */
-/* ════════════════════════════════════════════════ */
+/* ══════════════ PAGE ══════════════ */
 export default function Home() {
+  const [faq, setFaq] = useState<number | null>(null);
+  const [nav, setNav] = useState(false);
+  useEffect(() => {
+    const h = () => setNav(window.scrollY > 50);
+    window.addEventListener("scroll", h, { passive: true });
+    return () => window.removeEventListener("scroll", h);
+  }, []);
+
   return (
-    <div
-      className="min-h-svh"
-      style={{
-        ...PAGE_VARS,
-        background: "var(--bg)",
-        color: "var(--ink)",
-        fontFamily: "'Zilla Slab', serif",
-      } as React.CSSProperties}
-    >
-      {/* ── Mobile sticky bottom bar ── */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
-        style={{ background: "var(--surface)" }}
-      >
-        <div className="flex items-center justify-between px-5 py-3">
-          <a
-            href="/auth"
-            style={{ fontSize: "var(--step-small)", fontWeight: 500 }}
-          >
-            Log in
-          </a>
-          <a
-            href="/start"
-            className="active:scale-[0.98] transition-transform"
-            style={{
-              background: "var(--accent)",
-              color: "var(--accent-ink)",
-              fontWeight: 600,
-              fontSize: "var(--step-small)",
-              padding: "12px 24px",
-            }}
-          >
+    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
+      {/* ── Nav ── */}
+      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-200 ${nav ? "bg-white/90 backdrop-blur-lg" : ""}`} style={nav ? { borderBottom: "1px solid var(--border)" } : {}}>
+        <div className="max-w-[1200px] mx-auto flex items-center justify-between px-5 lg:px-8 h-14">
+          <Logo size={22} />
+          <div className="flex items-center gap-5">
+            <a href="/auth" className="text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors hidden sm:block">Log in</a>
+            <a href="/start" className="bg-[var(--coral)] text-white font-semibold text-[13px] h-9 px-5 inline-flex items-center rounded-full active:scale-[0.97] transition-transform hover:bg-[var(--coral-dark)]">
+              Get Started
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Mobile bottom bar ── */}
+      <div className="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-white/95 backdrop-blur-lg" style={{ borderTop: "1px solid var(--border)" }}>
+        <div className="flex items-center justify-between px-5 h-16">
+          <a href="/auth" className="text-[14px] font-medium text-[var(--text-secondary)]">Log in</a>
+          <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[15px] h-11 px-7 inline-flex items-center rounded-full active:scale-[0.97] transition-transform">
             Set Up My Office
           </a>
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════ */}
-      {/* SPLIT STAGE                             */}
-      {/* ═══════════════════════════════════════ */}
-      <div className="lg:grid lg:grid-cols-2 lg:gap-3 lg:p-3">
-        {/* ── Content column ── */}
-        <div>
-          {/* Mobile: sticky food photo behind hero */}
-          <div className="lg:hidden h-[60svh] sticky top-0 z-0 overflow-hidden">
-            <Crossfade />
-          </div>
-
-          {/* HERO CARD */}
-          <div
-            className="relative z-10 mx-3 -mt-6 lg:mt-0 lg:mx-0 rounded-[16px] overflow-hidden"
-            style={{ background: "var(--surface)" }}
-          >
-            <Stripe />
-            <div className="px-6 py-10 lg:px-12 lg:py-16 text-center">
-              <div className="mb-8">
-                <Logo size={28} />
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  HERO                                               */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8 pt-24 lg:pt-32 pb-12 lg:pb-20">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
+            <div className="lg:col-span-6 mb-10 lg:mb-0" style={{ animation: "fu .6s ease" }}>
+              <div className="inline-flex items-center gap-2 bg-[var(--emerald)]/10 text-[var(--emerald)] text-[13px] font-semibold px-3 py-1.5 rounded-full mb-6">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--emerald)]" />
+                Now in 20+ Lagos offices
               </div>
-              <h1
-                style={{
-                  fontSize: "clamp(40px, 3.6vw, 56px)",
-                  fontWeight: 600,
-                  letterSpacing: "-0.025em",
-                  lineHeight: 1.0,
-                  marginBottom: 20,
-                }}
-              >
-                Lunch is cheaper
-                <br />
-                together.
+              <h1 className="text-[clamp(36px,7vw,64px)] font-extrabold text-[var(--text)] leading-[1.0] tracking-[-0.03em] mb-5">
+                Office lunch,<br />
+                <span className="text-[var(--coral)]">40% cheaper.</span>
               </h1>
-              <p
-                style={{
-                  fontSize: "var(--step-body)",
-                  color: "var(--muted)",
-                  maxWidth: "36ch",
-                  margin: "0 auto 32px",
-                  lineHeight: 1.5,
-                }}
-              >
-                ChopDrop pools your office lunch orders from local vendors. More
-                people ordering = cheaper plates for everyone.
+              <p className="text-[18px] lg:text-[20px] text-[var(--text-secondary)] leading-[1.55] max-w-[440px] mb-8">
+                Pool your office orders from local vendors. More people = cheaper plates for everyone. ₦0 delivery.
               </p>
-              <a
-                href="/start"
-                className="inline-block active:scale-[0.98] transition-transform"
-                style={{
-                  background: "var(--accent)",
-                  color: "var(--accent-ink)",
-                  fontWeight: 600,
-                  fontSize: "var(--step-body)",
-                  padding: "16px 40px",
-                }}
-              >
-                Set Up My Office
-              </a>
-              <div
-                className="flex justify-center gap-6 lg:gap-8 mt-8 flex-wrap"
-                style={{
-                  fontSize: "var(--step-small)",
-                  color: "var(--muted)",
-                }}
-              >
-                <a href="/menu" className="underline">
-                  Browse menu
+              <div className="flex flex-wrap items-center gap-3">
+                <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[16px] h-[52px] px-8 inline-flex items-center rounded-full active:scale-[0.97] transition-all hover:bg-[var(--coral-dark)] hover:scale-[1.02]">
+                  Set Up My Office
                 </a>
-                <a href="/auth" className="underline">
-                  Log in
-                </a>
-                <a href="/auth" className="underline">
-                  Join office
+                <a href="/menu" className="text-[var(--text)] font-semibold text-[16px] h-[52px] px-6 inline-flex items-center gap-2 hover:text-[var(--coral)] transition-colors">
+                  Browse Menu
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6"/></svg>
                 </a>
               </div>
             </div>
+            <div className="lg:col-span-6 lg:col-start-7" style={{ animation: "fu .6s ease .1s both" }}>
+              <div className="rounded-[24px] overflow-hidden relative aspect-[4/3] lg:aspect-square">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={HERO} alt="Nigerian egusi soup with eba — a popular office lunch" className="w-full h-full object-cover" />
+                <div className="absolute top-4 left-4 bg-white text-[var(--text)] text-[13px] font-bold px-4 py-2 rounded-full">
+                  19 ordering now
+                </div>
+                <div className="absolute bottom-4 right-4 bg-[var(--emerald)] text-white text-[13px] font-bold px-4 py-2 rounded-full">
+                  ₦0 delivery
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  METRICS STRIP                                      */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-10 lg:py-14" style={{ background: "var(--sand)" }}>
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+          <R>
+            <div className="flex flex-wrap justify-center gap-8 lg:gap-16 text-center">
+              {[
+                { n: "20+", l: "offices piloting" },
+                { n: "₦0", l: "delivery fee" },
+                { n: "40%", l: "max savings" },
+                { n: "2 min", l: "to set up" },
+              ].map((m) => (
+                <div key={m.l}>
+                  <div className="text-[32px] lg:text-[40px] font-extrabold text-[var(--text)] tabular-nums leading-none">{m.n}</div>
+                  <div className="text-[14px] text-[var(--text-secondary)] mt-1">{m.l}</div>
+                </div>
+              ))}
+            </div>
+          </R>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  THE MATH                                           */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+          <R><h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-12">The lunch math</h2></R>
+
+          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0 mb-8">
+            <R d={60}>
+              <div className="bg-white rounded-[20px] p-6 lg:p-7" style={{ border: "1px solid var(--border)" }}>
+                <div className="text-[14px] font-semibold text-[var(--text-secondary)] mb-3">Without ChopDrop</div>
+                <div className="text-[15px] text-[var(--text-secondary)] mb-1">30 people × ₦2,000/day</div>
+                <div className="text-[32px] font-extrabold text-[var(--text)] tabular-nums leading-tight">₦1.2M<span className="text-[15px] font-medium text-[var(--text-muted)]">/mo</span></div>
+              </div>
+            </R>
+            <R d={120}>
+              <div className="bg-white rounded-[20px] p-6 lg:p-7" style={{ border: "2px solid var(--coral)" }}>
+                <div className="text-[14px] font-semibold text-[var(--coral)] mb-3">With ChopDrop</div>
+                <div className="text-[15px] text-[var(--text-secondary)] mb-1">30 people × ₦1,300/day</div>
+                <div className="text-[32px] font-extrabold text-[var(--emerald)] tabular-nums leading-tight">₦780K<span className="text-[15px] font-medium text-[var(--text-muted)]">/mo</span></div>
+              </div>
+            </R>
+            <R d={180}>
+              <div className="bg-[var(--coral)] rounded-[20px] p-6 lg:p-7 text-white">
+                <div className="text-[14px] font-semibold text-white/60 mb-3">You save</div>
+                <div className="text-[40px] lg:text-[48px] font-extrabold tabular-nums leading-tight">₦420K</div>
+                <div className="text-[15px] text-white/70 mt-1">per month — ₦14,000 each pocket</div>
+              </div>
+            </R>
           </div>
 
-          {/* Cover mobile sticky photo with bg */}
-          <div
-            className="relative z-10"
-            style={{ background: "var(--bg)" }}
-          >
-            {/* ── PROOF: The math ── */}
-            <section
-              className="px-6 lg:px-12"
-              style={{ paddingTop: 120, paddingBottom: 120 }}
-            >
-              <h2
-                style={{
-                  fontSize: "var(--step-head)",
-                  fontWeight: 600,
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1,
-                  marginBottom: 48,
-                }}
-              >
-                The math
-              </h2>
-              <div
-                className="lg:grid lg:grid-cols-2 lg:gap-12"
-                style={{ fontSize: "var(--step-body)", lineHeight: 1.5 }}
-              >
-                <div className="mb-8 lg:mb-0">
-                  <div
-                    style={{
-                      color: "var(--muted)",
-                      marginBottom: 8,
-                      fontWeight: 500,
-                    }}
-                  >
-                    Without ChopDrop
+          <R d={240}><Calc /></R>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  HOW IT WORKS — photo cards                         */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24" style={{ background: "var(--sand)" }}>
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+          <R><h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-12">Three steps, two minutes</h2></R>
+
+          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-6 lg:space-y-0">
+            {[
+              { img: F3, t: "Set up your office", d: "Enter your company name, share the invite link on your office WhatsApp. Done." },
+              { img: F1, t: "Everyone picks their plate", d: "Each person chooses base, protein, side and drink. More people ordering = cheaper price." },
+              { img: F2, t: "Food arrives at 1 PM", d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat." },
+            ].map((s, i) => (
+              <R key={i} d={i * 80}>
+                <div className="bg-white rounded-[20px] overflow-hidden group cursor-default" style={{ border: "1px solid var(--border)" }}>
+                  <div className="h-[200px] overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={s.img} alt={s.t} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                   </div>
-                  <div>30 people × ₦2,000/day</div>
-                  <div
-                    style={{
-                      fontSize: "var(--step-lead)",
-                      fontWeight: 600,
-                      marginTop: 4,
-                      fontVariantNumeric: "tabular-nums",
-                    }}
-                  >
-                    = ₦1,200,000/mo
+                  <div className="p-6">
+                    <h3 className="text-[20px] font-bold text-[var(--text)] mb-2">{s.t}</h3>
+                    <p className="text-[16px] text-[var(--text-secondary)] leading-[1.5]">{s.d}</p>
                   </div>
                 </div>
-                <div>
-                  <div
-                    style={{
-                      color: "var(--accent)",
-                      marginBottom: 8,
-                      fontWeight: 500,
-                    }}
-                  >
-                    With ChopDrop
-                  </div>
-                  <div>30 people × ₦1,300/day</div>
-                  <div
-                    style={{
-                      fontSize: "var(--step-lead)",
-                      fontWeight: 600,
-                      marginTop: 4,
-                      fontVariantNumeric: "tabular-nums",
-                    }}
-                  >
-                    = ₦780,000/mo
-                  </div>
+              </R>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  CAPTAIN PERKS — dark section                       */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24" style={{ background: "var(--dark)" }}>
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+          <R>
+            <h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-white tracking-[-0.02em] mb-3">What&apos;s in it for you?</h2>
+            <p className="text-[18px] text-white/50 mb-12 max-w-[460px]">You become the Pool Captain. Your office eats cheaper, and you get rewarded.</p>
+          </R>
+
+          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
+            <R d={80}>
+              <div className="rounded-[20px] p-6 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07] transition-colors">
+                <div className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-5" style={{ background: "var(--coral)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  </svg>
                 </div>
+                <h3 className="text-[20px] font-bold text-white mb-2">Free lunch, every day</h3>
+                <p className="text-[16px] text-white/60 leading-[1.5]">15+ colleagues order? Your meal is on us.</p>
               </div>
-              <div className="mt-12">
-                <div
-                  style={{
-                    fontSize: "var(--step-head)",
-                    fontWeight: 600,
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1,
-                    fontVariantNumeric: "tabular-nums",
-                  }}
-                >
-                  ₦420,000
+            </R>
+            <R d={160}>
+              <div className="rounded-[20px] p-6 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07] transition-colors">
+                <div className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-5" style={{ background: "var(--gold)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
                 </div>
-                <div
-                  style={{
-                    fontSize: "var(--step-body)",
-                    color: "var(--muted)",
-                    marginTop: 8,
-                  }}
-                >
-                  saved per month. ₦14,000 back in each pocket.
-                </div>
+                <h3 className="text-[20px] font-bold text-white mb-2">Up to ₦10K/month cash</h3>
+                <p className="text-[16px] text-white/60 leading-[1.5]">₦500 per pool with 20+ orders. Real money, your account.</p>
               </div>
-              <div className="mt-16">
-                <PoolCalc />
-              </div>
-            </section>
-
-            {/* ── HOW IT WORKS: Itinerary slip ── */}
-            <section style={{ paddingTop: 120, paddingBottom: 120 }}>
-              <div className="lg:grid lg:grid-cols-12 lg:gap-8 px-6 lg:px-12">
-                <div className="lg:col-span-5">
-                  <h2
-                    style={{
-                      fontSize: "var(--step-head)",
-                      fontWeight: 600,
-                      letterSpacing: "-0.02em",
-                      lineHeight: 1,
-                      marginBottom: 24,
-                    }}
-                  >
-                    How it works
-                  </h2>
-                  <p
-                    style={{
-                      fontSize: "var(--step-body)",
-                      color: "var(--muted)",
-                      maxWidth: "30ch",
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    Set up in two minutes. Everyone picks and pays for their own
-                    plate.
-                  </p>
+            </R>
+            <R d={240}>
+              <div className="rounded-[20px] p-6 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07] transition-colors">
+                <div className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-5" style={{ background: "var(--emerald)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
                 </div>
-                <div className="lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
-                  <div
-                    className="rounded-[16px] overflow-hidden"
-                    style={{ background: "var(--surface)" }}
-                  >
-                    <div className="px-6 py-8">
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          fontSize: "var(--step-body)",
-                          marginBottom: 4,
-                        }}
-                      >
-                        Morning
-                      </div>
-                      <ItRow left="Create your office pool" right="2 min" />
-                      <ItRow
-                        left="Share link on WhatsApp"
-                        right="30 sec"
-                      />
+                <h3 className="text-[20px] font-bold text-white mb-2">The office hero</h3>
+                <p className="text-[16px] text-white/60 leading-[1.5]">Your effort: one WhatsApp message. The app does the rest.</p>
+              </div>
+            </R>
+          </div>
+        </div>
+      </section>
 
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          fontSize: "var(--step-body)",
-                          marginTop: 28,
-                          marginBottom: 4,
-                        }}
-                      >
-                        Before noon
-                      </div>
-                      <ItRow
-                        left="Colleagues pick their meals"
-                        right="60 sec each"
-                      />
-                      <ItRow
-                        left="Everyone pays via Paystack"
-                        right="automatic"
-                      />
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  FOOD GALLERY — scroll strip                        */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-6 overflow-hidden" aria-label="Food gallery">
+        <div className="flex gap-3 px-5 overflow-x-auto hide-scrollbar snap-x snap-mandatory">
+          {[
+            { s: F5, a: "Grilled suya" }, { s: F1, a: "Jollof rice" }, { s: F6, a: "Fresh bowl" },
+            { s: F4, a: "Rice and vegetables" }, { s: F2, a: "White rice" }, { s: F3, a: "Lunch spread" },
+          ].map((img, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={i} src={img.s} alt={img.a} className="h-[120px] lg:h-[180px] w-auto rounded-[16px] object-cover shrink-0 snap-start" loading="lazy" />
+          ))}
+        </div>
+      </section>
 
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          fontSize: "var(--step-body)",
-                          marginTop: 28,
-                          marginBottom: 4,
-                        }}
-                      >
-                        1:00 PM
-                      </div>
-                      <ItRow left="Food arrives at reception" right="one batch" />
-
-                      {/* Inverted result row */}
-                      <div
-                        className="flex justify-between items-center -mx-6 -mb-8 mt-8 px-6 py-4"
-                        style={{
-                          background: "var(--ink)",
-                          color: "var(--bg)",
-                          fontSize: "var(--step-body)",
-                          fontWeight: 600,
-                        }}
-                      >
-                        <span>Everyone saves</span>
-                        <span style={{ fontVariantNumeric: "tabular-nums" }}>
-                          ₦14,000/mo each
-                        </span>
-                      </div>
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  SOCIAL PROOF                                       */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+          <R><h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] text-center mb-12">Offices already saving</h2></R>
+          <div className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-4 lg:space-y-0">
+            {[
+              { q: "I used to spend 30 minutes collecting lunch orders on WhatsApp. Now I tap one button and eat free.", who: "Pool Captain", where: "Ikeja, 28 colleagues", init: "AO", bg: "var(--coral)" },
+              { q: "Our team of 35 saves over ₦400K per month. Setup took 2 minutes. Best decision this quarter.", who: "Office Manager", where: "Lagos Island, 35 colleagues", init: "CE", bg: "var(--emerald)" },
+            ].map((t, i) => (
+              <R key={i} d={i * 80}>
+                <div className="bg-white rounded-[20px] p-6 lg:p-8" style={{ border: "1px solid var(--border)" }}>
+                  <p className="text-[18px] text-[var(--text)] leading-[1.6] mb-6">&ldquo;{t.q}&rdquo;</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[12px] font-bold" style={{ background: t.bg }}>{t.init}</div>
+                    <div>
+                      <div className="text-[14px] font-semibold text-[var(--text)]">{t.who}</div>
+                      <div className="text-[13px] text-[var(--text-muted)]">{t.where}</div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </section>
-          </div>
-        </div>
-
-        {/* ── Desktop: sticky photo column ── */}
-        <div className="hidden lg:block">
-          <div className="sticky top-3 h-[calc(100svh-24px)] rounded-[16px] overflow-hidden">
-            <Crossfade />
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* FEATURES — full width, field colour     */}
-      {/* ═══════════════════════════════════════ */}
-      <section style={{ background: "var(--field)", padding: "120px 0" }}>
-        <div className="px-6 lg:px-12 max-w-[1400px] mx-auto lg:grid lg:grid-cols-12 lg:gap-8">
-          <h2
-            className="lg:col-span-5 lg:sticky lg:top-8 self-start"
-            style={{
-              fontSize: "clamp(48px, 6vw, 96px)",
-              fontWeight: 600,
-              letterSpacing: "-0.03em",
-              lineHeight: 0.95,
-              marginBottom: 48,
-            }}
-          >
-            Captain
-            <br />
-            perks
-          </h2>
-          <div className="lg:col-span-5 lg:col-start-7 space-y-20 lg:space-y-32">
-            {/* Free lunch */}
-            <div>
-              <h3
-                style={{
-                  fontSize: "clamp(24px, 2vw, 28px)",
-                  fontWeight: 600,
-                  marginBottom: 16,
-                }}
-              >
-                Free lunch
-              </h3>
-              <div className="lg:flex lg:gap-8">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={PHOTOS[1]}
-                  alt="Jollof rice"
-                  width={180}
-                  height={240}
-                  className="w-full lg:w-[180px] h-auto lg:h-[240px] object-cover mb-4 lg:mb-0 shrink-0"
-                  style={{ aspectRatio: "3/4" }}
-                  loading="lazy"
-                />
-                <p
-                  style={{
-                    fontSize: "var(--step-body)",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  When 15 or more colleagues order through your pool, your lunch
-                  is free. Every day. Most offices hit this within a week.
-                </p>
-              </div>
-            </div>
-
-            {/* Cash bonus */}
-            <div>
-              <h3
-                style={{
-                  fontSize: "clamp(24px, 2vw, 28px)",
-                  fontWeight: 600,
-                  marginBottom: 16,
-                }}
-              >
-                Monthly cash bonus
-              </h3>
-              <div className="lg:flex lg:flex-row-reverse lg:gap-8">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={PHOTOS[2]}
-                  alt="Rice dish"
-                  width={180}
-                  height={240}
-                  className="w-full lg:w-[180px] h-auto lg:h-[240px] object-cover mb-4 lg:mb-0 shrink-0"
-                  style={{ aspectRatio: "3/4" }}
-                  loading="lazy"
-                />
-                <p
-                  style={{
-                    fontSize: "var(--step-body)",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  ₦500 for every pool with 20 or more orders. Up to ₦10,000 per
-                  month, paid to your account.
-                </p>
-              </div>
-            </div>
-
-            {/* Office hero */}
-            <div>
-              <h3
-                style={{
-                  fontSize: "clamp(24px, 2vw, 28px)",
-                  fontWeight: 600,
-                  marginBottom: 16,
-                }}
-              >
-                Office hero
-              </h3>
-              <div className="lg:flex lg:gap-8">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={PHOTOS[0]}
-                  alt="Nigerian food spread"
-                  width={180}
-                  height={240}
-                  className="w-full lg:w-[180px] h-auto lg:h-[240px] object-cover mb-4 lg:mb-0 shrink-0"
-                  style={{ aspectRatio: "3/4" }}
-                  loading="lazy"
-                />
-                <p
-                  style={{
-                    fontSize: "var(--step-body)",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  You save everyone money. They thank you every day. Your total
-                  effort: send one WhatsApp message each morning. The app does
-                  the rest.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* TESTIMONIAL                             */}
-      {/* ═══════════════════════════════════════ */}
-      <section style={{ padding: "160px 0" }}>
-        <div className="px-6 lg:px-12 max-w-[1400px] mx-auto lg:grid lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-4 lg:col-start-2 mb-8 lg:mb-0">
-            <div
-              className="w-full max-w-[280px]"
-              style={{
-                aspectRatio: "3/4",
-                background: "var(--surface)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: "clamp(40px, 4vw, 60px)",
-                  fontWeight: 600,
-                  color: "var(--muted)",
-                }}
-              >
-                AO
-              </span>
-            </div>
-          </div>
-          <div className="lg:col-span-6 lg:col-start-7 lg:pt-32">
-            <blockquote
-              style={{
-                fontSize: "clamp(24px, 2.6vw, 40px)",
-                fontWeight: 400,
-                lineHeight: 1.2,
-                maxWidth: "26ch",
-              }}
-            >
-              I used to spend 30 minutes every day collecting lunch orders on
-              WhatsApp. Now I tap one button and eat free.
-            </blockquote>
-            <div className="mt-8" style={{ fontSize: "var(--step-body)" }}>
-              <div style={{ fontWeight: 500 }}>Pool Captain, Ikeja</div>
-              <div style={{ color: "var(--muted)" }}>28 colleagues</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* FAQ — continuous reading text            */}
-      {/* ═══════════════════════════════════════ */}
-      <section style={{ padding: "120px 0" }}>
-        <div className="px-6 lg:px-12 max-w-[1400px] mx-auto lg:grid lg:grid-cols-12 lg:gap-8">
-          <h2
-            className="lg:col-span-3"
-            style={{
-              fontSize: "clamp(28px, 2.4vw, 32px)",
-              fontWeight: 600,
-              marginBottom: 32,
-            }}
-          >
-            Questions
-          </h2>
-          <div
-            className="lg:col-span-8 lg:col-start-5 lg:columns-2 lg:gap-14"
-            style={{ fontSize: "var(--step-body)", lineHeight: 1.55 }}
-          >
-            {[
-              {
-                q: "Is it really free?",
-                a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for guaranteed orders. You pay the discounted food price only.",
-              },
-              {
-                q: "What if only 3 people order?",
-                a: "You still get your food at the regular price. Discounts kick in at 5. Most offices hit 10 within the first week.",
-              },
-              {
-                q: "What vendors are available?",
-                a: "We partner with vetted local vendors near your office. Have a favourite? We will onboard them.",
-              },
-              {
-                q: "Can I stop being captain?",
-                a: "Transfer the role in one tap. But most captains stay. Free lunch every day is hard to give up.",
-              },
-              {
-                q: "How does payment work?",
-                a: "Everyone pays for their own plate via card or bank transfer through Paystack. No collecting cash.",
-              },
-              {
-                q: "Can people customise their food?",
-                a: "Yes. Everyone picks their own meal: base, protein, side, drink. Exactly what you want.",
-              },
-            ].map((item, i) => (
-              <p
-                key={i}
-                className="mb-5"
-                style={{ breakInside: "avoid" }}
-              >
-                <span style={{ fontWeight: 500 }}>{item.q} </span>
-                {item.a}
-              </p>
+              </R>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════ */}
-      {/* CTA — full-bleed photograph              */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative" style={{ height: "90svh" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={PHOTO_CTA}
-          alt="Nigerian food"
-          width={1600}
-          height={900}
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ filter: "brightness(0.7)" }}
-          loading="lazy"
-        />
-        <div className="absolute inset-0 flex flex-col justify-end p-8 lg:p-16 lg:items-end">
-          <div className="lg:max-w-[480px] lg:text-right">
-            <h2
-              style={{
-                fontSize: "clamp(28px, 3.4vw, 52px)",
-                fontWeight: 400,
-                color: "#fff",
-                lineHeight: 1.1,
-                marginBottom: 16,
-              }}
-            >
-              Save together.
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  FAQ                                                */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24" style={{ background: "var(--sand)" }}>
+        <div className="max-w-[720px] mx-auto px-5 lg:px-8">
+          <R><h2 className="text-[clamp(28px,4vw,40px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-10">Questions</h2></R>
+          {[
+            { q: "Is it really free?", a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for guaranteed orders." },
+            { q: "What if only 3 people order?", a: "You still get your food at the regular price. Discounts kick in at 5+. Most offices hit 10+ in the first week." },
+            { q: "What vendors are available?", a: "Vetted local vendors near your office. Have a favourite? We'll onboard them." },
+            { q: "Can I stop being captain?", a: "Transfer the role in one tap. But most captains stay — free lunch is hard to give up." },
+            { q: "How does payment work?", a: "Everyone pays via card or bank transfer through Paystack. No collecting cash." },
+            { q: "Can people customise?", a: "Yes. Base, protein, side, drink — everyone picks exactly what they want." },
+          ].map((item, i) => (
+            <R key={i} d={i * 30}>
+              <div className={i > 0 ? "border-t border-[var(--border)]" : ""}>
+                <button type="button" onClick={() => setFaq(faq === i ? null : i)}
+                  aria-expanded={faq === i}
+                  className="w-full flex items-center justify-between py-5 text-left cursor-pointer group">
+                  <span className="text-[17px] font-semibold text-[var(--text)] pr-4 group-hover:text-[var(--coral)] transition-colors">{item.q}</span>
+                  <div className={`w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0 transition-transform duration-200 ${faq === i ? "rotate-180" : ""}`} style={{ border: "1px solid var(--border)" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2.5"><path d="m6 9 6 6 6-6" /></svg>
+                  </div>
+                </button>
+                <div className={`overflow-hidden transition-all duration-300 ${faq === i ? "max-h-40 opacity-100 pb-5" : "max-h-0 opacity-0"}`}>
+                  <p className="text-[16px] text-[var(--text-secondary)] leading-[1.6]">{item.a}</p>
+                </div>
+              </div>
+            </R>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  FINAL CTA                                          */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-20 lg:py-32 text-center" style={{ background: "var(--dark)" }}>
+        <div className="max-w-[640px] mx-auto px-5 lg:px-8">
+          <R>
+            <h2 className="text-[clamp(32px,6vw,56px)] font-extrabold text-white tracking-[-0.03em] leading-[1.0] mb-6">
+              Save your office<br />₦400K+ per month
             </h2>
-            <p
-              style={{
-                fontSize: "var(--step-body)",
-                color: "rgba(255,255,255,0.8)",
-                marginBottom: 24,
-                lineHeight: 1.5,
-              }}
-            >
-              Set up your office in two minutes. Everyone picks their meal, pays
-              their share, and eats for less.
-            </p>
-            <a
-              href="/start"
-              className="inline-block active:scale-[0.98] transition-transform"
-              style={{
-                background: "var(--bg)",
-                color: "var(--ink)",
-                fontWeight: 600,
-                fontSize: "var(--step-body)",
-                padding: "16px 40px",
-              }}
-            >
+          </R>
+          <R d={80}>
+            <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[18px] h-[56px] px-10 inline-flex items-center rounded-full active:scale-[0.97] transition-all hover:scale-[1.03] mb-3">
               Set Up My Office
             </a>
-            <p
-              className="mt-4"
-              style={{
-                fontSize: "var(--step-small)",
-                color: "rgba(255,255,255,0.6)",
-              }}
-            >
-              Or{" "}
-              <a
-                href={WA_LINK}
-                className="underline"
-                style={{ color: "#fff" }}
-              >
-                WhatsApp us
-              </a>{" "}
-              and we set it up with you
+            <p className="text-[14px] text-white/30 mb-6">Free. 2 minutes. No card required.</p>
+          </R>
+          <R d={160}>
+            <p className="text-[16px] text-white/50">
+              Or <a href={WA} className="text-white font-semibold underline underline-offset-2 hover:text-[var(--coral)] transition-colors">WhatsApp us</a> and we set it up with you
             </p>
-          </div>
+          </R>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════ */}
-      {/* FOOTER — photo half + menu half          */}
-      {/* ═══════════════════════════════════════ */}
-      <footer className="lg:grid lg:grid-cols-2 min-h-svh">
-        <div className="h-[50svh] lg:h-auto overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={PHOTO_FOOTER}
-            alt="Nigerian food"
-            width={800}
-            height={1200}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
-        <div
-          className="p-8 lg:p-16 flex flex-col"
-          style={{ background: "var(--field)" }}
-        >
-          <Stripe h={8} w={8} round={false} />
-          <div className="mt-12 mb-8">
-            <Logo size={20} />
+      {/* ── Footer ── */}
+      <footer className="py-12" style={{ background: "var(--bg)" }}>
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8 flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6">
+          <div className="flex flex-col items-center lg:items-start gap-2">
+            <Logo size={22} />
+            <p className="text-[14px] text-[var(--text-muted)]">Cheaper lunch. Zero stress.</p>
           </div>
-          <nav className="space-y-4 lg:space-y-5 mb-auto">
-            {[
-              { label: "Menu", href: "/menu" },
-              { label: "Start", href: "/start" },
-              { label: "Orders", href: "/orders" },
-              { label: "About", href: "/about" },
-            ].map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="block hover:translate-x-3 transition-transform"
-                style={{
-                  fontSize: "clamp(24px, 2.6vw, 40px)",
-                  fontWeight: 600,
-                }}
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-          <div
-            className="mt-12 flex gap-12"
-            style={{ fontSize: "var(--step-small)", color: "var(--muted)" }}
-          >
-            <div>
-              <div>Lagos, Nigeria</div>
-              <div>@chopdrop.ng</div>
-            </div>
-            <div>
-              <a href={WA_LINK} className="underline">
-                WhatsApp
-              </a>
-            </div>
+          <div className="flex gap-8 text-[14px] text-[var(--text-secondary)]">
+            <a href="/menu" className="hover:text-[var(--text)] transition-colors">Menu</a>
+            <a href="/start" className="hover:text-[var(--text)] transition-colors">Start</a>
+            <a href="/about" className="hover:text-[var(--text)] transition-colors">About</a>
+            <a href={WA} className="hover:text-[var(--text)] transition-colors">WhatsApp</a>
           </div>
-          <div
-            className="mt-8"
-            style={{ fontSize: "var(--step-small)", color: "var(--muted)" }}
-          >
-            © 2026 Arete Ltd (trading as ChopDrop)
+          <div className="text-[13px] text-[var(--text-muted)] text-center lg:text-right">
+            <div>&copy; 2026 Arete Ltd (trading as ChopDrop)</div>
+            <div>Lagos, Nigeria</div>
           </div>
         </div>
       </footer>
 
-      {/* Bottom bar clearance on mobile */}
-      <div className="h-16 lg:hidden" style={{ background: "var(--field)" }} />
+      <div className="h-16 lg:hidden" />
+
+{/* animations moved to globals.css */}
     </div>
   );
 }
