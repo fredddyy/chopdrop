@@ -324,6 +324,7 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
               Join &amp; Order Lunch
             </button>
             <p className="text-[10px] text-[#9ca3af] text-center mt-2.5">Takes 60 seconds · No app download needed</p>
+            <p className="text-[12px] text-[#4b5563] text-center mt-3">Already a member? <a href="/auth" className="text-[#f05f4b] font-bold">Log in</a></p>
           </div>
 
           {/* Captain credit */}

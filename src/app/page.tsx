@@ -47,7 +47,7 @@ export default function Home() {
 
       {/* ── Bottom CTA — glass ── */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-2xl border-t border-black/[0.04] px-4 py-3 flex items-center justify-between">
-        <Logo size={20} compact />
+        <a href="/auth" className="text-[12px] font-semibold text-[#4b5563]">Log in</a>
         <a href="/start" className="bg-[#f05f4b] text-white font-bold text-[13px] px-5 py-2.5 rounded-full active:scale-[0.97] transition-transform" style={{ boxShadow: "0 2px 12px rgba(240,95,75,0.3)" }}>
           Set Up My Office →
         </a>
@@ -94,9 +94,10 @@ export default function Home() {
             </div>
           </div>
 
-          <p className="text-[12px] text-[#6b7280] text-center mt-5">
-            Already have an invite? <a href="/auth" className="text-[#f05f4b] font-semibold">Join your office</a>
-          </p>
+          <div className="text-center mt-5 space-y-1">
+            <p className="text-[12px] text-[#4b5563]">Already a member? <a href="/auth" className="text-[#f05f4b] font-bold">Log in</a></p>
+            <p className="text-[12px] text-[#6b7280]">Have an invite? <a href="/auth" className="text-[#6b7280] font-semibold underline">Join your office</a></p>
+          </div>
         </section>
 
         {/* ═══════════════════════════════════════════════════════ */}
