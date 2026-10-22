@@ -3,10 +3,22 @@ import { CartProvider } from "@/lib/cart";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ChopDrop — Meals for Your Team, Sorted",
+  title: "ChopDrop — Cheaper Office Lunch",
   description:
-    "Work is stressful. Food shouldn't be. Pick your meal, pay on your phone, fresh food at your desk. ₦0 delivery to Ikeja offices.",
+    "Save 20-40% when your office orders lunch together. Pool pricing, ₦0 delivery, everyone picks & pays individually. Set up in 2 minutes.",
   manifest: "/manifest.json",
+  openGraph: {
+    title: "ChopDrop — Cheaper Office Lunch",
+    description: "Save 20-40% when your office orders together. Set up in 2 min.",
+    url: "https://chopdrop-app.vercel.app",
+    siteName: "ChopDrop",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ChopDrop — Cheaper Office Lunch",
+    description: "Save 20-40% when your office orders together. Set up in 2 min.",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

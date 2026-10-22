@@ -1,551 +1,291 @@
+"use client";
+
+import { useState } from "react";
 import { Logo } from "@/components/logo";
-import { MobileNav } from "@/components/mobile-nav";
-import "./landing.css";
 
-const FOOD_IMAGE =
-  "https://images.unsplash.com/photo-1603496987674-79600a000f55?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=85&w=900";
-const FOOD_IMAGE_ALT =
-  "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=85&w=900";
-const FOOD_IMAGE_GROUP =
-  "https://images.unsplash.com/photo-1638436684761-7e59f8a9072f?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=85&w=900";
-
-type IconName =
-  | "bag"
-  | "card"
-  | "check"
-  | "clock"
-  | "copy"
-  | "restaurant"
-  | "truck"
-  | "users";
-
-function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
-  const paths: Record<IconName, React.ReactNode> = {
-    bag: (
-      <>
-        <path d="M6.5 8.5h11l-1 11h-9l-1-11Z" />
-        <path d="M9.5 9V6.5a2.5 2.5 0 0 1 5 0V9" />
-      </>
-    ),
-    card: (
-      <>
-        <rect x="3.5" y="6" width="17" height="12" rx="2" />
-        <path d="M3.5 10h17M7 14h3" />
-      </>
-    ),
-    check: <path d="m5 12 4.2 4L19 6.5" />,
-    clock: (
-      <>
-        <circle cx="12" cy="12" r="8.5" />
-        <path d="M12 7.5V12l3 2" />
-      </>
-    ),
-    copy: (
-      <>
-        <rect x="7" y="4" width="11" height="14" rx="2" />
-        <path d="M7 7H5.5A1.5 1.5 0 0 0 4 8.5v10A1.5 1.5 0 0 0 5.5 20H14a1.5 1.5 0 0 0 1.5-1.5V18" />
-      </>
-    ),
-    restaurant: (
-      <>
-        <path d="M5 4v7M8 4v7M5 8h3M6.5 11v9M15 4v16M15 4c3 2 3 7 0 9" />
-      </>
-    ),
-    truck: (
-      <>
-        <path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z" />
-        <circle cx="7" cy="18" r="2" />
-        <circle cx="18" cy="18" r="2" />
-      </>
-    ),
-    users: (
-      <>
-        <circle cx="9" cy="8" r="3" />
-        <circle cx="17" cy="9" r="2.3" />
-        <path d="M3.5 19c.5-4 2.3-6 5.5-6s5 2 5.5 6M15 14c2.7.2 4.3 1.8 4.7 4.5" />
-      </>
-    ),
-  };
-
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      height={size}
-      viewBox="0 0 24 24"
-      width={size}
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.7"
-    >
-      {paths[name]}
-    </svg>
-  );
-}
-
-function Action({
-  children,
-  variant = "primary",
-  href = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20order%20food%20for%20my%20office",
-}: {
-  children: React.ReactNode;
-  variant?: "primary" | "outline" | "light";
-  href?: string;
-}) {
-  return (
-    <a className={`action action-${variant}`} href={href}>
-      {children}
-      <span aria-hidden="true">→</span>
-    </a>
-  );
-}
-
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <div className="eyebrow">{children}</div>;
-}
-
-function PhoneMockup({ compact = false }: { compact?: boolean }) {
-  return (
-    <div className={`phone ${compact ? "phone-compact" : ""}`}>
-      <div className="phone-island" />
-      <div className="phone-top">
-        <span>9:41</span>
-        <span className="signal">● ●</span>
-      </div>
-      <div className="phone-body">
-        <div className="phone-greeting">Good morning, Ada</div>
-        <div className="phone-title">What&apos;s for lunch?</div>
-        <div className="restaurant-card">
-          <div>
-            <small>The Lunch Kitchen</small>
-            <strong>
-              Work is stressful.
-              <br />
-              Food shouldn&apos;t be.
-            </strong>
-          </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="A plate of rice and chicken" src={FOOD_IMAGE} />
-        </div>
-        <div className="phone-tabs">
-          <span className="active">Popular</span>
-          <span>Rice</span>
-          <span>Swallow</span>
-        </div>
-        <div className="meal-card">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="" src={FOOD_IMAGE_ALT} />
-          <div>
-            <strong>Smoky jollof &amp; beef</strong>
-            <span>Freshly cooked today</span>
-            <b>₦3,800</b>
-          </div>
-        </div>
-        <div className="meal-card">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="" src={FOOD_IMAGE} />
-          <div>
-            <strong>Fried rice &amp; chicken</strong>
-            <span>With plantain</span>
-            <b>₦4,200</b>
-          </div>
-        </div>
-      </div>
-      <div className="phone-home" />
-    </div>
-  );
-}
-
-function OrderPhone() {
-  return (
-    <div className="phone order-phone">
-      <div className="phone-island" />
-      <div className="phone-top">
-        <span>9:41</span>
-        <span className="signal">● ●</span>
-      </div>
-      <div className="order-screen">
-        <div className="order-mini">Today&apos;s order</div>
-        <div className="order-heading">Lunch is sorted.</div>
-        <div className="success-icon">
-          <Icon name="check" size={26} />
-        </div>
-        <strong>Paid &amp; confirmed</strong>
-        <span>We&apos;ll see you at lunchtime</span>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="Rice and chicken order" src={FOOD_IMAGE} />
-        <b>by 12:00 PM</b>
-        <small>Fresh food at your desk. ₦0 delivery.</small>
-        <div className="collection-code">COLLECT WITH CODE · CD 028</div>
-      </div>
-      <div className="phone-home" />
-    </div>
-  );
-}
-
-function Step({
-  icon,
-  number,
-  title,
-  copy,
-}: {
-  icon: IconName;
-  number: string;
-  title: string;
-  copy: string;
-}) {
-  return (
-    <>
-      <div className="step-top">
-        <span>{number} /</span>
-        <Icon name={icon} size={18} />
-      </div>
-      <h3>{title}</h3>
-      <p>{copy}</p>
-    </>
-  );
-}
-
-const steps = [
-  {
-    icon: "card" as IconName,
-    number: "01",
-    title: "Everyone Picks Their Meal",
-    copy: "Choose from the menu and pay online. No cash collection, no chasing.",
-  },
-  {
-    icon: "restaurant" as IconName,
-    number: "02",
-    title: "Restaurants Cook to Order",
-    copy: "Your prepaid order goes straight to the kitchen. No guesswork, no waste.",
-  },
-  {
-    icon: "truck" as IconName,
-    number: "03",
-    title: "₦0 Delivery to Your Office",
-    copy: "Your meal reaches your desk in one smooth drop — free delivery, no hassle.",
-  },
-  {
-    icon: "copy" as IconName,
-    number: "04",
-    title: "Your ChopDropper Distributes",
-    copy: "Simple collection codes make handing out every meal quick and easy.",
-  },
-];
-
-const audiences = [
-  {
-    className: "audience-cream",
-    icon: "card" as IconName,
-    title: "For Workers",
-    copy: "Pick what you want. Pay on your phone. Collect at the set time. No queueing.",
-    action: "Start Ordering",
-  },
-  {
-    className: "audience-green",
-    icon: "copy" as IconName,
-    title: "For ChopDroppers",
-    copy: "Bring your group together without chasing cash, orders, or restaurants.",
-    action: "Become a ChopDropper",
-  },
-  {
-    className: "audience-coral",
-    icon: "restaurant" as IconName,
-    title: "For Restaurants",
-    copy: "Get guaranteed prepaid group orders, cook exactly what is needed, and reduce waste.",
-    action: "Partner With Us",
-  },
-];
+const WA_LINK = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20set%20up%20my%20office";
 
 export default function Home() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
   return (
-    <div className="landing">
-      <header className="nav container">
-        <Logo size={28} variant="dark" />
-        <nav aria-label="Main navigation">
-          <a href="#how">How it works</a>
-          <a href="#audiences">Who it&apos;s for</a>
-          <a href="#about">About us</a>
-        </nav>
-        <div className="nav-actions">
-          <a className="action action-outline nav-app-link" href="/menu">
-            Use the App <span aria-hidden="true">→</span>
+    <div className="min-h-screen bg-[#fafaf8]" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+      {/* ── Sticky bottom CTA bar ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-black/[0.06] px-4 py-3 flex items-center justify-between">
+        <Logo size={20} compact />
+        <a href="/start" className="bg-[#f05f4b] text-white font-bold text-[13px] px-5 py-2.5 rounded-xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] active:scale-[0.97] transition-transform">
+          Set Up My Office →
+        </a>
+      </div>
+
+      <div className="max-w-[480px] mx-auto pb-24">
+        {/* ════════════════════════════════════════ */}
+        {/* SECTION 1: HERO */}
+        {/* ════════════════════════════════════════ */}
+        <section className="px-5 pt-6 pb-2">
+          <div className="flex items-center justify-center mb-8">
+            <Logo size={28} />
+          </div>
+
+          <h1 className="font-display font-bold text-[28px] text-[#1a1a1a] tracking-[-0.04em] leading-[1.15] text-center mb-2">
+            Your office lunch is<br />too expensive.
+          </h1>
+          <p className="font-display font-bold text-[22px] text-[#f05f4b] tracking-[-0.03em] text-center mb-6">
+            Fix it in 2 minutes.
+          </p>
+
+          {/* Hero image placeholder */}
+          <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-[#0f4030] to-[#0a2e20] h-[200px] flex items-center justify-center mb-5 relative">
+            <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-[#f5c565]/10" />
+            <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-[#f05f4b]/10" />
+            <div className="relative text-center px-6">
+              <div className="text-[32px] mb-2">🍚📦🏢</div>
+              <p className="text-white/80 text-[13px]">Fresh food, labelled bags, delivered to your reception</p>
+            </div>
+          </div>
+
+          <div className="text-center mb-6">
+            <p className="text-[15px] text-[#1a1a1a] font-medium leading-relaxed">
+              Pool your office lunch orders.<br />
+              Everyone saves 20–40%.<br />
+              <span className="font-bold text-[#f05f4b]">You eat free.</span>
+            </p>
+          </div>
+
+          <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[16px] py-4 rounded-2xl shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform mb-3">
+            Set Up My Office
+            <span className="block text-[11px] font-medium text-white/70 mt-0.5">Free · Takes 2 minutes</span>
           </a>
-          <Action href="#cta">Order on WhatsApp</Action>
-        </div>
-        <MobileNav />
-      </header>
 
-      <main>
-        {/* ── Hero ── */}
-        <section className="hero">
-          <div className="container hero-grid">
-            <div className="hero-copy">
-              <Eyebrow>
-                <span className="status-dot" /> Now serving Ikeja offices
-              </Eyebrow>
-              <h1>
-                Meals for <span>Offices,</span> <strong>Sorted.</strong>
-              </h1>
-              <p>
-                Pick your meal, pay on your phone. Fresh food arrives at your
-                office — zero delivery fees, zero stress.
-              </p>
-              <div className="button-row">
-                <Action>Order on WhatsApp</Action>
-                <Action variant="outline" href="/menu">
-                  Use the App
-                </Action>
-              </div>
-              <div className="trust-row">
-                <span>
-                  <i>
-                    <Icon name="card" size={15} />
-                  </i>
-                  <b>Pick &amp; pay individually</b>
-                </span>
-                <span>
-                  <i>
-                    <Icon name="truck" size={15} />
-                  </i>
-                  <b>₦0 delivery</b>
-                </span>
-              </div>
-            </div>
+          <p className="text-[12px] text-[#9ca3af] text-center">
+            Already have an invite? <a href="/auth" className="text-[#f05f4b] font-semibold">Join your office</a>
+          </p>
 
-            <div className="hero-visual">
-              <div className="hero-orbit" />
-              <div className="hero-phone">
-                <PhoneMockup />
-              </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className="hero-food"
-                alt="Freshly prepared rice and chicken"
-                src={FOOD_IMAGE}
-              />
-              <div className="delivery-toast">
-                <span className="toast-icon">
-                  <Icon name="clock" size={18} />
-                </span>
-                <div>
-                  <strong>By 12 PM. Meals land.</strong>
-                  <small>One drop. Right on time.</small>
-                </div>
-              </div>
-              <div className="batch-badge">
-                <strong>20–30</strong>
-                <span>
-                  meals
-                  <br />
-                  one drop
-                </span>
-              </div>
-            </div>
+          <div className="flex items-center justify-center mt-6 mb-2">
+            <a href="#math" className="text-[12px] text-[#9ca3af] flex items-center gap-1">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg>
+              How it works
+            </a>
           </div>
         </section>
 
-        {/* ── Locations ── */}
-        <div className="locations">
-          <span>Currently serving select areas</span>
-          <strong>
-            Allen Avenue · Opebi · Computer Village · Alausa · Toyin Street
-          </strong>
-        </div>
+        {/* ════════════════════════════════════════ */}
+        {/* SECTION 2: THE MATH */}
+        {/* ════════════════════════════════════════ */}
+        <section id="math" className="px-5 py-8">
+          <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em] text-center mb-5">
+            How much is your office<br />spending on lunch?
+          </h2>
 
-        {/* ── Problem / Why Us ── */}
-        <section className="problem section" id="about">
-          <div className="container problem-grid">
-            <div className="problem-visual">
-              <div className="soft-circle" />
-              <PhoneMockup compact />
-              <div className="payment-toast">
-                <span>
-                  <Icon name="check" size={17} />
-                </span>
-                <div>
-                  <strong>No chasing payments.</strong>
-                  <small>Everyone pays upfront.</small>
-                </div>
-              </div>
+          {/* Without */}
+          <div className="bg-[#f5f5f3] rounded-2xl p-5 mb-3">
+            <div className="text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.08em] mb-3">Without ChopDrop</div>
+            <div className="space-y-1.5 text-[13px] text-[#6b7280]">
+              <p>30 people × ₦2,000/day</p>
+              <p className="font-display font-bold text-[18px] text-[#1a1a1a]">= ₦1,200,000/month</p>
+              <p className="text-[11px] mt-2">Each person orders alone. Full price. + delivery fees.</p>
             </div>
-            <div className="problem-copy">
-              <Eyebrow>Why groups choose us</Eyebrow>
-              <h2>No More Food Chaos for Your Team</h2>
-              <p>
-                Group meals shouldn&apos;t mean collecting cash, fixing wrong
-                orders, or wondering if there will be enough. With ChopDrop,
-                everyone chooses and prepays for exactly what they want.
-              </p>
-              <p>
-                We bring it all together in one scheduled delivery, ready to
-                hand out with simple collection codes. Office lunch is just
-                where we&apos;re starting.
-              </p>
-              <div className="stats">
-                <div>
-                  <strong>20–30</strong>
-                  <span>Meals per drop</span>
-                </div>
-                <div>
-                  <strong className="stat-coral">₦0</strong>
-                  <span>Delivery fee</span>
-                </div>
-                <div>
-                  <strong>100%</strong>
-                  <span>Prepaid orders</span>
-                </div>
-              </div>
+          </div>
+
+          <div className="text-center text-[14px] font-bold text-[#9ca3af] my-2">vs</div>
+
+          {/* With */}
+          <div className="bg-white rounded-2xl p-5 border border-[#22c55e]/20 mb-3">
+            <div className="text-[10px] font-bold text-[#22c55e] uppercase tracking-[0.08em] mb-3">With ChopDrop</div>
+            <div className="space-y-1.5 text-[13px] text-[#6b7280]">
+              <p>30 people × ₦1,300/day</p>
+              <p className="font-display font-bold text-[18px] text-[#0f4030]">= ₦780,000/month</p>
+              <p className="text-[11px] mt-2">Everyone orders together. Pool discount. Free delivery to reception.</p>
             </div>
+          </div>
+
+          {/* Savings */}
+          <div className="bg-[#f05f4b] rounded-2xl p-5 text-center">
+            <div className="text-[10px] font-bold text-white/70 uppercase tracking-[0.08em] mb-1">Your office saves</div>
+            <div className="font-display font-bold text-[32px] text-white tracking-[-0.03em]">₦420,000/mo</div>
+            <p className="text-[12px] text-white/70 mt-1">That&apos;s ₦14,000 back in each person&apos;s pocket. Every month.</p>
           </div>
         </section>
 
-        {/* ── How It Works ── */}
-        <section className="how section" id="how">
-          <div className="container">
-            <div className="section-heading">
-              <Eyebrow>Office lunch is where we begin</Eyebrow>
-              <h2>
-                How <strong>ChopDrop</strong> Works
-              </h2>
-              <p>
-                Here&apos;s how one meal run comes together—from individual
-                picks to one easy drop.
-              </p>
-            </div>
-            <div className="steps-layout">
-              <div className="step-card step-one">
-                <Step {...steps[0]} />
-              </div>
-              <div className="step-card step-two">
-                <Step {...steps[1]} />
-              </div>
-              <div className="how-phone">
-                <OrderPhone />
-              </div>
-              <div className="step-card step-three">
-                <Step {...steps[2]} />
-              </div>
-              <div className="step-card step-four">
-                <Step {...steps[3]} />
-              </div>
-            </div>
-            <p className="how-note">
-              Office lunch today. Breakfasts, events, estates, and more
-              tomorrow.
-            </p>
-          </div>
-        </section>
+        {/* ════════════════════════════════════════ */}
+        {/* SECTION 3: HOW IT WORKS */}
+        {/* ════════════════════════════════════════ */}
+        <section className="px-5 py-8">
+          <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em] mb-6">How it works</h2>
 
-        {/* ── Audiences ── */}
-        <section className="audiences section" id="audiences">
-          <div className="container">
-            <div className="section-heading compact-heading">
-              <Eyebrow>Our first ChopDrop community</Eyebrow>
-              <h2>
-                Built for <strong>Everyone Who Eats Together</strong>
-              </h2>
-              <p>
-                Starting with the people who make great office meals happen.
-              </p>
+          {/* Step 1 */}
+          <div className="mb-7">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-full bg-[#f05f4b] text-white flex items-center justify-center text-[13px] font-bold flex-shrink-0">1</div>
+              <h3 className="text-[15px] font-bold text-[#1a1a1a]">You set up your office <span className="font-normal text-[#9ca3af]">(2 min)</span></h3>
             </div>
-            <div className="audience-grid">
-              {audiences.map((audience, index) => (
-                <article
-                  className={`audience-card ${audience.className}`}
-                  key={audience.title}
-                >
-                  <div className="audience-top">
-                    <span className="audience-icon">
-                      <Icon name={audience.icon} />
-                    </span>
-                    <b>0{index + 1}</b>
-                  </div>
-                  <h3>{audience.title}</h3>
-                  <p>{audience.copy}</p>
-                  <Action href="#cta">{audience.action}</Action>
-                  <small>Let&apos;s talk on WhatsApp</small>
-                </article>
-              ))}
+            <div className="ml-11 bg-[#0f4030] rounded-xl p-4 mb-2">
+              <div className="text-[10px] font-bold text-[#6ee7b7] mb-1">Office name</div>
+              <div className="text-[14px] font-semibold text-white">Sterling Bank HQ</div>
+              <div className="mt-2 text-[10px] text-white/50">Invite link: chopdrop-app.vercel.app/join/sterling-hq</div>
             </div>
+            <p className="ml-11 text-[12px] text-[#6b7280]">Enter your company name and share the invite link to your office WhatsApp group.</p>
           </div>
-        </section>
 
-        {/* ── CTA ── */}
-        <section className="cta" id="cta">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="cta-food cta-food-left"
-            alt=""
-            src={FOOD_IMAGE_GROUP}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="cta-food cta-food-right"
-            alt=""
-            src={FOOD_IMAGE_ALT}
-          />
-          <div className="container cta-inner">
-            <span>Make mealtime your time</span>
-            <h2>
-              Ready to Eat <strong>Better Together?</strong>
-            </h2>
-            <p>
-              Bring your group together with food everyone actually chose—no app
-              download needed.
-            </p>
-            <div className="button-row centered">
-              <Action>Order on WhatsApp</Action>
-              <Action variant="light">Join Waitlist</Action>
+          {/* Step 2 */}
+          <div className="mb-7">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-full bg-[#f5c565] text-[#5a3e00] flex items-center justify-center text-[13px] font-bold flex-shrink-0">2</div>
+              <h3 className="text-[15px] font-bold text-[#1a1a1a]">Colleagues pick their meal <span className="font-normal text-[#9ca3af]">(60 sec)</span></h3>
             </div>
-            <div className="notify">
-              <label htmlFor="email">
-                Get an email when ChopDrop reaches you.
-              </label>
+            <div className="ml-11 bg-white rounded-xl border border-black/[0.06] p-4 mb-2">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[12px] font-semibold text-[#1a1a1a]">Jollof Rice + Chicken</span>
+                <span className="text-[8px] font-bold text-white bg-[#f05f4b] px-1.5 py-0.5 rounded-full">-30%</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[14px] font-bold text-[#0f4030]">₦1,400</span>
+                <span className="text-[11px] text-[#d1d5db] line-through">₦2,000</span>
+              </div>
+              <div className="mt-2 text-[9px] text-[#22c55e] font-medium">🏢 18 from your office · 2 more → ₦1,200</div>
+            </div>
+            <p className="ml-11 text-[12px] text-[#6b7280]">Everyone picks their own meal and pays on their phone. The more people order, the cheaper it gets — up to 40% off.</p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="mb-7">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-8 h-8 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[13px] font-bold flex-shrink-0">3</div>
+              <h3 className="text-[15px] font-bold text-[#1a1a1a]">Food arrives at reception <span className="font-normal text-[#9ca3af]">(by 1 PM)</span></h3>
+            </div>
+            <div className="ml-11 bg-white rounded-xl border border-black/[0.06] p-4 mb-2 flex items-center gap-3">
+              <div className="text-[28px]">📦</div>
               <div>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Your email address"
-                />
-                <button type="button">Notify me →</button>
+                <div className="text-[12px] font-bold text-[#1a1a1a]">TUNDE</div>
+                <div className="text-[10px] text-[#9ca3af]">Jollof + Chicken · Extra meat</div>
               </div>
             </div>
-            <small>App coming soon · WhatsApp ordering available now</small>
+            <p className="ml-11 text-[12px] text-[#6b7280]">One batch delivery. Everyone&apos;s bag has their name on it. Pick up and eat.</p>
+          </div>
+
+          <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[15px] py-3.5 rounded-2xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform">
+            Set Up My Office
+          </a>
+        </section>
+
+        {/* ════════════════════════════════════════ */}
+        {/* SECTION 4: CAPTAIN BENEFITS */}
+        {/* ════════════════════════════════════════ */}
+        <section className="px-5 py-8 bg-[#0f4030] -mx-0 rounded-none" style={{ marginLeft: 0, marginRight: 0 }}>
+          <h2 className="font-display font-bold text-[20px] text-white tracking-[-0.03em] mb-1">Wait — what do I get<br />out of this?</h2>
+          <p className="text-[13px] text-white/50 mb-6">You become your office&apos;s Pool Captain. That means:</p>
+
+          <div className="space-y-3 mb-6">
+            <div className="bg-white/10 rounded-xl p-4">
+              <div className="text-[10px] font-bold text-[#f5c565] uppercase tracking-[0.06em] mb-1">Free lunch</div>
+              <p className="text-[13px] text-white font-medium">When 15+ colleagues order, your lunch is on us. Every day.</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4">
+              <div className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.06em] mb-1">Monthly bonus</div>
+              <p className="text-[13px] text-white font-medium">₦500 per pool with 20+ orders. That&apos;s up to ₦10,000/month cash.</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4">
+              <div className="text-[10px] font-bold text-[#f05f4b] uppercase tracking-[0.06em] mb-1">Office hero status</div>
+              <p className="text-[13px] text-white font-medium">You&apos;re the person who saves everyone money. They&apos;ll thank you every single day.</p>
+            </div>
+          </div>
+
+          <p className="text-[13px] text-white/60 text-center mb-5">
+            Your total effort? <span className="text-white font-semibold">Send one WhatsApp message each morning.</span> The app does the rest.
+          </p>
+
+          <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[15px] py-3.5 rounded-2xl shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform">
+            Set Up My Office
+          </a>
+        </section>
+
+        {/* ════════════════════════════════════════ */}
+        {/* SECTION 5: SOCIAL PROOF */}
+        {/* ════════════════════════════════════════ */}
+        <section className="px-5 py-8">
+          <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] tracking-[-0.03em] mb-4">Early pilot offices</h2>
+
+          <div className="bg-white rounded-2xl border border-black/[0.06] p-4 mb-3">
+            <p className="text-[13px] text-[#1a1a1a] italic leading-relaxed mb-3">&ldquo;I used to spend 30 minutes every day collecting lunch orders on WhatsApp. Now I just tap &apos;Send Reminder&apos; and eat free.&rdquo;</p>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[9px] font-bold">AO</div>
+              <div>
+                <div className="text-[11px] font-semibold text-[#1a1a1a]">Pool Captain, Ikeja</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-white rounded-xl border border-black/[0.06] p-3 text-center">
+              <div className="font-display font-bold text-[20px] text-[#0f4030]">20+</div>
+              <div className="text-[9px] text-[#9ca3af] font-medium">pilot offices</div>
+            </div>
+            <div className="bg-white rounded-xl border border-black/[0.06] p-3 text-center">
+              <div className="font-display font-bold text-[20px] text-[#f05f4b]">₦0</div>
+              <div className="text-[9px] text-[#9ca3af] font-medium">delivery fee</div>
+            </div>
+            <div className="bg-white rounded-xl border border-black/[0.06] p-3 text-center">
+              <div className="font-display font-bold text-[20px] text-[#f5c565]">40%</div>
+              <div className="text-[9px] text-[#9ca3af] font-medium">max savings</div>
+            </div>
           </div>
         </section>
-      </main>
 
-      <footer>
-        <div className="container footer-grid">
-          <div className="footer-brand">
-            <Logo size={28} variant="dark" />
-            <p>Work is stressful. Food shouldn&apos;t be.</p>
-          </div>
-          <div>
-            <strong>Product</strong>
-            <a href="#how">How it works</a>
-            <a href="#cta">Order on WhatsApp</a>
-            <a href="#audiences">For ChopDroppers</a>
-          </div>
-          <div>
-            <strong>Company</strong>
-            <a href="#about">About ChopDrop</a>
-            <a href="#audiences">Restaurant partners</a>
-            <a href="#cta">Get in touch</a>
-          </div>
-          <div>
-            <strong>Legal</strong>
-            <a href="#cta">Privacy policy</a>
-            <a href="#cta">Terms of service</a>
-          </div>
-        </div>
-        <div className="container footer-bottom">
-          <span>© 2026 Arete Ltd (trading as ChopDrop) · Ikeja, Lagos</span>
-          <span>Work is stressful. Food shouldn&apos;t be.</span>
-        </div>
-      </footer>
+        {/* ════════════════════════════════════════ */}
+        {/* SECTION 6: FAQ */}
+        {/* ════════════════════════════════════════ */}
+        <section className="px-5 py-8">
+          <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] tracking-[-0.03em] mb-4">Common questions</h2>
+
+          {[
+            { q: "Is it really free?", a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for the guaranteed orders. You and your colleagues pay the discounted food price only." },
+            { q: "What if only 3 people order?", a: "You still get your food — just at the regular price. The discount kicks in when 5+ people order from the same vendor. Most offices hit 10+ within the first week." },
+            { q: "What vendors are available?", a: "We partner with vetted local food vendors near your office. If your office has a favorite vendor, we'll onboard them." },
+            { q: "What if I don't want to be captain forever?", a: "Transfer the role to any colleague in one tap. But most captains stay — free lunch every day is a strong incentive." },
+            { q: "How does payment work?", a: "Everyone pays for their own plate through the app (card or bank transfer via Paystack). No collecting cash. No chasing people." },
+            { q: "Can people customize their food?", a: "Yes — everyone picks their own meal. Exactly what you want, not a fixed combo." },
+          ].map((item, i) => (
+            <div key={i} className="border-b border-black/[0.06] last:border-0">
+              <button
+                type="button"
+                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                className="w-full flex items-center justify-between py-3.5 text-left"
+              >
+                <span className="text-[13px] font-semibold text-[#1a1a1a] pr-4">{item.q}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" className={`flex-shrink-0 transition-transform ${openFaq === i ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
+              </button>
+              {openFaq === i && (
+                <p className="text-[12px] text-[#6b7280] leading-relaxed pb-3.5 -mt-1">{item.a}</p>
+              )}
+            </div>
+          ))}
+        </section>
+
+        {/* ════════════════════════════════════════ */}
+        {/* SECTION 7: FINAL CTA */}
+        {/* ════════════════════════════════════════ */}
+        <section className="px-5 py-8 text-center">
+          <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em] mb-5">
+            Ready to save your office<br />₦400K+ per month?
+          </h2>
+
+          <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[16px] py-4 rounded-2xl shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform mb-3">
+            Set Up My Office
+            <span className="block text-[11px] font-medium text-white/70 mt-0.5">Free · Takes 2 minutes</span>
+          </a>
+
+          <p className="text-[12px] text-[#9ca3af] mb-6">
+            Or <a href={WA_LINK} className="text-[#22c55e] font-semibold">WhatsApp us</a> — we&apos;ll set it up with you live
+          </p>
+
+          <div className="h-px bg-black/[0.06] mb-6" />
+
+          <Logo size={24} />
+          <p className="text-[12px] text-[#9ca3af] mt-2">Cheaper lunch. Zero stress.</p>
+          <p className="text-[10px] text-[#9ca3af] mt-4">© 2026 Arete Ltd (trading as ChopDrop) · Lagos, Nigeria</p>
+          <p className="text-[10px] text-[#9ca3af] mt-1">@chopdrop.ng</p>
+        </section>
+      </div>
     </div>
   );
 }
