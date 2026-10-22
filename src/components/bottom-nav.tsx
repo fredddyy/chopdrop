@@ -8,13 +8,13 @@ export function BottomNav() {
   const pathname = usePathname();
   const cart = useCart();
 
-  const cartLabel = cart.subtotal > 0 ? `₦${(cart.subtotal / 100).toLocaleString()}` : "Cart";
+  const plateLabel = cart.subtotal > 0 ? `₦${(cart.subtotal / 100).toLocaleString()}` : "My Plate";
 
   const links = [
-    { href: "/menu", label: "Today's", icon: "M3 12l9-8 9 8M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10", count: 0 },
-    { href: "/cart", label: cartLabel, icon: "M6 7h12l1 14H5L6 7ZM9 9V6a3 3 0 0 1 6 0v3", count: cart.totalItems },
+    { href: "/menu", label: "Pool", icon: "M3 12l9-8 9 8M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10", count: 0 },
+    { href: "/cart", label: plateLabel, icon: "M6 7h12l1 14H5L6 7ZM9 9V6a3 3 0 0 1 6 0v3", count: cart.totalItems },
     { href: "/orders", label: "Orders", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 14l2 2 4-4", count: 0 },
-    { href: "/account", label: "Account", icon: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z", count: 0 },
+    { href: "/account", label: "Me", icon: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z", count: 0 },
   ];
 
   return (

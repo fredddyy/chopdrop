@@ -200,88 +200,44 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   }
 
   return (
-    <main className="flex-1 max-w-[480px] lg:max-w-[1120px] mx-auto w-full pb-24 lg:pb-8 bg-white lg:bg-[#f8f8f6]">
-      {/* ── Header — Workspace Dashboard ── */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-[#f1f5f9]">
-        <div className="px-4 pt-3 pb-2.5 lg:max-w-[1120px] lg:mx-auto">
-          {/* Row 1: Office name + Countdown + Cart */}
-          <div className="flex justify-between items-center mb-2.5">
+    <main className="flex-1 max-w-[480px] lg:max-w-[1120px] mx-auto w-full pb-24 lg:pb-8 bg-[#faf7f2] lg:bg-[#f5f1eb]">
+      {/* ── Header — Clean, warm, no jargon ── */}
+      <header className="sticky top-0 z-40 bg-[#faf7f2]/95 backdrop-blur-xl border-b border-black/[0.04]">
+        <div className="px-5 pt-3 pb-2.5 lg:max-w-[1120px] lg:mx-auto">
+          {/* Row 1: Office name + notification + cart */}
+          <div className="flex justify-between items-center mb-2">
+            <h1 className="text-[15px] font-[800] text-[#0f172a] tracking-tight">{officeName || "ChopDrop"}</h1>
             <div className="flex items-center gap-2">
-              <span className="text-[16px]">🏢</span>
-              <h1 className="text-[16px] font-[900] text-[#0f172a] tracking-tight">{officeName || "ChopDrop"}</h1>
-            </div>
-            <div className="flex items-center gap-2">
-              {slot && !slot.expired && (
-                <div className="flex items-center gap-1.5 bg-[#fff1f2] border border-[#fecdd3] px-2.5 py-1 rounded-full">
-                  <span className="text-[10px]">⏰</span>
-                  <CountdownTimer cutoffTime={slot.cutoffTime} compact />
-                </div>
-              )}
-              <Link href="/cart" className="relative w-8 h-8 rounded-full bg-[#f1f5f9] flex items-center justify-center lg:hidden">
+              <Link href="/cart" className="relative w-8 h-8 rounded-full bg-white border border-black/[0.06] flex items-center justify-center lg:hidden">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0f172a]"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
                 {cart.totalItems > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] bg-[#f05f4b] text-white text-[7px] font-bold rounded-full flex items-center justify-center px-0.5">{cart.totalItems}</span>}
               </Link>
-              {/* Desktop nav */}
               <nav className="hidden lg:flex items-center gap-1 ml-2">
-                <Link href="/orders" className="text-[12px] font-medium text-[#64748b] hover:text-[#0f172a] px-3 py-1.5 rounded-lg hover:bg-[#f1f5f9]">Orders</Link>
-                <Link href="/account" className="text-[12px] font-medium text-[#64748b] hover:text-[#0f172a] px-3 py-1.5 rounded-lg hover:bg-[#f1f5f9]">Account</Link>
+                <Link href="/orders" className="text-[12px] font-medium text-[#64748b] hover:text-[#0f172a] px-3 py-1.5 rounded-lg hover:bg-white/50">Orders</Link>
+                <Link href="/account" className="text-[12px] font-medium text-[#64748b] hover:text-[#0f172a] px-3 py-1.5 rounded-lg hover:bg-white/50">Me</Link>
               </nav>
             </div>
           </div>
 
-          {/* Row 2: Micro-segmented meal toggle */}
+          {/* Row 2: Meal toggle — compact pill */}
           {slots.length > 1 && (
-            <div className="w-full bg-[#f1f5f9] rounded-xl p-1 flex items-center mb-3">
+            <div className="w-full bg-white/60 rounded-xl p-1 flex items-center">
               {slots.map((s) => {
                 const isActive = s.id === activeSlot;
-                const orderCount = s.expired ? 0 : s.items.reduce((sum, i) => sum + Math.max(0, (i.tag === "DEAL" ? 20 : 50) - i.remaining), 0);
                 return (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setActiveSlot(s.id)}
-                    className={`flex-1 py-2 text-[11px] font-bold flex items-center justify-center gap-1.5 rounded-lg transition-all duration-200 ${
-                      isActive ? "bg-white text-[#0f172a] shadow-sm" : "text-[#94a3b8]"
-                    } ${s.expired && !isActive ? "cursor-default" : ""}`}
-                  >
+                  <button key={s.id} type="button" onClick={() => setActiveSlot(s.id)}
+                    className={`flex-1 py-2 text-[11px] font-bold flex items-center justify-center gap-1.5 rounded-lg transition-all duration-200 ${isActive ? "bg-white text-[#0f172a] shadow-sm" : "text-[#94a3b8]"}`}>
                     <span>{getSlotIcon(s.label)}</span>
                     <span>{getSlotShortName(s.label)}</span>
-                    {s.expired ? (
-                      <span className="bg-[#e2e8f0] text-[9px] text-[#64748b] px-1.5 py-0.5 rounded-md font-medium">Closed</span>
-                    ) : isActive && orderCount > 0 ? (
-                      <span className="bg-[#22c55e] text-[9px] text-white px-1.5 py-0.5 rounded-md font-[800] tracking-wide">{orderCount} LIVE</span>
-                    ) : null}
+                    {s.expired && <span className="text-[9px] text-[#94a3b8] font-medium">Closed</span>}
                   </button>
                 );
               })}
             </div>
           )}
-
-          {/* Row 3: Horizontal tier chip track */}
-          {slot && !slot.expired && slot.restaurants.length > 0 && (
-            <div>
-              <p className="text-[9px] font-[800] text-[#94a3b8] uppercase tracking-[0.12em] mb-1.5">Live tier tracking</p>
-              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-                {slot.restaurants.map((r) => {
-                  const rOrders = poolData.officeOrderCount; // TODO: per-vendor counts
-                  const discountPct = rOrders >= 15 ? 30 : rOrders >= 10 ? 20 : rOrders >= 5 ? 10 : 0;
-                  const chipBg = discountPct >= 20 ? "bg-[#f0fdf4] border-[#bbf7d0]" : discountPct >= 10 ? "bg-[#fffbeb] border-[#fde68a]" : "bg-[#f8fafc] border-[#e2e8f0]";
-                  const dotColor = discountPct >= 20 ? "bg-[#22c55e]" : discountPct >= 10 ? "bg-[#f59e0b]" : "bg-[#94a3b8]";
-                  const textColor = discountPct >= 20 ? "text-[#15803d]" : discountPct >= 10 ? "text-[#92400e]" : "text-[#64748b]";
-                  const badgeBg = discountPct >= 20 ? "bg-[#dcfce7]" : discountPct >= 10 ? "bg-[#fef3c7]" : "bg-[#e2e8f0]";
-                  return (
-                    <div key={r.id} className={`flex-none flex items-center gap-1.5 ${chipBg} border px-3 py-1.5 rounded-full`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
-                      <span className="text-[11px] font-bold text-[#0f172a]">{r.name.split(" ")[0]}</span>
-                      <span className={`text-[10px] font-[900] ${textColor} ${badgeBg} px-1.5 py-0.5 rounded-md`}>{discountPct}% OFF</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
       </header>
+
 
       {/* ── Desktop two-column layout ── */}
       <div className="lg:flex lg:gap-8 lg:px-5 lg:pt-5">
@@ -1073,90 +1029,74 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </div>
       ) : slot && (
         <>
-          {/* ── VENDOR POOL CARDS — the new world-class layout ── */}
-          <section className="px-4 lg:px-6 pt-4 pb-4">
-            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+          {/* ── VENDOR POOL CARDS — redesigned with food photos + clean hierarchy ── */}
+          <section className="px-5 lg:px-6 pt-3 pb-4">
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
               {slot.restaurants.map((r) => {
-                // Calculate per-vendor stats
                 const vendorMeals = slot.items.filter((i) => i.restaurantId === r.id);
                 const cheapestPrice = vendorMeals.length > 0 ? Math.min(...vendorMeals.map((m) => m.price)) : 0;
-                const cuisineTags = [...new Set(vendorMeals.map((m) => m.name.split(/[+&·,]/).map(p => p.trim())).flat().filter(t => t.length > 2).slice(0, 3))].join(" · ");
+                // Short cuisine tags — max 3 words, no internal vendor codes
+                const tags = vendorMeals.slice(0, 3).map(m => m.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "").split(/[+&·,]/)[0].trim()).filter(Boolean);
+                const cuisineShort = [...new Set(tags)].slice(0, 3).join(" · ");
                 const rOrders = poolData.officeOrderCount;
                 const discountPct = rOrders >= 15 ? 30 : rOrders >= 10 ? 20 : rOrders >= 5 ? 10 : 0;
                 const nextTierMin = discountPct >= 30 ? 0 : discountPct >= 20 ? 20 : discountPct >= 10 ? 15 : 5;
                 const nextTierPct = discountPct >= 30 ? 30 : discountPct >= 20 ? 30 : discountPct >= 10 ? 20 : 10;
                 const moreNeeded = nextTierMin > 0 ? Math.max(0, nextTierMin - rOrders) : 0;
                 const progressPct = nextTierMin > 0 ? Math.min(100, (rOrders / nextTierMin) * 100) : 100;
+                // Food photo — use restaurant image or first meal with image
+                const foodPhoto = r.previewImage || r.imageUrl || vendorMeals.find(m => m.imageUrl)?.imageUrl;
+                // Progress bar color
+                const barColor = discountPct >= 20 ? "#16a34a" : discountPct >= 10 ? "#f59e0b" : "#cbd5e1";
 
                 return (
-                  <div key={r.id} className="bg-white rounded-2xl border border-[#f1f5f9] shadow-sm p-4">
-                    {/* Vendor header */}
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#f1f5f9] flex-shrink-0">
-                          {r.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={r.imageUrl} alt={r.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[#64748b]">
-                              {r.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="text-[15px] font-[800] text-[#0f172a] tracking-tight">{r.name}</h3>
-                          <p className="text-[10px] text-[#64748b] font-medium mt-0.5">{cuisineTags || `${r.mealCount} meals`}</p>
-                        </div>
+                  <div key={r.id} className="bg-white rounded-2xl overflow-hidden border border-black/[0.04]" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                    {/* LAYER 1: Food photo + vendor identity */}
+                    <div className="flex p-4 pb-3 gap-3.5">
+                      <div className="w-[80px] h-[80px] rounded-xl overflow-hidden bg-[#f5f0e8] flex-shrink-0">
+                        {foodPhoto ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={foodPhoto} alt={r.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[28px]">🍽️</div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-1 bg-[#fffbeb] px-2 py-1 rounded-lg">
-                        <span className="text-[#f59e0b] text-[10px] font-bold">⭐ 4.8</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between">
+                          <h3 className="text-[15px] font-[800] text-[#0f172a] tracking-tight leading-tight">{r.name}</h3>
+                          <span className="text-[#f59e0b] text-[10px] font-bold flex-shrink-0 ml-1">⭐ 4.8</span>
+                        </div>
+                        <p className="text-[11px] text-[#64748b] mt-0.5">{cuisineShort || `${r.mealCount} meals`}</p>
+                        {/* Discount badge — one line */}
+                        {discountPct > 0 ? (
+                          <div className="flex items-center gap-1.5 mt-2">
+                            <span className="bg-[#dcfce7] text-[#15803d] text-[9px] font-[800] px-2 py-0.5 rounded-full">{discountPct}% OFF</span>
+                            <span className="text-[9px] text-[#64748b]">{rOrders} orders</span>
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-[#94a3b8] mt-2">Full price right now</p>
+                        )}
                       </div>
                     </div>
 
-                    {/* Discount milestone banner */}
-                    {discountPct > 0 ? (
-                      <div className="w-full bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-3 my-3 flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22c55e]" />
-                          </span>
-                          <p className="text-[11px] font-bold text-[#15803d]">🎉 {discountPct}% DISCOUNT UNLOCKED</p>
+                    {/* LAYER 2: Progress bar — one line, color-coded */}
+                    <div className="px-4 pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 bg-[#f1f5f9] h-[6px] rounded-full overflow-hidden">
+                          <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${Math.max(progressPct, 4)}%`, backgroundColor: barColor }} />
                         </div>
-                        <span className="text-[10px] font-[800] text-[#15803d] bg-white px-2 py-0.5 rounded-md shadow-sm">{rOrders} Orders</span>
-                      </div>
-                    ) : (
-                      <div className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-3 my-3 flex justify-between items-center">
-                        <p className="text-[11px] font-bold text-[#64748b]">No discount yet — {moreNeeded} more to unlock {nextTierPct}% OFF</p>
-                        <span className="text-[10px] font-[800] text-[#64748b] bg-white px-2 py-0.5 rounded-md">{rOrders} Orders</span>
-                      </div>
-                    )}
-
-                    {/* Progress bar */}
-                    <div className="mb-2">
-                      <div className="w-full bg-[#f1f5f9] h-2.5 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${Math.max(progressPct, 3)}%`, background: discountPct > 0 ? "linear-gradient(90deg, #22c55e, #16a34a)" : "linear-gradient(90deg, #94a3b8, #64748b)" }} />
+                        <span className="text-[9px] font-bold text-[#94a3b8] flex-shrink-0">{rOrders}/{nextTierMin || "✓"}</span>
                       </div>
                       {moreNeeded > 0 && (
-                        <div className="flex justify-between items-center mt-1.5">
-                          <p className="text-[10px] font-semibold text-[#475569]">🔥 {moreNeeded} more to unlock <span className="text-[#16a34a] font-bold">{nextTierPct}% OFF</span></p>
-                          <span className="text-[9px] text-[#94a3b8] font-medium">Next: {nextTierMin} orders</span>
-                        </div>
+                        <p className="text-[10px] text-[#475569] mt-1">{moreNeeded} more → <span className="font-bold text-[#16a34a]">{nextTierPct}% off</span></p>
                       )}
                     </div>
 
-                    {/* Price + CTA */}
-                    <div className="flex justify-between items-center mt-4 pt-3 border-t border-[#f8fafc]">
-                      <div>
-                        <p className="text-[9px] font-bold text-[#94a3b8] uppercase tracking-wider">Custom plates</p>
-                        <p className="text-[17px] font-[900] text-[#0f172a]">From <span className="text-[19px]">{formatPrice(cheapestPrice || r.mealCount * 10000)}</span></p>
-                      </div>
-                      <Link
-                        href={`/restaurant/${r.id}`}
-                        className="bg-[#f05f4b] hover:bg-[#dc4a37] text-white text-[11px] font-bold py-3 px-5 rounded-xl shadow-md active:scale-95 transition-all flex items-center gap-1"
-                      >
-                        <span>Build Your Plate</span>
-                        <span>→</span>
+                    {/* LAYER 3: Price + CTA — clean bottom row */}
+                    <div className="flex justify-between items-center px-4 pb-4 pt-2 border-t border-[#f8f6f1]">
+                      <p className="text-[16px] font-[900] text-[#0f172a]">From {formatPrice(cheapestPrice || r.mealCount * 10000)}</p>
+                      <Link href={`/restaurant/${r.id}`} className="bg-[#f05f4b] text-white text-[11px] font-bold py-2.5 px-4 rounded-xl active:scale-95 transition-all" style={{ boxShadow: "0 2px 8px rgba(240,95,75,0.25)" }}>
+                        Build Your Plate →
                       </Link>
                     </div>
                   </div>
