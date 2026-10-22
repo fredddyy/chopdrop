@@ -196,24 +196,75 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       <div className="lg:flex lg:gap-8 lg:px-5 lg:pt-5">
       <div className="flex-1 min-w-0">
 
-      {/* ── Pool progress meter — shared, not per-vendor ── */}
-      {slot && !slot.expired && poolData.officeOrderCount > 0 && (
-        <div className="mx-5 mt-4 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>
-              {nextDiscount > 0 ? `${nextDiscount}% pool discount active` : "Pool building"}
-            </span>
-            <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--emerald)" }}>
-              {poolData.officeOrderCount} orders
-            </span>
+      {/* ── SOCIAL PROOF: Live activity bar ── */}
+      {slot && !slot.expired && totalOrdered > 0 && (
+        <div className="mx-5 mt-4 flex items-center gap-3 p-3 rounded-[14px]" style={{ background: "var(--emerald)", color: "white" }}>
+          {/* Avatar stack */}
+          <div className="flex -space-x-2 shrink-0">
+            {["T", "B", "A", "E", "K"].slice(0, Math.min(totalOrdered, 5)).map((initial, i) => (
+              <div key={i} className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold" style={{ borderColor: "var(--emerald)", background: ["#E8604C", "#D4A24E", "#141413", "#0D9F5F", "#71706E"][i % 5], zIndex: 5 - i }}>
+                {initial}
+              </div>
+            ))}
+            {totalOrdered > 5 && (
+              <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[9px] font-bold bg-white/20" style={{ borderColor: "var(--emerald)" }}>
+                +{totalOrdered - 5}
+              </div>
+            )}
           </div>
-          <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(poolPct, 5)}%`, background: nextDiscount >= 20 ? "var(--emerald)" : nextDiscount >= 10 ? "var(--gold)" : "var(--border)" }} />
-          </div>
-          {moreForNextTier > 0 && (
-            <p className="text-[13px] mt-2" style={{ color: "var(--text-secondary)" }}>
-              {moreForNextTier} more → <span className="font-bold" style={{ color: "var(--emerald)" }}>prices drop for everyone</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-semibold leading-tight">
+              {totalOrdered} colleague{totalOrdered !== 1 ? "s" : ""} ordering right now
             </p>
+            <p className="text-[11px] text-white/60">
+              {officeName ? `from ${officeName}` : "Join the pool to save together"}
+            </p>
+          </div>
+          <div className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0" />
+        </div>
+      )}
+
+      {/* ── Pool progress meter with colleague context ── */}
+      {slot && !slot.expired && (poolData.officeOrderCount > 0 || totalOrdered === 0) && (
+        <div className="mx-5 mt-3 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          {poolData.officeOrderCount > 0 ? (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={nextDiscount > 0 ? "var(--emerald)" : "var(--gold)"} strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>
+                    {nextDiscount > 0 ? `${nextDiscount}% pool discount` : "Building your pool"}
+                  </span>
+                </div>
+                <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--emerald)" }}>
+                  {poolData.officeOrderCount} orders
+                </span>
+              </div>
+              <div className="h-2.5 rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(poolPct, 5)}%`, background: nextDiscount >= 20 ? "var(--emerald)" : nextDiscount >= 10 ? "var(--gold)" : "var(--coral)" }} />
+              </div>
+              {moreForNextTier > 0 && (
+                <p className="text-[13px] mt-2" style={{ color: "var(--text-secondary)" }}>
+                  {moreForNextTier} more from your office → <span className="font-bold" style={{ color: "var(--emerald)" }}>everyone saves more</span>
+                </p>
+              )}
+              {nextDiscount >= 20 && (
+                <p className="text-[13px] mt-2 font-bold" style={{ color: "var(--emerald)" }}>
+                  Best price unlocked for your whole office!
+                </p>
+              )}
+            </>
+          ) : (
+            /* Empty pool — encourage first order */
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Be the first to order today</p>
+                <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>Start the pool — prices drop as colleagues join</p>
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -362,6 +413,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     const cartQty = cart.items.find((i) => i.dailyMenuId === meal.id)?.quantity || 0;
                     const effectivePrice = getEffectivePrice(meal.id, meal.price);
                     const hasPoolDiscount = poolData.meals[meal.id] && poolData.meals[meal.id].savings > 0;
+                    const maxOrders = meal.tag === "DEAL" ? 20 : 50;
+                    const mealOrders = Math.max(0, maxOrders - meal.remaining);
+                    const isPopular = mealOrders >= 3;
 
                     return (
                       <div key={meal.id} className="rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: cartQty > 0 ? "2px solid var(--coral)" : "1px solid var(--border)" }} onClick={() => handleAddFixed(meal)}>
@@ -397,6 +451,13 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           {hasPoolDiscount && (
                             <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center text-[11px] font-bold text-white" style={{ background: "var(--emerald)" }}>
                               {Math.round((poolData.meals[meal.id].savings / poolData.meals[meal.id].basePrice) * 100)}% off
+                            </div>
+                          )}
+                          {/* Popularity indicator */}
+                          {isPopular && !hasPoolDiscount && (
+                            <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center gap-1 text-[11px] font-bold" style={{ background: "var(--card)", color: "var(--coral)" }}>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                              {mealOrders} ordered
                             </div>
                           )}
                         </div>
