@@ -1,305 +1,416 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Logo } from "@/components/logo";
 
 const WA_LINK = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20set%20up%20my%20office";
 
-// Real food photos — warm, appetizing, Nigerian
 const HERO_IMG = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=800&q=80&fit=crop";
 const FOOD_JOLLOF = "https://images.unsplash.com/photo-1603496987674-79600a000f55?w=400&q=80&fit=crop";
 const FOOD_RICE = "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?w=400&q=80&fit=crop";
 
+// ── Scroll-triggered animation hook ──
+function useScrollReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return { ref, visible };
+}
+
+function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const { ref, visible } = useScrollReveal();
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transition: `opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ── Floating badge pill ──
+function FloatingPill({ icon, text, delay, side }: { icon: string; text: string; delay: number; side: "left" | "right" }) {
+  const { ref, visible } = useScrollReveal();
+  return (
+    <div
+      ref={ref}
+      className={`inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.08)] text-[11px] font-semibold ${side === "right" ? "ml-auto" : ""}`}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0) scale(1)" : `translateY(16px) scale(0.9)`,
+        transition: `all 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
+      }}
+    >
+      <span>{icon}</span>
+      <span className="text-[#1a1a1a]">{text}</span>
+    </div>
+  );
+}
+
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [navSolid, setNavSolid] = useState(false);
+
+  // Sticky nav morph: transparent → solid on scroll
+  useEffect(() => {
+    function handleScroll() { setNavSolid(window.scrollY > 60); }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: "#FAF7F2" }}>
+      {/* ── Sticky top nav — glassmorphism, morphs on scroll ── */}
+      <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navSolid ? "bg-white/90 backdrop-blur-xl shadow-[0_1px_3px_rgba(0,0,0,0.06)]" : "bg-transparent"}`}>
+        <div className="max-w-[480px] mx-auto flex items-center justify-between px-5 py-3">
+          <Logo size={22} />
+          <a href="/auth" className={`text-[12px] font-semibold transition-colors ${navSolid ? "text-[#6b7280]" : "text-white/80"}`}>Log in</a>
+        </div>
+      </div>
+
       {/* ── Sticky bottom CTA bar ── */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-black/[0.06] px-4 py-3 flex items-center justify-between">
         <Logo size={20} compact />
-        <a href="/start" className="bg-[#f05f4b] text-white font-bold text-[13px] px-5 py-2.5 rounded-xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] active:scale-[0.97] transition-transform">
+        <a href="/start" className="bg-[#f05f4b] text-white font-bold text-[13px] px-5 py-2.5 rounded-full shadow-[0_2px_10px_rgba(240,95,75,0.3)] active:scale-[0.97] transition-transform">
           Set Up My Office →
         </a>
       </div>
 
       <div className="max-w-[480px] mx-auto pb-24">
         {/* ════════════════════════════════════════════════════════ */}
-        {/* SECTION 1: HERO — Photo-led, warm, full-bleed          */}
+        {/* SECTION 1: HERO — Gradient-topped, photo-led, animated */}
         {/* ════════════════════════════════════════════════════════ */}
-        <section className="px-5 pt-5 pb-2">
-          <div className="flex items-center justify-between mb-6">
-            <Logo size={26} />
-            <a href="/auth" className="text-[12px] font-semibold text-[#6b7280] hover:text-[#1a1a1a]">Log in</a>
-          </div>
+        <section className="relative overflow-hidden">
+          {/* Gradient overlay at top */}
+          <div className="absolute inset-0 h-[340px]" style={{ background: "linear-gradient(135deg, #f05f4b 0%, #f5c565 50%, #0f4030 100%)" }} />
 
-          <h1 className="font-display font-bold text-[30px] text-[#1a1a1a] tracking-[-0.04em] leading-[1.1] mb-2">
-            Your office lunch<br />is <span className="text-[#f05f4b]">too expensive.</span>
-          </h1>
-          <p className="font-display font-bold text-[20px] text-[#0f4030] tracking-[-0.02em] mb-5">
-            Fix it in 2 minutes.
-          </p>
-
-          {/* Hero photo — real food, warm */}
-          <div className="rounded-2xl overflow-hidden mb-5 relative" style={{ aspectRatio: "16/10" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={HERO_IMG} alt="Nigerian food spread" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            <div className="absolute bottom-3 left-3 right-3">
-              <p className="text-white text-[13px] font-semibold leading-snug">Fresh food, labelled bags, delivered to your reception every day</p>
+          <div className="relative px-5 pt-16 pb-2">
+            <div style={{ animation: "heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <h1 className="font-display font-bold text-[32px] text-white tracking-[-0.04em] leading-[1.08] mb-2" style={{ textShadow: "0 2px 20px rgba(0,0,0,0.15)" }}>
+                your office lunch<br />is <span style={{ color: "#ffe4b5" }}>too expensive.</span>
+              </h1>
+              <p className="font-display font-bold text-[20px] text-white/90 tracking-[-0.02em] mb-5">
+                fix it in 2 minutes.
+              </p>
             </div>
-          </div>
 
-          <div className="mb-6">
-            <p className="text-[16px] text-[#1a1a1a] leading-relaxed">
-              Pool your office lunch orders.<br />
-              Everyone saves 20–40%.<br />
-              <span className="font-bold text-[#f05f4b]">You eat free.</span>
+            {/* Hero photo — with animated entry */}
+            <div
+              className="rounded-2xl overflow-hidden mb-5 relative shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
+              style={{ aspectRatio: "16/10", animation: "heroImageIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both" }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={HERO_IMG} alt="Nigerian food spread" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3">
+                <p className="text-white text-[13px] font-semibold leading-snug">fresh food, labelled bags, delivered to your reception every day</p>
+              </div>
+            </div>
+
+            {/* Floating social proof pills — staggered */}
+            <div className="flex flex-col gap-2 mb-5">
+              <FloatingPill icon="🏢" text="20+ offices in pilot" delay={400} side="left" />
+              <FloatingPill icon="💰" text="₦420K saved per office/month" delay={600} side="right" />
+              <FloatingPill icon="🍽️" text="₦0 delivery. always." delay={800} side="left" />
+            </div>
+
+            <div className="mb-5" style={{ animation: "heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both" }}>
+              <p className="text-[16px] text-[#1a1a1a] leading-relaxed">
+                pool your office lunch orders.<br />
+                everyone saves 20–40%.<br />
+                <span className="font-bold text-[#f05f4b]">you eat free.</span>
+              </p>
+            </div>
+
+            <a
+              href="/start"
+              className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[16px] py-4 rounded-full shadow-[0_4px_20px_rgba(240,95,75,0.35)] active:scale-[0.97] transition-transform mb-3"
+              style={{ animation: "heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both" }}
+            >
+              set up my office
+              <span className="block text-[11px] font-medium text-white/70 mt-0.5">free · takes 2 minutes</span>
+            </a>
+
+            <p className="text-[12px] text-[#9ca3af] text-center mb-2">
+              already have an invite? <a href="/auth" className="text-[#f05f4b] font-semibold">join your office</a>
             </p>
           </div>
-
-          <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[16px] py-4 rounded-2xl shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform mb-3">
-            Set Up My Office
-            <span className="block text-[11px] font-medium text-white/70 mt-0.5">Free · Takes 2 minutes</span>
-          </a>
-
-          <p className="text-[12px] text-[#9ca3af] text-center mb-2">
-            Already have an invite? <a href="/auth" className="text-[#f05f4b] font-semibold">Join your office</a>
-          </p>
         </section>
 
         {/* ════════════════════════════════════════════════════════ */}
-        {/* SECTION 2: THE MATH — Cards on warm cream, numerical   */}
+        {/* SECTION 2: THE MATH — Scroll-reveal cards               */}
         {/* ════════════════════════════════════════════════════════ */}
         <section className="px-5 py-10">
-          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] text-center mb-6">
-            How much is your office<br />spending on lunch?
-          </h2>
+          <Reveal>
+            <h2 className="font-display font-bold text-[24px] text-[#1a1a1a] tracking-[-0.03em] text-center mb-6">
+              how much is your office<br />spending on lunch?
+            </h2>
+          </Reveal>
 
-          {/* Without */}
-          <div className="bg-white rounded-2xl p-5 mb-3 border border-black/[0.04]">
-            <div className="text-[9px] font-bold text-[#9ca3af] uppercase tracking-[0.1em] mb-3">Without ChopDrop</div>
-            <p className="text-[13px] text-[#6b7280] mb-1">30 people × ₦2,000/day</p>
-            <p className="font-display font-bold text-[22px] text-[#1a1a1a] mb-1">= ₦1,200,000<span className="text-[14px] font-medium text-[#9ca3af]">/month</span></p>
-            <p className="text-[11px] text-[#9ca3af]">Each person orders alone. Full price. + delivery fees.</p>
-          </div>
+          <Reveal delay={100}>
+            <div className="bg-white rounded-2xl p-5 mb-3 border border-black/[0.04] shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+              <div className="text-[9px] font-bold text-[#9ca3af] uppercase tracking-[0.1em] mb-3">Without ChopDrop</div>
+              <p className="text-[13px] text-[#6b7280] mb-1">30 people × ₦2,000/day</p>
+              <p className="font-display font-bold text-[24px] text-[#1a1a1a] mb-1">= ₦1,200,000<span className="text-[14px] font-medium text-[#9ca3af]">/month</span></p>
+              <p className="text-[11px] text-[#9ca3af]">each person orders alone. full price. + delivery fees.</p>
+            </div>
+          </Reveal>
 
-          <div className="text-center text-[13px] font-bold text-[#d1d5db] my-2">vs</div>
+          <Reveal delay={200}>
+            <div className="text-center text-[13px] font-bold text-[#d1d5db] my-2">vs</div>
+          </Reveal>
 
-          {/* With */}
-          <div className="bg-white rounded-2xl p-5 border-2 border-[#22c55e]/30 mb-3 relative">
-            <div className="absolute -top-2.5 left-4 bg-[#22c55e] text-white text-[8px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-[0.06em]">Recommended</div>
-            <div className="text-[9px] font-bold text-[#22c55e] uppercase tracking-[0.1em] mb-3 mt-1">With ChopDrop</div>
-            <p className="text-[13px] text-[#6b7280] mb-1">30 people × ₦1,300/day</p>
-            <p className="font-display font-bold text-[22px] text-[#0f4030] mb-1">= ₦780,000<span className="text-[14px] font-medium text-[#9ca3af]">/month</span></p>
-            <p className="text-[11px] text-[#6b7280]">Everyone orders together. Pool discount. ₦0 delivery.</p>
-          </div>
+          <Reveal delay={300}>
+            <div className="bg-white rounded-2xl p-5 border-2 border-[#22c55e]/30 mb-3 relative shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+              <div className="absolute -top-2.5 left-4 bg-[#22c55e] text-white text-[8px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-[0.06em]">Recommended</div>
+              <div className="text-[9px] font-bold text-[#22c55e] uppercase tracking-[0.1em] mb-3 mt-1">With ChopDrop</div>
+              <p className="text-[13px] text-[#6b7280] mb-1">30 people × ₦1,300/day</p>
+              <p className="font-display font-bold text-[24px] text-[#0f4030] mb-1">= ₦780,000<span className="text-[14px] font-medium text-[#9ca3af]">/month</span></p>
+              <p className="text-[11px] text-[#6b7280]">everyone orders together. pool discount. ₦0 delivery.</p>
+            </div>
+          </Reveal>
 
-          {/* Savings — coral, warm */}
-          <div className="bg-[#f05f4b] rounded-2xl p-5 text-center">
-            <div className="text-[9px] font-bold text-white/60 uppercase tracking-[0.1em] mb-1">Your office saves</div>
-            <div className="font-display font-bold text-[36px] text-white tracking-[-0.03em] leading-none">₦420,000</div>
-            <div className="text-[11px] text-white/80 mt-1">per month</div>
-            <div className="h-px bg-white/20 my-3" />
-            <p className="text-[13px] text-white font-medium">That&apos;s <span className="font-bold">₦14,000</span> back in each person&apos;s pocket. Every month.</p>
-          </div>
+          <Reveal delay={400}>
+            <div className="rounded-2xl p-5 text-center relative overflow-hidden" style={{ background: "linear-gradient(135deg, #f05f4b, #e8604c, #f5c565)" }}>
+              <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/10" />
+              <div className="relative">
+                <div className="text-[9px] font-bold text-white/60 uppercase tracking-[0.1em] mb-1">your office saves</div>
+                <div className="font-display font-bold text-[40px] text-white tracking-[-0.03em] leading-none">₦420,000</div>
+                <div className="text-[11px] text-white/80 mt-1">per month</div>
+                <div className="h-px bg-white/20 my-3" />
+                <p className="text-[13px] text-white font-medium">that&apos;s <span className="font-bold">₦14,000</span> back in each person&apos;s pocket. every month.</p>
+              </div>
+            </div>
+          </Reveal>
         </section>
 
         {/* ════════════════════════════════════════════════════════ */}
-        {/* SECTION 3: HOW IT WORKS — Phone mockups, product-first */}
+        {/* SECTION 3: HOW IT WORKS — Staggered cards, warm bg     */}
         {/* ════════════════════════════════════════════════════════ */}
         <section className="py-10 px-5" style={{ background: "#F3EDE4" }}>
-          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-8">How it works</h2>
+          <Reveal>
+            <h2 className="font-display font-bold text-[24px] text-[#1a1a1a] tracking-[-0.03em] mb-8">how it works</h2>
+          </Reveal>
 
           {/* Step 1 */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-[#f05f4b] text-white flex items-center justify-center text-[14px] font-bold flex-shrink-0">1</div>
-              <div>
-                <h3 className="text-[15px] font-bold text-[#1a1a1a]">You set up your office</h3>
-                <p className="text-[11px] text-[#9ca3af]">Takes 2 minutes</p>
-              </div>
-            </div>
-            {/* Mini phone mockup */}
-            <div className="ml-6 bg-white rounded-2xl border border-black/[0.08] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-3 h-3 rounded-full bg-[#22c55e]" />
-                <span className="text-[10px] font-bold text-[#22c55e]">Office created</span>
-              </div>
-              <div className="text-[14px] font-bold text-[#1a1a1a] mb-1">Sterling Bank HQ</div>
-              <div className="text-[10px] text-[#9ca3af] mb-3">20 Marina St, Lagos Island</div>
-              <div className="bg-[#f0fdf4] rounded-lg px-3 py-2 text-[10px] text-[#0f4030]">
-                🔗 chopdrop-app.vercel.app/join/sterling-hq
-              </div>
-            </div>
-            <p className="ml-6 text-[12px] text-[#6b7280] mt-2">Enter your company name and share the invite link to your office WhatsApp group.</p>
-          </div>
-
-          {/* Step 2 — Build your plate mockup */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-[#f5c565] text-[#5a3e00] flex items-center justify-center text-[14px] font-bold flex-shrink-0">2</div>
-              <div>
-                <h3 className="text-[15px] font-bold text-[#1a1a1a]">Colleagues pick their meal</h3>
-                <p className="text-[11px] text-[#9ca3af]">60 seconds each</p>
-              </div>
-            </div>
-            <div className="ml-6 bg-white rounded-2xl border border-black/[0.08] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-              {/* Food image strip */}
-              <div className="flex h-[80px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={FOOD_JOLLOF} alt="" className="w-1/2 object-cover" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={FOOD_RICE} alt="" className="w-1/2 object-cover" />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[12px] font-bold text-[#1a1a1a]">Mama Tola&apos;s Kitchen</span>
-                  <span className="text-[8px] font-bold text-white bg-[#22c55e] px-2 py-0.5 rounded-full">POOL: 20% OFF</span>
-                </div>
-                <div className="space-y-2 text-[12px]">
-                  <div className="flex justify-between"><span className="text-[#6b7280]">Base: Jollof Rice</span><span className="font-semibold">₦400</span></div>
-                  <div className="flex justify-between"><span className="text-[#6b7280]">Protein: Chicken</span><span className="font-semibold">₦480</span></div>
-                  <div className="flex justify-between"><span className="text-[#6b7280]">Side: Plantain</span><span className="font-semibold">₦240</span></div>
-                  <div className="flex justify-between"><span className="text-[#6b7280]">Drink: Zobo</span><span className="font-semibold">₦240</span></div>
-                  <div className="h-px bg-black/[0.06]" />
-                  <div className="flex justify-between font-bold text-[13px]"><span className="text-[#0f4030]">Total</span><span>₦1,360</span></div>
-                  <div className="text-[10px] text-[#f05f4b] font-semibold">You save ₦340 (20%)</div>
-                </div>
-              </div>
-            </div>
-            <p className="ml-6 text-[12px] text-[#6b7280] mt-2">Everyone picks their own meal. The more people order from the same vendor, the cheaper it gets — up to 40% off.</p>
-          </div>
-
-          {/* Step 3 — Delivery */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[14px] font-bold flex-shrink-0">3</div>
-              <div>
-                <h3 className="text-[15px] font-bold text-[#1a1a1a]">Food arrives at reception</h3>
-                <p className="text-[11px] text-[#9ca3af]">By 1:00 PM</p>
-              </div>
-            </div>
-            <div className="ml-6 bg-white rounded-2xl border border-black/[0.08] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+          <Reveal delay={100}>
+            <div className="mb-8">
               <div className="flex items-center gap-3 mb-3">
-                <div className="text-[28px]">📦</div>
+                <div className="w-9 h-9 rounded-full bg-[#f05f4b] text-white flex items-center justify-center text-[14px] font-bold flex-shrink-0 shadow-[0_2px_8px_rgba(240,95,75,0.3)]">1</div>
                 <div>
-                  <div className="font-display font-bold text-[14px] text-[#1a1a1a]">TUNDE</div>
-                  <div className="text-[10px] text-[#9ca3af]">Jollof + Chicken · Extra meat · Zobo</div>
+                  <h3 className="text-[15px] font-bold text-[#1a1a1a]">you set up your office</h3>
+                  <p className="text-[11px] text-[#9ca3af]">takes 2 minutes</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-[28px]">📦</div>
-                <div>
-                  <div className="font-display font-bold text-[14px] text-[#1a1a1a]">BLESSING</div>
-                  <div className="text-[10px] text-[#9ca3af]">Fried Rice + Turkey · Plantain</div>
+              <div className="ml-6 bg-white rounded-2xl border border-black/[0.06] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow duration-300">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-3 h-3 rounded-full bg-[#22c55e]" />
+                  <span className="text-[10px] font-bold text-[#22c55e]">Office created</span>
+                </div>
+                <div className="text-[14px] font-bold text-[#1a1a1a] mb-1">Sterling Bank HQ</div>
+                <div className="text-[10px] text-[#9ca3af] mb-3">20 Marina St, Lagos Island</div>
+                <div className="bg-[#f0fdf4] rounded-lg px-3 py-2 text-[10px] text-[#0f4030]">
+                  🔗 chopdrop-app.vercel.app/join/sterling-hq
                 </div>
               </div>
+              <p className="ml-6 text-[12px] text-[#6b7280] mt-2">enter your company name and share the invite link to your office WhatsApp group.</p>
             </div>
-            <p className="ml-6 text-[12px] text-[#6b7280] mt-2">One batch delivery. Everyone&apos;s bag has their name on it. Pick up and eat.</p>
-          </div>
+          </Reveal>
 
-          <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[15px] py-3.5 rounded-2xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform">
-            Set Up My Office
-          </a>
+          {/* Step 2 — Build your plate */}
+          <Reveal delay={200}>
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-full bg-[#f5c565] text-[#5a3e00] flex items-center justify-center text-[14px] font-bold flex-shrink-0 shadow-[0_2px_8px_rgba(245,197,101,0.3)]">2</div>
+                <div>
+                  <h3 className="text-[15px] font-bold text-[#1a1a1a]">colleagues pick their meal</h3>
+                  <p className="text-[11px] text-[#9ca3af]">60 seconds each</p>
+                </div>
+              </div>
+              <div className="ml-6 bg-white rounded-2xl border border-black/[0.06] overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow duration-300">
+                <div className="flex h-[80px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={FOOD_JOLLOF} alt="" className="w-1/2 object-cover" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={FOOD_RICE} alt="" className="w-1/2 object-cover" />
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[12px] font-bold text-[#1a1a1a]">Mama Tola&apos;s Kitchen</span>
+                    <span className="text-[8px] font-bold text-white bg-[#22c55e] px-2 py-0.5 rounded-full">POOL: 20% OFF</span>
+                  </div>
+                  <div className="space-y-2 text-[12px]">
+                    <div className="flex justify-between"><span className="text-[#6b7280]">Base: Jollof Rice</span><span className="font-semibold">₦400</span></div>
+                    <div className="flex justify-between"><span className="text-[#6b7280]">Protein: Chicken</span><span className="font-semibold">₦480</span></div>
+                    <div className="flex justify-between"><span className="text-[#6b7280]">Side: Plantain</span><span className="font-semibold">₦240</span></div>
+                    <div className="flex justify-between"><span className="text-[#6b7280]">Drink: Zobo</span><span className="font-semibold">₦240</span></div>
+                    <div className="h-px bg-black/[0.06]" />
+                    <div className="flex justify-between font-bold text-[13px]"><span className="text-[#0f4030]">Total</span><span>₦1,360</span></div>
+                    <div className="text-[10px] text-[#f05f4b] font-semibold">You save ₦340 (20%)</div>
+                  </div>
+                </div>
+              </div>
+              <p className="ml-6 text-[12px] text-[#6b7280] mt-2">everyone picks their own meal. the more people order, the cheaper it gets — up to 40% off.</p>
+            </div>
+          </Reveal>
+
+          {/* Step 3 */}
+          <Reveal delay={300}>
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-full bg-[#0f4030] text-white flex items-center justify-center text-[14px] font-bold flex-shrink-0 shadow-[0_2px_8px_rgba(15,64,48,0.3)]">3</div>
+                <div>
+                  <h3 className="text-[15px] font-bold text-[#1a1a1a]">food arrives at reception</h3>
+                  <p className="text-[11px] text-[#9ca3af]">by 1:00 PM</p>
+                </div>
+              </div>
+              <div className="ml-6 bg-white rounded-2xl border border-black/[0.06] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow duration-300">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-[28px]">📦</div>
+                  <div>
+                    <div className="font-display font-bold text-[14px] text-[#1a1a1a]">TUNDE</div>
+                    <div className="text-[10px] text-[#9ca3af]">Jollof + Chicken · Extra meat · Zobo</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-[28px]">📦</div>
+                  <div>
+                    <div className="font-display font-bold text-[14px] text-[#1a1a1a]">BLESSING</div>
+                    <div className="text-[10px] text-[#9ca3af]">Fried Rice + Turkey · Plantain</div>
+                  </div>
+                </div>
+              </div>
+              <p className="ml-6 text-[12px] text-[#6b7280] mt-2">one batch delivery. everyone&apos;s bag has their name on it. pick up and eat.</p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={400}>
+            <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[15px] py-3.5 rounded-full shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.97] transition-transform">
+              set up my office
+            </a>
+          </Reveal>
         </section>
 
         {/* ════════════════════════════════════════════════════════ */}
-        {/* SECTION 4: CAPTAIN BENEFITS — Warm terracotta banner   */}
+        {/* SECTION 4: CAPTAIN BENEFITS — Bold gradient moment      */}
         {/* ════════════════════════════════════════════════════════ */}
         <section className="px-5 py-10">
-          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-1">Wait — what do I get<br />out of this?</h2>
-          <p className="text-[13px] text-[#9ca3af] mb-6">You become your office&apos;s Pool Captain. That means:</p>
+          <Reveal>
+            <h2 className="font-display font-bold text-[24px] text-[#1a1a1a] tracking-[-0.03em] mb-1">wait — what do i get<br />out of this?</h2>
+            <p className="text-[13px] text-[#9ca3af] mb-6">you become your office&apos;s Pool Captain. that means:</p>
+          </Reveal>
 
           <div className="space-y-3 mb-6">
-            {/* Card 1 — warm cream, not dark green */}
-            <div className="bg-white rounded-2xl p-5 border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-[#f05f4b]/10 flex items-center justify-center text-[20px]">🍽️</div>
-                <div className="text-[10px] font-bold text-[#f05f4b] uppercase tracking-[0.06em]">Free lunch</div>
+            <Reveal delay={100}>
+              <div className="bg-white rounded-2xl p-5 border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-shadow duration-300">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-[#f05f4b]/10 flex items-center justify-center text-[20px]">🍽️</div>
+                  <div className="text-[10px] font-bold text-[#f05f4b] uppercase tracking-[0.06em]">free lunch</div>
+                </div>
+                <p className="text-[14px] font-semibold text-[#1a1a1a]">when 15+ colleagues order, your lunch is on us. every day.</p>
               </div>
-              <p className="text-[14px] font-semibold text-[#1a1a1a]">When 15+ colleagues order, your lunch is on us. Every day.</p>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white rounded-2xl p-5 border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-[#22c55e]/10 flex items-center justify-center text-[20px]">💰</div>
-                <div className="text-[10px] font-bold text-[#22c55e] uppercase tracking-[0.06em]">Monthly bonus</div>
+            </Reveal>
+            <Reveal delay={200}>
+              <div className="bg-white rounded-2xl p-5 border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-shadow duration-300">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-[#22c55e]/10 flex items-center justify-center text-[20px]">💰</div>
+                  <div className="text-[10px] font-bold text-[#22c55e] uppercase tracking-[0.06em]">monthly bonus</div>
+                </div>
+                <p className="text-[14px] font-semibold text-[#1a1a1a]">₦500 per pool with 20+ orders. that&apos;s up to ₦10,000/month cash.</p>
               </div>
-              <p className="text-[14px] font-semibold text-[#1a1a1a]">₦500 per pool with 20+ orders. That&apos;s up to ₦10,000/month cash.</p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white rounded-2xl p-5 border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-[#f5c565]/15 flex items-center justify-center text-[20px]">👑</div>
-                <div className="text-[10px] font-bold text-[#92702a] uppercase tracking-[0.06em]">Office hero</div>
+            </Reveal>
+            <Reveal delay={300}>
+              <div className="bg-white rounded-2xl p-5 border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-shadow duration-300">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-[#f5c565]/15 flex items-center justify-center text-[20px]">👑</div>
+                  <div className="text-[10px] font-bold text-[#92702a] uppercase tracking-[0.06em]">office hero</div>
+                </div>
+                <p className="text-[14px] font-semibold text-[#1a1a1a]">you&apos;re the person who saves everyone money. they&apos;ll thank you every single day.</p>
               </div>
-              <p className="text-[14px] font-semibold text-[#1a1a1a]">You&apos;re the person who saves everyone money. They&apos;ll thank you every single day.</p>
-            </div>
+            </Reveal>
           </div>
 
-          <div className="bg-[#0f4030] rounded-2xl p-4 text-center mb-5">
-            <p className="text-[13px] text-white/70">Your total effort?</p>
-            <p className="text-[14px] text-white font-bold mt-1">Send one WhatsApp message each morning.</p>
-            <p className="text-[12px] text-white/50 mt-1">The app does the rest.</p>
-          </div>
+          <Reveal delay={400}>
+            <div className="rounded-2xl p-4 text-center relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f4030, #0a2e20)" }}>
+              <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/[0.04]" />
+              <p className="text-[13px] text-white/70 relative">your total effort?</p>
+              <p className="text-[14px] text-white font-bold mt-1 relative">send one WhatsApp message each morning.</p>
+              <p className="text-[12px] text-white/50 mt-1 relative">the app does the rest.</p>
+            </div>
+          </Reveal>
 
-          <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[15px] py-3.5 rounded-2xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform">
-            Set Up My Office
-          </a>
+          <Reveal delay={500}>
+            <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[15px] py-3.5 rounded-full shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.97] transition-transform mt-5">
+              set up my office
+            </a>
+          </Reveal>
         </section>
 
         {/* ════════════════════════════════════════════════════════ */}
-        {/* SECTION 5: SOCIAL PROOF — Human, with photo            */}
+        {/* SECTION 5: SOCIAL PROOF — Warm bg, floating pills       */}
         {/* ════════════════════════════════════════════════════════ */}
         <section className="px-5 py-10" style={{ background: "#F3EDE4" }}>
-          <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] tracking-[-0.03em] mb-4">Offices already saving</h2>
+          <Reveal>
+            <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em] mb-5">offices already saving</h2>
+          </Reveal>
 
-          <div className="bg-white rounded-2xl p-5 border border-black/[0.04] mb-3">
-            <p className="text-[14px] text-[#1a1a1a] italic leading-relaxed mb-4">&ldquo;I used to spend 30 minutes every day collecting lunch orders on WhatsApp. Now I just tap &apos;Send Reminder&apos; and eat free.&rdquo;</p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f05f4b] to-[#f5c565] flex items-center justify-center text-white text-[13px] font-bold">AO</div>
-              <div>
-                <div className="text-[13px] font-semibold text-[#1a1a1a]">Pool Captain</div>
-                <div className="text-[11px] text-[#9ca3af]">Office in Ikeja · 28 colleagues</div>
+          <Reveal delay={100}>
+            <div className="bg-white rounded-2xl p-5 border border-black/[0.04] mb-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+              <p className="text-[14px] text-[#1a1a1a] italic leading-relaxed mb-4">&ldquo;I used to spend 30 minutes every day collecting lunch orders on WhatsApp. Now I just tap &apos;Send Reminder&apos; and eat free.&rdquo;</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f05f4b] to-[#f5c565] flex items-center justify-center text-white text-[13px] font-bold">AO</div>
+                <div>
+                  <div className="text-[13px] font-semibold text-[#1a1a1a]">Pool Captain</div>
+                  <div className="text-[11px] text-[#9ca3af]">Office in Ikeja · 28 colleagues</div>
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="bg-white rounded-2xl p-5 border border-black/[0.04] mb-4">
-            <p className="text-[14px] text-[#1a1a1a] italic leading-relaxed mb-4">&ldquo;Our team of 35 saves over ₦400K per month. Setup took 2 minutes. Best decision I made this quarter.&rdquo;</p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0f4030] to-[#22c55e] flex items-center justify-center text-white text-[13px] font-bold">CE</div>
-              <div>
-                <div className="text-[13px] font-semibold text-[#1a1a1a]">Office Manager</div>
-                <div className="text-[11px] text-[#9ca3af]">Office in Lagos Island · 35 colleagues</div>
+          <Reveal delay={200}>
+            <div className="bg-white rounded-2xl p-5 border border-black/[0.04] mb-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+              <p className="text-[14px] text-[#1a1a1a] italic leading-relaxed mb-4">&ldquo;Our team of 35 saves over ₦400K per month. Setup took 2 minutes. Best decision I made this quarter.&rdquo;</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0f4030] to-[#22c55e] flex items-center justify-center text-white text-[13px] font-bold">CE</div>
+                <div>
+                  <div className="text-[13px] font-semibold text-[#1a1a1a]">Office Manager</div>
+                  <div className="text-[11px] text-[#9ca3af]">Office in Lagos Island · 35 colleagues</div>
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-white rounded-xl p-3 text-center border border-black/[0.04]">
-              <div className="font-display font-bold text-[22px] text-[#0f4030]">20+</div>
-              <div className="text-[9px] text-[#9ca3af] font-medium">pilot offices</div>
-            </div>
-            <div className="bg-white rounded-xl p-3 text-center border border-black/[0.04]">
-              <div className="font-display font-bold text-[22px] text-[#f05f4b]">₦0</div>
-              <div className="text-[9px] text-[#9ca3af] font-medium">delivery fee</div>
-            </div>
-            <div className="bg-white rounded-xl p-3 text-center border border-black/[0.04]">
-              <div className="font-display font-bold text-[22px] text-[#f5c565]">40%</div>
-              <div className="text-[9px] text-[#9ca3af] font-medium">max savings</div>
-            </div>
+          {/* Floating stat pills — scattered, Snackpass style */}
+          <div className="flex flex-col gap-2.5 mb-2">
+            <FloatingPill icon="🏢" text="20+ pilot offices" delay={300} side="left" />
+            <FloatingPill icon="⭐" text="4.8 average rating" delay={450} side="right" />
+            <FloatingPill icon="💰" text="₦0 delivery fee. always." delay={600} side="left" />
+            <FloatingPill icon="📈" text="40% max savings" delay={750} side="right" />
           </div>
         </section>
 
         {/* ════════════════════════════════════════════════════════ */}
-        {/* SECTION 6: FAQ — Clean, breathing room                 */}
+        {/* SECTION 6: FAQ — Clean, breathing room                  */}
         {/* ════════════════════════════════════════════════════════ */}
         <section className="px-5 py-10">
-          <h2 className="font-display font-bold text-[18px] text-[#1a1a1a] tracking-[-0.03em] mb-5">Common questions</h2>
+          <Reveal>
+            <h2 className="font-display font-bold text-[20px] text-[#1a1a1a] tracking-[-0.03em] mb-5">common questions</h2>
+          </Reveal>
 
           {[
             { q: "Is it really free?", a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for the guaranteed orders. You and your colleagues pay the discounted food price only." },
@@ -309,49 +420,72 @@ export default function Home() {
             { q: "How does payment work?", a: "Everyone pays for their own plate through the app (card or bank transfer via Paystack). No collecting cash. No chasing people." },
             { q: "Can people customize their food?", a: "Yes — everyone picks their own meal. Exactly what you want, not a fixed combo." },
           ].map((item, i) => (
-            <div key={i} className="border-b border-black/[0.06] last:border-0">
-              <button
-                type="button"
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full flex items-center justify-between py-4 text-left"
-              >
-                <span className="text-[14px] font-semibold text-[#1a1a1a] pr-4">{item.q}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" className={`flex-shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
-              </button>
-              {openFaq === i && (
-                <p className="text-[13px] text-[#6b7280] leading-relaxed pb-4 -mt-1">{item.a}</p>
-              )}
-            </div>
+            <Reveal key={i} delay={i * 50}>
+              <div className="border-b border-black/[0.06] last:border-0">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between py-4 text-left"
+                >
+                  <span className="text-[14px] font-semibold text-[#1a1a1a] pr-4">{item.q}</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" className={`flex-shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
+                </button>
+                <div className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
+                  <p className="text-[13px] text-[#6b7280] leading-relaxed pb-4">{item.a}</p>
+                </div>
+              </div>
+            </Reveal>
           ))}
         </section>
 
         {/* ════════════════════════════════════════════════════════ */}
-        {/* SECTION 7: FINAL CTA — Coral warmth, urgency           */}
+        {/* SECTION 7: FINAL CTA — Bold gradient, urgency           */}
         {/* ════════════════════════════════════════════════════════ */}
-        <section className="px-5 py-10 text-center" style={{ background: "#F3EDE4" }}>
-          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-5">
-            Ready to save your office<br /><span className="text-[#f05f4b]">₦400K+ per month?</span>
-          </h2>
+        <section className="relative overflow-hidden py-12 px-5 text-center" style={{ background: "linear-gradient(135deg, #f05f4b 0%, #f5c565 100%)" }}>
+          <div className="absolute -right-12 -top-12 w-40 h-40 rounded-full bg-white/10" />
+          <div className="absolute -left-8 -bottom-8 w-28 h-28 rounded-full bg-white/10" />
 
-          <a href="/start" className="block w-full bg-[#f05f4b] text-white text-center font-bold text-[16px] py-4 rounded-2xl shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform mb-3">
-            Set Up My Office
-            <span className="block text-[11px] font-medium text-white/70 mt-0.5">Free · Takes 2 minutes</span>
-          </a>
+          <Reveal>
+            <h2 className="font-display font-bold text-[24px] text-white tracking-[-0.03em] mb-5 relative">
+              ready to save your office<br />₦400K+ per month?
+            </h2>
+          </Reveal>
 
-          <p className="text-[13px] text-[#6b7280] mb-8">
-            Or <a href={WA_LINK} className="text-[#22c55e] font-semibold underline">WhatsApp us</a> — we&apos;ll set it up with you live
-          </p>
+          <Reveal delay={200}>
+            <a href="/start" className="block w-full bg-white text-[#f05f4b] text-center font-bold text-[16px] py-4 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] active:scale-[0.97] transition-transform mb-3 relative">
+              set up my office
+              <span className="block text-[11px] font-medium text-[#f05f4b]/60 mt-0.5">free · takes 2 minutes</span>
+            </a>
+          </Reveal>
 
-          <div className="h-px bg-black/[0.08] mb-6" />
+          <Reveal delay={300}>
+            <p className="text-[13px] text-white/80 mb-0 relative">
+              or <a href={WA_LINK} className="text-white font-bold underline">WhatsApp us</a> — we&apos;ll set it up with you live
+            </p>
+          </Reveal>
+        </section>
 
+        {/* Footer */}
+        <section className="px-5 py-8 text-center">
           <div className="flex items-center justify-center mb-2">
             <Logo size={24} />
           </div>
-          <p className="text-[12px] text-[#9ca3af]">Cheaper lunch. Zero stress.</p>
+          <p className="text-[12px] text-[#9ca3af]">cheaper lunch. zero stress.</p>
           <p className="text-[10px] text-[#9ca3af] mt-4">© 2026 Arete Ltd (trading as ChopDrop)</p>
           <p className="text-[10px] text-[#9ca3af]">Lagos, Nigeria · @chopdrop.ng</p>
         </section>
       </div>
+
+      <style jsx global>{`
+        @keyframes heroFadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes heroImageIn {
+          from { opacity: 0; transform: translateY(30px) scale(0.96); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+      `}</style>
     </div>
   );
 }
