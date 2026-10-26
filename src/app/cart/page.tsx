@@ -74,8 +74,10 @@ export default function CartPage() {
 
   const EXPRESS_FEE = 120000;
   const deliveryFee = isFirstOrder ? 0 : fulfillment === "delivery" ? EXPRESS_FEE : 0;
-  const creditsToApply = Math.min(creditBalance, cart.subtotal + deliveryFee);
-  const orderTotal = cart.subtotal + deliveryFee - creditsToApply;
+  // Service fee: 5% of subtotal, min ₦100 (10000 kobo), max ₦500 (50000 kobo)
+  const serviceFee = Math.min(50000, Math.max(10000, Math.round(cart.subtotal * 0.05)));
+  const creditsToApply = Math.min(creditBalance, cart.subtotal + deliveryFee + serviceFee);
+  const orderTotal = cart.subtotal + deliveryFee + serviceFee - creditsToApply;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
   const hasContact = customerName.trim() && customerPhone.trim();
 
@@ -106,7 +108,7 @@ export default function CartPage() {
     const totalQuantity = cart.items.reduce((sum, i) => sum + i.quantity, 0);
     const allCustomItems = cart.items.filter((i) => i.customItems?.length).flatMap((i) => i.customItems || []);
     try {
-      const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyMenuId: realDailyMenuId, officeId: fulfillment === "office" ? officeId : undefined, customerName: customerName.trim(), customerPhone: customerPhone.trim(), customerEmail: "", fulfillmentType: fulfillment === "delivery" ? "DELIVERY" : "PICKUP", deliveryAddress: fulfillment === "delivery" ? deliveryAddress.trim() : undefined, quantity: totalQuantity, subtotal: cart.subtotal, captainTip: 0, serviceFee: 0, creditsApplied: creditsToApply, items: allCustomItems.length > 0 ? allCustomItems : undefined }) });
+      const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyMenuId: realDailyMenuId, officeId: fulfillment === "office" ? officeId : undefined, customerName: customerName.trim(), customerPhone: customerPhone.trim(), customerEmail: "", fulfillmentType: fulfillment === "delivery" ? "DELIVERY" : "PICKUP", deliveryAddress: fulfillment === "delivery" ? deliveryAddress.trim() : undefined, quantity: totalQuantity, subtotal: cart.subtotal, captainTip: 0, serviceFee, creditsApplied: creditsToApply, items: allCustomItems.length > 0 ? allCustomItems : undefined }) });
       const data = await res.json();
       if (!data.success) { if (data.error === "Menu item not found") { setError("Cart expired. Re-add from menu."); cart.clearCart(); } else { setError(data.error || "Something went wrong"); } setLoading(false); return; }
       const redirectUrl = data.data.authorizationUrl;
@@ -299,6 +301,13 @@ export default function CartPage() {
               <div className="flex justify-between">
                 <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
                 <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-1.5">
+                  <span style={{ color: "var(--text-secondary)" }}>Service fee</span>
+                  <span className="text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>covers payment processing</span>
+                </div>
+                <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
               </div>
               {creditsToApply > 0 && (
                 <div className="flex justify-between">

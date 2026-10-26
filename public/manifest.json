@@ -1,11 +1,11 @@
 {
   "name": "ChopDrop",
   "short_name": "ChopDrop",
-  "description": "Meals for your team, sorted. Pick, pay, and collect — one smooth drop.",
-  "start_url": "/auth",
+  "description": "Order office lunch together. Save up to 30%.",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#fffdf8",
-  "theme_color": "#0f4030",
+  "background_color": "#FAFAF8",
+  "theme_color": "#E8604C",
   "orientation": "portrait",
   "scope": "/",
   "icons": [

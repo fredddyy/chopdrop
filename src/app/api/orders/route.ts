@@ -90,37 +90,126 @@ export async function POST(request: NextRequest) {
   // Get authenticated user if available
   const userPayload = await getUserFromCookie();
 
-  const order = await prisma.order.create({
-    data: {
-      orderCode,
-      dailyMenuId: data.dailyMenuId,
-      userId: userPayload?.id || null,
-      officeId: data.officeId || null,
-      dropPointId: data.dropPointId || null,
-      customerName: data.customerName,
-      customerPhone: data.customerPhone,
-      customerEmail: data.customerEmail || null,
-      fulfillmentType: data.fulfillmentType,
-      deliveryAddress: data.deliveryAddress || null,
-      quantity: data.quantity,
-      totalAmount,
-      captainTip: data.captainTip || 0,
-      serviceFee: data.serviceFee || 0,
-      paymentRef,
-      items: data.items?.length
-        ? {
-            create: data.items.map((item) => ({
-              menuItemId: item.menuItemId,
-              quantity: item.quantity,
-              price:
-                totalAmount /
-                data.quantity /
-                (data.items?.length || 1), // will be corrected below
-            })),
-          }
-        : undefined,
-    },
-  });
+  // Validate and apply credits if requested
+  const creditsApplied = data.creditsApplied ?? 0;
+  if (creditsApplied > 0) {
+    if (!userPayload) {
+      return NextResponse.json(
+        { success: false, error: "Must be logged in to apply credits" },
+        { status: 401 }
+      );
+    }
+
+    const wallet = await prisma.creditWallet.findFirst({
+      where: { userId: userPayload.id },
+    });
+
+    if (!wallet || wallet.balance < creditsApplied) {
+      return NextResponse.json(
+        { success: false, error: "Insufficient credits" },
+        { status: 400 }
+      );
+    }
+  }
+
+  // Payment amount = meal total + tip + service fee - credits
+  const grossPaymentAmount = totalAmount + (data.captainTip || 0) + (data.serviceFee || 0);
+  const paymentAmount = Math.max(0, grossPaymentAmount - creditsApplied);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  let order: Awaited<ReturnType<typeof prisma.order.create>>;
+
+  if (creditsApplied > 0 && userPayload) {
+    // Run credit deduction + order creation in a transaction
+    order = await prisma.$transaction(async (tx) => {
+      const wallet = await tx.creditWallet.findFirstOrThrow({
+        where: { userId: userPayload.id },
+      });
+
+      await tx.creditWallet.update({
+        where: { id: wallet.id },
+        data: { balance: { decrement: creditsApplied } },
+      });
+
+      const newOrder = await tx.order.create({
+        data: {
+          orderCode,
+          dailyMenuId: data.dailyMenuId,
+          userId: userPayload.id,
+          officeId: data.officeId || null,
+          dropPointId: data.dropPointId || null,
+          customerName: data.customerName,
+          customerPhone: data.customerPhone,
+          customerEmail: data.customerEmail || null,
+          fulfillmentType: data.fulfillmentType,
+          deliveryAddress: data.deliveryAddress || null,
+          quantity: data.quantity,
+          totalAmount,
+          captainTip: data.captainTip || 0,
+          serviceFee: data.serviceFee || 0,
+          creditsApplied,
+          paymentRef,
+          ...(paymentAmount <= 0 ? { paymentStatus: "SUCCESS", paidAt: new Date() } : {}),
+          items: data.items?.length
+            ? {
+                create: data.items.map((item) => ({
+                  menuItemId: item.menuItemId,
+                  quantity: item.quantity,
+                  price:
+                    totalAmount /
+                    data.quantity /
+                    (data.items?.length || 1),
+                })),
+              }
+            : undefined,
+        },
+      });
+
+      await tx.creditTransaction.create({
+        data: {
+          walletId: wallet.id,
+          orderId: newOrder.id,
+          amount: -creditsApplied,
+          type: "APPLIED",
+          description: `Credits applied to order ${orderCode}`,
+        },
+      });
+
+      return newOrder;
+    });
+  } else {
+    order = await prisma.order.create({
+      data: {
+        orderCode,
+        dailyMenuId: data.dailyMenuId,
+        userId: userPayload?.id || null,
+        officeId: data.officeId || null,
+        dropPointId: data.dropPointId || null,
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        customerEmail: data.customerEmail || null,
+        fulfillmentType: data.fulfillmentType,
+        deliveryAddress: data.deliveryAddress || null,
+        quantity: data.quantity,
+        totalAmount,
+        captainTip: data.captainTip || 0,
+        serviceFee: data.serviceFee || 0,
+        paymentRef,
+        items: data.items?.length
+          ? {
+              create: data.items.map((item) => ({
+                menuItemId: item.menuItemId,
+                quantity: item.quantity,
+                price:
+                  totalAmount /
+                  data.quantity /
+                  (data.items?.length || 1), // will be corrected below
+              })),
+            }
+          : undefined,
+      },
+    });
+  }
 
   // Fix order item prices with actual values
   if (data.items?.length) {
@@ -138,10 +227,20 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
-  // Payment amount = meal total + tip + service fee
-  const paymentAmount = totalAmount + (data.captainTip || 0) + (data.serviceFee || 0);
+  // Credits cover the full amount — skip Paystack
+  if (paymentAmount <= 0) {
+    return NextResponse.json({
+      success: true,
+      data: {
+        orderCode,
+        reference: paymentRef,
+        authorizationUrl: null,
+        totalAmount: grossPaymentAmount,
+        creditsApplied,
+        paidWithCredits: true,
+      },
+    });
+  }
 
   const paystack = await initializeTransaction({
     email,
@@ -156,7 +255,8 @@ export async function POST(request: NextRequest) {
       orderCode,
       reference: paymentRef,
       authorizationUrl: paystack.data.authorization_url,
-      totalAmount: paymentAmount,
+      totalAmount: grossPaymentAmount,
+      creditsApplied,
     },
   });
 }

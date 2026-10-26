@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Logo } from "@/components/logo";
+import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 
 const WA = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20set%20up%20my%20office";
 
@@ -402,6 +403,8 @@ export default function Home() {
       </footer>
 
       <div className="h-16 lg:hidden" />
+
+      <PwaInstallPrompt />
 
 {/* animations moved to globals.css */}
     </div>

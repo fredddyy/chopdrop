@@ -24,6 +24,7 @@ export const createOrderSchema = z.object({
       })
     )
     .optional(),
+  creditsApplied: z.number().int().min(0).default(0).optional(),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;

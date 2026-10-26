@@ -19,6 +19,14 @@ export default function AccountPage() {
   const [officeCodeLoading, setOfficeCodeLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [orderStats, setOrderStats] = useState({ count: 0, totalSpent: 0 });
+  const [creditBalance, setCreditBalance] = useState(0);
+  const [creditTransactions, setCreditTransactions] = useState<Array<{
+    id: string;
+    amount: number;
+    type: string;
+    description: string | null;
+    createdAt: string;
+  }>>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -47,6 +55,14 @@ export default function AccountPage() {
               count: od.data.length,
               totalSpent: od.data.reduce((s: number, o: { totalAmount: number }) => s + o.totalAmount, 0),
             });
+          }
+        }).catch(() => {});
+
+        // Fetch credit wallet
+        fetch("/api/credits").then((r) => r.json()).then((cd) => {
+          if (cd.success && cd.data) {
+            setCreditBalance(cd.data.balance);
+            setCreditTransactions(cd.data.transactions.slice(0, 8));
           }
         }).catch(() => {});
       }
@@ -137,6 +153,58 @@ export default function AccountPage() {
       </div>
 
       <div className="px-5 space-y-4 mt-5">
+
+        {/* Credit wallet */}
+        {creditBalance > 0 || creditTransactions.length > 0 ? (
+          <section className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(13,159,95,0.1)" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+                  </div>
+                  <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Pool credits</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-[22px] font-extrabold tabular-nums leading-none" style={{ color: "var(--emerald)" }}>
+                    {formatNaira(creditBalance)}
+                  </div>
+                  <div className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>available</div>
+                </div>
+              </div>
+
+              {creditTransactions.length > 0 && (
+                <div className="pt-3 space-y-2.5" style={{ borderTop: "1px solid var(--border)" }}>
+                  <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Recent activity</p>
+                  {creditTransactions.map((t) => {
+                    const isCredit = t.amount > 0;
+                    const dateStr = new Date(t.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short" });
+                    return (
+                      <div key={t.id} className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: isCredit ? "rgba(13,159,95,0.08)" : "rgba(196,87,42,0.08)" }}>
+                          {isCredit ? (
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                          ) : (
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-semibold truncate" style={{ color: "var(--text)" }}>
+                            {t.description || (t.type === "POOL_REFUND" ? "Pool cashback" : t.type === "APPLIED" ? "Credits applied" : "Credit adjustment")}
+                          </p>
+                          <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{dateStr}</p>
+                        </div>
+                        <span className="text-[14px] font-bold tabular-nums shrink-0" style={{ color: isCredit ? "var(--emerald)" : "var(--coral)" }}>
+                          {isCredit ? "+" : ""}{formatNaira(Math.abs(t.amount))}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </section>
+        ) : null}
 
         {/* Office connection */}
         <section className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>

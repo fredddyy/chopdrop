@@ -9,7 +9,7 @@ import { BottomNav } from "@/components/bottom-nav";
 interface OrderData {
   id: string; orderCode: string; status: string; paymentStatus: string;
   customerName: string; fulfillmentType: string; deliveryAddress: string | null;
-  quantity: number; totalAmount: number;
+  quantity: number; totalAmount: number; creditsApplied: number;
   meal: { name: string; type: string; imageUrl: string | null };
   restaurant: { name: string; address: string };
   timeSlot: { startTime: string; endTime: string };
@@ -267,6 +267,12 @@ function ConfirmationContent() {
                 <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
                 <span className="font-semibold" style={{ color: isOffice ? "var(--emerald)" : "var(--text)" }}>{isOffice ? "Free office drop" : order.fulfillmentType === "DELIVERY" ? "Express" : "Pickup"}</span>
               </div>
+              {order.creditsApplied > 0 && (
+                <div className="flex justify-between">
+                  <span style={{ color: "var(--text-secondary)" }}>Credits applied</span>
+                  <span className="font-semibold tabular-nums" style={{ color: "var(--emerald)" }}>-{formatNaira(order.creditsApplied)}</span>
+                </div>
+              )}
               <div className="flex justify-between items-center pt-3" style={{ borderTop: "1px solid var(--border)" }}>
                 <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Total paid</span>
                 <span className="text-[20px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(order.totalAmount)}</span>
@@ -349,6 +355,16 @@ function ConfirmationContent() {
           <div className="rounded-[14px] p-3 flex items-center gap-2" style={{ background: "rgba(13,159,95,0.08)" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
             <span className="text-[13px] font-semibold" style={{ color: "var(--emerald)" }}>Office connected — free delivery next time</span>
+          </div>
+        )}
+
+        {/* Pool credits note */}
+        {isConfirmed && (
+          <div className="rounded-[14px] p-3 flex items-start gap-2.5" style={{ background: "rgba(13,159,95,0.08)" }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+            <p className="text-[13px]" style={{ color: "var(--emerald)" }}>
+              Pool credits will be applied automatically when the pool settles
+            </p>
           </div>
         )}
 
