@@ -49,6 +49,20 @@ export const createMealSchema = z.object({
   claimedPad: z.number().int().min(0).default(0),
   tag: z.enum(["REGULAR", "DEAL"]).default("REGULAR"),
   type: z.enum(["FIXED", "BUILD_YOUR_PLATE"]).default("FIXED"),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+export const reorderMealsSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        sortOrder: z.number().int().min(0),
+        restaurantId: z.string().min(1),
+      })
+    )
+    .min(1)
+    .max(200),
 });
 
 export const createDailyMenuSchema = z.object({

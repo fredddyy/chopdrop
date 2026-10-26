@@ -71,6 +71,7 @@ model Meal {
   tag           MealTag  @default(REGULAR)
   type          MealType @default(FIXED)
   isAvailable   Boolean  @default(true)
+  sortOrder     Int      @default(0)
   createdAt     DateTime @default(now())
 
   restaurant Restaurant  @relation(fields: [restaurantId], references: [id])

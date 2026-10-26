@@ -60,6 +60,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [preorderToast, setPreorderToast] = useState("");
   const [activePromo, setActivePromo] = useState<ActivePromo | null>(null);
   const [poolData, setPoolData] = useState<{ officeOrderCount: number; meals: Record<string, { poolPrice: number; basePrice: number; savings: number; nextTier: { min: number; price: number } | null; tiers: { min: number; price: number }[] }> }>({ officeOrderCount: 0, meals: {} });
+  const [poolCollapsed, setPoolCollapsed] = useState(() => {
+    if (typeof window !== "undefined") return localStorage.getItem("chopdrop-pool-collapsed") === "1";
+    return false;
+  });
   const [userOfficeId, setUserOfficeId] = useState("");
   const [lastOrder, setLastOrder] = useState<{ name: string; price: number; imageUrl: string | null; restaurantName: string; dailyMenuId: string } | null>(null);
   const [creditBalance, setCreditBalance] = useState(0);
@@ -154,7 +158,12 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           {/* Row 1: Office name + timer + cart */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
-              <h1 className="text-[15px] font-bold text-white truncate">{officeName || "ChopDrop"}</h1>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" className="shrink-0 opacity-40">
+                  <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /><path d="M10 6h4" /><path d="M10 10h4" /><path d="M10 14h4" /><path d="M10 18h4" />
+                </svg>
+                <h1 className="text-[15px] font-bold text-white truncate">{officeName || "ChopDrop"}</h1>
+              </div>
               {slot && !slot.expired && totalOrdered > 0 && (
                 <div className="flex items-center gap-1.5 shrink-0">
                   <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--emerald)" }} />
@@ -256,18 +265,36 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
         return (
           <div className="mx-5 mt-3 rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            {/* Header */}
-            <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+            {/* Header — tap to collapse/expand */}
+            <button
+              type="button"
+              className="w-full px-4 pt-4 pb-3 flex items-center justify-between cursor-pointer"
+              onClick={() => {
+                const next = !poolCollapsed;
+                setPoolCollapsed(next);
+                localStorage.setItem("chopdrop-pool-collapsed", next ? "1" : "0");
+              }}
+            >
               <div className="flex items-center gap-2">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 <span className="text-[15px] font-extrabold" style={{ color: "var(--text)" }}>Pool pricing</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--emerald)" }} />
-                <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--emerald)" }}>{orders} orders now</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--emerald)" }} />
+                  <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--emerald)" }}>{orders} orders now</span>
+                </div>
+                <svg
+                  width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  className={`transition-transform ${poolCollapsed ? "" : "rotate-180"}`}
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
               </div>
-            </div>
+            </button>
 
+            {/* Collapsible body */}
+            <div className={`transition-all overflow-hidden ${poolCollapsed ? "max-h-0" : "max-h-[600px]"}`} style={{ transitionDuration: "300ms" }}>
             {/* Tier steps */}
             <div className="px-4 pb-4">
               <div className="flex gap-1.5">
@@ -361,6 +388,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 </div>
               )}
             </div>
+            </div>{/* end collapsible body */}
           </div>
         );
       })()}
