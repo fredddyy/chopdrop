@@ -9,7 +9,7 @@ const WA = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20se
 /* ── Imagery ── */
 const HERO = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=1400&q=90&fit=crop";
 // Steps: Nigerian context — office WhatsApp, jollof spread, Lagos delivery
-const STEP1 = "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80&fit=crop"; // African colleagues at work
+const STEP1 = "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?w=600&q=80&fit=crop"; // Black professionals in office
 const STEP2 = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=600&q=80&fit=crop"; // Nigerian jollof rice
 const STEP3 = "https://images.unsplash.com/photo-1585759065152-3b0e2524b869?w=600&q=80&fit=crop"; // food delivery packaging
 // Food gallery with vendor context
