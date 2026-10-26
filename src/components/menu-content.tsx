@@ -592,23 +592,80 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 {/* Full vendor sections — adaptive by meal count */}
                 {fullVendors.map(([rId, rData]) => (
               <section key={rId} className="mt-8 px-5">
-                {/* Vendor header */}
-                <div className="flex items-center gap-3 mb-3 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
-                  <div className="w-11 h-11 rounded-[12px] overflow-hidden shrink-0 border-2 border-white">
-                    {rData.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[13px] font-bold" style={{ background: "var(--card)", color: "var(--text-muted)" }}>{rData.name.charAt(0)}</div>
+                {/* Vendor card — rich preview */}
+                <div className="rounded-[18px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                  {/* Top: Logo + info + social proof */}
+                  <div className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-[14px] overflow-hidden shrink-0" style={{ border: "2px solid var(--border)" }}>
+                        {rData.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[14px] font-bold" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>{rData.name.charAt(0)}</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-[17px] font-extrabold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-[12px]">⭐</span>
+                          <span className="text-[12px] font-semibold" style={{ color: "var(--text)" }}>4.8</span>
+                          <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>·</span>
+                          <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals</span>
+                          {rData.address && (
+                            <>
+                              <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>·</span>
+                              <span className="text-[12px] truncate" style={{ color: "var(--text-secondary)" }}>{rData.address}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Social proof tag */}
+                    {rData.items.length >= 3 && (
+                      <div className="flex items-center gap-1.5 mt-3 px-2.5 py-1.5 rounded-full w-fit" style={{ background: "var(--sand)" }}>
+                        <span className="text-[11px]">🔥</span>
+                        <span className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>Most ordered in your office</span>
+                      </div>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-[16px] font-extrabold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
-                    <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""}</p>
+
+                  {/* Horizontal food preview — see 2-3 items without expanding */}
+                  <div className="flex gap-2 px-4 pb-3 overflow-x-auto hide-scrollbar">
+                    {rData.items.slice(0, 3).map((meal) => {
+                      const effectivePrice = getEffectivePrice(meal.id, meal.price);
+                      return (
+                        <div key={meal.id} className="flex-shrink-0 w-[120px] cursor-pointer active:scale-[0.97] transition-transform" onClick={() => handleAddFixed(meal)}>
+                          <div className="w-[120px] h-[80px] rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                            {meal.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={meal.imageUrl} alt={meal.name} className="w-full h-full object-cover" loading="lazy" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-[11px] font-semibold mt-1.5 leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                            {meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
+                          </p>
+                          <span className="text-[12px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
+                        </div>
+                      );
+                    })}
+                    {rData.items.length > 3 && (
+                      <div className="flex-shrink-0 w-[80px] flex items-center justify-center">
+                        <span className="text-[13px] font-bold" style={{ color: "var(--coral)" }}>+{rData.items.length - 3} more</span>
+                      </div>
+                    )}
                   </div>
+
+                  {/* CTA — only if vendor has build-your-plate */}
                   {rData.hasBuild && (
-                    <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-full text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
-                      Build Plate
+                    <Link href={`/restaurant/${rId}`} className="flex items-center justify-center gap-2 mx-4 mb-4 h-11 rounded-[12px] text-[14px] font-bold transition-all cursor-pointer hover:opacity-90 active:scale-[0.98]" style={{ background: "var(--sand)", color: "var(--coral)", border: "1.5px solid var(--border)" }}>
+                      Build Your Plate
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                     </Link>
                   )}
                 </div>
@@ -731,9 +788,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
           {/* Combo deals — visually distinct section */}
           {slot.items.some((i) => i.tag === "DEAL") && (
-            <section className="mt-8 pb-4 pt-5 mx-5 rounded-[20px]" style={{ background: "var(--dark)" }}>
+            <section className="mt-8 pb-4 pt-5 mx-5 rounded-[20px]" style={{ background: "var(--sand)", border: "1px solid var(--border)" }}>
               <div className="flex items-center justify-between px-5 mb-3">
-                <h2 className="text-[18px] font-extrabold text-white">Today&apos;s deals</h2>
+                <h2 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Today&apos;s deals</h2>
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: "var(--coral)" }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   <span className="text-[10px] font-bold text-white">Limited</span>
@@ -749,7 +806,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   const hasDiscount = deal.originalPrice && deal.originalPrice > deal.price;
 
                   return (
-                    <div key={deal.id} className="flex-shrink-0 w-[220px] lg:w-auto rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid rgba(255,255,255,0.1)" }} onClick={() => handleAddFixed(deal)}>
+                    <div key={deal.id} className="flex-shrink-0 w-[220px] lg:w-auto rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)" }} onClick={() => handleAddFixed(deal)}>
                       <div className="relative h-[120px]" style={{ background: "var(--sand)" }}>
                         {deal.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -791,7 +848,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         </div>
                         {/* Claimed bar + urgency */}
                         <div className="mt-2.5">
-                          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+                          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
                             <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pctClaimed, 5)}%`, background: pctClaimed > 80 ? "var(--coral)" : "var(--gold)" }} />
                           </div>
                           <div className="text-[11px] font-semibold mt-1" style={{ color: deal.remaining <= 3 ? "var(--coral)" : "var(--text-muted)" }}>

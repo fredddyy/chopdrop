@@ -36,19 +36,27 @@ export function CountdownTimer({ cutoffTime, compact = false }: CountdownTimerPr
     if (timeLeft.expired) {
       return <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>Closed</span>;
     }
+    const totalMinutes = timeLeft.hours * 60 + timeLeft.minutes;
+    const isUrgent = totalMinutes < 30;
+    const digitBg = isUrgent ? "var(--coral)" : "var(--dark)";
     return (
-      <div className="flex items-center gap-[3px]">
-        {pad(timeLeft.hours).split("").map((d, i) => (
-          <span key={`h${i}`} className="w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white" style={{ background: "var(--dark)" }}>{d}</span>
-        ))}
-        <span className="text-[12px] font-bold mx-[1px]" style={{ color: "var(--text-muted)" }}>:</span>
-        {pad(timeLeft.minutes).split("").map((d, i) => (
-          <span key={`m${i}`} className="w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white" style={{ background: "var(--dark)" }}>{d}</span>
-        ))}
-        <span className="text-[12px] font-bold mx-[1px]" style={{ color: "var(--text-muted)" }}>:</span>
-        {pad(timeLeft.seconds).split("").map((d, i) => (
-          <span key={`s${i}`} className="w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white" style={{ background: "var(--coral)" }}>{d}</span>
-        ))}
+      <div className="flex flex-col items-end gap-0.5">
+        <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: isUrgent ? "var(--coral)" : "rgba(255,255,255,0.35)" }}>
+          {isUrgent ? "Closing soon" : "Pool closes in"}
+        </span>
+        <div className="flex items-center gap-[3px]">
+          {pad(timeLeft.hours).split("").map((d, i) => (
+            <span key={`h${i}`} className={`w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white ${isUrgent ? "animate-pulse" : ""}`} style={{ background: digitBg }}>{d}</span>
+          ))}
+          <span className="text-[12px] font-bold mx-[1px]" style={{ color: "var(--text-muted)" }}>:</span>
+          {pad(timeLeft.minutes).split("").map((d, i) => (
+            <span key={`m${i}`} className={`w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white ${isUrgent ? "animate-pulse" : ""}`} style={{ background: digitBg }}>{d}</span>
+          ))}
+          <span className="text-[12px] font-bold mx-[1px]" style={{ color: "var(--text-muted)" }}>:</span>
+          {pad(timeLeft.seconds).split("").map((d, i) => (
+            <span key={`s${i}`} className="w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white" style={{ background: isUrgent ? "var(--coral)" : "var(--coral)" }}>{d}</span>
+          ))}
+        </div>
       </div>
     );
   }
