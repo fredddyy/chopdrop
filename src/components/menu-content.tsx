@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { CountdownTimer } from "./countdown-timer";
 import { BottomNav } from "./bottom-nav";
 import { useCart } from "@/lib/cart";
-import { getCustomerProfile } from "@/lib/customer";
+import { getCustomerProfile, clearCustomerProfile } from "@/lib/customer";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { CartSidebar } from "./cart-sidebar";
@@ -77,7 +77,20 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
     const savedReminder = localStorage.getItem("chopdrop-reminder-set");
     if (savedReminder === "true") setReminderSet(true);
 
-    fetch("/api/auth/me").then((r) => r.json()).then((d) => {
+    fetch("/api/auth/me").then((r) => {
+      if (r.status === 401 || r.status === 404) {
+        // User deleted or session expired — clear cached data
+        clearCustomerProfile();
+        setOfficeName("");
+        document.cookie = "chopdrop-user-token=; Max-Age=0; path=/";
+        return null;
+      }
+      return r.json();
+    }).then((d) => {
+      if (!d) {
+        fetch("/api/promos/active").then((r2) => r2.json()).then((p) => { if (p.success && p.data) setActivePromo(p.data); }).catch(() => {});
+        return;
+      }
       if (d.success && d.data?.office) {
         if (d.data.office.name) setOfficeName(d.data.office.name);
         if (d.data.office.assistantName) setCaptainName(d.data.office.assistantName);
@@ -92,6 +105,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         const userId = d.data.id || "";
         fetch(`/api/promos/active?officeId=${officeId}&userId=${userId}`).then((r2) => r2.json()).then((p) => { if (p.success && p.data) setActivePromo(p.data); }).catch(() => {});
         fetch("/api/credits").then((r4) => r4.json()).then((c) => { if (c.success && c.data?.balance > 0) setCreditBalance(c.data.balance); }).catch(() => {});
+      } else if (d.success && d.data && !d.data.office) {
+        // User exists but no office — clear stale office cache
+        setOfficeName("");
+        fetch("/api/promos/active").then((r2) => r2.json()).then((p) => { if (p.success && p.data) setActivePromo(p.data); }).catch(() => {});
       } else {
         fetch("/api/promos/active").then((r2) => r2.json()).then((p) => { if (p.success && p.data) setActivePromo(p.data); }).catch(() => {});
       }
