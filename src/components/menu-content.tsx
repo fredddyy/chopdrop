@@ -611,13 +611,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           <span className="text-[12px]">⭐</span>
                           <span className="text-[12px] font-semibold" style={{ color: "var(--text)" }}>4.8</span>
                           <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>·</span>
-                          <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals</span>
-                          {rData.address && (
-                            <>
-                              <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>·</span>
-                              <span className="text-[12px] truncate" style={{ color: "var(--text-secondary)" }}>{rData.address}</span>
-                            </>
-                          )}
+                          <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""}</span>
                         </div>
                       </div>
                     </div>
