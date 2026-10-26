@@ -133,12 +133,14 @@ export default function Home() {
             <div className="lg:col-span-6 lg:col-start-7" style={{ animation: "fu .6s ease .1s both" }}>
               <div className="rounded-[24px] overflow-hidden relative aspect-[4/3] lg:aspect-square">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={HERO} alt="Nigerian egusi soup with eba — a popular office lunch" className="w-full h-full object-cover" />
-                <div className="absolute top-4 left-4 bg-white text-[var(--text)] text-[13px] font-bold px-4 py-2 rounded-full">
-                  19 ordering now
+                <img src={HERO} alt="Nigerian jollof rice and chicken — popular office lunch" className="w-full h-full object-cover" />
+                <div className="absolute top-4 left-4 bg-white text-[var(--text)] text-[13px] font-bold px-4 py-2 rounded-full inline-flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[var(--emerald)] animate-pulse" />
+                  Offices ordering now
                 </div>
-                <div className="absolute bottom-4 right-4 bg-[var(--emerald)] text-white text-[13px] font-bold px-4 py-2 rounded-full">
-                  ₦0 delivery
+                <div className="absolute bottom-4 left-4 right-4 flex gap-2">
+                  <div className="bg-[var(--emerald)] text-white text-[13px] font-bold px-4 py-2 rounded-full">₦0 delivery</div>
+                  <div className="bg-white/90 backdrop-blur-sm text-[var(--text)] text-[13px] font-bold px-4 py-2 rounded-full">Up to 30% off</div>
                 </div>
               </div>
             </div>
@@ -222,37 +224,15 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════ */}
-      {/*  THE MATH                                           */}
+      {/*  THE MATH — just the calculator, no redundant cards */}
       {/* ═══════════════════════════════════════════════════ */}
       <section className="py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
-          <R><h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-12">The lunch math</h2></R>
-
-          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0 mb-8">
-            <R d={60}>
-              <div className="bg-white rounded-[20px] p-6 lg:p-7" style={{ border: "1px solid var(--border)" }}>
-                <div className="text-[14px] font-semibold text-[var(--text-secondary)] mb-3">Without ChopDrop</div>
-                <div className="text-[15px] text-[var(--text-secondary)] mb-1">30 people × ₦2,000/day</div>
-                <div className="text-[32px] font-extrabold text-[var(--text)] tabular-nums leading-tight">₦1.2M<span className="text-[15px] font-medium text-[var(--text-muted)]">/mo</span></div>
-              </div>
-            </R>
-            <R d={120}>
-              <div className="bg-white rounded-[20px] p-6 lg:p-7" style={{ border: "2px solid var(--coral)" }}>
-                <div className="text-[14px] font-semibold text-[var(--coral)] mb-3">With ChopDrop</div>
-                <div className="text-[15px] text-[var(--text-secondary)] mb-1">30 people × ₦1,300/day</div>
-                <div className="text-[32px] font-extrabold text-[var(--emerald)] tabular-nums leading-tight">₦780K<span className="text-[15px] font-medium text-[var(--text-muted)]">/mo</span></div>
-              </div>
-            </R>
-            <R d={180}>
-              <div className="bg-[var(--coral)] rounded-[20px] p-6 lg:p-7 text-white">
-                <div className="text-[14px] font-semibold text-white/60 mb-3">You save</div>
-                <div className="text-[40px] lg:text-[48px] font-extrabold tabular-nums leading-tight">₦420K</div>
-                <div className="text-[15px] text-white/70 mt-1">per month — ₦14,000 each pocket</div>
-              </div>
-            </R>
-          </div>
-
-          <R d={240}><Calc /></R>
+          <R>
+            <h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-3">Do the math</h2>
+            <p className="text-[18px] text-[var(--text-secondary)] leading-[1.55] max-w-[480px] mb-10">Slide to see how much your office saves per month.</p>
+          </R>
+          <R d={80}><Calc /></R>
         </div>
       </section>
 
@@ -325,8 +305,8 @@ export default function Home() {
       <section className="py-16 lg:py-24" style={{ background: "var(--dark)" }}>
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
           <R>
-            <h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-white tracking-[-0.02em] mb-3">What&apos;s in it for you?</h2>
-            <p className="text-[18px] text-white/50 mb-12 max-w-[460px]">You become the Pool Captain. Your office eats cheaper, and you get rewarded.</p>
+            <h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-white tracking-[-0.02em] mb-3">The person who sets it up gets rewarded</h2>
+            <p className="text-[18px] text-white/50 mb-12 max-w-[480px]">Set up ChopDrop for your office in 2 minutes. Your colleagues eat cheaper — and you get perks every day.</p>
           </R>
 
           <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
