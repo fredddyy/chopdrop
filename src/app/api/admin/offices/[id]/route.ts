@@ -38,15 +38,39 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  const { searchParams } = new URL(request.url);
+  const hard = searchParams.get("hard") === "true";
 
-  await prisma.office.update({
-    where: { id },
-    data: { isActive: false },
-  });
+  if (hard) {
+    // Hard delete: remove users, disconnect orders, then delete office
+    await prisma.$transaction(async (tx) => {
+      // Disconnect orders from this office (keep order records, just unlink)
+      await tx.order.updateMany({
+        where: { officeId: id },
+        data: { officeId: null },
+      });
+
+      // Delete users belonging to this office
+      await tx.user.deleteMany({
+        where: { officeId: id },
+      });
+
+      // Delete the office
+      await tx.office.delete({
+        where: { id },
+      });
+    });
+  } else {
+    // Soft delete: just deactivate
+    await prisma.office.update({
+      where: { id },
+      data: { isActive: false },
+    });
+  }
 
   return NextResponse.json({ success: true });
 }

@@ -380,6 +380,16 @@ export default function OpsPage() {
     loadAll();
   }
 
+  async function deleteOffice(officeId: string, officeName: string, orderCount: number) {
+    if (orderCount > 0) {
+      if (!confirm(`"${officeName}" has ${orderCount} orders. This will permanently delete the office and all its users. Orders will be kept but unlinked. Continue?`)) return;
+    } else {
+      if (!confirm(`Permanently delete "${officeName}" and all its users? This cannot be undone.`)) return;
+    }
+    await fetch(`/api/admin/offices/${officeId}?hard=true`, { method: "DELETE" });
+    loadAll();
+  }
+
   async function uploadImage(file: File): Promise<string | null> {
     setUploading(true);
     try {
@@ -1589,6 +1599,13 @@ export default function OpsPage() {
                       className="text-[10px] font-bold text-green hover:underline ml-1"
                     >
                       {editingOfficeId === o.id ? "Close" : "Edit"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteOffice(o.id, o.name, o._count.orders)}
+                      className="text-[10px] font-bold text-coral hover:underline ml-1"
+                    >
+                      Delete
                     </button>
                   </div>
                   {editingOfficeId === o.id && (
