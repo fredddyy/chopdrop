@@ -8,12 +8,17 @@ const WA = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20se
 
 /* ── Imagery ── */
 const HERO = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=1400&q=90&fit=crop";
-const F1 = "https://images.unsplash.com/photo-1603496987674-79600a000f55?w=600&q=80&fit=crop";
-const F2 = "https://images.unsplash.com/photo-1593787614839-9b93c8998f25?w=600&q=80&fit=crop";
-const F3 = "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80&fit=crop";
-const F4 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80&fit=crop";
-const F5 = "https://images.unsplash.com/photo-1567364816519-cbc9c4ffe1eb?w=800&q=80&fit=crop";
-const F6 = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80&fit=crop";
+// Steps: phone setup, food menu, delivery
+const STEP1 = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80&fit=crop"; // person on phone
+const STEP2 = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80&fit=crop"; // food spread
+const STEP3 = "https://images.unsplash.com/photo-1526367790999-0150786686a2?w=600&q=80&fit=crop"; // delivery bag
+// Food gallery with vendor context
+const FOOD_JOLLOF = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=600&q=80&fit=crop";
+const FOOD_CHICKEN = "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=600&q=80&fit=crop";
+const FOOD_RICE = "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&q=80&fit=crop";
+const FOOD_SOUP = "https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80&fit=crop";
+const FOOD_WRAP = "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&q=80&fit=crop";
+const FOOD_BOWL = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80&fit=crop";
 
 /* ── Scroll reveal ── */
 function useReveal() {
@@ -117,9 +122,13 @@ export default function Home() {
                 Office lunch,<br />
                 <span className="text-[var(--coral)]">40% cheaper.</span>
               </h1>
-              <p className="text-[18px] lg:text-[20px] text-[var(--text-secondary)] leading-[1.55] max-w-[440px] mb-8">
+              <p className="text-[18px] lg:text-[20px] text-[var(--text-secondary)] leading-[1.55] max-w-[440px] mb-4">
                 Pool your office orders from local vendors. More people = cheaper plates for everyone. ₦0 delivery.
               </p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8" style={{ background: "rgba(13,159,95,0.08)", border: "1px solid rgba(13,159,95,0.15)" }}>
+                <span className="w-2 h-2 rounded-full bg-[var(--emerald)] animate-pulse" />
+                <span className="text-[14px] font-semibold text-[var(--emerald)]">Today&apos;s lunch pool is open — order before 11 AM</span>
+              </div>
               <div className="flex flex-wrap items-center gap-3">
                 <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[16px] h-[52px] px-8 inline-flex items-center rounded-full active:scale-[0.97] transition-all hover:bg-[var(--coral-dark)] hover:scale-[1.02]">
                   Set Up My Office
@@ -245,9 +254,9 @@ export default function Home() {
 
           <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-6 lg:space-y-0">
             {[
-              { img: F3, t: "Set up your office", d: "Enter your company name, share the invite link on your office WhatsApp. Done.", vendors: false },
-              { img: F1, t: "Everyone picks their plate", d: "Each person chooses base, protein, side and drink. More people ordering = cheaper price.", vendors: true },
-              { img: F2, t: "Food arrives before noon", d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat.", vendors: false },
+              { img: STEP1, t: "Set up your office", d: "Enter your company name, share the invite link on your office WhatsApp. Two minutes, done.", vendors: false },
+              { img: STEP2, t: "Everyone picks their plate", d: "Each person chooses base, protein, side and drink. More people ordering = cheaper price.", vendors: true },
+              { img: STEP3, t: "Food arrives before noon", d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat.", vendors: false },
             ].map((s, i) => (
               <R key={i} d={i * 80}>
                 <div className="bg-white rounded-[20px] overflow-hidden group cursor-default" style={{ border: "1px solid var(--border)" }}>
@@ -270,7 +279,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════ */}
       {/*  WHERE WE DELIVER                                   */}
       {/* ═══════════════════════════════════════════════════ */}
-      <section className="py-16 lg:py-24">
+      <section className="py-16 lg:py-24" style={{ background: "var(--sand)" }}>
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
           <R>
             <h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-3">Delivering across Lagos</h2>
@@ -382,14 +391,34 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════ */}
       {/*  FOOD GALLERY — scroll strip                        */}
       {/* ═══════════════════════════════════════════════════ */}
-      <section className="py-6 overflow-hidden" aria-label="Food gallery">
-        <div className="flex gap-3 px-5 overflow-x-auto hide-scrollbar snap-x snap-mandatory">
+      <section className="py-10 overflow-hidden" aria-label="Popular meals">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8 mb-6">
+          <R><h3 className="text-[22px] font-extrabold text-[var(--text)]">Popular with Lagos offices</h3></R>
+        </div>
+        <div className="flex gap-4 px-5 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-2">
           {[
-            { s: F5, a: "Grilled suya" }, { s: F1, a: "Jollof rice" }, { s: F6, a: "Fresh bowl" },
-            { s: F4, a: "Rice and vegetables" }, { s: F2, a: "White rice" }, { s: F3, a: "Lunch spread" },
-          ].map((img, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={i} src={img.s} alt={img.a} className="h-[120px] lg:h-[180px] w-auto rounded-[16px] object-cover shrink-0 snap-start" loading="lazy" />
+            { img: FOOD_JOLLOF, name: "Jollof Rice & Chicken", vendor: "The Place", orig: "₦4,800", pool: "₦3,360" },
+            { img: FOOD_CHICKEN, name: "Grilled Chicken", vendor: "Kilimanjaro", orig: "₦3,500", pool: "₦2,450" },
+            { img: FOOD_RICE, name: "Fried Rice Special", vendor: "Mama Tola's", orig: "₦3,200", pool: "₦2,240" },
+            { img: FOOD_SOUP, name: "Pepper Soup", vendor: "The Place", orig: "₦4,500", pool: "₦3,150" },
+            { img: FOOD_WRAP, name: "Chicken Shawarma", vendor: "ChickenWizz", orig: "₦3,900", pool: "₦2,730" },
+            { img: FOOD_BOWL, name: "Veggie Power Bowl", vendor: "Green Basket", orig: "₦3,000", pool: "₦2,100" },
+          ].map((meal, i) => (
+            <div key={i} className="shrink-0 w-[220px] lg:w-[260px] snap-start rounded-[20px] overflow-hidden bg-white group" style={{ border: "1px solid var(--border)" }}>
+              <div className="h-[140px] lg:h-[170px] overflow-hidden relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={meal.img} alt={meal.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[11px] font-bold text-[var(--text)] px-3 py-1 rounded-full">{meal.vendor}</div>
+              </div>
+              <div className="p-4">
+                <div className="text-[15px] font-bold text-[var(--text)] mb-2 leading-tight">{meal.name}</div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] text-[var(--text-muted)] line-through">{meal.orig}</span>
+                  <span className="text-[16px] font-extrabold text-[var(--emerald)]">{meal.pool}</span>
+                </div>
+                <div className="text-[11px] text-[var(--emerald)] font-semibold mt-1">pool price</div>
+              </div>
+            </div>
           ))}
         </div>
       </section>
