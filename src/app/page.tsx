@@ -149,19 +149,20 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════ */}
       {/*  METRICS STRIP                                      */}
       {/* ═══════════════════════════════════════════════════ */}
-      <section className="py-10 lg:py-14" style={{ background: "var(--sand)" }}>
+      <section className="py-10 lg:py-14" style={{ background: "var(--dark)" }}>
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
           <R>
-            <div className="flex flex-wrap justify-center gap-8 lg:gap-16 text-center">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
               {[
-                { n: "20+", l: "offices piloting" },
-                { n: "₦0", l: "delivery fee" },
-                { n: "40%", l: "max savings" },
-                { n: "2 min", l: "to set up" },
+                { n: "₦0", l: "delivery fee", sub: "One rider. Everyone's food.", color: "var(--emerald)" },
+                { n: "30%", l: "cheaper per plate", sub: "When 15+ colleagues order.", color: "var(--coral)" },
+                { n: "₦750", l: "saved per meal", sub: "Same jollof. Less money.", color: "var(--gold)" },
+                { n: "3 taps", l: "to order", sub: "Pre-order tonight. Eat tomorrow.", color: "var(--emerald)" },
               ].map((m) => (
-                <div key={m.l}>
-                  <div className="text-[32px] lg:text-[40px] font-extrabold text-[var(--text)] tabular-nums leading-none">{m.n}</div>
-                  <div className="text-[14px] text-[var(--text-secondary)] mt-1">{m.l}</div>
+                <div key={m.l} className="rounded-[16px] p-5 lg:p-6" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="text-[36px] lg:text-[44px] font-extrabold tabular-nums leading-none" style={{ color: m.color }}>{m.n}</div>
+                  <div className="text-[15px] font-semibold text-white mt-2">{m.l}</div>
+                  <div className="text-[13px] text-white/40 mt-1">{m.sub}</div>
                 </div>
               ))}
             </div>
@@ -266,7 +267,7 @@ export default function Home() {
             {[
               { img: F3, t: "Set up your office", d: "Enter your company name, share the invite link on your office WhatsApp. Done.", vendors: false },
               { img: F1, t: "Everyone picks their plate", d: "Each person chooses base, protein, side and drink. More people ordering = cheaper price.", vendors: true },
-              { img: F2, t: "Food arrives at 1 PM", d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat.", vendors: false },
+              { img: F2, t: "Food arrives before noon", d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat.", vendors: false },
             ].map((s, i) => (
               <R key={i} d={i * 80}>
                 <div className="bg-white rounded-[20px] overflow-hidden group cursor-default" style={{ border: "1px solid var(--border)" }}>
