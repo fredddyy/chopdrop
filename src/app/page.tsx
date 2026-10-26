@@ -170,6 +170,57 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════ */}
+      {/*  POOL PRICING VISUAL                                */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+          <R>
+            <h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-3">How pool pricing works</h2>
+            <p className="text-[18px] text-[var(--text-secondary)] leading-[1.55] max-w-[520px] mb-12">The more you order together, the less everyone pays</p>
+          </R>
+
+          {/* Tier ladder */}
+          <R d={80}>
+            <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-0 mb-8">
+              {[
+                { people: "1-4 people", discount: "Base price", bg: "transparent", border: "var(--border)", text: "var(--text-secondary)", fill: false },
+                { people: "5+ people", discount: "10% off", bg: "var(--gold)", border: "var(--gold)", text: "white", fill: true },
+                { people: "10+ people", discount: "20% off", bg: "var(--coral)", border: "var(--coral)", text: "white", fill: true },
+                { people: "15+ people", discount: "30% off", bg: "var(--emerald)", border: "var(--emerald)", text: "white", fill: true, highlight: true },
+              ].map((tier, i) => (
+                <div key={i} className="flex flex-col lg:flex-row items-center flex-1">
+                  <div
+                    className={`w-full lg:flex-1 rounded-[16px] p-5 text-center transition-transform ${tier.highlight ? "lg:scale-[1.05]" : ""}`}
+                    style={{
+                      background: tier.fill ? tier.bg : "var(--card)",
+                      border: `2px solid ${tier.border}`,
+                    }}
+                  >
+                    <div className="text-[13px] font-semibold mb-1" style={{ color: tier.fill ? "rgba(255,255,255,0.7)" : "var(--text-muted)" }}>{tier.people}</div>
+                    <div className="text-[20px] font-extrabold" style={{ color: tier.text }}>{tier.discount}</div>
+                  </div>
+                  {i < 3 && (
+                    <div className="flex items-center justify-center w-8 h-8 shrink-0">
+                      {/* Vertical arrow on mobile, horizontal on desktop */}
+                      <svg className="lg:hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                      <svg className="hidden lg:block" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 6 6 6-6 6"/></svg>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </R>
+
+          {/* Callout */}
+          <R d={160}>
+            <div className="bg-white rounded-[16px] p-5 max-w-[600px]" style={{ border: "1px solid var(--border)", borderLeft: "3px solid var(--emerald)" }}>
+              <p className="text-[16px] text-[var(--text)] leading-[1.5]">Everyone gets the final price. Even if you ordered first.</p>
+            </div>
+          </R>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
       {/*  THE MATH                                           */}
       {/* ═══════════════════════════════════════════════════ */}
       <section className="py-16 lg:py-24">
@@ -213,9 +264,9 @@ export default function Home() {
 
           <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-6 lg:space-y-0">
             {[
-              { img: F3, t: "Set up your office", d: "Enter your company name, share the invite link on your office WhatsApp. Done." },
-              { img: F1, t: "Everyone picks their plate", d: "Each person chooses base, protein, side and drink. More people ordering = cheaper price." },
-              { img: F2, t: "Food arrives at 1 PM", d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat." },
+              { img: F3, t: "Set up your office", d: "Enter your company name, share the invite link on your office WhatsApp. Done.", vendors: false },
+              { img: F1, t: "Everyone picks their plate", d: "Each person chooses base, protein, side and drink. More people ordering = cheaper price.", vendors: true },
+              { img: F2, t: "Food arrives at 1 PM", d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat.", vendors: false },
             ].map((s, i) => (
               <R key={i} d={i * 80}>
                 <div className="bg-white rounded-[20px] overflow-hidden group cursor-default" style={{ border: "1px solid var(--border)" }}>
@@ -226,11 +277,44 @@ export default function Home() {
                   <div className="p-6">
                     <h3 className="text-[20px] font-bold text-[var(--text)] mb-2">{s.t}</h3>
                     <p className="text-[16px] text-[var(--text-secondary)] leading-[1.5]">{s.d}</p>
+                    {s.vendors && <p className="text-[14px] text-[var(--text-muted)] mt-2">From vendors like The Place, Kilimanjaro, Mama Tola&apos;s, and your office favorites.</p>}
                   </div>
                 </div>
               </R>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/*  WHERE WE DELIVER                                   */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+          <R>
+            <h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-3">Delivering across Lagos</h2>
+            <p className="text-[18px] text-[var(--text-secondary)] leading-[1.55] max-w-[480px] mb-10">From Victoria Island to Ikeja — if your office is here, we&apos;ve got you.</p>
+          </R>
+
+          <R d={80}>
+            <div className="flex flex-wrap gap-3 mb-8">
+              {["Victoria Island", "Ikoyi", "Lekki Phase 1", "Ikeja GRA", "Marina", "Yaba", "Surulere", "Maryland"].map((loc) => (
+                <span key={loc} className="text-[14px] font-medium text-[var(--text-secondary)] px-4 py-2 rounded-full" style={{ background: "var(--sand)" }}>
+                  {loc}
+                </span>
+              ))}
+            </div>
+          </R>
+
+          <R d={160}>
+            <div className="bg-white rounded-[16px] p-5 max-w-[520px]" style={{ border: "1px solid var(--border)", borderLeft: "3px solid var(--coral)" }}>
+              <p className="text-[16px] text-[var(--text)] leading-[1.5] mb-2">Don&apos;t see your area? We&apos;re expanding fast.</p>
+              <a href={WA} className="text-[15px] font-semibold text-[var(--coral)] hover:text-[var(--coral-dark)] transition-colors inline-flex items-center gap-1">
+                Tell us your location
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6"/></svg>
+              </a>
+            </div>
+          </R>
         </div>
       </section>
 
@@ -283,6 +367,38 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════ */}
+      {/*  PRE-ORDER & POOL GUARANTEE                         */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-4 lg:space-y-0">
+            <R d={0}>
+              <div className="bg-white rounded-[20px] p-6 lg:p-8" style={{ border: "1px solid var(--border)" }}>
+                <div className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-5" style={{ background: "var(--coral)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                  </svg>
+                </div>
+                <h3 className="text-[20px] font-bold text-[var(--text)] mb-2">Order tonight. Eat first tomorrow.</h3>
+                <p className="text-[16px] text-[var(--text-secondary)] leading-[1.5]">Pre-order locks your meal before the vendor even opens. No more &ldquo;sold out.&rdquo; You&apos;re position #1.</p>
+              </div>
+            </R>
+            <R d={80}>
+              <div className="bg-white rounded-[20px] p-6 lg:p-8" style={{ border: "1px solid var(--border)" }}>
+                <div className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-5" style={{ background: "var(--emerald)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+                <h3 className="text-[20px] font-bold text-[var(--text)] mb-2">You never overpay.</h3>
+                <p className="text-[16px] text-[var(--text-secondary)] leading-[1.5]">If more colleagues join after you order and the price drops, you get the difference back as credit. Automatically.</p>
+              </div>
+            </R>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════ */}
       {/*  FOOD GALLERY — scroll strip                        */}
       {/* ═══════════════════════════════════════════════════ */}
       <section className="py-6 overflow-hidden" aria-label="Food gallery">
@@ -303,10 +419,11 @@ export default function Home() {
       <section className="py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
           <R><h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] text-center mb-12">Offices already saving</h2></R>
-          <div className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-4 lg:space-y-0">
+          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
             {[
-              { q: "I used to spend 30 minutes collecting lunch orders on WhatsApp. Now I tap one button and eat free.", who: "Pool Captain", where: "Ikeja, 28 colleagues", init: "AO", bg: "var(--coral)" },
-              { q: "Our team of 35 saves over ₦400K per month. Setup took 2 minutes. Best decision this quarter.", who: "Office Manager", where: "Lagos Island, 35 colleagues", init: "CE", bg: "var(--emerald)" },
+              { q: "I used to spend ₦6,000 a day on food + delivery. Now I spend ₦3,500. Same jollof from The Place.", who: "Adaeze O.", where: "Sterling Bank, VI", count: "28 colleagues", init: "AO", bg: "var(--coral)" },
+              { q: "Pre-ordered at 10pm, ate at 12:15 the next day. My colleague who ordered at noon? Sold out.", who: "Tunde M.", where: "GTBank, Ikeja", count: "35 colleagues", init: "TM", bg: "var(--gold)" },
+              { q: "We save over ₦400K per month as an office. Setup took literally 2 minutes.", who: "Kemi A.", where: "First Bank, Marina", count: "42 colleagues", init: "KA", bg: "var(--emerald)" },
             ].map((t, i) => (
               <R key={i} d={i * 80}>
                 <div className="bg-white rounded-[20px] p-6 lg:p-8" style={{ border: "1px solid var(--border)" }}>
@@ -317,6 +434,7 @@ export default function Home() {
                       <div className="text-[14px] font-semibold text-[var(--text)]">{t.who}</div>
                       <div className="text-[13px] text-[var(--text-muted)]">{t.where}</div>
                     </div>
+                    <span className="ml-auto text-[12px] font-semibold text-[var(--emerald)] px-3 py-1 rounded-full" style={{ background: "rgba(13,159,95,0.08)" }}>{t.count}</span>
                   </div>
                 </div>
               </R>
@@ -333,7 +451,9 @@ export default function Home() {
           <R><h2 className="text-[clamp(28px,4vw,40px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-10">Questions</h2></R>
           {[
             { q: "Is it really free?", a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for guaranteed orders." },
+            { q: "What is pool pricing?", a: "The more people from your office that order, the cheaper it gets for everyone. 5 people = 10% off. 15 people = 30% off. You all share one delivery, so the fee is ₦0." },
             { q: "What if only 3 people order?", a: "You still get your food at the regular price. Discounts kick in at 5+. Most offices hit 10+ in the first week." },
+            { q: "Can I pre-order for tomorrow?", a: "Yes! Pools open the evening before. Lock your meal tonight and it's guaranteed tomorrow. No more racing at noon." },
             { q: "What vendors are available?", a: "Vetted local vendors near your office. Have a favourite? We'll onboard them." },
             { q: "Can I stop being captain?", a: "Transfer the role in one tap. But most captains stay — free lunch is hard to give up." },
             { q: "How does payment work?", a: "Everyone pays via card or bank transfer through Paystack. No collecting cash." },
