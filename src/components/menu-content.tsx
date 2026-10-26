@@ -517,7 +517,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                             <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
                               <div>
                                 <h3 className="text-[14px] font-bold leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}</h3>
-                                <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{rData.name}</p>
+                                {meal.description && <p className="text-[11px] mt-0.5 leading-snug" style={{ color: "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{meal.description}</p>}
+                                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{rData.name}</p>
                               </div>
                               <div className="flex items-center justify-between mt-1">
                                 <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
@@ -626,6 +627,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           <h3 className="text-[14px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                             {meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
                           </h3>
+                          {meal.description && <p className="text-[11px] mt-0.5 leading-snug" style={{ color: "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{meal.description}</p>}
                           <div className="flex items-baseline gap-2 mt-1.5">
                             <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
                             {hasPoolDiscount && <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(poolData.meals[meal.id].basePrice)}</span>}
