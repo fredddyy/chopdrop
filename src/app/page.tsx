@@ -8,10 +8,10 @@ const WA = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20se
 
 /* ── Imagery ── */
 const HERO = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=1400&q=90&fit=crop";
-// Steps: phone setup, food menu, delivery
-const STEP1 = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80&fit=crop"; // person on phone
-const STEP2 = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80&fit=crop"; // food spread
-const STEP3 = "https://images.unsplash.com/photo-1526367790999-0150786686a2?w=600&q=80&fit=crop"; // delivery bag
+// Steps: Nigerian context — office WhatsApp, jollof spread, Lagos delivery
+const STEP1 = "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80&fit=crop"; // African colleagues at work
+const STEP2 = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=600&q=80&fit=crop"; // Nigerian jollof rice
+const STEP3 = "https://images.unsplash.com/photo-1585759065152-3b0e2524b869?w=600&q=80&fit=crop"; // food delivery packaging
 // Food gallery with vendor context
 const FOOD_JOLLOF = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=600&q=80&fit=crop";
 const FOOD_CHICKEN = "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=600&q=80&fit=crop";
