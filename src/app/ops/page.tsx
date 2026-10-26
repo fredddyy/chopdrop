@@ -111,11 +111,12 @@ export default function OpsPage() {
   const [menuRestaurantId, setMenuRestaurantId] = useState("");
   const [menuCategories, setMenuCategories] = useState<Array<{
     id: string; name: string; selectionRule: string; sortOrder: number;
-    items: Array<{ id: string; name: string; price: number; sortOrder: number }>;
+    items: Array<{ id: string; name: string; description: string | null; price: number; sortOrder: number }>;
   }>>([]);
   const [menuLoading, setMenuLoading] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editItemName, setEditItemName] = useState("");
+  const [editItemDescription, setEditItemDescription] = useState("");
   const [editItemPrice, setEditItemPrice] = useState("");
   const [editItemImage, setEditItemImage] = useState("");
   const [editItemUploading, setEditItemUploading] = useState(false);
@@ -123,6 +124,7 @@ export default function OpsPage() {
   const [newItemUploading, setNewItemUploading] = useState(false);
   const [newItemCategoryId, setNewItemCategoryId] = useState<string | null>(null);
   const [newItemName, setNewItemName] = useState("");
+  const [newItemDescription, setNewItemDescription] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -536,7 +538,7 @@ export default function OpsPage() {
     await fetch(`/api/admin/menu-items/${itemId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: editItemName.trim(), price: Math.round(parseFloat(editItemPrice) * 100), imageUrl: editItemImage.trim() || null }),
+      body: JSON.stringify({ name: editItemName.trim(), description: editItemDescription.trim() || null, price: Math.round(parseFloat(editItemPrice) * 100), imageUrl: editItemImage.trim() || null }),
     });
     setEditingItemId(null);
     loadMenuItems();
@@ -553,10 +555,11 @@ export default function OpsPage() {
     await fetch("/api/admin/menu-items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryId, name: newItemName.trim(), price: Math.round(parseFloat(newItemPrice) * 100), imageUrl: newItemImage.trim() || null }),
+      body: JSON.stringify({ categoryId, name: newItemName.trim(), description: newItemDescription.trim() || null, price: Math.round(parseFloat(newItemPrice) * 100), imageUrl: newItemImage.trim() || null }),
     });
     setNewItemCategoryId(null);
     setNewItemName("");
+    setNewItemDescription("");
     setNewItemPrice("");
     setNewItemImage("");
     loadMenuItems();
@@ -1737,7 +1740,7 @@ export default function OpsPage() {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => { setNewItemCategoryId(cat.id); setNewItemName(""); setNewItemPrice(""); }}
+                        onClick={() => { setNewItemCategoryId(cat.id); setNewItemName(""); setNewItemDescription(""); setNewItemPrice(""); }}
                         className="text-[10px] font-bold text-green hover:underline"
                       >
                         + Add item
@@ -1764,6 +1767,7 @@ export default function OpsPage() {
                               <button type="button" onClick={() => saveEditItem(item.id)} className="bg-green text-white text-[10px] font-bold px-3 py-1.5 rounded-[8px]">Save</button>
                               <button type="button" onClick={() => setEditingItemId(null)} className="text-ink-soft text-[10px] font-bold px-2 py-1.5">Cancel</button>
                             </div>
+                            <input type="text" value={editItemDescription} onChange={(e) => setEditItemDescription(e.target.value)} placeholder="Description (optional) — e.g. Fried rice with curry chicken and plantain" className="w-full px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
                             <div className="flex items-center gap-2">
                               <label className={`px-3 py-1.5 border border-line rounded-[8px] text-[10px] font-bold cursor-pointer ${editItemUploading ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
                                 {editItemUploading ? "Uploading..." : editItemImage ? "Change image" : "Add image"}
@@ -1785,13 +1789,16 @@ export default function OpsPage() {
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={(item as { imageUrl?: string }).imageUrl!} alt="" className="w-7 h-7 rounded object-cover flex-shrink-0" />
                               )}
-                              <span className="text-[13px]">{item.name}</span>
+                              <div className="min-w-0">
+                                <span className="text-[13px]">{item.name}</span>
+                                {item.description && <p className="text-[10px] text-ink-soft truncate">{item.description}</p>}
+                              </div>
                             </div>
                             <div className="flex items-center gap-3">
                               <strong className="text-[13px]">₦{(item.price / 100).toLocaleString()}</strong>
                               <button
                                 type="button"
-                                onClick={() => { setEditingItemId(item.id); setEditItemName(item.name); setEditItemPrice(String(item.price / 100)); setEditItemImage((item as { imageUrl?: string }).imageUrl || ""); }}
+                                onClick={() => { setEditingItemId(item.id); setEditItemName(item.name); setEditItemDescription(item.description || ""); setEditItemPrice(String(item.price / 100)); setEditItemImage((item as { imageUrl?: string }).imageUrl || ""); }}
                                 className="text-[10px] font-bold text-green hover:underline"
                               >
                                 Edit
@@ -1815,6 +1822,9 @@ export default function OpsPage() {
                         <div className="flex items-center gap-2">
                           <input type="text" value={newItemName} onChange={(e) => setNewItemName(e.target.value)} placeholder="Item name" className="flex-1 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30" autoFocus />
                           <input type="number" value={newItemPrice} onChange={(e) => setNewItemPrice(e.target.value)} placeholder="Price ₦" className="w-24 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input type="text" value={newItemDescription} onChange={(e) => setNewItemDescription(e.target.value)} placeholder="Description (optional) — e.g. Fried rice with curry chicken and plantain" className="flex-1 px-2.5 py-1.5 border border-line rounded-[8px] text-sm bg-paper focus:outline-none focus:ring-2 focus:ring-green/30" />
                           <button
                             type="button"
                             onClick={() => addItem(cat.id)}

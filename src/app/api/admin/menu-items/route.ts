@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 // POST — create a new menu item
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { categoryId, name, price, sortOrder } = body;
+  const { categoryId, name, description, price, sortOrder, imageUrl } = body;
 
   if (!categoryId || !name || price === undefined) {
     return NextResponse.json(
@@ -49,8 +49,10 @@ export async function POST(request: NextRequest) {
     data: {
       categoryId,
       name: name.trim(),
+      description: description?.trim() || null,
       price: Math.round(price),
       sortOrder: sortOrder || 0,
+      imageUrl: imageUrl || null,
     },
   });
 
