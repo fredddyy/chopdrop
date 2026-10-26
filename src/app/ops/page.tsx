@@ -584,6 +584,47 @@ export default function OpsPage() {
     loadMenuItems();
   }
 
+  async function moveItem(itemId: string, direction: "up" | "down", categoryId: string) {
+    const cat = menuCategories.find((c) => c.id === categoryId);
+    if (!cat) return;
+    const idx = cat.items.findIndex((i) => i.id === itemId);
+    if (idx === -1) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= cat.items.length) return;
+
+    const items = [
+      { id: cat.items[idx].id, sortOrder: swapIdx, categoryId },
+      { id: cat.items[swapIdx].id, sortOrder: idx, categoryId },
+    ];
+    // Optimistic update
+    setMenuCategories((prev) =>
+      prev.map((c) => {
+        if (c.id !== categoryId) return c;
+        const newItems = [...c.items];
+        [newItems[idx], newItems[swapIdx]] = [newItems[swapIdx], newItems[idx]];
+        return { ...c, items: newItems };
+      })
+    );
+    await fetch("/api/admin/menu-items/reorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items }),
+    });
+    loadMenuItems();
+  }
+
+  async function moveItemToCategory(itemId: string, fromCategoryId: string, toCategoryId: string) {
+    const fromCat = menuCategories.find((c) => c.id === fromCategoryId);
+    const toCat = menuCategories.find((c) => c.id === toCategoryId);
+    if (!fromCat || !toCat) return;
+    await fetch(`/api/admin/menu-items/${itemId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ categoryId: toCategoryId, sortOrder: toCat.items.length }),
+    });
+    loadMenuItems();
+  }
+
   // Promo functions
   function resetPromoForm() {
     setPromoName("");
@@ -1783,8 +1824,29 @@ export default function OpsPage() {
                             </div>
                           </div>
                         ) : (
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-between gap-2">
+                            {/* Reorder arrows */}
+                            <div className="flex flex-col shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => moveItem(item.id, "up", cat.id)}
+                                disabled={cat.items.indexOf(item) === 0}
+                                className="p-0.5 text-ink-soft hover:text-ink disabled:opacity-20 disabled:cursor-default"
+                                title="Move up"
+                              >
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveItem(item.id, "down", cat.id)}
+                                disabled={cat.items.indexOf(item) === cat.items.length - 1}
+                                className="p-0.5 text-ink-soft hover:text-ink disabled:opacity-20 disabled:cursor-default"
+                                title="Move down"
+                              >
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
                               {(item as { imageUrl?: string }).imageUrl && (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={(item as { imageUrl?: string }).imageUrl!} alt="" className="w-7 h-7 rounded object-cover flex-shrink-0" />
@@ -1794,8 +1856,22 @@ export default function OpsPage() {
                                 {item.description && <p className="text-[10px] text-ink-soft truncate">{item.description}</p>}
                               </div>
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 shrink-0">
                               <strong className="text-[13px]">₦{(item.price / 100).toLocaleString()}</strong>
+                              {/* Move to category dropdown */}
+                              {menuCategories.length > 1 && (
+                                <select
+                                  value=""
+                                  onChange={(e) => { if (e.target.value) moveItemToCategory(item.id, cat.id, e.target.value); }}
+                                  className="text-[9px] text-ink-soft border border-line rounded-[6px] px-1 py-0.5 bg-transparent cursor-pointer"
+                                  title="Move to another category"
+                                >
+                                  <option value="">Move to...</option>
+                                  {menuCategories.filter((c) => c.id !== cat.id).map((c) => (
+                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                  ))}
+                                </select>
+                              )}
                               <button
                                 type="button"
                                 onClick={() => { setEditingItemId(item.id); setEditItemName(item.name); setEditItemDescription(item.description || ""); setEditItemPrice(String(item.price / 100)); setEditItemImage((item as { imageUrl?: string }).imageUrl || ""); }}
