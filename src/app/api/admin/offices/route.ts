@@ -21,8 +21,7 @@ function generateSlug(name: string, address: string): string {
 
 export async function GET() {
   const offices = await prisma.office.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ isActive: "desc" }, { createdAt: "desc" }],
     include: {
       _count: { select: { orders: true } },
     },

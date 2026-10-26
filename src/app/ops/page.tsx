@@ -1563,7 +1563,7 @@ export default function OpsPage() {
 
             <div className="space-y-3">
               {filteredOffices.map((o) => (
-                <div key={o.id} className="bg-paper border border-line rounded-[16px] overflow-hidden">
+                <div key={o.id} className={`bg-paper border border-line rounded-[16px] overflow-hidden ${!o.isActive ? "opacity-50" : ""}`}>
                   <div className="p-4 flex items-center gap-4">
                     <div className="w-10 h-10 bg-green-soft text-green rounded-[10px] flex items-center justify-center flex-shrink-0">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3" /></svg>
