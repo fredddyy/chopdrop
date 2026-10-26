@@ -252,22 +252,40 @@ export default function Home() {
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
           <R><h2 className="text-[clamp(28px,4.5vw,44px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-12">Three steps, two minutes</h2></R>
 
-          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-6 lg:space-y-0">
+          <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
             {[
-              { img: STEP1, t: "Set up your office", d: "Enter your company name, share the invite link on your office WhatsApp. Two minutes, done.", vendors: false },
-              { img: STEP2, t: "Everyone picks their plate", d: "Each person chooses base, protein, side and drink. More people ordering = cheaper price.", vendors: true },
-              { img: STEP3, t: "Food arrives before noon", d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat.", vendors: false },
+              {
+                bg: "var(--coral)", num: "01", t: "Set up your office",
+                d: "Enter your company name, share the invite link on your office WhatsApp. Two minutes, done.",
+                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>,
+                sub: null,
+              },
+              {
+                bg: "var(--gold)", num: "02", t: "Everyone picks their plate",
+                d: "Each person chooses base, protein, side and drink. More people ordering = cheaper price.",
+                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>,
+                sub: "From vendors like The Place, Kilimanjaro, Mama Tola's, and your office favorites.",
+              },
+              {
+                bg: "var(--emerald)", num: "03", t: "Food arrives before noon",
+                d: "One batch delivery to reception. Everyone's bag has their name. Pick up and eat.",
+                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16v-2"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>,
+                sub: null,
+              },
             ].map((s, i) => (
               <R key={i} d={i * 80}>
-                <div className="bg-white rounded-[20px] overflow-hidden group cursor-default" style={{ border: "1px solid var(--border)" }}>
-                  <div className="h-[200px] overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.img} alt={s.t} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div className="bg-white rounded-[20px] overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+                  {/* Icon header */}
+                  <div className="h-[180px] flex flex-col items-center justify-center gap-4 relative" style={{ background: s.bg }}>
+                    <div className="absolute top-4 left-5 text-[64px] font-extrabold leading-none text-white/15">{s.num}</div>
+                    <div className="w-16 h-16 rounded-[18px] bg-white/20 flex items-center justify-center">
+                      {s.icon}
+                    </div>
                   </div>
                   <div className="p-6">
                     <h3 className="text-[20px] font-bold text-[var(--text)] mb-2">{s.t}</h3>
                     <p className="text-[16px] text-[var(--text-secondary)] leading-[1.5]">{s.d}</p>
-                    {s.vendors && <p className="text-[14px] text-[var(--text-muted)] mt-2">From vendors like The Place, Kilimanjaro, Mama Tola&apos;s, and your office favorites.</p>}
+                    {s.sub && <p className="text-[14px] text-[var(--text-muted)] mt-2">{s.sub}</p>}
                   </div>
                 </div>
               </R>
