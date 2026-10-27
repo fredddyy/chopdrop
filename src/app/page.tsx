@@ -6,8 +6,8 @@ import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 
 const WA = "https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20want%20to%20set%20up%20my%20office";
 
-const HERO = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=1400&q=90&fit=crop";
-const FOOD_JOLLOF = "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=600&q=80&fit=crop";
+const HERO = "/hero-jollof.jpg";
+const FOOD_JOLLOF = "/hero-jollof.jpg";
 const FOOD_CHICKEN = "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=600&q=80&fit=crop";
 const FOOD_RICE = "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&q=80&fit=crop";
 const FOOD_SOUP = "https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80&fit=crop";
