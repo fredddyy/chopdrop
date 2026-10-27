@@ -100,6 +100,22 @@ export function CaptainDashboard({
       </header>
 
       <div className="max-w-2xl mx-auto px-5 -mt-1 pb-8">
+        {/* ── Order your lunch CTA ── */}
+        <a href="/menu" className="flex items-center justify-between bg-[var(--coral)] rounded-[16px] p-4 mb-5 active:scale-[0.98] transition-transform">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" /><path d="M7 2v20" /><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-[16px] font-bold text-white">Order your lunch too</div>
+              <div className="text-[13px] text-white/60">Captains eat too — don&apos;t forget yours</div>
+            </div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+        </a>
+
         {/* ── Stats row ── */}
         <div className="grid grid-cols-3 gap-3 mb-5">
           {[
