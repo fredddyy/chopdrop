@@ -189,15 +189,13 @@ export default function Home() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={HERO} alt="Nigerian jollof rice — the lunch everyone orders" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
-                  <div>
-                    <div className="text-white text-[22px] font-extrabold leading-tight">Jollof Rice & Chicken</div>
-                    <div className="text-white/70 text-[14px] mt-0.5">The Place · Admiralty Way</div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="flex gap-2 mb-2">
+                    <div className="bg-[var(--emerald)] text-white text-[12px] font-bold px-3 py-1.5 rounded-full">₦0 delivery</div>
+                    <div className="bg-white text-[var(--text)] text-[12px] font-bold px-3 py-1.5 rounded-full">30% off</div>
                   </div>
-                  <div className="flex gap-2">
-                    <div className="bg-[var(--emerald)] text-white text-[13px] font-bold px-4 py-2 rounded-full">₦0 delivery</div>
-                    <div className="bg-white text-[var(--text)] text-[13px] font-bold px-4 py-2 rounded-full">30% off</div>
-                  </div>
+                  <div className="text-white text-[20px] font-extrabold leading-tight">Jollof Rice & Chicken</div>
+                  <div className="text-white/70 text-[13px] mt-0.5">The Place · Admiralty Way</div>
                 </div>
               </div>
             </div>
