@@ -157,7 +157,7 @@ export default function Home() {
                 <span className="text-[var(--coral)]">ordered together?</span>
               </h1>
               <p className="text-[18px] text-[var(--text-secondary)] leading-[1.55] max-w-[420px] mb-6">
-                Pool orders from local vendors. More people = cheaper plates. ₦0 delivery. Pre-order tonight, eat first tomorrow.
+                Pool orders from local vendors. More people = cheaper plates. ₦0 delivery. Breakfast by 9AM. Lunch by noon.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -224,7 +224,7 @@ export default function Home() {
             {[
               { num: "1", color: "var(--coral)", t: "Share the link", d: "Enter your office name, get an invite link. Drop it in your WhatsApp group." },
               { num: "2", color: "var(--gold)", t: "Everyone picks their food", d: "Each person chooses what they want. More people = cheaper price for all." },
-              { num: "3", color: "var(--emerald)", t: "Food arrives together", d: "One batch delivery before noon. Named bags. Pick up and eat." },
+              { num: "3", color: "var(--emerald)", t: "Food arrives on time", d: "Breakfast before 9AM. Lunch before noon. One batch delivery. Named bags. Pick up and eat." },
             ].map((s, i) => (
               <R key={i} d={i * 100}>
                 <div className="text-center px-6 py-8 relative">
@@ -291,9 +291,9 @@ export default function Home() {
                     <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                   </svg>
                 ),
-                stat: "#1", statLabel: "priority",
-                t: "Pre-order tonight. Eat first tomorrow.",
-                d: "Lock your meal the night before. While everyone scrambles at noon, your food is guaranteed and waiting.",
+                stat: "2", statLabel: "daily pools",
+                t: "Breakfast by 9AM. Lunch by noon.",
+                d: "Breakfast orders: 6–8AM, arrives before 9. Lunch orders: 9–10:30AM, arrives before 12. Order in the window, food shows up on time.",
               },
               {
                 color: "var(--gold)", icon: (
@@ -426,7 +426,7 @@ export default function Home() {
           {[
             { q: "Is it really free?", a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for guaranteed orders." },
             { q: "What if only 3 people order?", a: "You still get your food at the regular price. Discounts kick in at 5+. Most offices hit 10+ in the first week." },
-            { q: "Can I pre-order for tomorrow?", a: "Yes! Pools open the evening before. Lock your meal tonight and it's guaranteed tomorrow." },
+            { q: "When can I order?", a: "Two daily windows. Breakfast: 6–8AM (arrives before 9). Lunch: 9–10:30AM (arrives before 12). Order during the window and your food shows up on time." },
             { q: "What vendors are available?", a: "Vetted local vendors near your office — The Place, Kilimanjaro, Mama Tola's, and more. Have a favourite? We'll onboard them." },
             { q: "How does payment work?", a: "Everyone pays via card or bank transfer through Paystack. No collecting cash. No chasing Emeka." },
           ].map((item, i) => (
