@@ -136,8 +136,10 @@ export default function OpsPage() {
   const [editRestAddress, setEditRestAddress] = useState("");
   const [editRestPhone, setEditRestPhone] = useState("");
   const [editRestImage, setEditRestImage] = useState("");
+  const [editRestBanner, setEditRestBanner] = useState("");
   const [editRestActive, setEditRestActive] = useState(true);
   const [uploadingRestImage, setUploadingRestImage] = useState(false);
+  const [uploadingRestBanner, setUploadingRestBanner] = useState(false);
 
   // Office editing
   const [editingOfficeId, setEditingOfficeId] = useState<string | null>(null);
@@ -286,6 +288,7 @@ export default function OpsPage() {
     setEditRestAddress(r.address);
     setEditRestPhone(r.phone);
     setEditRestImage((r as { imageUrl?: string }).imageUrl || "");
+    setEditRestBanner((r as { bannerUrl?: string }).bannerUrl || "");
     setEditRestActive(r.isActive);
   }
 
@@ -299,6 +302,7 @@ export default function OpsPage() {
         address: editRestAddress.trim(),
         phone: editRestPhone.trim(),
         imageUrl: editRestImage.trim() || null,
+        bannerUrl: editRestBanner.trim() || null,
         isActive: editRestActive,
       }),
     });
@@ -320,6 +324,23 @@ export default function OpsPage() {
       else alert("Upload failed: " + (data.error || "Unknown error"));
     } finally {
       setUploadingRestImage(false);
+    }
+  }
+
+  async function handleRestBannerFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingRestBanner(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "chopdrop");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.success) setEditRestBanner(data.url);
+      else alert("Upload failed: " + (data.error || "Unknown error"));
+    } finally {
+      setUploadingRestBanner(false);
     }
   }
 
@@ -1155,6 +1176,22 @@ export default function OpsPage() {
                           {editRestImage && (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={editRestImage} alt="Preview" className="w-16 h-16 rounded-lg object-cover mt-2 border border-line" />
+                          )}
+                        </div>
+                        <div className="col-span-full">
+                          <label className="block text-[12px] font-bold mb-1.5">Banner <span className="font-normal text-ink-soft">(landscape hero for menu page)</span></label>
+                          <div className="flex items-center gap-3">
+                            <label className={`px-4 py-2.5 border border-line rounded-[10px] text-sm cursor-pointer transition-colors ${uploadingRestBanner ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
+                              {uploadingRestBanner ? "Uploading..." : editRestBanner ? "Change banner" : "Choose banner"}
+                              <input type="file" accept="image/*" onChange={handleRestBannerFile} disabled={uploadingRestBanner} className="hidden" />
+                            </label>
+                            {editRestBanner && (
+                              <button type="button" onClick={() => setEditRestBanner("")} className="text-ink-soft text-xs hover:text-coral">Remove</button>
+                            )}
+                          </div>
+                          {editRestBanner && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={editRestBanner} alt="Banner preview" className="w-full max-w-[280px] h-20 rounded-lg object-cover mt-2 border border-line" />
                           )}
                         </div>
                       </div>

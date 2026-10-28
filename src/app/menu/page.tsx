@@ -89,12 +89,12 @@ export default async function MenuPage() {
       const expired = isSlotExpired(slot.cutoffTime);
 
       // Only show restaurants that have a BUILD_YOUR_PLATE entry (full menu enabled)
-      const restaurantMap = new Map<string, { id: string; name: string; imageUrl: string | null; address: string; mealCount: number; previewImage: string | null }>();
+      const restaurantMap = new Map<string, { id: string; name: string; imageUrl: string | null; bannerUrl: string | null; address: string; mealCount: number; previewImage: string | null }>();
       for (const dm of slot.menus) {
         if (dm.meal.type !== "BUILD_YOUR_PLATE") continue; // skip deals/combos — they show in combo section
         const r = dm.meal.restaurant;
         const menuItemCount = r.menuCategories.reduce((sum, cat) => sum + cat.items.length, 0);
-        restaurantMap.set(r.id, { id: r.id, name: r.name, imageUrl: r.imageUrl, address: r.address, mealCount: menuItemCount, previewImage: dm.meal.imageUrl });
+        restaurantMap.set(r.id, { id: r.id, name: r.name, imageUrl: r.imageUrl, bannerUrl: r.bannerUrl, address: r.address, mealCount: menuItemCount, previewImage: dm.meal.imageUrl });
       }
 
       const items = slot.menus.map((dm) => {
@@ -113,7 +113,7 @@ export default async function MenuPage() {
           id: dm.id, name: dm.meal.name, description: dm.meal.description, imageUrl: dm.meal.imageUrl,
           price: minPrice, originalPrice: dm.meal.originalPrice, maxDeals: dm.meal.maxDeals, claimedPad: dm.meal.claimedPad,
           tag: dm.meal.tag, type: dm.meal.type,
-          restaurantId: dm.meal.restaurant.id, restaurantName: dm.meal.restaurant.name, restaurantAddress: dm.meal.restaurant.address, restaurantImageUrl: dm.meal.restaurant.imageUrl,
+          restaurantId: dm.meal.restaurant.id, restaurantName: dm.meal.restaurant.name, restaurantAddress: dm.meal.restaurant.address, restaurantImageUrl: dm.meal.restaurant.imageUrl, restaurantBannerUrl: dm.meal.restaurant.bannerUrl,
           startTime: dm.timeSlot.startTime, endTime: dm.timeSlot.endTime,
           remaining: dm.maxOrders - dm.currentOrders, expired,
           categories: dm.meal.type === "BUILD_YOUR_PLATE"

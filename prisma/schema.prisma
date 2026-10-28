@@ -48,6 +48,7 @@ model Restaurant {
   address   String
   phone     String
   imageUrl  String?
+  bannerUrl String?
   zoneId    String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())

@@ -13,6 +13,7 @@ export async function PATCH(
     address?: string;
     phone?: string;
     imageUrl?: string | null;
+    bannerUrl?: string | null;
     isActive?: boolean;
   } = {};
 
@@ -20,6 +21,7 @@ export async function PATCH(
   if (body.address !== undefined) data.address = body.address;
   if (body.phone !== undefined) data.phone = body.phone;
   if (body.imageUrl !== undefined) data.imageUrl = body.imageUrl;
+  if (body.bannerUrl !== undefined) data.bannerUrl = body.bannerUrl;
   if (body.isActive !== undefined) data.isActive = body.isActive;
 
   const restaurant = await prisma.restaurant.update({
