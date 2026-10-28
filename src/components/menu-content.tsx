@@ -59,7 +59,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [reminderSet, setReminderSet] = useState(false);
   const [preorderToast, setPreorderToast] = useState("");
   const [activePromo, setActivePromo] = useState<ActivePromo | null>(null);
-  const [poolData, setPoolData] = useState<{ officeOrderCount: number; meals: Record<string, { poolPrice: number; basePrice: number; savings: number; nextTier: { min: number; price: number } | null; tiers: { min: number; price: number }[] }> }>({ officeOrderCount: 0, meals: {} });
+  const [poolData, setPoolData] = useState<{ officeOrderCount: number; poolMembers: { initial: string; name: string }[]; meals: Record<string, { poolPrice: number; basePrice: number; savings: number; nextTier: { min: number; price: number } | null; tiers: { min: number; price: number }[] }> }>({ officeOrderCount: 0, poolMembers: [], meals: {} });
   const [poolCollapsed, setPoolCollapsed] = useState(() => {
     if (typeof window !== "undefined") return localStorage.getItem("chopdrop-pool-collapsed") === "1";
     return false;
@@ -251,18 +251,18 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               {/* Status: live count + current tier badge */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2.5">
-                  {orders > 0 && (
+                  {poolData.poolMembers.length > 0 && (
                     <div className="flex -space-x-1.5">
-                      {["T", "B", "A", "E"].slice(0, Math.min(orders, 4)).map((initial, i) => (
+                      {poolData.poolMembers.slice(0, 4).map((member, i) => (
                         <div key={i} className="rounded-full flex items-center justify-center text-[8px] font-bold"
-                          style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: ["#C4572A", "#D4A24E", "#1A7D4B", "#6B6560"][i], zIndex: 4 - i }}>
-                          {initial}
+                          style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: ["#C4572A", "#D4A24E", "#1A7D4B", "#6B6560"][i % 4], zIndex: 4 - i }}>
+                          {member.initial}
                         </div>
                       ))}
-                      {orders > 4 && (
+                      {orders > poolData.poolMembers.length && (
                         <div className="rounded-full flex items-center justify-center text-[8px] font-bold text-white/70"
                           style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: "rgba(255,255,255,0.15)", zIndex: 0 }}>
-                          +{orders - 4}
+                          +{orders - poolData.poolMembers.length}
                         </div>
                       )}
                     </div>

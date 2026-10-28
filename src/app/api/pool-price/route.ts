@@ -45,6 +45,24 @@ export async function GET(request: NextRequest) {
     // Use paid + pending for tier calculation (people have committed)
     const totalCommitted = officeOrderCount + pendingCount;
 
+    // Get real names of people in the pool (for avatar stack — trust, not decoration)
+    const recentOrderers = await prisma.order.findMany({
+      where: {
+        officeId,
+        paymentStatus: { in: ["SUCCESS", "PENDING"] },
+        createdAt: { gte: todayStart, lte: todayEnd },
+        dailyMenu: { timeSlotId },
+      },
+      select: { customerName: true },
+      distinct: ["customerName"],
+      take: 5,
+      orderBy: { createdAt: "desc" },
+    });
+    const poolMembers = recentOrderers.map(o => ({
+      initial: o.customerName.charAt(0).toUpperCase(),
+      name: o.customerName.split(" ")[0],
+    }));
+
     // Get all meals for today's time slot that have pool tiers
     const todayStr = new Date().toLocaleDateString("en-CA");
     const today = new Date(todayStr + "T00:00:00.000Z");
@@ -87,6 +105,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: {
         officeOrderCount: totalCommitted,
+        poolMembers,
         meals,
       },
     });
