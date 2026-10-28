@@ -224,33 +224,159 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       <div className="lg:flex lg:gap-8 lg:px-5 lg:pt-5">
       <div className="flex-1 min-w-0">
 
-      {/* ── SOCIAL PROOF: Live activity bar ── */}
-      {slot && !slot.expired && totalOrdered > 0 && (
-        <div className="mx-5 mt-4 flex items-center gap-3 p-3 rounded-[14px]" style={{ background: "var(--emerald)", color: "white" }}>
-          {/* Avatar stack */}
-          <div className="flex -space-x-2 shrink-0">
-            {["T", "B", "A", "E", "K"].slice(0, Math.min(totalOrdered, 5)).map((initial, i) => (
-              <div key={i} className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold" style={{ borderColor: "var(--emerald)", background: ["#E8604C", "#D4A24E", "#141413", "#0D9F5F", "#71706E"][i % 5], zIndex: 5 - i }}>
-                {initial}
+      {/* ── THE POOL — promise (always visible) + tier journey (collapsible) ── */}
+      {slot && !slot.expired && (() => {
+        const tiers = [
+          { min: 0, pct: 0 },
+          { min: 5, pct: 10 },
+          { min: 10, pct: 20 },
+          { min: 15, pct: 30 },
+        ];
+        const orders = poolData.officeOrderCount;
+        const currentTierIdx = orders >= 15 ? 3 : orders >= 10 ? 2 : orders >= 5 ? 1 : 0;
+        const mealPrices = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).map(i => i.price);
+        const rawAvg = mealPrices.length > 0 ? mealPrices.reduce((a, b) => a + b, 0) / mealPrices.length : 200000;
+        const examplePrice = Math.round(rawAvg / 5000) * 5000;
+        const currentPct = tiers[currentTierIdx].pct;
+        const nextTierData = currentTierIdx < 3 ? tiers[currentTierIdx + 1] : null;
+        const moreNeeded = nextTierData ? nextTierData.min - orders : 0;
+        const nextSavings = nextTierData ? Math.round(examplePrice * (nextTierData.pct - currentPct) / 100) : 0;
+        const barColors = ["var(--text-muted)", "var(--gold)", "var(--coral)", "var(--emerald)"];
+
+        return (
+          <div className="mx-5 mt-4 rounded-[20px] overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+
+            {/* ═══ THE PROMISE — dark, never collapses, the hero ═══ */}
+            <div className="px-4 pt-4 pb-3.5" style={{ background: "var(--dark)" }}>
+              {/* Status: live count + current tier badge */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  {orders > 0 && (
+                    <div className="flex -space-x-1.5">
+                      {["T", "B", "A", "E"].slice(0, Math.min(orders, 4)).map((initial, i) => (
+                        <div key={i} className="rounded-full flex items-center justify-center text-[8px] font-bold"
+                          style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: ["#C4572A", "#D4A24E", "#1A7D4B", "#6B6560"][i], zIndex: 4 - i }}>
+                          {initial}
+                        </div>
+                      ))}
+                      {orders > 4 && (
+                        <div className="rounded-full flex items-center justify-center text-[8px] font-bold text-white/70"
+                          style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: "rgba(255,255,255,0.15)", zIndex: 0 }}>
+                          +{orders - 4}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5">
+                    <div className="rounded-full animate-pulse" style={{ width: 5, height: 5, background: orders > 0 ? "var(--emerald)" : "var(--text-muted)" }} />
+                    <span className="text-[12px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
+                      {orders === 0 ? "Pool open — be first" : `${orders} from ${officeName || "your office"}`}
+                    </span>
+                  </div>
+                </div>
+                {currentPct > 0 && (
+                  <span className="text-[11px] font-extrabold tracking-wide px-2 rounded-full" style={{ background: "var(--emerald)", color: "white", paddingTop: 3, paddingBottom: 3 }}>
+                    &minus;{currentPct}%
+                  </span>
+                )}
               </div>
-            ))}
-            {totalOrdered > 5 && (
-              <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[9px] font-bold bg-white/20" style={{ borderColor: "var(--emerald)" }}>
-                +{totalOrdered - 5}
+
+              {/* The guarantee — the single most important line in the app */}
+              <p className="text-[14px] leading-[1.55]" style={{ color: "rgba(255,255,255,0.6)" }}>
+                {orders === 0 ? (
+                  <>Order at today&apos;s price. As colleagues join, it drops — <span className="font-bold text-white">you get the difference back</span> as credit.</>
+                ) : orders < 15 ? (
+                  <>Your price is locked. More people order, price drops — <span className="font-bold text-white">difference refunded to you</span> automatically.</>
+                ) : (
+                  <><span className="font-bold" style={{ color: "var(--emerald)" }}>Best tier unlocked.</span> Max savings for everyone in your pool.</>
+                )}
+              </p>
+
+              {/* Quick next-tier nudge — inline, tight, only when close */}
+              {nextTierData && moreNeeded > 0 && moreNeeded <= 8 && (
+                <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <span className="text-[22px] font-extrabold tabular-nums leading-none" style={{ color: "var(--gold)" }}>{moreNeeded}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[13px] font-bold text-white">
+                      more {moreNeeded === 1 ? "person" : "people"} to {nextTierData.pct}% off
+                    </span>
+                    <span className="text-[12px] ml-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                      ~{formatPrice(nextSavings)}/plate back
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ═══ TIER JOURNEY — light, collapsible detail ═══ */}
+            <div style={{ background: "var(--card)" }}>
+              <button
+                type="button"
+                className="w-full px-4 py-3 flex items-center justify-between cursor-pointer"
+                onClick={() => { const n = !poolCollapsed; setPoolCollapsed(n); localStorage.setItem("chopdrop-pool-collapsed", n ? "1" : "0"); }}
+              >
+                <span className="text-[13px] font-bold" style={{ color: "var(--text-secondary)" }}>How pool pricing works</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  className={`transition-transform ${poolCollapsed ? "" : "rotate-180"}`}>
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+
+              <div className={`transition-all overflow-hidden ${poolCollapsed ? "max-h-0" : "max-h-[400px]"}`} style={{ transitionDuration: "300ms" }}>
+                <div className="px-4 pb-4">
+                  {/* Segmented progress — 6px flat, crisp color transitions per design system */}
+                  <div className="flex gap-[3px]">
+                    {tiers.map((_, i) => (
+                      <div key={i} className="flex-1 rounded-full" style={{
+                        height: 6,
+                        background: i <= currentTierIdx ? barColors[i] : "var(--sand)",
+                      }} />
+                    ))}
+                  </div>
+
+                  {/* Tier milestones — dramatic type scale: 10px label vs 15px price */}
+                  <div className="flex gap-[3px] mt-3">
+                    {tiers.map((tier, i) => {
+                      const isActive = i === currentTierIdx;
+                      const isFuture = i > currentTierIdx;
+                      const tierPrice = Math.round(examplePrice * (1 - tier.pct / 100));
+                      return (
+                        <div key={i} className="flex-1 rounded-[10px] py-2.5 text-center" style={{
+                          background: isActive ? "var(--sand)" : "transparent",
+                          outline: isActive ? "1.5px solid var(--border)" : "none",
+                        }}>
+                          <div className="text-[10px] font-bold" style={{ color: isFuture ? "var(--text-muted)" : "var(--text-secondary)" }}>
+                            {tier.min === 0 ? "1–4" : `${tier.min}+`}
+                          </div>
+                          <div className="text-[15px] font-extrabold tabular-nums mt-0.5" style={{
+                            color: isActive && currentPct > 0 ? "var(--emerald)" : isActive ? "var(--text)" : isFuture ? "var(--text-muted)" : "var(--text-secondary)",
+                          }}>
+                            {formatPrice(tierPrice)}
+                          </div>
+                          <div className="text-[10px] font-bold mt-0.5" style={{
+                            color: isActive && currentPct > 0 ? "var(--emerald)" : isActive ? "var(--text-secondary)" : isFuture ? "var(--text-muted)" : "var(--text-secondary)",
+                          }}>
+                            {tier.pct === 0 ? "Full" : `${tier.pct}% off`}
+                          </div>
+                          {isActive && <div className="text-[9px] font-bold mt-1" style={{ color: "var(--coral)" }}>Now</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Max tier celebration */}
+                  {currentTierIdx >= 3 && (
+                    <div className="mt-3 p-3 rounded-[14px] flex items-center gap-2" style={{ background: "rgba(13,159,95,0.08)" }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                      <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>Best price — max credit for everyone</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold leading-tight">
-              {totalOrdered} colleague{totalOrdered !== 1 ? "s" : ""} ordering right now
-            </p>
-            <p className="text-[11px] text-white/60">
-              {officeName ? `from ${officeName}` : "Join the pool to save together"}
-            </p>
-          </div>
-          <div className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0" />
-        </div>
-      )}
+        );
+      })()}
 
       {/* ── Credit balance banner — show when user has credits ── */}
       {creditBalance > 0 && (
@@ -265,150 +391,6 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </div>
       )}
 
-      {/* ── PRICE TIER LADDER — makes pool pricing crystal clear ── */}
-      {slot && !slot.expired && (() => {
-        const tiers = [
-          { min: 0, pct: 0, label: "Full price" },
-          { min: 5, pct: 10, label: "10% off" },
-          { min: 10, pct: 20, label: "20% off" },
-          { min: 15, pct: 30, label: "30% off" },
-        ];
-        const orders = poolData.officeOrderCount;
-        const currentTierIdx = orders >= 15 ? 3 : orders >= 10 ? 2 : orders >= 5 ? 1 : 0;
-        // Average meal price — rounded to nearest ₦50 for clean display
-        const mealPrices = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).map(i => i.price);
-        const rawAvg = mealPrices.length > 0 ? mealPrices.reduce((a, b) => a + b, 0) / mealPrices.length : 200000;
-        const examplePrice = Math.round(rawAvg / 5000) * 5000; // round to nearest ₦50
-
-        return (
-          <div className="mx-5 mt-3 rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            {/* Header — tap to collapse/expand */}
-            <button
-              type="button"
-              className="w-full px-4 pt-4 pb-3 flex items-center justify-between cursor-pointer"
-              onClick={() => {
-                const next = !poolCollapsed;
-                setPoolCollapsed(next);
-                localStorage.setItem("chopdrop-pool-collapsed", next ? "1" : "0");
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span className="text-[15px] font-extrabold" style={{ color: "var(--text)" }}>Pool pricing</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--emerald)" }} />
-                  <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--emerald)" }}>{orders} orders now</span>
-                </div>
-                <svg
-                  width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                  className={`transition-transform ${poolCollapsed ? "" : "rotate-180"}`}
-                >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </div>
-            </button>
-
-            {/* Collapsible body */}
-            <div className={`transition-all overflow-hidden ${poolCollapsed ? "max-h-0" : "max-h-[600px]"}`} style={{ transitionDuration: "300ms" }}>
-            {/* Tier steps */}
-            <div className="px-4 pb-4">
-              <div className="flex gap-1.5">
-                {tiers.map((tier, i) => {
-                  const isActive = i === currentTierIdx;
-                  const isUnlocked = i <= currentTierIdx;
-                  const isNext = i === currentTierIdx + 1;
-                  const moreNeeded = isNext ? tier.min - orders : 0;
-                  const tierPrice = Math.round(examplePrice * (1 - tier.pct / 100));
-
-                  return (
-                    <div key={i} className="flex-1">
-                      {/* Bar segment */}
-                      <div className="h-2 rounded-full mb-2" style={{
-                        background: isUnlocked
-                          ? (i === 3 ? "var(--emerald)" : i === 2 ? "var(--emerald)" : i === 1 ? "var(--gold)" : "var(--coral)")
-                          : "var(--sand)",
-                        opacity: isUnlocked ? 1 : 0.5,
-                      }} />
-                      {/* Label */}
-                      <div className={`rounded-[10px] p-2 text-center transition-all ${isActive ? "ring-2 ring-[var(--coral)]" : ""}`} style={{
-                        background: isActive ? (i >= 2 ? "var(--emerald)" : i === 1 ? "var(--gold)" : "var(--sand)") : "var(--sand)",
-                        opacity: isUnlocked || isNext ? 1 : 0.5,
-                      }}>
-                        <div className="text-[11px] font-extrabold" style={{ color: isActive && i >= 1 ? "white" : "var(--text)" }}>
-                          {tier.pct === 0 ? "0%" : `${tier.pct}%`}
-                        </div>
-                        <div className="text-[10px] font-bold tabular-nums mt-0.5" style={{ color: isActive && i >= 1 ? "white/80" : "var(--text-secondary)" }}>
-                          {formatPrice(tierPrice)}
-                        </div>
-                        <div className="text-[9px] mt-0.5" style={{ color: isActive && i >= 1 ? "white/60" : "var(--text-muted)" }}>
-                          {tier.min === 0 ? "1-4" : `${tier.min}+`}
-                        </div>
-                      </div>
-                      {/* "Next" indicator */}
-                      {isNext && moreNeeded > 0 && (
-                        <div className="text-center mt-1.5">
-                          <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>{moreNeeded} more</span>
-                        </div>
-                      )}
-                      {isActive && (
-                        <div className="text-center mt-1.5">
-                          <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>You&apos;re here</span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Credit explanation — LOUD, specific, not passive */}
-            <div className="px-4 pb-4 -mt-1">
-              {orders > 0 && orders < 15 && (() => {
-                const nextTierIdx = currentTierIdx + 1;
-                const nextTier = nextTierIdx < tiers.length ? tiers[nextTierIdx] : null;
-                const nextPct = nextTier ? nextTier.pct : 0;
-                const currentPct = tiers[currentTierIdx].pct;
-                const moreNeeded = nextTier ? nextTier.min - orders : 0;
-                const potentialSavings = Math.round(examplePrice * (nextPct - currentPct) / 100 / 5000) * 5000; // round to nearest ₦50
-                return (
-                  <div className="p-3.5 rounded-[14px]" style={{ background: "var(--dark)" }}>
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                      <span className="text-[14px] font-bold text-white">Pool refund guarantee</span>
-                    </div>
-                    <p className="text-[13px] text-white/70 leading-relaxed">
-                      {moreNeeded > 0
-                        ? <>If <span className="font-bold text-white">{moreNeeded} more</span> colleague{moreNeeded !== 1 ? "s" : ""} order{moreNeeded === 1 ? "s" : ""}, you save <span className="font-bold" style={{ color: "var(--emerald)" }}>~₦{(potentialSavings / 100).toLocaleString()} per plate</span> as credit.</>
-                        : <>You&apos;re at the best tier! Credits will be calculated when the pool closes.</>
-                      }
-                    </p>
-                  </div>
-                );
-              })()}
-              {orders === 0 && (
-                <div className="p-3.5 rounded-[14px]" style={{ background: "var(--dark)" }}>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <span className="text-[14px] font-bold text-white">Pool refund guarantee</span>
-                  </div>
-                  <p className="text-[13px] text-white/70 leading-relaxed">
-                    Order at full price now. As colleagues join, the price drops — you get the <span className="font-bold" style={{ color: "var(--emerald)" }}>difference as credit</span> for your next meal.
-                  </p>
-                </div>
-              )}
-              {orders >= 15 && (
-                <div className="p-3 rounded-[14px] flex items-center gap-2" style={{ background: "rgba(13,159,95,0.1)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-                  <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>Best tier reached! Everyone gets max credit when pool closes.</span>
-                </div>
-              )}
-            </div>
-            </div>{/* end collapsible body */}
-          </div>
-        );
-      })()}
 
       {/* ── How it works — first-time ONLY, compact ── */}
       {!bannerDismissed && (
