@@ -835,8 +835,8 @@ export default function OpsPage() {
         <nav className="space-y-1">
           {([
             ["overview", "Overview", "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"],
-            ["meals", "Meals", "M6 7h12l1 14H5L6 7ZM9 9V6a3 3 0 0 1 6 0v3"],
-            ["menu", "Daily Menu", "M6 3h12v18l-3-2-3 2-3-2-3 2V3ZM9 8h6M9 12h6"],
+            ["meals", "Meals & Publish", "M6 7h12l1 14H5L6 7ZM9 9V6a3 3 0 0 1 6 0v3"],
+            ["menu", "Today's Menu", "M6 3h12v18l-3-2-3 2-3-2-3 2V3ZM9 8h6M9 12h6"],
             ["restaurants", "Restaurants", "M4 3v7a3 3 0 0 0 6 0V3M7 3v18M16 3v18M16 3c4 2 4 8 0 10"],
             ["offices", "Offices", "M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3"],
             ["items", "Menu Items", "M4 6h16M4 10h16M4 14h8M4 18h8"],
@@ -1374,6 +1374,7 @@ export default function OpsPage() {
               <div>
                 <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.13em]">Meal management</div>
                 <h2 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-1">Meals</h2>
+                <p className="text-ink-soft text-[12px] mt-1">Add meals here, then tap <strong className="text-coral">+ Breakfast</strong> or <strong className="text-coral">+ Lunch</strong> to publish to today&apos;s menu</p>
               </div>
               <button type="button" onClick={() => setShowMealForm(!showMealForm)} className="bg-coral text-white font-bold px-4 py-2.5 rounded-[10px] text-sm inline-flex items-center gap-2 shadow-[0_5px_14px_rgba(240,100,73,0.22)] hover:bg-[#d95038] transition-all">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
@@ -1488,6 +1489,22 @@ export default function OpsPage() {
                     >
                       {editingMealId === m.id ? "Close" : "Edit"}
                     </button>
+                    {/* Quick publish to today's menu */}
+                    {m.isAvailable && timeSlots.length > 0 && (
+                      <div className="flex gap-1 ml-1">
+                        {timeSlots.map((s) => (
+                          <button key={s.id} type="button" onClick={async () => {
+                            const today = new Date().toISOString().split("T")[0];
+                            const res = await fetch("/api/admin/daily-menu", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mealId: m.id, timeSlotId: s.id, date: today, maxOrders: 30 }) });
+                            const data = await res.json();
+                            if (data.success) { alert(`Added to ${s.label}!`); loadAll(); }
+                            else alert(data.error || "Already on today's menu");
+                          }} className="text-[9px] font-bold px-2 py-1 rounded-full bg-coral/10 text-coral hover:bg-coral hover:text-white transition-colors cursor-pointer">
+                            + {s.label.split("(")[0].trim()}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   {editingMealId === m.id && (
                     <div className="border-t border-line p-4 bg-cream/40">
