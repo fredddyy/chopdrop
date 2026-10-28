@@ -1346,6 +1346,13 @@ export default function OpsPage() {
                       <div className="flex gap-2 mt-4">
                         <button type="button" onClick={saveRestaurant} className="bg-coral text-white font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors">Save</button>
                         <button type="button" onClick={() => setEditingRestaurantId(null)} className="bg-cream text-ink-soft font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-line transition-colors">Cancel</button>
+                        <button type="button" onClick={async () => {
+                          if (!editingRestaurantId) return;
+                          if (!confirm("Delete this restaurant? This cannot be undone.")) return;
+                          await fetch(`/api/admin/restaurants/${editingRestaurantId}`, { method: "DELETE" });
+                          setEditingRestaurantId(null);
+                          loadAll();
+                        }} className="ml-auto text-coral text-sm font-bold hover:underline cursor-pointer">Delete</button>
                       </div>
                     </div>
                   )}
