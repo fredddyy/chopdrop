@@ -1993,11 +1993,34 @@ export default function OpsPage() {
                 <div key={cat.id} className="bg-paper border border-line rounded-[16px] overflow-hidden">
                   {/* Category header */}
                   <div className="flex items-center justify-between px-4 py-3 bg-cream/50 border-b border-line">
-                    <div>
-                      <strong className="text-[13px]">{cat.name}</strong>
-                      <span className="text-ink-soft text-[10px] ml-2">
-                        {cat.selectionRule === "PICK_ONE" ? "Pick one" : cat.selectionRule === "PICK_ONE_OR_MORE" ? "Pick one or more" : "Pick any"} &middot; {cat.items.length} items
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        defaultValue={cat.name}
+                        className="text-[13px] font-bold bg-transparent border-b border-transparent hover:border-line focus:border-coral focus:outline-none px-0 py-0.5 w-auto min-w-[60px]"
+                        style={{ maxWidth: 200 }}
+                        onBlur={async (e) => {
+                          const newName = e.target.value.trim();
+                          if (newName && newName !== cat.name) {
+                            await fetch(`/api/admin/categories/${cat.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newName }) });
+                            loadAll();
+                          }
+                        }}
+                        onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+                      />
+                      <select
+                        defaultValue={cat.selectionRule}
+                        className="text-ink-soft text-[10px] bg-transparent border-none focus:outline-none cursor-pointer"
+                        onChange={async (e) => {
+                          await fetch(`/api/admin/categories/${cat.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ selectionRule: e.target.value }) });
+                          loadAll();
+                        }}
+                      >
+                        <option value="PICK_ONE">Pick one</option>
+                        <option value="PICK_ONE_OR_MORE">Pick one+</option>
+                        <option value="PICK_ANY">Pick any</option>
+                      </select>
+                      <span className="text-ink-soft text-[10px]">&middot; {cat.items.length} items</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
