@@ -1095,6 +1095,31 @@ export default function OpsPage() {
           </div>
         )}
 
+        {/* Push notification sender — always visible */}
+        <div className="bg-paper border border-line rounded-[13px] p-4 mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+            <span className="text-[13px] font-bold">Send Push Notification</span>
+          </div>
+          <div className="space-y-2">
+            <input type="text" id="push-title-top" placeholder="Title (e.g. Menu is live!)" className="w-full px-3 py-2 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-coral/30" />
+            <input type="text" id="push-body-top" placeholder="Body (e.g. Today's jollof is from The Place)" className="w-full px-3 py-2 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-coral/30" />
+            <div className="flex gap-2">
+              <button type="button" onClick={async () => {
+                const title = (document.getElementById("push-title-top") as HTMLInputElement).value;
+                const body = (document.getElementById("push-body-top") as HTMLInputElement).value;
+                if (!title || !body) { alert("Enter title and body"); return; }
+                const res = await fetch("/api/push/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body, url: "/menu" }) });
+                const data = await res.json();
+                if (data.success) alert(`Sent to ${data.data.sent} users (${data.data.failed} failed, ${data.data.cleaned} expired)`);
+                else alert("Failed: " + (data.error || "Unknown error"));
+              }} className="bg-coral text-white font-bold px-4 py-2 rounded-[8px] text-sm hover:bg-[#d95038] transition-colors cursor-pointer">
+                Send to all users
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Operational Stats — only when there are orders */}
         {orders.length > 0 && <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
           <div className="bg-paper border border-line rounded-[13px] p-4 border-t-[3px] border-t-green">
@@ -1184,41 +1209,6 @@ export default function OpsPage() {
             ))}
           </div>
         </div>}
-
-        {/* Push notification sender */}
-        <div className="bg-paper border border-line rounded-[13px] p-4 mb-4">
-          <div className="flex items-center gap-2 mb-3">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
-            <span className="text-[13px] font-bold">Send Push Notification</span>
-          </div>
-          <div className="space-y-2">
-            <input type="text" id="push-title" placeholder="Title (e.g. Menu is live!)" className="w-full px-3 py-2 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-coral/30" />
-            <input type="text" id="push-body" placeholder="Body (e.g. Today's jollof is from The Place)" className="w-full px-3 py-2 border border-line rounded-[8px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-coral/30" />
-            <div className="flex gap-2">
-              <button type="button" onClick={async () => {
-                const title = (document.getElementById("push-title") as HTMLInputElement).value;
-                const body = (document.getElementById("push-body") as HTMLInputElement).value;
-                if (!title || !body) { alert("Enter title and body"); return; }
-                const res = await fetch("/api/push/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body, url: "/menu" }) });
-                const data = await res.json();
-                if (data.success) alert(`Sent to ${data.data.sent} users (${data.data.failed} failed, ${data.data.cleaned} expired)`);
-                else alert("Failed: " + (data.error || "Unknown error"));
-              }} className="bg-coral text-white font-bold px-4 py-2 rounded-[8px] text-sm hover:bg-[#d95038] transition-colors cursor-pointer">
-                Send to all users
-              </button>
-              <button type="button" onClick={async () => {
-                const title = (document.getElementById("push-title") as HTMLInputElement).value;
-                const body = (document.getElementById("push-body") as HTMLInputElement).value;
-                if (!title || !body) { alert("Enter title and body"); return; }
-                const res = await fetch("/api/push/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body, url: "/menu", tag: "menu-reminder" }) });
-                const data = await res.json();
-                if (data.success) alert(`Sent: ${data.data.sent}, Failed: ${data.data.failed}`);
-              }} className="bg-ink text-white font-bold px-4 py-2 rounded-[8px] text-sm hover:bg-ink/80 transition-colors cursor-pointer">
-                Menu reminder
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Activity strip */}
         <div className="bg-ink text-[#b8c6c1] rounded-xl px-5 py-3.5 flex items-center gap-5 overflow-x-auto hide-scrollbar text-[9px]">
