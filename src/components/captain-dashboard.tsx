@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatNaira } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 
@@ -64,7 +64,8 @@ export function CaptainDashboard({
   const distributionFee = totalBoxes * 15000;
   const freeLunchProgress = Math.min(100, (totalBoxes / 15) * 100);
   const bonusProgress = Math.min(100, (totalBoxes / 20) * 100);
-  const appUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const [appUrl, setAppUrl] = useState("");
+  useEffect(() => { setAppUrl(window.location.origin); }, []);
 
   const handoffSteps = [
     { label: "Orders closed", done: true },
