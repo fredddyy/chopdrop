@@ -44,10 +44,10 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // Connect the captain to this office
+  // Connect the captain to this office and set role
   await prisma.user.update({
     where: { id: user.id },
-    data: { officeId: office.id },
+    data: { officeId: office.id, role: "CAPTAIN" },
   });
 
   return NextResponse.json({

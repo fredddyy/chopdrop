@@ -13,6 +13,7 @@ model User {
   phone        String   @unique
   passwordHash String
   pinHash      String?
+  role         UserRole @default(USER)
   firstName    String
   lastName     String
   officeId     String?
@@ -162,6 +163,11 @@ model DropPoint {
   createdAt DateTime      @default(now())
 
   orders Order[]
+}
+
+enum UserRole {
+  USER
+  CAPTAIN
 }
 
 enum DropPointTier {
