@@ -68,6 +68,12 @@ export default function OpsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [metrics, setMetrics] = useState<{
+    today: { orders: number; ordersYesterday: number; ordersDelta: number; grossRevenue: number; serviceChargeRevenue: number; discountCost: number; netMargin: number; activeOffices: number; totalOffices: number; activeOfficesYesterday: number; avgPoolSize: number; repeatRate: number; repeatUsers: number; totalUsersYesterday: number; failedPayments: number; pendingPayments: number };
+    week: { orders: number; prevWeekOrders: number; ordersDelta: number; newUsers: number; newOffices: number };
+    creditLiability: number;
+    officeBreakdown: { name: string; orders: number }[];
+  } | null>(null);
 
   // Restaurant form
   const [showRestForm, setShowRestForm] = useState(false);
@@ -251,7 +257,9 @@ export default function OpsPage() {
         fetch("/api/admin/time-slots").then((r) => r.json()),
         fetch("/api/admin/zones").then((r) => r.json()),
         fetch("/api/admin/promos").then((r) => r.json()).catch(() => ({ success: true, data: [] })),
-      ]).then(([ordersData, restD, offData, mealsData, dmData, slotsData, zoneData, promoData]) => {
+        fetch("/api/admin/dashboard/metrics").then((r) => r.json()).catch(() => ({ success: true, data: null })),
+      ]).then(([ordersData, restD, offData, mealsData, dmData, slotsData, zoneData, promoData, metricsData]) => {
+        if (metricsData.success && metricsData.data) setMetrics(metricsData.data);
         if (ordersData.success) setOrders(ordersData.data.filter((o: OrderData) => o.paymentStatus === "SUCCESS"));
         if (restD.success) setRestaurants(restD.data);
         if (offData.success) setOffices(offData.data);
@@ -972,7 +980,110 @@ export default function OpsPage() {
           </div>
         )}
 
-        {/* Stats */}
+        {/* ── GROWTH METRICS DASHBOARD ── */}
+        {metrics && (
+          <div className="mb-6">
+            {/* Row 1: Key health metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-3">
+              <div className="bg-paper border border-line rounded-[13px] p-3.5">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Orders today</span>
+                <div className="flex items-baseline gap-1.5 mt-1">
+                  <strong className="font-display font-[750] text-[24px] tracking-[-0.04em]">{metrics.today.orders}</strong>
+                  <span className={`text-[11px] font-bold ${metrics.today.ordersDelta >= 0 ? "text-green" : "text-coral"}`}>
+                    {metrics.today.ordersDelta >= 0 ? "+" : ""}{metrics.today.ordersDelta}
+                  </span>
+                </div>
+                <small className="text-ink-soft text-[9px]">vs {metrics.today.ordersYesterday} yesterday</small>
+              </div>
+              <div className="bg-paper border border-line rounded-[13px] p-3.5">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Active offices</span>
+                <div className="flex items-baseline gap-1.5 mt-1">
+                  <strong className="font-display font-[750] text-[24px] tracking-[-0.04em]">{metrics.today.activeOffices}</strong>
+                  <span className="text-ink-soft text-[11px] font-bold">/ {metrics.today.totalOffices}</span>
+                </div>
+                <small className="text-ink-soft text-[9px]">{metrics.today.activeOfficesYesterday} yesterday</small>
+              </div>
+              <div className="bg-paper border border-line rounded-[13px] p-3.5 border-t-[3px] border-t-green">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Avg pool size</span>
+                <strong className="font-display font-[750] text-[24px] tracking-[-0.04em] block mt-1">{metrics.today.avgPoolSize}</strong>
+                <small className="text-ink-soft text-[9px]">orders per office</small>
+              </div>
+              <div className="bg-paper border border-line rounded-[13px] p-3.5">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Repeat rate</span>
+                <strong className="font-display font-[750] text-[24px] tracking-[-0.04em] block mt-1">{metrics.today.repeatRate}%</strong>
+                <small className="text-ink-soft text-[9px]">{metrics.today.repeatUsers} of {metrics.today.totalUsersYesterday} returned</small>
+              </div>
+              <div className="bg-paper border border-line rounded-[13px] p-3.5">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Failed payments</span>
+                <strong className={`font-display font-[750] text-[24px] tracking-[-0.04em] block mt-1 ${metrics.today.failedPayments > 0 ? "text-coral" : ""}`}>{metrics.today.failedPayments}</strong>
+                <small className="text-ink-soft text-[9px]">{metrics.today.pendingPayments} pending</small>
+              </div>
+            </div>
+
+            {/* Row 2: Revenue + Growth */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-3">
+              <div className="bg-paper border border-line rounded-[13px] p-3.5">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Service charge</span>
+                <strong className="font-display font-[750] text-[20px] tracking-[-0.04em] block mt-1 text-green">{formatNaira(metrics.today.serviceChargeRevenue)}</strong>
+                <small className="text-ink-soft text-[9px]">₦100 × {metrics.today.orders} orders</small>
+              </div>
+              <div className="bg-paper border border-line rounded-[13px] p-3.5">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Pool discount cost</span>
+                <strong className="font-display font-[750] text-[20px] tracking-[-0.04em] block mt-1">{formatNaira(metrics.today.discountCost)}</strong>
+                <small className="text-ink-soft text-[9px]">given away today</small>
+              </div>
+              <div className="bg-paper border border-line rounded-[13px] p-3.5 border-t-[3px] border-t-green">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Net margin</span>
+                <strong className={`font-display font-[750] text-[20px] tracking-[-0.04em] block mt-1 ${metrics.today.netMargin >= 0 ? "text-green" : "text-coral"}`}>{formatNaira(metrics.today.netMargin)}</strong>
+                <small className="text-ink-soft text-[9px]">revenue - discount</small>
+              </div>
+              <div className="bg-paper border border-line rounded-[13px] p-3.5">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block">Credit liability</span>
+                <strong className="font-display font-[750] text-[20px] tracking-[-0.04em] block mt-1">{formatNaira(metrics.creditLiability)}</strong>
+                <small className="text-ink-soft text-[9px]">outstanding wallet credits</small>
+              </div>
+            </div>
+
+            {/* Row 3: Weekly growth + Office breakdown */}
+            <div className="grid md:grid-cols-2 gap-2.5">
+              <div className="bg-paper border border-line rounded-[13px] p-4">
+                <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block mb-3">This week</span>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <strong className="font-display font-[750] text-[20px] tracking-[-0.04em] block">{metrics.week.orders}</strong>
+                    <span className="text-ink-soft text-[10px]">orders {metrics.week.ordersDelta >= 0 ? <span className="text-green">+{metrics.week.ordersDelta}</span> : <span className="text-coral">{metrics.week.ordersDelta}</span>}</span>
+                  </div>
+                  <div>
+                    <strong className="font-display font-[750] text-[20px] tracking-[-0.04em] block">{metrics.week.newUsers}</strong>
+                    <span className="text-ink-soft text-[10px]">new users</span>
+                  </div>
+                  <div>
+                    <strong className="font-display font-[750] text-[20px] tracking-[-0.04em] block">{metrics.week.newOffices}</strong>
+                    <span className="text-ink-soft text-[10px]">new offices</span>
+                  </div>
+                </div>
+              </div>
+              {metrics.officeBreakdown.length > 0 && (
+                <div className="bg-paper border border-line rounded-[13px] p-4">
+                  <span className="text-ink-soft text-[9px] font-bold uppercase tracking-wider block mb-3">Pool size by office</span>
+                  <div className="space-y-2">
+                    {metrics.officeBreakdown.map((o, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <span className="text-[12px] font-semibold flex-1 truncate">{o.name}</span>
+                        <div className="flex-1 h-[6px] rounded-full bg-cream overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${Math.min(100, (o.orders / 30) * 100)}%`, background: o.orders >= 30 ? "var(--emerald)" : o.orders >= 20 ? "var(--gold)" : o.orders >= 10 ? "var(--coral)" : "#d1d5db" }} />
+                        </div>
+                        <span className="text-[12px] font-bold tabular-nums w-6 text-right">{o.orders}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Operational Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
           <div className="bg-paper border border-line rounded-[13px] p-4 border-t-[3px] border-t-green">
             <span className="text-ink-soft text-[10px] font-bold block">Gross order value</span>
