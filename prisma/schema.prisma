@@ -63,6 +63,7 @@ model Restaurant {
   phone     String
   imageUrl  String?
   bannerUrl String?
+  sortOrder Int      @default(0)
   zoneId    String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())

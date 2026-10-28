@@ -17,7 +17,7 @@ interface MenuItem {
   id: string; name: string; description: string | null; imageUrl: string | null;
   price: number; originalPrice: number | null; maxDeals: number; claimedPad: number;
   tag: string; type: string; restaurantId: string; restaurantName: string;
-  restaurantAddress: string; restaurantImageUrl: string | null; restaurantBannerUrl: string | null; startTime: string; endTime: string; remaining: number;
+  restaurantAddress: string; restaurantImageUrl: string | null; restaurantBannerUrl: string | null; restaurantSortOrder: number; startTime: string; endTime: string; remaining: number;
   expired: boolean; categories?: Category[];
 }
 interface RestaurantInfo { id: string; name: string; imageUrl: string | null; bannerUrl: string | null; address: string; mealCount: number; previewImage: string | null; }
@@ -509,17 +509,17 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       {slot && !slot.expired && !allExpired && (
         <>
           {(() => {
-            const byRestaurant = new Map<string, { name: string; imageUrl: string | null; bannerUrl: string | null; items: MenuItem[]; hasBuild: boolean; }>();
+            const byRestaurant = new Map<string, { name: string; imageUrl: string | null; bannerUrl: string | null; sortOrder: number; items: MenuItem[]; hasBuild: boolean; }>();
             for (const item of slot.items) {
-              if (!byRestaurant.has(item.restaurantId)) byRestaurant.set(item.restaurantId, { name: item.restaurantName, imageUrl: item.restaurantImageUrl, bannerUrl: item.restaurantBannerUrl, items: [], hasBuild: false });
+              if (!byRestaurant.has(item.restaurantId)) byRestaurant.set(item.restaurantId, { name: item.restaurantName, imageUrl: item.restaurantImageUrl, bannerUrl: item.restaurantBannerUrl, sortOrder: item.restaurantSortOrder, items: [], hasBuild: false });
               const r = byRestaurant.get(item.restaurantId)!;
               if (item.type === "BUILD_YOUR_PLATE" || item.name.toLowerCase().includes("build")) { r.hasBuild = true; continue; }
               r.items.push(item);
             }
 
             // Split: single-meal vendors go into "Quick picks", rest get full sections
-            const quickPicks: { rId: string; rData: { name: string; imageUrl: string | null; bannerUrl: string | null; items: MenuItem[]; hasBuild: boolean } }[] = [];
-            const fullVendors: [string, { name: string; imageUrl: string | null; bannerUrl: string | null; items: MenuItem[]; hasBuild: boolean }][] = [];
+            const quickPicks: { rId: string; rData: { name: string; imageUrl: string | null; bannerUrl: string | null; sortOrder: number; items: MenuItem[]; hasBuild: boolean } }[] = [];
+            const fullVendors: [string, { name: string; imageUrl: string | null; bannerUrl: string | null; sortOrder: number; items: MenuItem[]; hasBuild: boolean }][] = [];
 
             for (const [rId, rData] of byRestaurant) {
               if (rData.items.length === 1 && !rData.hasBuild) {
@@ -528,6 +528,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 fullVendors.push([rId, rData]);
               }
             }
+
+            // Sort by admin-defined sortOrder
+            fullVendors.sort((a, b) => a[1].sortOrder - b[1].sortOrder);
+            quickPicks.sort((a, b) => a.rData.sortOrder - b.rData.sortOrder);
 
             return (
               <>

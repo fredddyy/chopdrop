@@ -113,7 +113,7 @@ export default async function MenuPage() {
           id: dm.id, name: dm.meal.name, description: dm.meal.description, imageUrl: dm.meal.imageUrl,
           price: minPrice, originalPrice: dm.meal.originalPrice, maxDeals: dm.meal.maxDeals, claimedPad: dm.meal.claimedPad,
           tag: dm.meal.tag, type: dm.meal.type,
-          restaurantId: dm.meal.restaurant.id, restaurantName: dm.meal.restaurant.name, restaurantAddress: dm.meal.restaurant.address, restaurantImageUrl: dm.meal.restaurant.imageUrl, restaurantBannerUrl: dm.meal.restaurant.bannerUrl,
+          restaurantId: dm.meal.restaurant.id, restaurantName: dm.meal.restaurant.name, restaurantAddress: dm.meal.restaurant.address, restaurantImageUrl: dm.meal.restaurant.imageUrl, restaurantBannerUrl: dm.meal.restaurant.bannerUrl, restaurantSortOrder: dm.meal.restaurant.sortOrder,
           startTime: dm.timeSlot.startTime, endTime: dm.timeSlot.endTime,
           remaining: dm.maxOrders - dm.currentOrders, expired,
           categories: dm.meal.type === "BUILD_YOUR_PLATE"

@@ -144,6 +144,7 @@ export default function OpsPage() {
   const [editRestImage, setEditRestImage] = useState("");
   const [editRestBanner, setEditRestBanner] = useState("");
   const [editRestActive, setEditRestActive] = useState(true);
+  const [editRestSortOrder, setEditRestSortOrder] = useState(0);
   const [uploadingRestImage, setUploadingRestImage] = useState(false);
   const [uploadingRestBanner, setUploadingRestBanner] = useState(false);
 
@@ -297,6 +298,7 @@ export default function OpsPage() {
     setEditRestPhone(r.phone);
     setEditRestImage((r as { imageUrl?: string }).imageUrl || "");
     setEditRestBanner((r as { bannerUrl?: string }).bannerUrl || "");
+    setEditRestSortOrder((r as { sortOrder?: number }).sortOrder || 0);
     setEditRestActive(r.isActive);
   }
 
@@ -311,6 +313,7 @@ export default function OpsPage() {
         phone: editRestPhone.trim(),
         imageUrl: editRestImage.trim() || null,
         bannerUrl: editRestBanner.trim() || null,
+        sortOrder: editRestSortOrder,
         isActive: editRestActive,
       }),
     });
@@ -1309,6 +1312,10 @@ export default function OpsPage() {
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                           </select>
+                        </div>
+                        <div>
+                          <label className="block text-[12px] font-bold mb-1.5">Sort order <span className="font-normal text-ink-soft">(lower = first)</span></label>
+                          <input type="number" value={editRestSortOrder} onChange={(e) => setEditRestSortOrder(parseInt(e.target.value) || 0)} className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
                         </div>
                         <div className="col-span-full">
                           <label className="block text-[12px] font-bold mb-1.5">Image <span className="font-normal text-ink-soft">(optional)</span></label>
