@@ -88,12 +88,20 @@ export async function POST(request: NextRequest) {
     path: "/",
   });
 
+  // Check if this user is the captain (their phone matches office assistantPhone)
+  const isCaptain = user.office?.assistantPhone === phone;
+  const captainUrl = isCaptain && user.office
+    ? `/captain/${user.office.slug}${user.office.secretToken ? `?token=${user.office.secretToken}` : ""}`
+    : null;
+
   return NextResponse.json({
     success: true,
     data: {
       id: user.id,
       firstName: user.firstName,
       phone: user.phone,
+      isCaptain,
+      captainUrl,
       office: user.office
         ? { id: user.office.id, name: user.office.name, code: user.office.code, collectionPoint: user.office.collectionPoint }
         : null,

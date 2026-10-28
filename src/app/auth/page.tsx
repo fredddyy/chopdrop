@@ -47,7 +47,9 @@ export default function AuthPage() {
       setFirstName(data.data.firstName);
       setOfficeName(data.data.office?.name || "");
       setStep("welcome");
-      setTimeout(() => { window.location.href = getReturnUrl(); }, 2000);
+      // Captains go to their dashboard, everyone else to menu
+      const dest = data.data.captainUrl || getReturnUrl();
+      setTimeout(() => { window.location.href = dest; }, 2000);
     } catch { setError("Network error."); }
     setLoading(false);
   }
