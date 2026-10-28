@@ -23,8 +23,8 @@ self.addEventListener("push", (event) => {
   const title = data.title || "ChopDrop";
   const options = {
     body: data.body || "You have a new update",
-    icon: "/icons/icon-192.png",
-    badge: "/icons/icon-192.png",
+    icon: "/icons/icon-maskable-192.png",
+    badge: "/icons/icon-maskable-192.png",
     tag: data.tag || "chopdrop-notification",
     data: { url: data.url || "/menu" },
   };
