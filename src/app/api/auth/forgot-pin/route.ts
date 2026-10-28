@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { rateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
 const JWT_SECRET = process.env.JWT_SECRET || "chopdrop-secret-key";
-const ADMIN_WHATSAPP = process.env.ADMIN_WHATSAPP || "2349120532827";
+import { SUPPORT_WHATSAPP } from "@/lib/constants";
+const ADMIN_WHATSAPP = process.env.ADMIN_WHATSAPP || SUPPORT_WHATSAPP;
 
 /**
  * POST /api/auth/forgot-pin
