@@ -930,8 +930,8 @@ export default function OpsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.13em]">Ikeja launch zone</div>
-            <h1 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-1">Lunch control room</h1>
-            <p className="text-ink-soft text-[13px] mt-1">Live oversight for today&apos;s aggregated office drops.</p>
+            <h1 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-1">Control room</h1>
+            <p className="text-ink-soft text-[13px] mt-1">Today&apos;s orders across all time slots.</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -980,8 +980,8 @@ export default function OpsPage() {
           </div>
         )}
 
-        {/* ── GROWTH METRICS DASHBOARD ── */}
-        {metrics && (
+        {/* ── GROWTH METRICS DASHBOARD — only show when there's real data ── */}
+        {metrics && (metrics.today.orders > 0 || metrics.week.orders > 0) ? (
           <div className="mb-6">
             {/* Row 1: Key health metrics */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-3">
@@ -1081,10 +1081,22 @@ export default function OpsPage() {
               )}
             </div>
           </div>
+        ) : (
+          <div className="mb-6 rounded-[16px] p-8 text-center" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
+            <div className="text-[48px] font-extrabold" style={{ color: "var(--line)" }}>0</div>
+            <h2 className="text-[18px] font-bold mt-2">No orders today</h2>
+            <p className="text-[14px] text-ink-soft mt-1 max-w-[320px] mx-auto">
+              Orders will appear here once the pool opens and people start ordering. Use the tabs above to manage restaurants, meals, and menus.
+            </p>
+            <a href="/ops/orders" className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-[10px] text-[13px] font-bold text-white" style={{ background: "var(--coral)" }}>
+              Open order management
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+            </a>
+          </div>
         )}
 
-        {/* Operational Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        {/* Operational Stats — only when there are orders */}
+        {orders.length > 0 && <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
           <div className="bg-paper border border-line rounded-[13px] p-4 border-t-[3px] border-t-green">
             <span className="text-ink-soft text-[10px] font-bold block">Gross order value</span>
             <strong className="font-display font-[750] text-[25px] tracking-[-0.04em] block mt-1">{formatNaira(totalRevenue)}</strong>
@@ -1105,9 +1117,9 @@ export default function OpsPage() {
             <strong className="font-display font-[750] text-[25px] tracking-[-0.04em] block mt-1">{completedCount} / {orders.length}</strong>
             <small className="text-ink-soft text-[9px]">{confirmedCount} pending, {readyCount} ready</small>
           </div>
-        </div>
+        </div>}
 
-        <div className="grid md:grid-cols-[1.5fr_0.8fr] gap-4 mb-4">
+        {orders.length > 0 && <div className="grid md:grid-cols-[1.5fr_0.8fr] gap-4 mb-4">
           {/* Orders table */}
           <div className="bg-paper border border-line rounded-[15px] p-5">
             <div className="flex items-start justify-between mb-3">
@@ -1171,7 +1183,7 @@ export default function OpsPage() {
               </div>
             ))}
           </div>
-        </div>
+        </div>}
 
         {/* Activity strip */}
         <div className="bg-ink text-[#b8c6c1] rounded-xl px-5 py-3.5 flex items-center gap-5 overflow-x-auto hide-scrollbar text-[9px]">
