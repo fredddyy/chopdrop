@@ -74,8 +74,8 @@ export default function CartPage() {
 
   const EXPRESS_FEE = 120000;
   const deliveryFee = isFirstOrder ? 0 : fulfillment === "delivery" ? EXPRESS_FEE : 0;
-  // Service fee: 5% of subtotal, min ₦100 (10000 kobo), max ₦500 (50000 kobo)
-  const serviceFee = Math.min(50000, Math.max(10000, Math.round(cart.subtotal * 0.05)));
+  // Service charge: flat ₦100 (10000 kobo)
+  const serviceFee = 10000;
   const creditsToApply = Math.min(creditBalance, cart.subtotal + deliveryFee + serviceFee);
   const orderTotal = cart.subtotal + deliveryFee + serviceFee - creditsToApply;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
@@ -304,7 +304,7 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-1.5">
-                  <span style={{ color: "var(--text-secondary)" }}>Service fee</span>
+                  <span style={{ color: "var(--text-secondary)" }}>Service charge</span>
                   <span className="text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>covers payment processing</span>
                 </div>
                 <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
@@ -350,10 +350,10 @@ export default function CartPage() {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   <span className="text-[14px] font-bold text-white">Pool refund guarantee</span>
                 </div>
-                {poolData.officeOrderCount > 0 && poolData.officeOrderCount < 15 ? (() => {
-                  const currentPct = poolData.officeOrderCount >= 10 ? 20 : poolData.officeOrderCount >= 5 ? 10 : 0;
-                  const nextPct = currentPct >= 20 ? 30 : currentPct >= 10 ? 20 : 10;
-                  const nextMin = nextPct === 10 ? 5 : nextPct === 20 ? 10 : 15;
+                {poolData.officeOrderCount > 0 && poolData.officeOrderCount < 30 ? (() => {
+                  const currentPct = poolData.officeOrderCount >= 30 ? 8 : poolData.officeOrderCount >= 20 ? 5 : poolData.officeOrderCount >= 10 ? 3 : 0;
+                  const nextPct = currentPct >= 8 ? 8 : currentPct >= 5 ? 8 : currentPct >= 3 ? 5 : 3;
+                  const nextMin = nextPct === 3 ? 10 : nextPct === 5 ? 20 : 30;
                   const moreNeeded = Math.max(0, nextMin - poolData.officeOrderCount);
                   const potentialCredit = Math.round(cart.subtotal * (nextPct - currentPct) / 100);
                   return (

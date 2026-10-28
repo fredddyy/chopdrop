@@ -159,8 +159,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   // Compute pool progress
   const totalOrdered = slot && !slot.expired ? slot.items.reduce((sum, i) => { const maxO = i.tag === "DEAL" ? 20 : 50; return sum + Math.max(0, maxO - i.remaining); }, 0) : 0;
   const poolPct = Math.min(100, (poolData.officeOrderCount / 15) * 100);
-  const nextDiscount = poolData.officeOrderCount >= 15 ? 30 : poolData.officeOrderCount >= 10 ? 20 : poolData.officeOrderCount >= 5 ? 10 : 0;
-  const nextTierTarget = nextDiscount >= 30 ? 0 : nextDiscount >= 20 ? 20 : nextDiscount >= 10 ? 15 : 5;
+  const nextDiscount = poolData.officeOrderCount >= 30 ? 8 : poolData.officeOrderCount >= 20 ? 5 : poolData.officeOrderCount >= 10 ? 3 : 0;
+  const nextTierTarget = nextDiscount >= 8 ? 0 : nextDiscount >= 5 ? 30 : nextDiscount >= 3 ? 20 : 10;
   const moreForNextTier = nextTierTarget > 0 ? Math.max(0, nextTierTarget - poolData.officeOrderCount) : 0;
 
   /* ═══════════════════════════════════════════════════════ */
@@ -228,12 +228,12 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       {slot && !slot.expired && (() => {
         const tiers = [
           { min: 0, pct: 0 },
-          { min: 5, pct: 10 },
-          { min: 10, pct: 20 },
-          { min: 15, pct: 30 },
+          { min: 10, pct: 3 },
+          { min: 20, pct: 5 },
+          { min: 30, pct: 8 },
         ];
         const orders = poolData.officeOrderCount;
-        const currentTierIdx = orders >= 15 ? 3 : orders >= 10 ? 2 : orders >= 5 ? 1 : 0;
+        const currentTierIdx = orders >= 30 ? 3 : orders >= 20 ? 2 : orders >= 10 ? 1 : 0;
         const mealPrices = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).map(i => i.price);
         const rawAvg = mealPrices.length > 0 ? mealPrices.reduce((a, b) => a + b, 0) / mealPrices.length : 200000;
         const examplePrice = Math.round(rawAvg / 5000) * 5000;
@@ -371,6 +371,15 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                       <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>Best price — max credit for everyone</span>
                     </div>
                   )}
+
+                  {/* Milestone teaser + link */}
+                  <Link href="/rewards" className="mt-3 flex items-center justify-between p-3 rounded-[14px] cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--sand)" }}>
+                    <div className="flex items-center gap-2">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                      <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Unlock up to 30% off with milestone rewards</span>
+                    </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -690,13 +699,13 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   </div>
                   <div>
                     <p className="text-[15px] font-extrabold text-white">
-                      {moreForNextTier === 1 ? "1 more person" : `${moreForNextTier} more people`} for {nextDiscount >= 10 ? (nextDiscount + 10) : 10}% off
+                      {moreForNextTier === 1 ? "1 more person" : `${moreForNextTier} more people`} for {nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% off
                     </p>
                     <p className="text-[12px] text-white/50">Everyone in {officeName} saves on every meal</p>
                   </div>
                 </div>
                 <a
-                  href={`https://wa.me/?text=${encodeURIComponent(`Hey! We're ${moreForNextTier} people away from ${nextDiscount >= 10 ? (nextDiscount + 10) : 10}% off lunch at ${officeName}. Order on ChopDrop before the pool closes!\n\n${typeof window !== "undefined" ? window.location.origin : ""}/menu`)}`}
+                  href={`https://wa.me/?text=${encodeURIComponent(`Hey! We're ${moreForNextTier} people away from ${nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% off lunch at ${officeName}. Order on ChopDrop before the pool closes!\n\n${typeof window !== "undefined" ? window.location.origin : ""}/menu`)}`}
                   target="_blank" rel="noopener noreferrer"
                   className="mt-3 w-full h-11 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold text-white active:scale-[0.97] transition-transform cursor-pointer"
                   style={{ background: "#25d366" }}

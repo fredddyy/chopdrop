@@ -24,7 +24,7 @@ export function CartSidebar() {
   }
 
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
-  const serviceFee = Math.min(50000, Math.max(10000, Math.round(cart.subtotal * 0.05)));
+  const serviceFee = 10000; // flat ₦100
 
   return (
     <div className="hidden lg:block w-[360px] flex-shrink-0">
@@ -87,7 +87,7 @@ export function CartSidebar() {
             <span className="font-semibold text-[#1a1a1a]">{formatNaira(cart.subtotal)}</span>
           </div>
           <div className="flex justify-between text-[12px] mb-1.5">
-            <span className="text-[#6b7280]">Service fee</span>
+            <span className="text-[#6b7280]">Service charge</span>
             <span className="font-semibold text-[#1a1a1a]">{formatNaira(serviceFee)}</span>
           </div>
           <div className="flex justify-between text-[12px] mb-1.5">

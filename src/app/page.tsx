@@ -36,10 +36,10 @@ function R({ children, d = 0, c = "" }: { children: React.ReactNode; d?: number;
 /* ── Pool calculator ── */
 function Calc() {
   const [n, setN] = useState(15);
-  const price = n >= 25 ? 1200 : n >= 15 ? 1400 : n >= 10 ? 1600 : n >= 5 ? 1800 : 2000;
+  const price = n >= 30 ? Math.round(2000 * 0.92) : n >= 20 ? Math.round(2000 * 0.95) : n >= 10 ? Math.round(2000 * 0.97) : 2000;
   const saved = (2000 - price) * n * 20;
   const pct = Math.round(((2000 - price) / 2000) * 100);
-  const tier = n >= 25 ? 3 : n >= 15 ? 2 : n >= 10 ? 1 : n >= 5 ? 0 : -1;
+  const tier = n >= 30 ? 3 : n >= 20 ? 2 : n >= 10 ? 1 : -1;
 
   return (
     <div className="rounded-[24px] p-6 lg:p-10" style={{ background: "var(--dark)" }}>
@@ -65,11 +65,10 @@ function Calc() {
       {/* Tier indicators */}
       <div className="flex gap-2 mb-8">
         {[
-          { label: "1-4", pct: "Base", idx: -1 },
-          { label: "5+", pct: "10% off", idx: 0 },
-          { label: "10+", pct: "20% off", idx: 1 },
-          { label: "15+", pct: "30% off", idx: 2 },
-          { label: "25+", pct: "40% off", idx: 3 },
+          { label: "1-9", pct: "Base", idx: -1 },
+          { label: "10+", pct: "3% off", idx: 1 },
+          { label: "20+", pct: "5% off", idx: 2 },
+          { label: "30+", pct: "8% off", idx: 3 },
         ].map((t) => (
           <div key={t.label} className="flex-1 text-center rounded-[12px] py-3 transition-all duration-300" style={{
             background: tier >= t.idx && t.idx >= 0 ? "rgba(13,159,95,0.15)" : "rgba(255,255,255,0.05)",
