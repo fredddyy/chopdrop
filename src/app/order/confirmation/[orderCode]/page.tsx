@@ -71,6 +71,20 @@ function ConfirmationContent() {
     return () => clearInterval(interval);
   }, [order, orderCode]);
 
+  // Poll for order STATUS updates after payment confirmed (preparing → ready → delivered)
+  useEffect(() => {
+    if (!order || order.paymentStatus !== "SUCCESS" || order.status === "COMPLETED") return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/orders/${orderCode}`);
+        const data = await res.json();
+        if (data.success && data.data.status !== order.status) { setOrder(data.data); }
+        if (data.success && data.data.status === "COMPLETED") { clearInterval(interval); }
+      } catch { /* retry */ }
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [order, orderCode]);
+
   async function handleConnectOffice() {
     if (!officeCodeInput.trim()) return;
     setOfficeConnectLoading(true); setOfficeConnectError("");
@@ -139,7 +153,18 @@ function ConfirmationContent() {
 
       {/* Celebration header — dark */}
       <div className="pt-10 pb-8 text-center" style={{ background: isConfirmed ? "var(--dark)" : "var(--bg)" }}>
-        {isConfirmed ? (
+        {isConfirmed && order.status === "COMPLETED" ? (
+          <>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "var(--emerald)" }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+            </div>
+            <h1 className="text-[22px] font-extrabold text-white mb-1">Delivered!</h1>
+            <p className="text-[14px] text-white/50">
+              {isOffice ? `Collected at ${order.office!.collectionPoint}` : "Order complete"}
+            </p>
+            <p className="text-[13px] text-white/30 mt-2">Pool credits (if any) will be applied to your next order</p>
+          </>
+        ) : isConfirmed ? (
           <>
             <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "var(--emerald)", animation: "fu 0.4s ease" }}>
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>

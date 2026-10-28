@@ -1,0 +1,2228 @@
+{
+ "url": "https://chopdrop-app.vercel.app/",
+ "at": "2026-10-22T12:31:58.789Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 6,
+   "filled": [
+    0.19,
+    0.26,
+    0.29,
+    0.39,
+    0.24,
+    0.31
+   ],
+   "motion": {
+    "elements": 34,
+    "css": 4,
+    "transitions": 1,
+    "scripted": 29,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 5379,
+     "screens": 6,
+     "words": 597,
+     "img": 3,
+     "video": 0,
+     "canvas": 0,
+     "svg": 13,
+     "sections": 8,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "photo-1604329760661-e71dc83f8f26?w=800&q=80&fit="
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+     "words": 11,
+     "chars": 54,
+     "lines": 3,
+     "size": 32,
+     "vw": 2.2,
+     "font": "Manrope",
+     "weight": 800,
+     "tracking": -0.04,
+     "leading": 1.08,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.27,
+     "top": 93,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+     "words": 11,
+     "lines": 3,
+     "size": 32,
+     "font": "Manrope"
+    },
+    "headings": [
+     {
+      "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+      "words": 11,
+      "chars": 54,
+      "lines": 3,
+      "size": 32,
+      "vw": 2.2,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.04,
+      "leading": 1.08,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.27,
+      "top": 93,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "₦420,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 40,
+      "vw": 2.8,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.24,
+      "top": 1343,
+      "tag": "div",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 2,
+     "maxLines": 3,
+     "over2Lines": 1,
+     "statements": 0,
+     "centered": 1,
+     "medianWords": 1,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "DM Sans",
+       "share": 0.9,
+       "mono": false
+      },
+      {
+       "family": "Manrope",
+       "share": 0.1,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      22,
+      26,
+      32,
+      40
+     ],
+     "sizeCount": 12,
+     "notLoaded": [],
+     "body": {
+      "font": "DM Sans",
+      "size": 13,
+      "leading": 1.63,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.5
+     },
+     "measureChars": 48,
+     "max": {
+      "size": 40,
+      "vw": 2.8,
+      "font": "Manrope",
+      "text": "₦420,000"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 11,
+     "microLabelShare": 0.045,
+     "microSamples": [
+      "For Nigerian offices",
+      "The lunch math",
+      "Without ChopDrop",
+      "With ChopDrop",
+      "Your office saves",
+      "How it works"
+     ],
+     "upperShare": 0.05,
+     "centerShare": 0.14,
+     "smallText": 39
+    },
+    "eyebrows": [
+     {
+      "text": "For Nigerian offices",
+      "above": "Your office lunch costs too much. Fix it",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 64
+     },
+     {
+      "text": "Your office saves",
+      "above": "₦420,000",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 9,
+      "top": 1322
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f7f4ec",
+     "bodyBgHsl": {
+      "h": 44,
+      "s": 0.41,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f7f4ec",
+       "top": 0,
+       "hsl": {
+        "h": 44,
+        "s": 0.41,
+        "l": 0.95
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#536761",
+       "share": 0.44
+      },
+      {
+       "color": "#19342d",
+       "share": 0.29
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.19
+      },
+      {
+       "color": "#f06449",
+       "share": 0.04
+      },
+      {
+       "color": "#216c4e",
+       "share": 0.03
+      }
+     ],
+     "button": {
+      "bg": "#f06449",
+      "hsl": {
+       "h": 10,
+       "s": 0.85,
+       "l": 0.61
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": [
+      {
+       "text": "Pool Captain perks",
+       "ratio": 2.1,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#216c4e",
+       "bg": "#19342d"
+      },
+      {
+       "text": "Office hero",
+       "ratio": 2.1,
+       "need": 4.5,
+       "size": 10,
+       "fg": "#216c4e",
+       "bg": "#19342d"
+      },
+      {
+       "text": "For Nigerian offices",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "Fix it in 2 minutes.",
+       "ratio": 2.9,
+       "need": 3,
+       "size": 32,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "Log in",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 12,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "The lunch math",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 6,
+     "inHero": 3,
+     "radius": 12,
+     "height": 50,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Set Up My Office",
+      "Set Up My Office",
+      "Browse Menu"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 11,
+     "hairlineSamples": [
+      "div.jsx-1a7e5d5da7946634.fixed 1440px",
+      "div.jsx-1a7e5d5da7946634.flex 354px",
+      "div.jsx-1a7e5d5da7946634.flex 354px",
+      "div.jsx-1a7e5d5da7946634.border-t 388px",
+      "div.jsx-1a7e5d5da7946634.border-t 388px"
+     ],
+     "outlinedBoxes": 11,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 13,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 1,
+     "mediaRadius": 16,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.09
+     }
+    ],
+    "nav": {
+     "links": 1,
+     "fixed": true,
+     "height": 48,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "dm sans",
+     "manrope"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 5379,
+    "margins": {
+     "left": 526,
+     "right": 526
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+      "size": 32,
+      "top": 93,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 526,
+      "n": 10
+     },
+     {
+      "x": 543,
+      "n": 3
+     },
+     {
+      "x": 580,
+      "n": 3
+     }
+    ],
+    "leftBlocks": 16,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.29,
+    "voidBox": {
+     "x": 0,
+     "y": 120,
+     "w": 480,
+     "h": 780
+    }
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 6,
+   "filled": [
+    0.33,
+    0.45,
+    0.45,
+    0.53,
+    0.43,
+    0.41
+   ],
+   "motion": {
+    "elements": 34,
+    "css": 4,
+    "transitions": 1,
+    "scripted": 29,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 5379,
+     "screens": 5.3,
+     "words": 597,
+     "img": 3,
+     "video": 0,
+     "canvas": 0,
+     "svg": 13,
+     "sections": 8,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "photo-1604329760661-e71dc83f8f26?w=800&q=80&fit="
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+     "words": 11,
+     "chars": 54,
+     "lines": 3,
+     "size": 32,
+     "vw": 4.2,
+     "font": "Manrope",
+     "weight": 800,
+     "tracking": -0.04,
+     "leading": 1.08,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.51,
+     "top": 93,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+     "words": 11,
+     "lines": 3,
+     "size": 32,
+     "font": "Manrope"
+    },
+    "headings": [
+     {
+      "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+      "words": 11,
+      "chars": 54,
+      "lines": 3,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.04,
+      "leading": 1.08,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.51,
+      "top": 93,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "How much is your office spending on lunch?",
+      "words": 8,
+      "chars": 42,
+      "lines": 2,
+      "size": 26,
+      "vw": 3.4,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.51,
+      "top": 848,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "= ₦1,200,000/mo",
+      "words": 2,
+      "chars": 15,
+      "lines": 1,
+      "size": 26,
+      "vw": 3.4,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.02,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.46,
+      "top": 1013,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "= ₦780,000/mo",
+      "words": 2,
+      "chars": 13,
+      "lines": 1,
+      "size": 26,
+      "vw": 3.4,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.02,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.46,
+      "top": 1200,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "₦420,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 40,
+      "vw": 5.2,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.44,
+      "top": 1343,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "Three steps. Two minutes.",
+      "words": 4,
+      "chars": 25,
+      "lines": 1,
+      "size": 26,
+      "vw": 3.4,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.51,
+      "top": 1602,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Wait — what do I get out of this?",
+      "words": 9,
+      "chars": 33,
+      "lines": 2,
+      "size": 26,
+      "vw": 3.4,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.51,
+      "top": 2928,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Join offices already saving with ChopDrop",
+      "words": 6,
+      "chars": 41,
+      "lines": 2,
+      "size": 26,
+      "vw": 3.4,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.51,
+      "top": 3730,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Ready to save your office ₦400K+ per month?",
+      "words": 8,
+      "chars": 43,
+      "lines": 2,
+      "size": 26,
+      "vw": 3.4,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.51,
+      "top": 4870,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 9,
+     "maxLines": 3,
+     "over2Lines": 1,
+     "statements": 2,
+     "centered": 3,
+     "medianWords": 6,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "DM Sans",
+       "share": 0.9,
+       "mono": false
+      },
+      {
+       "family": "Manrope",
+       "share": 0.1,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      22,
+      26,
+      32,
+      40
+     ],
+     "sizeCount": 12,
+     "notLoaded": [],
+     "body": {
+      "font": "DM Sans",
+      "size": 13,
+      "leading": 1.63,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.5
+     },
+     "measureChars": 48,
+     "max": {
+      "size": 40,
+      "vw": 5.2,
+      "font": "Manrope",
+      "text": "₦420,000"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 11,
+     "microLabelShare": 0.045,
+     "microSamples": [
+      "For Nigerian offices",
+      "The lunch math",
+      "Without ChopDrop",
+      "With ChopDrop",
+      "Your office saves",
+      "How it works"
+     ],
+     "upperShare": 0.05,
+     "centerShare": 0.14,
+     "smallText": 39
+    },
+    "eyebrows": [
+     {
+      "text": "For Nigerian offices",
+      "above": "Your office lunch costs too much. Fix it",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 64
+     },
+     {
+      "text": "The lunch math",
+      "above": "How much is your office spending on lunc",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 823
+     },
+     {
+      "text": "30 people × ₦2,000/day",
+      "above": "= ₦1,200,000/mo",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 987
+     },
+     {
+      "text": "30 people × ₦1,300/day",
+      "above": "= ₦780,000/mo",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 1175
+     },
+     {
+      "text": "Your office saves",
+      "above": "₦420,000",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 9,
+      "top": 1322
+     },
+     {
+      "text": "How it works",
+      "above": "Three steps. Two minutes.",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 1577
+     },
+     {
+      "text": "Pool Captain perks",
+      "above": "Wait — what do I get out of this?",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 2904
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f7f4ec",
+     "bodyBgHsl": {
+      "h": 44,
+      "s": 0.41,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f7f4ec",
+       "top": 0,
+       "hsl": {
+        "h": 44,
+        "s": 0.41,
+        "l": 0.95
+       }
+      },
+      {
+       "color": "#19342d",
+       "top": 2856,
+       "hsl": {
+        "h": 164,
+        "s": 0.35,
+        "l": 0.15
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#536761",
+       "share": 0.44
+      },
+      {
+       "color": "#19342d",
+       "share": 0.29
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.19
+      },
+      {
+       "color": "#f06449",
+       "share": 0.04
+      },
+      {
+       "color": "#216c4e",
+       "share": 0.03
+      }
+     ],
+     "button": {
+      "bg": "#f06449",
+      "hsl": {
+       "h": 10,
+       "s": 0.85,
+       "l": 0.61
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": [
+      {
+       "text": "Pool Captain perks",
+       "ratio": 2.1,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#216c4e",
+       "bg": "#19342d"
+      },
+      {
+       "text": "Office hero",
+       "ratio": 2.1,
+       "need": 4.5,
+       "size": 10,
+       "fg": "#216c4e",
+       "bg": "#19342d"
+      },
+      {
+       "text": "For Nigerian offices",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "Fix it in 2 minutes.",
+       "ratio": 2.9,
+       "need": 3,
+       "size": 32,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "Log in",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 12,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "The lunch math",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 6,
+     "inHero": 3,
+     "radius": 12,
+     "height": 50,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Set Up My Office",
+      "Set Up My Office",
+      "Browse Menu"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 11,
+     "hairlineSamples": [
+      "div.jsx-1a7e5d5da7946634.fixed 768px",
+      "div.jsx-1a7e5d5da7946634.flex 354px",
+      "div.jsx-1a7e5d5da7946634.flex 354px",
+      "div.jsx-1a7e5d5da7946634.border-t 388px",
+      "div.jsx-1a7e5d5da7946634.border-t 388px"
+     ],
+     "outlinedBoxes": 11,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 13,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 1,
+     "mediaRadius": 16,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.14
+     }
+    ],
+    "nav": {
+     "links": 1,
+     "fixed": true,
+     "height": 48,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "dm sans",
+     "manrope"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 5379,
+    "margins": {
+     "left": 190,
+     "right": 190
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+      "size": 32,
+      "top": 93,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 190,
+      "n": 10
+     },
+     {
+      "x": 207,
+      "n": 3
+     },
+     {
+      "x": 244,
+      "n": 3
+     }
+    ],
+    "leftBlocks": 16,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 7,
+   "filled": [
+    0.67,
+    0.69,
+    0.7,
+    0.79,
+    0.81,
+    0.63,
+    0.69
+   ],
+   "motion": {
+    "elements": 34,
+    "css": 4,
+    "transitions": 1,
+    "scripted": 29,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 5393,
+     "screens": 6.4,
+     "words": 597,
+     "img": 3,
+     "video": 0,
+     "canvas": 0,
+     "svg": 13,
+     "sections": 8,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "photo-1604329760661-e71dc83f8f26?w=800&q=80&fit="
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+     "words": 11,
+     "chars": 54,
+     "lines": 3,
+     "size": 32,
+     "vw": 8.2,
+     "font": "Manrope",
+     "weight": 800,
+     "tracking": -0.04,
+     "leading": 1.08,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.9,
+     "top": 93,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+     "words": 11,
+     "lines": 3,
+     "size": 32,
+     "font": "Manrope"
+    },
+    "headings": [
+     {
+      "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+      "words": 11,
+      "chars": 54,
+      "lines": 3,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.04,
+      "leading": 1.08,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 93,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "How much is your office spending on lunch?",
+      "words": 8,
+      "chars": 42,
+      "lines": 2,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 819,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "= ₦1,200,000/mo",
+      "words": 2,
+      "chars": 15,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.02,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.81,
+      "top": 984,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "= ₦780,000/mo",
+      "words": 2,
+      "chars": 13,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.02,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.81,
+      "top": 1172,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "₦420,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.77,
+      "top": 1315,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "Three steps. Two minutes.",
+      "words": 4,
+      "chars": 25,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1573,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Wait — what do I get out of this?",
+      "words": 9,
+      "chars": 33,
+      "lines": 2,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 2919,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Join offices already saving with ChopDrop",
+      "words": 6,
+      "chars": 41,
+      "lines": 2,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 3721,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "20+",
+      "words": 1,
+      "chars": 3,
+      "lines": 1,
+      "size": 22,
+      "vw": 5.6,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "left",
+      "widthRatio": 0.22,
+      "top": 4192,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "₦0",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 22,
+      "vw": 5.6,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.21,
+      "top": 4192,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "40%",
+      "words": 1,
+      "chars": 3,
+      "lines": 1,
+      "size": 22,
+      "vw": 5.6,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "right",
+      "widthRatio": 0.22,
+      "top": 4192,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "Common questions",
+      "words": 2,
+      "chars": 16,
+      "lines": 1,
+      "size": 22,
+      "vw": 5.6,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 4382,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Ready to save your office ₦400K+ per month?",
+      "words": 8,
+      "chars": 43,
+      "lines": 2,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Manrope",
+      "weight": 800,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 4884,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 13,
+     "maxLines": 3,
+     "over2Lines": 1,
+     "statements": 2,
+     "centered": 6,
+     "medianWords": 2,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "DM Sans",
+       "share": 0.9,
+       "mono": false
+      },
+      {
+       "family": "Manrope",
+       "share": 0.1,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      22,
+      26,
+      32,
+      40
+     ],
+     "sizeCount": 12,
+     "notLoaded": [],
+     "body": {
+      "font": "DM Sans",
+      "size": 13,
+      "leading": 1.63,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.5
+     },
+     "measureChars": 47,
+     "max": {
+      "size": 40,
+      "vw": 10.3,
+      "font": "Manrope",
+      "text": "₦420,000"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 11,
+     "microLabelShare": 0.045,
+     "microSamples": [
+      "For Nigerian offices",
+      "The lunch math",
+      "Without ChopDrop",
+      "With ChopDrop",
+      "Your office saves",
+      "How it works"
+     ],
+     "upperShare": 0.05,
+     "centerShare": 0.14,
+     "smallText": 39
+    },
+    "eyebrows": [
+     {
+      "text": "For Nigerian offices",
+      "above": "Your office lunch costs too much. Fix it",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 64
+     },
+     {
+      "text": "The lunch math",
+      "above": "How much is your office spending on lunc",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 795
+     },
+     {
+      "text": "30 people × ₦2,000/day",
+      "above": "= ₦1,200,000/mo",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 959
+     },
+     {
+      "text": "30 people × ₦1,300/day",
+      "above": "= ₦780,000/mo",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 1146
+     },
+     {
+      "text": "Your office saves",
+      "above": "₦420,000",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 9,
+      "top": 1293
+     },
+     {
+      "text": "How it works",
+      "above": "Three steps. Two minutes.",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 1549
+     },
+     {
+      "text": "Pool Captain perks",
+      "above": "Wait — what do I get out of this?",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 2895
+     },
+     {
+      "text": "CE",
+      "above": "20+",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": true,
+      "size": 11,
+      "top": 4090
+     },
+     {
+      "text": "Lagos Island · 35 colleagues",
+      "above": "₦0",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 10,
+      "top": 4112
+     },
+     {
+      "text": "FAQ",
+      "above": "Common questions",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 11,
+      "top": 4357
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f7f4ec",
+     "bodyBgHsl": {
+      "h": 44,
+      "s": 0.41,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f7f4ec",
+       "top": 0,
+       "hsl": {
+        "h": 44,
+        "s": 0.41,
+        "l": 0.95
+       }
+      },
+      {
+       "color": "#fffdf8",
+       "top": 1999,
+       "hsl": {
+        "h": 43,
+        "s": 1,
+        "l": 0.99
+       }
+      },
+      {
+       "color": "#19342d",
+       "top": 2847,
+       "hsl": {
+        "h": 164,
+        "s": 0.35,
+        "l": 0.15
+       }
+      },
+      {
+       "color": "#f06449",
+       "top": 4828,
+       "hsl": {
+        "h": 10,
+        "s": 0.85,
+        "l": 0.61
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#536761",
+       "share": 0.44
+      },
+      {
+       "color": "#19342d",
+       "share": 0.29
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.19
+      },
+      {
+       "color": "#f06449",
+       "share": 0.04
+      },
+      {
+       "color": "#216c4e",
+       "share": 0.03
+      }
+     ],
+     "button": {
+      "bg": "#f06449",
+      "hsl": {
+       "h": 10,
+       "s": 0.85,
+       "l": 0.61
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": [
+      {
+       "text": "Pool Captain perks",
+       "ratio": 2.1,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#216c4e",
+       "bg": "#19342d"
+      },
+      {
+       "text": "Office hero",
+       "ratio": 2.1,
+       "need": 4.5,
+       "size": 10,
+       "fg": "#216c4e",
+       "bg": "#19342d"
+      },
+      {
+       "text": "For Nigerian offices",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "Fix it in 2 minutes.",
+       "ratio": 2.9,
+       "need": 3,
+       "size": 32,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "Log in",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 12,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      },
+      {
+       "text": "The lunch math",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 11,
+       "fg": "#f06449",
+       "bg": "#f7f4ec"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 6,
+     "inHero": 3,
+     "radius": 12,
+     "height": 50,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Set Up My Office",
+      "Set Up My Office",
+      "Browse Menu"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 9,
+     "hairlineSamples": [
+      "div.jsx-1a7e5d5da7946634.fixed 390px",
+      "div.jsx-1a7e5d5da7946634.flex 316px",
+      "div.jsx-1a7e5d5da7946634.flex 316px",
+      "div.jsx-1a7e5d5da7946634.border-t 350px",
+      "div.jsx-1a7e5d5da7946634.border-t 350px"
+     ],
+     "outlinedBoxes": 11,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 13,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 1,
+     "mediaRadius": 16,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.28
+     }
+    ],
+    "nav": {
+     "links": 1,
+     "fixed": true,
+     "height": 48,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "dm sans",
+     "manrope"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 5393,
+    "margins": {
+     "left": 20,
+     "right": 20
+    },
+    "sections": [
+     {
+      "sel": "section.jsx-1a7e5d5da7946634.px-5",
+      "tag": "section",
+      "top": 0,
+      "height": 747,
+      "words": 62,
+      "media": 1,
+      "middle": 0,
+      "heading": {
+       "text": "Your office lunch",
+       "size": 32,
+       "tag": "h1"
+      },
+      "left": 20,
+      "right": 21,
+      "textLeft": 20,
+      "textRight": 45,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.jsx-1a7e5d5da7946634.px-5",
+      "tag": "section",
+      "top": 747,
+      "height": 754,
+      "words": 60,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "How much is your office",
+       "size": 26,
+       "tag": "h2"
+      },
+      "left": 20,
+      "right": 70,
+      "textLeft": 20,
+      "textRight": 70,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.jsx-1a7e5d5da7946634.py-12",
+      "tag": "section",
+      "top": 1501,
+      "height": 1346,
+      "words": 126,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Three steps. Two minutes.",
+       "size": 26,
+       "tag": "h2"
+      },
+      "left": 20,
+      "right": 21,
+      "textLeft": 20,
+      "textRight": 22,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.jsx-1a7e5d5da7946634.px-5",
+      "tag": "section",
+      "top": 2847,
+      "height": 826,
+      "words": 74,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Wait — what do I get",
+       "size": 26,
+       "tag": "h2"
+      },
+      "left": 20,
+      "right": 21,
+      "textLeft": 20,
+      "textRight": 21,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.jsx-1a7e5d5da7946634.px-5",
+      "tag": "section",
+      "top": 3673,
+      "height": 636,
+      "words": 74,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Join offices already",
+       "size": 26,
+       "tag": "h2"
+      },
+      "left": 37,
+      "right": 44,
+      "textLeft": 37,
+      "textRight": 44,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.jsx-1a7e5d5da7946634.px-5",
+      "tag": "section",
+      "top": 4309,
+      "height": 519,
+      "words": 35,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Common questions",
+       "size": 22,
+       "tag": "h2"
+      },
+      "left": 20,
+      "right": 20,
+      "textLeft": 20,
+      "textRight": 87,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.jsx-1a7e5d5da7946634.py-14",
+      "tag": "section",
+      "top": 4828,
+      "height": 307,
+      "words": 28,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Ready to save your",
+       "size": 26,
+       "tag": "h2"
+      },
+      "left": 37,
+      "right": 37,
+      "textLeft": 37,
+      "textRight": 37,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.jsx-1a7e5d5da7946634.px-5",
+      "tag": "section",
+      "top": 5135,
+      "height": 162,
+      "words": 16,
+      "media": 0,
+      "middle": 0,
+      "heading": null,
+      "left": 51,
+      "right": 102,
+      "textLeft": 51,
+      "textRight": 102,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Your office lunch costs too much. Fix it in 2 minutes.",
+      "size": 32,
+      "top": 93,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 20,
+      "n": 10
+     },
+     {
+      "x": 37,
+      "n": 3
+     },
+     {
+      "x": 74,
+      "n": 3
+     }
+    ],
+    "leftBlocks": 16,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 1440,
+   "message": "1 headline(s) wrap past two lines at 1440px: \"Your office lunch costs too much. Fix it in 2 mi\" → 3 lines (11 words, 32px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 36px or less."
+  },
+  {
+   "level": "WARN",
+   "id": "hero-words",
+   "width": 1440,
+   "message": "Hero headline is 11 words (\"Your office lunch costs too much. Fix it in 2 minutes.\"). Gallery median is 5.",
+   "fix": "Say the one thing. Move the rest to the supporting line.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "eyebrow",
+   "width": 1440,
+   "message": "2 eyebrow/kicker label(s) above headings: \"For Nigerian offices\" above \"Your office lunch costs too much. Fix it\"; \"Your office saves\" above \"₦420,000\"",
+   "fix": "Delete them. If the label carried real information, fold it into the headline or the supporting sentence.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "micro-label",
+   "width": 1440,
+   "message": "11 tiny uppercase letter-spaced labels (e.g. \"For Nigerian offices\", \"The lunch math\", \"Without ChopDrop\", \"With ChopDrop\").",
+   "fix": "Use sentence-case text at a readable size, or delete the label.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "hairline",
+   "width": 1440,
+   "message": "11 thin rule(s)/divider line(s): div.jsx-1a7e5d5da7946634.fixed 1440px | div.jsx-1a7e5d5da7946634.flex 354px | div.jsx-1a7e5d5da7946634.flex 354px | div.jsx-1a7e5d5da7946634.border-t 388px",
+   "fix": "Delete. Separate with space, a tone change, or scale. Lines are only for real tables and form fields.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "outlined-box",
+   "width": 1440,
+   "message": "11 boxes drawn with a 1px outline.",
+   "fix": "Define a surface by its fill (one tone step from the page) or leave the content unboxed.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "palette-claude",
+   "width": 1440,
+   "message": "Cream + terracotta palette (page background #f7f4ec, section #f7f4ec, button #f06449, text #f06449).",
+   "fix": "Re-draw the palette from the library. This pairing reads as an assistant brand, not yours.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "contrast",
+   "width": 1440,
+   "message": "Unreadable text: \"Pool Captain perks\" 2.1:1 (#216c4e on #19342d); \"Office hero\" 2.1:1 (#216c4e on #19342d)",
+   "fix": "Raise contrast to at least 4.5:1 for text, 3:1 for large display.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "size-count",
+   "width": 1440,
+   "message": "12 different font sizes (9, 10, 11, 12, 13, 14, 15, 16, 22, 26, 32, 40).",
+   "fix": "A page needs about five: display, heading, lead, body, small.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "body-size",
+   "width": 1440,
+   "message": "Body text is 13px (the size most of the running text is set in).",
+   "fix": "Body copy 16–20px. Map small sizes from blueprints onto your body step.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "grey-body",
+   "width": 1440,
+   "message": "The running text is a soft grey on its ground (5.5:1).",
+   "fix": "Set body copy in the full ink (7:1 or more). Keep the muted ink for secondary notes; pages read thin and unfinished when everything is grey.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "few-pictures",
+   "width": 1440,
+   "message": "Only 1 picture(s) on the page (1 photographs, footage or raster images, 0 interface fragments). Drawings in SVG do not count.",
+   "fix": "Find real pictures of the subject's world with scripts/assets.mjs (photographs, archival images, maps, engravings, footage), download them to assets/ and give them room: a hero picture, one per section that has a subject, a full-width band. At least four, usually six to twelve."
+  },
+  {
+   "level": "WARN",
+   "id": "no-footage",
+   "width": 1440,
+   "message": "No video anywhere on the page.",
+   "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "FAIL",
+   "id": "small-text",
+   "width": 1440,
+   "message": "39 text blocks under 13px.",
+   "fix": "Nothing meant to be read goes below 13px.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "focal-point",
+   "width": 1440,
+   "message": "The first screen has no dominant element: the largest type is 32px (2.2vw) and no single picture holds a third of the viewport.",
+   "fix": "Make one thing lead: the headline at display size, or one large picture. A grid of many small pictures is not one thing; in blind tests jurors marked a first screen without a headline down every time. On the strongest studied sites the largest type has a median of 8.4vw.",
+   "alsoAt": [
+    768
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "hero-void",
+   "width": 1440,
+   "message": "29% of the first screen is one empty block (480×780px at 0,120).",
+   "fix": "Place the void on purpose or fill it: move the picture, the film or one fact into it, grow the headline to meet it, or shrink the screen to its content. A void reads as placed only when something closes it on the far side and it is the screen's one rest."
+  },
+  {
+   "level": "FAIL",
+   "id": "covered-text",
+   "width": 1440,
+   "message": "Large text lies under another element at some scroll position: \"How much is your office spending on lunch?\" (screen 1, 100% hidden)",
+   "fix": "Nothing may sit on top of a headline or statement. Move the picture, shorten the pinned run, or raise the text above it (z-index) and give it a ground.",
+   "alsoAt": [
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 768,
+   "message": "1 headline(s) wrap past two lines at 768px: \"Your office lunch costs too much. Fix it in 2 mi\" → 3 lines (11 words, 32px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 32px or less."
+  },
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 390,
+   "message": "1 headline(s) wrap past two lines at 390px: \"Your office lunch costs too much. Fix it in 2 mi\" → 3 lines (11 words, 32px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 24px or less."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\before\\desktop-fold.jpg",
+   "pages": [
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\before\\desktop-page-01.jpg",
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\before\\desktop-page-02.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\before\\tablet-fold.jpg",
+   "pages": [
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\before\\tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\before\\mobile-fold.jpg",
+   "pages": [
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\before\\mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

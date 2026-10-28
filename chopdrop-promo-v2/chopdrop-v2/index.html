@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <title>ChopDrop Promo</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { margin: 0; overflow: hidden; }
+    #root { width: 100%; height: 100%; position: relative; overflow: hidden; font-family: 'DM Sans', system-ui, sans-serif; background: #0F4030; }
+    .clip { position: absolute; inset: 0; overflow: hidden; }
+
+    /* ── Phone Mockup — MASSIVE, fills screen like Chowdeck ── */
+    .phone {
+      position: absolute;
+      left: 50%; top: 28%;
+      width: 860px; height: 1760px;
+      background: #000;
+      border-radius: 72px;
+      border: 10px solid #C8A84E;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.4);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .phone-screen {
+      width: 100%; height: 100%;
+      background: #FAFAF8;
+      border-radius: 62px;
+      overflow: hidden;
+      position: relative;
+    }
+    .phone-screen img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .phone-notch {
+      width: 220px; height: 40px;
+      background: #000;
+      border-radius: 0 0 16px 16px;
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+    }
+    .phone-status {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 4px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    /* ── App Screens Inside Phone ── */
+    .app-greeting {
+      color: #F05F4B;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .app-title {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 48px;
+      color: #19342d;
+      margin-bottom: 24px;
+    }
+    .app-hero-card {
+      background: #0F4030;
+      border-radius: 20px;
+      padding: 20px;
+      color: white;
+      position: relative;
+      margin-bottom: 16px;
+      min-height: 120px;
+    }
+    .app-hero-card h3 {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      line-height: 1.2;
+    }
+    .app-hero-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+    .app-food-circle {
+      position: absolute;
+      right: 16px; top: 50%;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #F5C565;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    .app-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .app-tab {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #f0efeb;
+      color: #536761;
+    }
+    .app-tab.active {
+      background: #F05F4B;
+      color: white;
+    }
+    .app-meal-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 0;
+      border-bottom: 1px solid #f0efeb;
+    }
+    .app-meal-img {
+      width: 72px; height: 72px;
+      border-radius: 18px;
+      background: #F5C565;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .app-meal-name {
+      font-weight: 700;
+      font-size: 22px;
+      color: #19342d;
+    }
+    .app-meal-restaurant {
+      font-size: 16px;
+      color: #F05F4B;
+    }
+    .app-meal-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #216c4e;
+      margin-left: auto;
+    }
+
+    /* ── Confirmation Screen ── */
+    .confirm-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .confirm-check {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #e4f1e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .confirm-title {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 26px;
+      color: #19342d;
+      margin-bottom: 8px;
+    }
+    .confirm-sub {
+      font-size: 14px;
+      color: #536761;
+      margin-bottom: 24px;
+    }
+    .confirm-food-img {
+      width: 120px; height: 120px;
+      border-radius: 20px;
+      background: #F5C565;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    .confirm-time {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 32px;
+      color: #19342d;
+    }
+    .confirm-time-sub {
+      font-size: 13px;
+      color: #536761;
+      margin-bottom: 16px;
+    }
+    .confirm-code {
+      font-size: 12px;
+      color: #F05F4B;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-top: 2px dashed #F05F4B;
+      padding-top: 12px;
+    }
+
+    /* ── Big Text Callouts ── */
+    .callout {
+      position: absolute;
+      left: 50%; top: 20%;
+      text-align: center;
+      z-index: 5;
+    }
+    .callout h2 {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 72px;
+      color: white;
+      line-height: 1.1;
+    }
+    .callout p {
+      font-size: 24px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 12px;
+    }
+
+    /* ── Feature Card ── */
+    .feature-card {
+      position: absolute;
+      left: 50%; bottom: 12%;
+      width: 460px;
+      background: white;
+      border-radius: 24px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+      z-index: 15;
+    }
+    .feature-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: #0F4030;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .feature-name {
+      font-weight: 700;
+      font-size: 18px;
+      color: #19342d;
+    }
+    .feature-sub {
+      font-size: 14px;
+      color: #536761;
+    }
+
+    /* ── Outro ── */
+    .outro-logo {
+      position: absolute;
+      left: 50%; top: 38%;
+      z-index: 5;
+    }
+    .outro-name {
+      position: absolute;
+      left: 50%; top: 52%;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 64px;
+      color: white;
+      z-index: 5;
+      white-space: nowrap;
+    }
+    .outro-tagline {
+      position: absolute;
+      left: 50%; top: 62%;
+      font-size: 22px;
+      color: #F5C565;
+      z-index: 5;
+      white-space: nowrap;
+    }
+    .outro-url {
+      position: absolute;
+      left: 50%; top: 72%;
+      background: #F05F4B;
+      color: white;
+      padding: 16px 40px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 20px;
+      z-index: 5;
+      white-space: nowrap;
+    }
+    .outro-handle {
+      position: absolute;
+      left: 50%; top: 82%;
+      font-size: 18px;
+      color: rgba(255,255,255,0.5);
+      z-index: 5;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="20" data-width="1080" data-height="1920">
+
+    <!-- ══ SCENE 1: Menu Screen (0-5s) ══ -->
+    <section id="scene-menu" class="clip" data-start="0" data-duration="5" data-track-index="1">
+      <div class="callout" id="callout1" style="top:6%;opacity:0;">
+        <h2>Lunch.<br>Sorted.</h2>
+      </div>
+
+      <div class="phone" id="phone1" style="opacity:0;">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="padding:32px;">
+          <div class="phone-status"><span>9:41</span><span>&#x2022;&#x2022;&#x2022;</span></div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <svg viewBox="0 0 100 110" width="36" height="40"><path d="M50 4 C58 12 88 35 88 50 L88 80 A18 18 0 0 1 70 98 L30 98 A18 18 0 0 1 12 80 L12 50 C12 35 42 12 50 4 Z" fill="#F05F4B"/><path d="M32 70 Q50 86 68 70" stroke="white" stroke-width="6.5" fill="none" stroke-linecap="round"/></svg>
+            <div><div style="font-weight:600;font-size:16px;color:#19342d;">Good morning, Ada</div><div style="font-size:13px;color:#216c4e;">&#x25CF; Serving Ikeja, Lagos</div></div>
+          </div>
+          <div class="app-title">What's for lunch?</div>
+          <div class="app-hero-card">
+            <div class="app-hero-label">AJISAFE KITCHEN</div>
+            <h3>Work is<br>stressful.<br>Food</h3>
+            <div class="app-food-circle">&#127858;</div>
+          </div>
+          <div class="app-tabs">
+            <div class="app-tab active">Popular</div>
+            <div class="app-tab">Rice</div>
+            <div class="app-tab">Swallow</div>
+          </div>
+          <div class="app-meal-row">
+            <div class="app-meal-img">&#127859;</div>
+            <div><div class="app-meal-name">Smoky jollof & beef</div><div class="app-meal-restaurant">Ajisafe Kitchen &middot; 17 meals</div></div>
+            <div class="app-meal-price">&#8358;3,500</div>
+          </div>
+          <div class="app-meal-row">
+            <div class="app-meal-img">&#127831;</div>
+            <div><div class="app-meal-name">Fried rice & chicken</div><div class="app-meal-restaurant">The Place &middot; 108 meals</div></div>
+            <div class="app-meal-price">&#8358;4,100</div>
+          </div>
+          <div class="app-meal-row">
+            <div class="app-meal-img">&#127834;</div>
+            <div><div class="app-meal-name">Amala & ewedu</div><div class="app-meal-restaurant">Mama T's Kitchen</div></div>
+            <div class="app-meal-price">&#8358;2,800</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SCENE 2: Order Confirmed (5-10s) ══ -->
+    <section id="scene-confirm" class="clip" data-start="5" data-duration="5" data-track-index="2">
+      <div class="callout" id="callout2" style="top:6%;opacity:0;">
+        <h2>Order.<br>Confirmed.</h2>
+      </div>
+
+      <div class="phone" id="phone2" style="opacity:0;">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="padding:28px;">
+          <div class="confirm-screen">
+            <div class="app-greeting">Today's order</div>
+            <div class="confirm-title">Lunch is sorted.</div>
+            <div class="confirm-check"><span style="font-size:36px;color:#216c4e;">✓</span></div>
+            <div class="confirm-sub">Paid & confirmed</div>
+            <div class="confirm-food-img">🍛</div>
+            <div class="confirm-time">by 12:00 PM</div>
+            <div class="confirm-time-sub">Fresh food at your desk. ₦0 delivery.</div>
+            <div class="confirm-code">COLLECT WITH CODE: CD 028</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SCENE 3: Feature Callout (10-15s) ══ -->
+    <section id="scene-features" class="clip" data-start="10" data-duration="5" data-track-index="3">
+      <div class="callout" id="callout3" style="top:15%;opacity:0;">
+        <h2>No More<br>Food Chaos</h2>
+        <p>Everyone picks. Everyone pays.<br>One delivery. Zero stress.</p>
+      </div>
+
+      <div class="feature-card" id="feat1" style="opacity:0;">
+        <div class="feature-icon">🍽️</div>
+        <div>
+          <div class="feature-name">Pick & Pay Individually</div>
+          <div class="feature-sub">No cash collection. No chasing.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SCENE 4: Delivery Promise (15-17.5s) ══ -->
+    <section id="scene-delivery" class="clip" data-start="15" data-duration="2.5" data-track-index="4">
+      <div class="callout" id="callout4" style="top:25%;opacity:0;">
+        <h2>₦0 Delivery</h2>
+        <p>Hot lunch at your desk by noon.</p>
+      </div>
+
+      <div class="feature-card" id="feat2" style="bottom:18%;opacity:0;">
+        <div class="feature-icon">🛵</div>
+        <div>
+          <div class="feature-name">Arrives by 12:00 PM</div>
+          <div class="feature-sub">One smooth drop. No hassle.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SCENE 5: Outro (17.5-20s) ══ -->
+    <section id="scene-outro" class="clip" data-start="17.5" data-duration="2.5" data-track-index="5">
+      <svg class="outro-logo" id="outro-logo" viewBox="0 0 100 110" width="120" height="132" style="opacity:0;">
+        <path d="M50 4 C58 12 88 35 88 50 L88 80 A18 18 0 0 1 70 98 L30 98 A18 18 0 0 1 12 80 L12 50 C12 35 42 12 50 4 Z" fill="#F05F4B"/>
+        <path d="M32 70 Q50 86 68 70" stroke="white" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="outro-name" id="outro-name" style="opacity:0;">ChopDrop</div>
+      <div class="outro-tagline" id="outro-tagline" style="opacity:0;">Order your office lunch</div>
+      <div class="outro-url" id="outro-url" style="opacity:0;">chopdrop-app.vercel.app</div>
+      <div class="outro-handle" id="outro-handle" style="opacity:0;">@chopdrop.ng</div>
+    </section>
+
+  </div>
+
+  <script>
+    const tl = gsap.timeline({ paused: true });
+
+    // ── SCENE 1: Menu Screen (0-5s) ──
+    // Callout slides down
+    gsap.set("#callout1", { xPercent: -50 });
+    tl.fromTo("#callout1", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.2);
+
+    // Phone slides up from bottom — large, cropped at bottom edge
+    gsap.set("#phone1", { xPercent: -50, yPercent: 0, y: 300 });
+    tl.to("#phone1", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.4);
+
+    // Hold, then exit
+    tl.to("#callout1", { opacity: 0, y: -30, duration: 0.3 }, 4.3);
+    tl.to("#phone1", { opacity: 0, y: 60, duration: 0.4, ease: "power2.in" }, 4.4);
+
+    // ── SCENE 2: Order Confirmed (5-10s) ──
+    gsap.set("#callout2", { xPercent: -50 });
+    tl.fromTo("#callout2", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 5.2);
+
+    gsap.set("#phone2", { xPercent: -50, yPercent: 0, y: 300 });
+    tl.to("#phone2", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 5.4);
+
+    // Hold, then exit
+    tl.to("#callout2", { opacity: 0, y: -30, duration: 0.3 }, 9.3);
+    tl.to("#phone2", { opacity: 0, y: 60, duration: 0.4, ease: "power2.in" }, 9.4);
+
+    // ── SCENE 3: Feature Callout (10-15s) ──
+    gsap.set("#callout3", { xPercent: -50 });
+    tl.fromTo("#callout3", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 10.2);
+
+    gsap.set("#feat1", { xPercent: -50 });
+    tl.fromTo("#feat1", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.4)" }, 11.0);
+
+    tl.to("#callout3", { opacity: 0, y: -30, duration: 0.3 }, 14.3);
+    tl.to("#feat1", { opacity: 0, y: 30, duration: 0.3 }, 14.3);
+
+    // ── SCENE 4: Delivery (15-17.5s) ──
+    gsap.set("#callout4", { xPercent: -50 });
+    tl.fromTo("#callout4", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.7)" }, 15.2);
+
+    gsap.set("#feat2", { xPercent: -50 });
+    tl.fromTo("#feat2", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.4)" }, 15.8);
+
+    tl.to("#callout4", { opacity: 0, duration: 0.2 }, 17.0);
+    tl.to("#feat2", { opacity: 0, duration: 0.2 }, 17.0);
+
+    // ── SCENE 5: Outro (17.5-20s) ──
+    gsap.set("#outro-logo", { xPercent: -50, yPercent: -50 });
+    gsap.set("#outro-name", { xPercent: -50, yPercent: -50 });
+    gsap.set("#outro-tagline", { xPercent: -50, yPercent: -50 });
+    gsap.set("#outro-url", { xPercent: -50, yPercent: -50 });
+    gsap.set("#outro-handle", { xPercent: -50, yPercent: -50 });
+
+    tl.fromTo("#outro-logo", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.7)" }, 17.6);
+    tl.fromTo("#outro-name", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 17.9);
+    tl.fromTo("#outro-tagline", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 18.2);
+    tl.fromTo("#outro-url", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.5)" }, 18.5);
+    tl.to("#outro-handle", { opacity: 0.5, duration: 0.3 }, 18.7);
+
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "historyId": "da21836a-b413-40ff-9c0c-49cd0f72233e",
+  "currentRevision": "9db3327c-8127-4557-9ea9-637f2fc1b198",
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "CLAUDE.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "hyperframes.json": {
+      "hash": "44d4e8dcefebce0a13f5afa82aa270b0b19a1d3f82e434f92616010cee775dc4",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\44\\44d4e8dcefebce0a13f5afa82aa270b0b19a1d3f82e434f92616010cee775dc4"
+    },
+    "index.html": {
+      "hash": "b055e9da5140a39cd49451787827321cf5305cf741725dbcaaf28fd9ca2f5e8d",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\b0\\b055e9da5140a39cd49451787827321cf5305cf741725dbcaaf28fd9ca2f5e8d"
+    },
+    "meta.json": {
+      "hash": "6df12b5e44b632ac9aaddb890f58cd848d6f81907fd9846d963589ab00465d13",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\6d\\6df12b5e44b632ac9aaddb890f58cd848d6f81907fd9846d963589ab00465d13"
+    },
+    "package.json": {
+      "hash": "da3ac837054f3d63fec089c1bccfe057465258f9f7ecdbeceef8dc5991f8ace8",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\da\\da3ac837054f3d63fec089c1bccfe057465258f9f7ecdbeceef8dc5991f8ace8"
+    }
+  },
+  "revisions": {
+    "3a9c2aaf-e5a3-40df-a5a1-51108497620a": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792397081052,
+      "endedAt": 1792397081053,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\10\\10108299258c27b9a4b7b7f57c714f15f19e6959f65a3a3abfba8564458d89f7",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\94\\946b95fd2cc2ff6f636e7abef799859f9cfe0d540bc24c2028c5cfcfa2c7fd7a"
+        }
+      }
+    },
+    "9db3327c-8127-4557-9ea9-637f2fc1b198": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792397939411,
+      "endedAt": 1792397939412,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\94\\946b95fd2cc2ff6f636e7abef799859f9cfe0d540bc24c2028c5cfcfa2c7fd7a",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\da21836a-b413-40ff-9c0c-49cd0f72233e\\blobs\\b0\\b055e9da5140a39cd49451787827321cf5305cf741725dbcaaf28fd9ca2f5e8d"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "8a13a976-9a3b-4c4d-941a-01a1c2a62c81",
+      "completedAt": 1792397972859,
+      "output": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\chopdrop-promo\\chopdrop-promo\\renders\\chopdrop-promo_2026-10-19_09-18-57.mp4",
+      "status": "completed",
+      "revision": "9db3327c-8127-4557-9ea9-637f2fc1b198"
+    },
+    "retainedRevisions": [
+      "9db3327c-8127-4557-9ea9-637f2fc1b198",
+      "3a9c2aaf-e5a3-40df-a5a1-51108497620a"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

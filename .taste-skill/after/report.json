@@ -1,0 +1,2649 @@
+{
+ "url": "https://chopdrop-app.vercel.app/",
+ "at": "2026-10-22T13:05:15.533Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 8,
+   "filled": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "motion": {
+    "elements": 6,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 6,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 7074,
+     "screens": 7.9,
+     "words": 415,
+     "img": 11,
+     "video": 0,
+     "canvas": 0,
+     "svg": 2,
+     "sections": 6,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 8,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "photo-1604329760661-e71dc83f8f26?w=900&h=1350&fi",
+      "photo-1603496987674-79600a000f55?w=900&h=1350&fi",
+      "photo-1593787614839-9b93c8998f25?w=900&h=1350&fi",
+      "photo-1603496987674-79600a000f55?w=900&h=1350&fi",
+      "photo-1593787614839-9b93c8998f25?w=900&h=1350&fi",
+      "photo-1604329760661-e71dc83f8f26?w=900&h=1350&fi",
+      "photo-1604329760661-e71dc83f8f26?w=1600&h=900&fi",
+      "photo-1603496987674-79600a000f55?w=800&h=1200&fi"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "The math",
+     "words": 2,
+     "chars": 8,
+     "lines": 1,
+     "size": 64,
+     "vw": 4.4,
+     "font": "Zilla Slab",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "left",
+     "widthRatio": 0.42,
+     "top": 745,
+     "tag": "h2",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Lunch is cheaper together.",
+     "words": 4,
+     "lines": 2,
+     "size": 51.8,
+     "font": "Zilla Slab"
+    },
+    "headings": [
+     {
+      "text": "Lunch is cheaper together.",
+      "words": 4,
+      "chars": 26,
+      "lines": 2,
+      "size": 51.8,
+      "vw": 3.6,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "left",
+      "widthRatio": 0.42,
+      "top": 195,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "The math",
+      "words": 2,
+      "chars": 8,
+      "lines": 1,
+      "size": 64,
+      "vw": 4.4,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.42,
+      "top": 745,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "₦420,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 64,
+      "vw": 4.4,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.42,
+      "top": 1019,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "₦240,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 64,
+      "vw": 4.4,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "right",
+      "position": "left",
+      "widthRatio": 0.17,
+      "top": 1370,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "How it works",
+      "words": 3,
+      "chars": 12,
+      "lines": 2,
+      "size": 64,
+      "vw": 4.4,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.16,
+      "top": 1731,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Captain perks",
+      "words": 2,
+      "chars": 13,
+      "lines": 2,
+      "size": 86.4,
+      "vw": 6,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 0.95,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.36,
+      "top": 2582,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Free lunch",
+      "words": 2,
+      "chars": 10,
+      "lines": 1,
+      "size": 28,
+      "vw": 1.9,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.36,
+      "top": 2582,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Monthly cash bonus",
+      "words": 3,
+      "chars": 18,
+      "lines": 1,
+      "size": 28,
+      "vw": 1.9,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.36,
+      "top": 3008,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Office hero",
+      "words": 2,
+      "chars": 11,
+      "lines": 1,
+      "size": 28,
+      "vw": 1.9,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.36,
+      "top": 3434,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "AO",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 57.6,
+      "vw": 4,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.29,
+      "top": 4012,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "I used to spend 30 minutes every day collecting lunch orders on WhatsApp. Now I tap one button and eat free.",
+      "words": 21,
+      "chars": 108,
+      "lines": 4,
+      "size": 37.4,
+      "vw": 2.6,
+      "font": "Zilla Slab",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.34,
+      "top": 4140,
+      "tag": "blockquote",
+      "kind": "statement"
+     },
+     {
+      "text": "Questions",
+      "words": 1,
+      "chars": 9,
+      "lines": 1,
+      "size": 32,
+      "vw": 2.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.21,
+      "top": 4695,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Save together.",
+      "words": 2,
+      "chars": 14,
+      "lines": 1,
+      "size": 49,
+      "vw": 3.4,
+      "font": "Zilla Slab",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "right",
+      "position": "right",
+      "widthRatio": 0.33,
+      "top": 5673,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Menu",
+      "words": 1,
+      "chars": 4,
+      "lines": 1,
+      "size": 37.4,
+      "vw": 2.6,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.41,
+      "top": 6168,
+      "tag": "a",
+      "kind": "heading"
+     },
+     {
+      "text": "Start",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 37.4,
+      "vw": 2.6,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.41,
+      "top": 6245,
+      "tag": "a",
+      "kind": "heading"
+     },
+     {
+      "text": "Orders",
+      "words": 1,
+      "chars": 6,
+      "lines": 1,
+      "size": 37.4,
+      "vw": 2.6,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.41,
+      "top": 6321,
+      "tag": "a",
+      "kind": "heading"
+     },
+     {
+      "text": "About",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 37.4,
+      "vw": 2.6,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.41,
+      "top": 6397,
+      "tag": "a",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 17,
+     "maxLines": 4,
+     "over2Lines": 0,
+     "statements": 1,
+     "centered": 1,
+     "medianWords": 2,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Zilla Slab",
+       "share": 0.99,
+       "mono": false
+      },
+      {
+       "family": "Plus Jakarta Sans",
+       "share": 0.01,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      14,
+      16,
+      21,
+      26,
+      28,
+      32,
+      37,
+      49,
+      52,
+      58,
+      64,
+      86
+     ],
+     "sizeCount": 13,
+     "notLoaded": [],
+     "body": {
+      "font": "Zilla Slab",
+      "size": 21,
+      "leading": 1.5,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 4.3
+     },
+     "measureChars": 30,
+     "max": {
+      "size": 86.4,
+      "vw": 6,
+      "font": "Zilla Slab",
+      "text": "Captainperks"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.08,
+     "smallText": 0
+    },
+    "eyebrows": [
+     {
+      "text": "ChopDrop",
+      "above": "Lunch is cheaper together.",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 15.7,
+      "top": 140
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#faf7f2",
+     "bodyBgHsl": {
+      "h": 38,
+      "s": 0.44,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#eeecea",
+       "top": 0,
+       "hsl": {
+        "h": 30,
+        "s": 0.11,
+        "l": 0.93
+       }
+      },
+      {
+       "color": "#e4e1dd",
+       "top": 12,
+       "hsl": {
+        "h": 34,
+        "s": 0.11,
+        "l": 0.88
+       }
+      },
+      {
+       "color": "#cdc3b6",
+       "top": 2462,
+       "hsl": {
+        "h": 34,
+        "s": 0.19,
+        "l": 0.76
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#333231",
+       "share": 0.72
+      },
+      {
+       "color": "#6b6763",
+       "share": 0.18
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.07
+      },
+      {
+       "color": "#eeecea",
+       "share": 0.01
+      },
+      {
+       "color": "#1c2b24",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#5c6b54",
+      "hsl": {
+       "h": 99,
+       "s": 0.12,
+       "l": 0.37
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": [
+      {
+       "text": "ChopDrop pools your office lunch orders ",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 21,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Browse menu",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 14,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Log in",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 14,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Join office",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 14,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "20 people",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 21,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "30% off",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 21,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 2,
+     "inHero": 1,
+     "radius": 0,
+     "height": 64,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Set Up My Office"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 3,
+     "boxRadius": 16,
+     "squareMedia": 2,
+     "roundedMedia": 3,
+     "mediaRadius": 16,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.47
+     },
+     {
+      "type": "img",
+      "ratio": 0.47
+     },
+     {
+      "type": "img",
+      "ratio": 0.47
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 285,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 7074,
+    "margins": {
+     "left": 60,
+     "right": 64
+    },
+    "sections": [
+     {
+      "sel": "div.lg:grid.lg:grid-cols-2",
+      "tag": "div",
+      "top": 0,
+      "height": 2462,
+      "words": 132,
+      "media": 2,
+      "middle": 0,
+      "heading": {
+       "text": "The math",
+       "size": 64,
+       "tag": "h2"
+      },
+      "left": 60,
+      "right": 12,
+      "textLeft": 60,
+      "textRight": 672,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": true
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 2462,
+      "height": 1390,
+      "words": 72,
+      "media": 3,
+      "middle": 388,
+      "heading": {
+       "text": "Captain",
+       "size": 86,
+       "tag": "h2"
+      },
+      "left": 68,
+      "right": 179,
+      "textLeft": 68,
+      "textRight": 183,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 3852,
+      "height": 723,
+      "words": 26,
+      "media": 0,
+      "middle": 373,
+      "heading": {
+       "text": "AO",
+       "size": 58,
+       "tag": "span"
+      },
+      "left": 276,
+      "right": 227,
+      "textLeft": 276,
+      "textRight": 227,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 4575,
+      "height": 609,
+      "words": 137,
+      "media": 0,
+      "middle": 310,
+      "heading": {
+       "text": "Questions",
+       "size": 32,
+       "tag": "h2"
+      },
+      "left": 68,
+      "right": 84,
+      "textLeft": 68,
+      "textRight": 84,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.relative",
+      "tag": "section",
+      "top": 5184,
+      "height": 810,
+      "words": 34,
+      "media": 1,
+      "middle": 0,
+      "heading": {
+       "text": "Save together.",
+       "size": 49,
+       "tag": "h2"
+      },
+      "left": 911,
+      "right": 64,
+      "textLeft": 911,
+      "textRight": 64,
+      "fullBleed": true,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "footer.lg:grid.lg:grid-cols-2",
+      "tag": "footer",
+      "top": 5994,
+      "height": 1080,
+      "words": 16,
+      "media": 1,
+      "middle": 64,
+      "heading": {
+       "text": "Menu",
+       "size": 37,
+       "tag": "a"
+      },
+      "left": 0,
+      "right": 427,
+      "textLeft": 784,
+      "textRight": 427,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [
+     {
+      "top": 4412,
+      "height": 284
+     }
+    ],
+    "h1s": [
+     {
+      "text": "Lunch is cheaper together.",
+      "size": 52,
+      "top": 195,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 60,
+      "n": 6
+     },
+     {
+      "x": 736,
+      "n": 5
+     },
+     {
+      "x": 513,
+      "n": 3
+     },
+     {
+      "x": 971,
+      "n": 3
+     },
+     {
+      "x": 948,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 19,
+    "bodySize": 21,
+    "stage": false,
+    "explains": true,
+    "slivers": [],
+    "voidShare": 0.07,
+    "voidBox": {
+     "x": 600,
+     "y": 120,
+     "w": 120,
+     "h": 780
+    }
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 11,
+   "filled": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "motion": {
+    "elements": 4,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 4,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 10584,
+     "screens": 10.3,
+     "words": 421,
+     "img": 11,
+     "video": 0,
+     "canvas": 0,
+     "svg": 2,
+     "sections": 6,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 8,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "photo-1604329760661-e71dc83f8f26?w=900&h=1350&fi",
+      "photo-1603496987674-79600a000f55?w=900&h=1350&fi",
+      "photo-1593787614839-9b93c8998f25?w=900&h=1350&fi",
+      "photo-1603496987674-79600a000f55?w=900&h=1350&fi",
+      "photo-1593787614839-9b93c8998f25?w=900&h=1350&fi",
+      "photo-1604329760661-e71dc83f8f26?w=900&h=1350&fi",
+      "photo-1604329760661-e71dc83f8f26?w=1600&h=900&fi",
+      "photo-1603496987674-79600a000f55?w=800&h=1200&fi"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Lunch is cheaper together.",
+     "words": 4,
+     "chars": 26,
+     "lines": 2,
+     "size": 40,
+     "vw": 5.2,
+     "font": "Zilla Slab",
+     "weight": 600,
+     "tracking": -0.025,
+     "leading": 1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "center",
+     "position": "center",
+     "widthRatio": 0.91,
+     "top": 749,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Lunch is cheaper together.",
+     "words": 4,
+     "lines": 2,
+     "size": 40,
+     "font": "Zilla Slab"
+    },
+    "headings": [
+     {
+      "text": "Lunch is cheaper together.",
+      "words": 4,
+      "chars": 26,
+      "lines": 2,
+      "size": 40,
+      "vw": 5.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.91,
+      "top": 749,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "The math",
+      "words": 2,
+      "chars": 8,
+      "lines": 1,
+      "size": 45.4,
+      "vw": 5.9,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 1240,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "₦420,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 45.4,
+      "vw": 5.9,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 1621,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "₦240,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 45.4,
+      "vw": 5.9,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "right",
+      "position": "right",
+      "widthRatio": 0.23,
+      "top": 1935,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "How it works",
+      "words": 3,
+      "chars": 12,
+      "lines": 1,
+      "size": 45.4,
+      "vw": 5.9,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 2268,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Captain perks",
+      "words": 2,
+      "chars": 13,
+      "lines": 2,
+      "size": 48,
+      "vw": 6.3,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 0.95,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 3209,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "AO",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 40,
+      "vw": 5.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 7016,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "Questions",
+      "words": 1,
+      "chars": 9,
+      "lines": 1,
+      "size": 28,
+      "vw": 3.6,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 7905,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Save together.",
+      "words": 2,
+      "chars": 14,
+      "lines": 1,
+      "size": 28,
+      "vw": 3.6,
+      "font": "Zilla Slab",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 9239,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 9,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 1,
+     "medianWords": 2,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Zilla Slab",
+       "share": 0.99,
+       "mono": false
+      },
+      {
+       "family": "Plus Jakarta Sans",
+       "share": 0.01,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      13,
+      16,
+      19,
+      23,
+      24,
+      28,
+      40,
+      45,
+      48
+     ],
+     "sizeCount": 10,
+     "notLoaded": [],
+     "body": {
+      "font": "Zilla Slab",
+      "size": 19.1,
+      "leading": 1.5,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 4.3
+     },
+     "measureChars": 75,
+     "max": {
+      "size": 48,
+      "vw": 6.3,
+      "font": "Zilla Slab",
+      "text": "Captainperks"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.08,
+     "smallText": 0
+    },
+    "eyebrows": [
+     {
+      "text": "ChopDrop",
+      "above": "Lunch is cheaper together.",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 15.7,
+      "top": 694
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#faf7f2",
+     "bodyBgHsl": {
+      "h": 38,
+      "s": 0.44,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#eeecea",
+       "top": 0,
+       "hsl": {
+        "h": 30,
+        "s": 0.11,
+        "l": 0.93
+       }
+      },
+      {
+       "color": "#e4e1dd",
+       "top": 590,
+       "hsl": {
+        "h": 34,
+        "s": 0.11,
+        "l": 0.88
+       }
+      },
+      {
+       "color": "#cdc3b6",
+       "top": 3089,
+       "hsl": {
+        "h": 34,
+        "s": 0.19,
+        "l": 0.76
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#333231",
+       "share": 0.71
+      },
+      {
+       "color": "#6b6763",
+       "share": 0.18
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.08
+      },
+      {
+       "color": "#eeecea",
+       "share": 0.01
+      },
+      {
+       "color": "#1c2b24",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#5c6b54",
+      "hsl": {
+       "h": 99,
+       "s": 0.12,
+       "l": 0.37
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": [
+      {
+       "text": "ChopDrop pools your office lunch orders ",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 19.1,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Browse menu",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 13.4,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Log in",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 13.4,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Join office",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 13.4,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "20 people",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 19.1,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "30% off",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 19.1,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 3,
+     "inHero": 2,
+     "radius": 0,
+     "height": 61,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Set Up My Office",
+      "Set Up My Office"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 3,
+     "boxRadius": 16,
+     "squareMedia": 8,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.6
+     },
+     {
+      "type": "img",
+      "ratio": 0.6
+     },
+     {
+      "type": "img",
+      "ratio": 0.6
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 192,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 10584,
+    "margins": {
+     "left": 24,
+     "right": 24
+    },
+    "sections": [
+     {
+      "sel": "div.lg:grid.lg:grid-cols-2",
+      "tag": "div",
+      "top": 0,
+      "height": 3089,
+      "words": 132,
+      "media": 1,
+      "middle": 27,
+      "heading": {
+       "text": "The math",
+       "size": 45,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 48,
+      "textLeft": 24,
+      "textRight": 48,
+      "fullBleed": true,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": true
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 3089,
+      "height": 3766,
+      "words": 72,
+      "media": 3,
+      "middle": 0,
+      "heading": {
+       "text": "Captain",
+       "size": 48,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 24,
+      "textLeft": 24,
+      "textRight": 32,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 6856,
+      "height": 930,
+      "words": 26,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "AO",
+       "size": 40,
+       "tag": "span"
+      },
+      "left": 24,
+      "right": 438,
+      "textLeft": 24,
+      "textRight": 438,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 7785,
+      "height": 789,
+      "words": 137,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Questions",
+       "size": 28,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 24,
+      "textLeft": 24,
+      "textRight": 24,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.relative",
+      "tag": "section",
+      "top": 8575,
+      "height": 922,
+      "words": 34,
+      "media": 1,
+      "middle": 0,
+      "heading": null,
+      "left": 32,
+      "right": 43,
+      "textLeft": 32,
+      "textRight": 43,
+      "fullBleed": true,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "footer.lg:grid.lg:grid-cols-2",
+      "tag": "footer",
+      "top": 9496,
+      "height": 1024,
+      "words": 16,
+      "media": 1,
+      "middle": 0,
+      "heading": null,
+      "left": 32,
+      "right": 517,
+      "textLeft": 32,
+      "textRight": 517,
+      "fullBleed": true,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [
+     {
+      "top": 6732,
+      "height": 444
+     }
+    ],
+    "h1s": [
+     {
+      "text": "Lunch is cheaper together.",
+      "size": 40,
+      "top": 749,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 24,
+      "n": 21
+     }
+    ],
+    "leftBlocks": 21,
+    "bodySize": 19,
+    "stage": false,
+    "explains": true,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 11,
+   "filled": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "motion": {
+    "elements": 4,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 4,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 8907,
+     "screens": 10.6,
+     "words": 421,
+     "img": 11,
+     "video": 0,
+     "canvas": 0,
+     "svg": 2,
+     "sections": 6,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 8,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "photo-1604329760661-e71dc83f8f26?w=900&h=1350&fi",
+      "photo-1603496987674-79600a000f55?w=900&h=1350&fi",
+      "photo-1593787614839-9b93c8998f25?w=900&h=1350&fi",
+      "photo-1603496987674-79600a000f55?w=900&h=1350&fi",
+      "photo-1593787614839-9b93c8998f25?w=900&h=1350&fi",
+      "photo-1604329760661-e71dc83f8f26?w=900&h=1350&fi",
+      "photo-1604329760661-e71dc83f8f26?w=1600&h=900&fi",
+      "photo-1603496987674-79600a000f55?w=800&h=1200&fi"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Lunch is cheaper together.",
+     "words": 4,
+     "chars": 26,
+     "lines": 2,
+     "size": 40,
+     "vw": 10.3,
+     "font": "Zilla Slab",
+     "weight": 600,
+     "tracking": -0.025,
+     "leading": 1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "center",
+     "position": "center",
+     "widthRatio": 0.82,
+     "top": 641,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Lunch is cheaper together.",
+     "words": 4,
+     "lines": 2,
+     "size": 40,
+     "font": "Zilla Slab"
+    },
+    "headings": [
+     {
+      "text": "Lunch is cheaper together.",
+      "words": 4,
+      "chars": 26,
+      "lines": 2,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.82,
+      "top": 641,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "The math",
+      "words": 2,
+      "chars": 8,
+      "lines": 1,
+      "size": 33.3,
+      "vw": 8.5,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 1125,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "₦420,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 33.3,
+      "vw": 8.5,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 1479,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "₦240,000",
+      "words": 1,
+      "chars": 8,
+      "lines": 1,
+      "size": 33.3,
+      "vw": 8.5,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "right",
+      "position": "right",
+      "widthRatio": 0.33,
+      "top": 1774,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "How it works",
+      "words": 3,
+      "chars": 12,
+      "lines": 1,
+      "size": 33.3,
+      "vw": 8.5,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 2095,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Captain perks",
+      "words": 2,
+      "chars": 13,
+      "lines": 2,
+      "size": 48,
+      "vw": 12.3,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 0.95,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 3005,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Free lunch",
+      "words": 2,
+      "chars": 10,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 3144,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Monthly cash bonus",
+      "words": 3,
+      "chars": 18,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 3829,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Office hero",
+      "words": 2,
+      "chars": 11,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 4514,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "AO",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 5426,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "I used to spend 30 minutes every day collecting lunch orders on WhatsApp. Now I tap one button and eat free.",
+      "words": 21,
+      "chars": 108,
+      "lines": 4,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Zilla Slab",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.8,
+      "top": 5831,
+      "tag": "blockquote",
+      "kind": "statement"
+     },
+     {
+      "text": "Questions",
+      "words": 1,
+      "chars": 9,
+      "lines": 1,
+      "size": 28,
+      "vw": 7.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 6313,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Save together.",
+      "words": 2,
+      "chars": 14,
+      "lines": 1,
+      "size": 28,
+      "vw": 7.2,
+      "font": "Zilla Slab",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.84,
+      "top": 7638,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Menu",
+      "words": 1,
+      "chars": 4,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.84,
+      "top": 8480,
+      "tag": "a",
+      "kind": "heading"
+     },
+     {
+      "text": "Start",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.84,
+      "top": 8532,
+      "tag": "a",
+      "kind": "heading"
+     },
+     {
+      "text": "Orders",
+      "words": 1,
+      "chars": 6,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.84,
+      "top": 8584,
+      "tag": "a",
+      "kind": "heading"
+     },
+     {
+      "text": "About",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Zilla Slab",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.5,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.84,
+      "top": 8636,
+      "tag": "a",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 17,
+     "maxLines": 4,
+     "over2Lines": 0,
+     "statements": 1,
+     "centered": 1,
+     "medianWords": 2,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Zilla Slab",
+       "share": 0.99,
+       "mono": false
+      },
+      {
+       "family": "Plus Jakarta Sans",
+       "share": 0.01,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      13,
+      16,
+      18,
+      20,
+      24,
+      28,
+      33,
+      40,
+      48
+     ],
+     "sizeCount": 10,
+     "notLoaded": [],
+     "body": {
+      "font": "Zilla Slab",
+      "size": 18,
+      "leading": 1.5,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 4.3
+     },
+     "measureChars": 38,
+     "max": {
+      "size": 48,
+      "vw": 12.3,
+      "font": "Zilla Slab",
+      "text": "Captainperks"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.08,
+     "smallText": 0
+    },
+    "eyebrows": [
+     {
+      "text": "ChopDrop",
+      "above": "Lunch is cheaper together.",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 15.7,
+      "top": 586
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#faf7f2",
+     "bodyBgHsl": {
+      "h": 38,
+      "s": 0.44,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#eeecea",
+       "top": 0,
+       "hsl": {
+        "h": 30,
+        "s": 0.11,
+        "l": 0.93
+       }
+      },
+      {
+       "color": "#e4e1dd",
+       "top": 482,
+       "hsl": {
+        "h": 34,
+        "s": 0.11,
+        "l": 0.88
+       }
+      },
+      {
+       "color": "#cdc3b6",
+       "top": 2885,
+       "hsl": {
+        "h": 34,
+        "s": 0.19,
+        "l": 0.76
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#333231",
+       "share": 0.71
+      },
+      {
+       "color": "#6b6763",
+       "share": 0.18
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.08
+      },
+      {
+       "color": "#eeecea",
+       "share": 0.01
+      },
+      {
+       "color": "#1c2b24",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#5c6b54",
+      "hsl": {
+       "h": 99,
+       "s": 0.12,
+       "l": 0.37
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": [
+      {
+       "text": "ChopDrop pools your office lunch orders ",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 18,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Browse menu",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Log in",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "Join office",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 13,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "20 people",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 18,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      },
+      {
+       "text": "30% off",
+       "ratio": 4.3,
+       "need": 4.5,
+       "size": 18,
+       "fg": "#6b6763",
+       "bg": "#e4e1dd"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 3,
+     "inHero": 1,
+     "radius": 0,
+     "height": 59,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Set Up My Office"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 3,
+     "boxRadius": 16,
+     "squareMedia": 8,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.6
+     },
+     {
+      "type": "img",
+      "ratio": 0.6
+     },
+     {
+      "type": "img",
+      "ratio": 0.6
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 192,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 8907,
+    "margins": {
+     "left": 24,
+     "right": 24
+    },
+    "sections": [
+     {
+      "sel": "div.lg:grid.lg:grid-cols-2",
+      "tag": "div",
+      "top": 0,
+      "height": 2885,
+      "words": 132,
+      "media": 1,
+      "middle": 0,
+      "heading": {
+       "text": "Lunch is cheaper",
+       "size": 40,
+       "tag": "h1"
+      },
+      "left": 24,
+      "right": 24,
+      "textLeft": 24,
+      "textRight": 24,
+      "fullBleed": true,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": true
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 2885,
+      "height": 2381,
+      "words": 72,
+      "media": 3,
+      "middle": 0,
+      "heading": {
+       "text": "Captain",
+       "size": 48,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 24,
+      "textLeft": 24,
+      "textRight": 34,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 5266,
+      "height": 927,
+      "words": 26,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "AO",
+       "size": 40,
+       "tag": "span"
+      },
+      "left": 24,
+      "right": 60,
+      "textLeft": 24,
+      "textRight": 60,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section",
+      "tag": "section",
+      "top": 6193,
+      "height": 964,
+      "words": 137,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Questions",
+       "size": 28,
+       "tag": "h2"
+      },
+      "left": 24,
+      "right": 29,
+      "textLeft": 24,
+      "textRight": 29,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.relative",
+      "tag": "section",
+      "top": 7156,
+      "height": 760,
+      "words": 34,
+      "media": 1,
+      "middle": 0,
+      "heading": {
+       "text": "Save together.",
+       "size": 28,
+       "tag": "h2"
+      },
+      "left": 32,
+      "right": 39,
+      "textLeft": 32,
+      "textRight": 39,
+      "fullBleed": true,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "footer.lg:grid.lg:grid-cols-2",
+      "tag": "footer",
+      "top": 7916,
+      "height": 927,
+      "words": 16,
+      "media": 1,
+      "middle": 0,
+      "heading": null,
+      "left": 32,
+      "right": 145,
+      "textLeft": 32,
+      "textRight": 145,
+      "fullBleed": true,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [
+     {
+      "top": 5144,
+      "height": 444
+     },
+     {
+      "top": 6032,
+      "height": 284
+     }
+    ],
+    "h1s": [
+     {
+      "text": "Lunch is cheaper together.",
+      "size": 40,
+      "top": 641,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 24,
+      "n": 21
+     }
+    ],
+    "leftBlocks": 21,
+    "bodySize": 18,
+    "stage": false,
+    "explains": true,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 1440,
+   "message": "1 headline(s) wrap past two lines at 1440px: \"I used to spend 30 minutes every day collecting \" → 4 lines (21 words, 37.4px, a paragraph set above 36px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 36px or less."
+  },
+  {
+   "level": "FAIL",
+   "id": "eyebrow",
+   "width": 1440,
+   "message": "1 eyebrow/kicker label(s) above headings: \"ChopDrop\" above \"Lunch is cheaper together.\"",
+   "fix": "Delete them. If the label carried real information, fold it into the headline or the supporting sentence.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "palette-cream",
+   "width": 1440,
+   "message": "Yellow-cream background (page background #faf7f2).",
+   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "contrast",
+   "width": 1440,
+   "message": "Low-contrast text: \"ChopDrop pools your office lunch orders \" 4.3:1 needs 4.5:1; \"Browse menu\" 4.3:1 needs 4.5:1; \"Log in\" 4.3:1 needs 4.5:1; \"Join office\" 4.3:1 needs 4.5:1",
+   "fix": "Darken or lighten the text colour.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "size-count",
+   "width": 1440,
+   "message": "13 different font sizes (11, 14, 16, 21, 26, 28, 32, 37, 49, 52, 58, 64, 86).",
+   "fix": "A page needs about five: display, heading, lead, body, small.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "grey-body",
+   "width": 1440,
+   "message": "The running text is a soft grey on its ground (4.3:1).",
+   "fix": "Set body copy in the full ink (7:1 or more). Keep the muted ink for secondary notes; pages read thin and unfinished when everything is grey.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "no-footage",
+   "width": 1440,
+   "message": "No video anywhere on the page.",
+   "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "FAIL",
+   "id": "still-page",
+   "width": 1440,
+   "message": "Only 6 element(s) moved while the page loaded and scrolled.",
+   "fix": "Build the motion layer (SKILL.md step 9, references/motion.md): the signature move, an entrance for the parts of every section, feedback on every control, and one moving picture. Transform and opacity only, with a reduced-motion fallback."
+  },
+  {
+   "level": "WARN",
+   "id": "lopsided",
+   "width": 768,
+   "message": "A section keeps its content on one side and leaves 438px of the width empty: \"AO\".",
+   "fix": "Fill the other side with what the section has (its picture, a second column, the figure), or defend the void in one sentence."
+  },
+  {
+   "level": "WARN",
+   "id": "blank-gap",
+   "width": 768,
+   "message": "A 444px stretch at 6732px holds nothing.",
+   "fix": "Check that it is a deliberate rest (once per page at most); otherwise close it to the normal section gap.",
+   "alsoAt": [
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "untitled-section",
+   "width": 768,
+   "message": "A section carries text but no heading: section.relative at 8575px.",
+   "fix": "Name it with a short heading unless it is the continuation of the section above."
+  },
+  {
+   "level": "FAIL",
+   "id": "covered-text",
+   "width": 768,
+   "message": "Large text lies under another element at some scroll position: \"Menu\" (screen 10, 50% hidden); \"Start\" (screen 10, 100% hidden)",
+   "fix": "Nothing may sit on top of a headline or statement. Move the picture, shorten the pinned run, or raise the text above it (z-index) and give it a ground.",
+   "alsoAt": [
+    390
+   ]
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\desktop-fold.jpg",
+   "pages": [
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\desktop-page-01.jpg",
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\desktop-page-02.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\tablet-fold.jpg",
+   "pages": [
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\tablet-page-01.jpg",
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\tablet-page-02.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\mobile-fold.jpg",
+   "pages": [
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\mobile-page-01.jpg",
+    "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\.taste-skill\\after\\mobile-page-02.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

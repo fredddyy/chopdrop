@@ -1,0 +1,309 @@
+{
+  "ok": true,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 6,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "timeline_track_too_dense",
+        "severity": "warning",
+        "message": "Track 0 has 5 timed elements in this HTML file. Smaller sub-compositions keep timelines easier to read, iterate on, and diff.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move coherent scene groups into separate .html files under compositions/ and mount them from the parent with data-composition-src so the timeline stays easier to inspect, revise, and validate."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene1\"> is a timeline element that contains nested <div id=\"s1-number\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene1",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene1\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene2\"> is a timeline element that contains nested <div id=\"s2-line1\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene2",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene2\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene3\"> is a timeline element that contains nested <div id=\"s3-card\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene3",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene3\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene4\"> is a timeline element that contains nested <div id=\"s4-icon\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene4",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene4\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene5\"> is a timeline element that contains nested <div id=\"s5-main\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene5",
+        "dataAttributes": {},
+        "sourceFile": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene5\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      }
+    ],
+    "filesScanned": 1
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"vo4\" is 2.43s but its slot (data-duration) is 2.50s — the slot is shortened to the media length when rendered. Set data-duration to ~2.43s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-hf-id": "hf-wwvb",
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1920",
+          "data-height": "1080"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "time": 0
+      }
+    ]
+  },
+  "layout": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "duration": 23,
+    "samples": [
+      1.278,
+      3.833,
+      6.389,
+      8.944,
+      11.5,
+      14.056,
+      16.611,
+      19.167,
+      21.722
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 0,
+    "truncated": false
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 4,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.4:1; WCAG AA requires 4.5:1.",
+        "text": "Arrives together by 12 PM",
+        "fg": "rgb(156,163,175)",
+        "bg": "rgb(247,249,249)",
+        "ratio": 2.4,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(110,115,124)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2)",
+        "dataAttributes": {
+          "data-hf-id": "hf-kvir"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 714,
+          "y": 559.5,
+          "width": 435.828125,
+          "height": 24
+        },
+        "time": 11.5,
+        "times": [
+          11.5
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.16:1; WCAG AA requires 3:1.",
+        "text": "FREE",
+        "fg": "rgb(34,197,94)",
+        "bg": "rgb(247,249,249)",
+        "ratio": 2.16,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(29,166,79)",
+        "large": true,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(3)",
+        "dataAttributes": {
+          "data-hf-id": "hf-wcju"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 1169.828125,
+          "y": 528.5,
+          "width": 76.171875,
+          "height": 44
+        },
+        "time": 11.5,
+        "times": [
+          11.5
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.28:1; WCAG AA requires 4.5:1.",
+        "text": "First order — delivery is free. No code needed.",
+        "fg": "rgb(34,197,94)",
+        "bg": "rgb(255,255,255)",
+        "ratio": 2.28,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(23,136,65)",
+        "large": false,
+        "selector": "div > div:nth-of-type(3) > div > div:nth-of-type(3)",
+        "dataAttributes": {
+          "data-hf-id": "hf-lu69"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 648,
+          "y": 625.5,
+          "width": 624,
+          "height": 24
+        },
+        "time": 11.5,
+        "times": [
+          11.5
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.54:1; WCAG AA requires 4.5:1.",
+        "text": "Ikeja",
+        "fg": "rgb(156,163,175)",
+        "bg": "rgb(255,255,255)",
+        "ratio": 2.54,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(114,119,128)",
+        "large": false,
+        "selector": "div > div:nth-of-type(5) > div:nth-of-type(3) > div:nth-of-type(2)",
+        "dataAttributes": {
+          "data-hf-id": "hf-tj7a"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 941.46875,
+          "y": 707.6875,
+          "width": 37.03125,
+          "height": 24
+        },
+        "time": 21.722,
+        "times": [
+          21.722
+        ]
+      }
+    ],
+    "enabled": true,
+    "samples": [
+      1.278,
+      6.389,
+      11.5,
+      16.611,
+      21.722
+    ],
+    "checked": 14,
+    "passed": 10
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

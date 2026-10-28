@@ -1,0 +1,510 @@
+{
+  "version": 1,
+  "historyId": "2e64d339-075c-4c17-a3cf-5db61f7ccfff",
+  "currentRevision": "ba469a46-e668-49f5-9d77-fda5bce449ce",
+  "pendingChanges": false,
+  "files": {
+    "assets/sfx/impact/impactBell_heavy_000.ogg": {
+      "hash": "94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\94\\94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f"
+    },
+    "assets/sfx/impact/impactSoft_medium_001.ogg": {
+      "hash": "7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\76\\7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf"
+    },
+    "assets/sfx/interface/click_003.ogg": {
+      "hash": "2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\2f\\2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292"
+    },
+    "assets/sfx/interface/drop_001.ogg": {
+      "hash": "692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\69\\692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af"
+    },
+    "assets/voiceover.wav": {
+      "hash": "c1de0e25884e03b80242592087781196df13bcb32e7f37dc29d0e804ac80046d",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\c1\\c1de0e25884e03b80242592087781196df13bcb32e7f37dc29d0e804ac80046d"
+    },
+    "index.html": {
+      "hash": "a7b4a73360200448971dc5b845b3fb0baa8d91637ec318e5061e96dc2a0a0852",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\a7\\a7b4a73360200448971dc5b845b3fb0baa8d91637ec318e5061e96dc2a0a0852"
+    },
+    "assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3": {
+      "hash": "5888d4bd2ba0119b87a94e502ae2cc401c08192945cc5e5c2f8e8a33aa47a0a1",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\58\\5888d4bd2ba0119b87a94e502ae2cc401c08192945cc5e5c2f8e8a33aa47a0a1"
+    },
+    "assets/voiceover-elevenlabs.mp3": {
+      "hash": "8fb77f793b15f2bab920502c25392730dd4f7e139a8e74b481d851c1dbd22fa4",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\8f\\8fb77f793b15f2bab920502c25392730dd4f7e139a8e74b481d851c1dbd22fa4"
+    }
+  },
+  "revisions": {
+    "e6524ba0-1a4a-4db7-9fdb-8e33c02d8beb": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792157391063,
+      "endedAt": 1792157391064,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\de\\deb0f687bae92e51887502b0b00d00a3eb02581a80301de000420b96e0cf0250",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\98\\98e43d1bdc679f6637e636c8a789b51b94d6cea764531cc7cf5e915dda2bbaa5"
+        }
+      }
+    },
+    "cf6c60a5-6780-4ae6-9ba1-6604c597e5c3": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792157440716,
+      "endedAt": 1792157440717,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\98\\98e43d1bdc679f6637e636c8a789b51b94d6cea764531cc7cf5e915dda2bbaa5",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\2b\\2b7809d855da19633ac529e5b10c0571b88cc36f2bf497700ee211626d46b5b9"
+        }
+      }
+    },
+    "ac975d35-d14c-4bbf-8895-b5714c7f00d2": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792157541046,
+      "endedAt": 1792157541047,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\2b\\2b7809d855da19633ac529e5b10c0571b88cc36f2bf497700ee211626d46b5b9",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\b7\\b79ab223279943daf87d9e6ba960a889f87e7beea0da61ec4ceaa3dc8dcf7010"
+        }
+      }
+    },
+    "ca02e2e7-0415-4496-a753-79918e868fa9": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792159064325,
+      "endedAt": 1792159064337,
+      "files": {
+        "assets/voiceover-elevenlabs.mp3": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\8f\\8fb77f793b15f2bab920502c25392730dd4f7e139a8e74b481d851c1dbd22fa4"
+        },
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\b7\\b79ab223279943daf87d9e6ba960a889f87e7beea0da61ec4ceaa3dc8dcf7010",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\98\\98a0633933d907f323be7e787b8f33d0848addb2b8f04f206d5b9f21b4af8383"
+        }
+      }
+    },
+    "55136da0-e81a-456a-b151-da02dee70e72": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792159962576,
+      "endedAt": 1792159962577,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\98\\98a0633933d907f323be7e787b8f33d0848addb2b8f04f206d5b9f21b4af8383",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\a8\\a87f5f798eca2250a438ddc3081312b411e45bf75ea4389d1db80736142e0942"
+        }
+      }
+    },
+    "c036c61b-1fee-4bd8-9dff-a4adeba93431": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792160574167,
+      "endedAt": 1792160574168,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\a8\\a87f5f798eca2250a438ddc3081312b411e45bf75ea4389d1db80736142e0942",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\56\\569e4313ae459c96f8a42fc05eb4b40e32a6a70190f24f0da2fbf329f4eecf04"
+        }
+      }
+    },
+    "8e07380f-9952-48f3-bb15-75f9dfb2bb4c": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792161479373,
+      "endedAt": 1792161479374,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\56\\569e4313ae459c96f8a42fc05eb4b40e32a6a70190f24f0da2fbf329f4eecf04",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\f2\\f2dc27db56cf33d276eaf4309e4765b7727686254713de676efd729aab3003e2"
+        }
+      }
+    },
+    "ba469a46-e668-49f5-9d77-fda5bce449ce": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792163459162,
+      "endedAt": 1792163459163,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\f2\\f2dc27db56cf33d276eaf4309e4765b7727686254713de676efd729aab3003e2",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\2e64d339-075c-4c17-a3cf-5db61f7ccfff\\blobs\\a7\\a7b4a73360200448971dc5b845b3fb0baa8d91637ec318e5061e96dc2a0a0852"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": null,
+      "id": "af5ccc89-0eed-4f64-8c22-7d6a194f489b"
+    },
+    "revisions": {
+      "e6524ba0-1a4a-4db7-9fdb-8e33c02d8beb": [
+        {
+          "id": "ec1a7ffb-b71e-47d5-8f07-5f8cc8db9396",
+          "scope": "project",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": true,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792157391958,
+          "contentHash": "7373f11171be7b03472ebab5088586558cfdc9a0b94e13f15a803afe750a7483",
+          "revision": "e6524ba0-1a4a-4db7-9fdb-8e33c02d8beb",
+          "inputFingerprint": "fb8a056e7f5842f8af4be838fa93ac502ff234f3dc82ff0c90f4d2fd22dc77cf",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "feacda49-5b19-4b06-b6f3-a088142d3f92"
+        }
+      ],
+      "cf6c60a5-6780-4ae6-9ba1-6604c597e5c3": [
+        {
+          "id": "b2e46c07-c86f-4f26-b4a6-edf5557f16c8",
+          "scope": "project",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792157455831,
+          "contentHash": "4825a8bc15c318ba9a0f5b3becbeba085e5e1fff552b4bf33123ceb8816d7097",
+          "revision": "cf6c60a5-6780-4ae6-9ba1-6604c597e5c3",
+          "inputFingerprint": "2b5d6bb80bee964c76504e934131643fe2767e8e635de608e3b902e7524198d9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "feacda49-5b19-4b06-b6f3-a088142d3f92"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "af5ccc89-0eed-4f64-8c22-7d6a194f489b",
+        "scope": "project",
+        "report": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\checks\\af5ccc89-0eed-4f64-8c22-7d6a194f489b.json",
+        "metadata": {
+          "ok": false,
+          "browserSkipped": true,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 3000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1792157134930,
+        "contentHash": "cc6de426874a0861d2687829249d09c6f558ce4ac27b68752ee7dc727fbed9b3",
+        "revision": null,
+        "inputFingerprint": "27d4cdf661e66764a140829c93291ab712f6d4717dcdcc77a8493d41f033c1ab",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": {
+      "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+      "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-8"
+    },
+    "revisions": {
+      "ac975d35-d14c-4bbf-8895-b5714c7f00d2": [
+        {
+          "scope": "full",
+          "id": "db9e264a-03c5-4c0b-b88d-96a2b407ccd8-0",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\brag.jpg\\frame-00-at-10.5s.png",
+          "time": 10.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792157622672,
+          "contentHash": "1ccf265b7b1ab2df72768ff10fe7a687fd9dc88bd28dff28b685e52179ed40b2",
+          "revision": "ac975d35-d14c-4bbf-8895-b5714c7f00d2",
+          "inputFingerprint": "78d7d049177caa3a79861c63d53928a1c6538d7eace3452ea6e21c75400f1cbe",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "db9e264a-03c5-4c0b-b88d-96a2b407ccd8-1",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\brag.jpg\\frame-01-at-20.37s.png",
+          "time": 20.37,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792157622672,
+          "contentHash": "91580391f58d53384ec318646821c7185d1c298b52c8acfc1d5a37155522d701",
+          "revision": "ac975d35-d14c-4bbf-8895-b5714c7f00d2",
+          "inputFingerprint": "78d7d049177caa3a79861c63d53928a1c6538d7eace3452ea6e21c75400f1cbe",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "8e07380f-9952-48f3-bb15-75f9dfb2bb4c": [
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-0",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-00-at-1.5s.png",
+          "time": 1.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378299,
+          "contentHash": "1b3322826f81ba76f7611b1037891dc7471c51da6d87f0b29d8c0655851f1eee",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-1",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-01-at-5s.png",
+          "time": 5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378299,
+          "contentHash": "f31f7ffd385b5d95154ccab1238516f99bba108ff9a7a67e28062f542b1755f2",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-2",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-02-at-8s.png",
+          "time": 8,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378299,
+          "contentHash": "ea49e9c493b039838131280535cbed6b365e7d5db6da3ea72cafc6b50d403ee8",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-3",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-03-at-11s.png",
+          "time": 11,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378299,
+          "contentHash": "4095c2e0cb989650d355596f6bea314ab22fd9644bfb036456b11cca362d12b0",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-4",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-04-at-13s.png",
+          "time": 13,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378299,
+          "contentHash": "3b25604046cdc1625e428eac3c1b25ef5c8038ceef4d17bec3b7253b555cf1e5",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-5",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-05-at-16s.png",
+          "time": 16,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378300,
+          "contentHash": "0d031f4ca9a9f846725134ae9b58dca701a2b695b9111630bd32ccf03b5f3f5b",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-6",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-06-at-19s.png",
+          "time": 19,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378300,
+          "contentHash": "1cca9bb5ccdace55349fbc46b8f325c589b33dd7ac3d4634e81753e77db4ca02",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-7",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-07-at-22s.png",
+          "time": 22,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378300,
+          "contentHash": "f27e0fa6e8a23edcfe1d5ffec54eb1e4c76ba1125dd335aab2369c2172a2dd0c",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "b2adbb8f-e98b-4072-9052-69d107395cc4-8",
+          "image": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\composition\\.hyperframes\\artifacts\\snapshots\\3659611c-6c01-4bea-9315-0d589073bcc9\\frame-08-at-22.31s.png",
+          "time": 22.31,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792162378300,
+          "contentHash": "db0f7482ca43cda0af50e1ba8894cc449d41d199c6ecfad139c7b006f8e03e1e",
+          "revision": "8e07380f-9952-48f3-bb15-75f9dfb2bb4c",
+          "inputFingerprint": "8644ccb93ab27cdaf55bfed2bac824affe9a1228a334dde4df384b10a118fa29",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "f800a7e8-c8ce-493f-bf2c-fcf6a52442fd",
+      "completedAt": 1792163510370,
+      "output": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-16-081500\\brag.mp4",
+      "status": "completed",
+      "revision": "ba469a46-e668-49f5-9d77-fda5bce449ce"
+    },
+    "retainedRevisions": [
+      "ba469a46-e668-49f5-9d77-fda5bce449ce",
+      "8e07380f-9952-48f3-bb15-75f9dfb2bb4c"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

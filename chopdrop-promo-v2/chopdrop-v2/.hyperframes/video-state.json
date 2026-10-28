@@ -1,0 +1,336 @@
+{
+  "version": 1,
+  "historyId": "ba596807-4bde-420c-8857-197a6721124d",
+  "currentRevision": "60aafaf4-4f30-45fe-a2a1-4a72ab3ac247",
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "CLAUDE.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "hyperframes.json": {
+      "hash": "3af6ecb4d7f8c0cf28a50880f71291f27406c4548e5db2ea2d57430abd99e0e1",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\3a\\3af6ecb4d7f8c0cf28a50880f71291f27406c4548e5db2ea2d57430abd99e0e1"
+    },
+    "index.html": {
+      "hash": "e86b0b8f009e23c8ff26e7de816bb2c33d297641d3b62ab8d638fe53721918eb",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\e8\\e86b0b8f009e23c8ff26e7de816bb2c33d297641d3b62ab8d638fe53721918eb"
+    },
+    "meta.json": {
+      "hash": "c98bfcf1a220191f29f03d7edaa272e6bd06ac4ddfcc2f07e50555cdbfbf3de0",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\c9\\c98bfcf1a220191f29f03d7edaa272e6bd06ac4ddfcc2f07e50555cdbfbf3de0"
+    },
+    "package.json": {
+      "hash": "f03d35fe22a4c662a742417d1f06a9e05955dd8f17bc22dfac887b2a4bddd4dd",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\f0\\f03d35fe22a4c662a742417d1f06a9e05955dd8f17bc22dfac887b2a4bddd4dd"
+    },
+    "assets/app-capture/AGENTS.md": {
+      "hash": "5569af567db521f028026c4998bb376a5ae08defe3d2361041dbbd86850c50f4",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\55\\5569af567db521f028026c4998bb376a5ae08defe3d2361041dbbd86850c50f4"
+    },
+    "assets/app-capture/assets/ajisafe-pepper-rice.webp": {
+      "hash": "f314536aa5bb76dea9c05f68f454fd4d4915db4cb97044af56d04d5281cbee66",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\f3\\f314536aa5bb76dea9c05f68f454fd4d4915db4cb97044af56d04d5281cbee66"
+    },
+    "assets/app-capture/assets/contact-sheet.jpg": {
+      "hash": "db28d838e989939467f8ae0aa2cf0a4c1b97fe4acbe8ae5fc4249319a5f78c3c",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\db\\db28d838e989939467f8ae0aa2cf0a4c1b97fe4acbe8ae5fc4249319a5f78c3c"
+    },
+    "assets/app-capture/assets/favicon.png": {
+      "hash": "4ac743ad4da2e0404531ecb94843a2df7d7ef3b41d57f66f40fc267d9d659cd3",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\4a\\4ac743ad4da2e0404531ecb94843a2df7d7ef3b41d57f66f40fc267d9d659cd3"
+    },
+    "assets/app-capture/assets/icon-apple-touch-icon-unsized.png": {
+      "hash": "4ac743ad4da2e0404531ecb94843a2df7d7ef3b41d57f66f40fc267d9d659cd3",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\4a\\4ac743ad4da2e0404531ecb94843a2df7d7ef3b41d57f66f40fc267d9d659cd3"
+    },
+    "assets/app-capture/assets/icon-icon-256x256.ico": {
+      "hash": "2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\2b\\2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932"
+    },
+    "assets/app-capture/assets/svgs/contact-sheet.jpg": {
+      "hash": "b82702f085304da2ade1699e2166d32b6eb1d2440fcd13b05972b0f85e03387b",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\b8\\b82702f085304da2ade1699e2166d32b6eb1d2440fcd13b05972b0f85e03387b"
+    },
+    "assets/app-capture/assets/svgs/logo-1a24f54d.svg": {
+      "hash": "f01ddf7af39667349dae1798b08ff95439ab38b6ceaacadfad058fb025519a54",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\f0\\f01ddf7af39667349dae1798b08ff95439ab38b6ceaacadfad058fb025519a54"
+    },
+    "assets/app-capture/assets/svgs/logo-b7d11721.svg": {
+      "hash": "92e14ce8798c618ac7d5c130b2b9d4ac1b29f8d5a3198456b5cbcf0bff8ca886",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\92\\92e14ce8798c618ac7d5c130b2b9d4ac1b29f8d5a3198456b5cbcf0bff8ca886"
+    },
+    "assets/app-capture/assets/svgs/svg-1e998517.svg": {
+      "hash": "2bc1aeb277ee1dc11dbdac6565e107cccea9059684a6b5d92994e7c9f41c4677",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\2b\\2bc1aeb277ee1dc11dbdac6565e107cccea9059684a6b5d92994e7c9f41c4677"
+    },
+    "assets/app-capture/assets/svgs/svg-8ab228e9.svg": {
+      "hash": "11f1d6767237ec0a5b876ca9dbc0074370b17061c1adbad129dea053d5fddef0",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\11\\11f1d6767237ec0a5b876ca9dbc0074370b17061c1adbad129dea053d5fddef0"
+    },
+    "assets/app-capture/assets/svgs/svg-91bf946d.svg": {
+      "hash": "73525b093cc16668f04fd74c3189cdda80cc2632c11c1dcca021da0d2715bf59",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\73\\73525b093cc16668f04fd74c3189cdda80cc2632c11c1dcca021da0d2715bf59"
+    },
+    "assets/app-capture/assets/svgs/svg-9ad70804.svg": {
+      "hash": "572467e73bbfd0271e597f65312c8cbbeeed9372f384638a2fc62da6b2427e2e",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\57\\572467e73bbfd0271e597f65312c8cbbeeed9372f384638a2fc62da6b2427e2e"
+    },
+    "assets/app-capture/assets/svgs/svg-c0eba316.svg": {
+      "hash": "aa5b524c93f66d2c1ff1f363d478095c59a028e97af09b5d3183a56565dc6f96",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\aa\\aa5b524c93f66d2c1ff1f363d478095c59a028e97af09b5d3183a56565dc6f96"
+    },
+    "assets/app-capture/assets/svgs/svg-f8259864.svg": {
+      "hash": "c08bb74dabe35891f2f063fe6cbcf7507d8a0b089482aedf0ccbb6bb772f04bc",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\c0\\c08bb74dabe35891f2f063fe6cbcf7507d8a0b089482aedf0ccbb6bb772f04bc"
+    },
+    "assets/app-capture/assets/the-place.jpg": {
+      "hash": "8301fc9e5d540457c62e964e5ca5f2f64d9fac07c29db0d85bdc3d54007e7e73",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\83\\8301fc9e5d540457c62e964e5ca5f2f64d9fac07c29db0d85bdc3d54007e7e73"
+    },
+    "assets/app-capture/CLAUDE.md": {
+      "hash": "5569af567db521f028026c4998bb376a5ae08defe3d2361041dbbd86850c50f4",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\55\\5569af567db521f028026c4998bb376a5ae08defe3d2361041dbbd86850c50f4"
+    },
+    "assets/app-capture/extracted/animations.json": {
+      "hash": "90066361ac63737ebd33f977e9d0eb3c5d775c5d0bd1b822917f559e954eb016",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\90\\90066361ac63737ebd33f977e9d0eb3c5d775c5d0bd1b822917f559e954eb016"
+    },
+    "assets/app-capture/extracted/asset-descriptions.md": {
+      "hash": "bc18ae33a7a2dff9cb11f4de753458d546000e6a64150066c49e6ea38ee13cb2",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\bc\\bc18ae33a7a2dff9cb11f4de753458d546000e6a64150066c49e6ea38ee13cb2"
+    },
+    "assets/app-capture/extracted/design-styles.json": {
+      "hash": "8edb5c5d37884e2fe58e481f1e5101e25699f680cab00d2745c61c74896876ba",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\8e\\8edb5c5d37884e2fe58e481f1e5101e25699f680cab00d2745c61c74896876ba"
+    },
+    "assets/app-capture/extracted/fonts-manifest.json": {
+      "hash": "50a25b80fa407aa8b31fa365e32b9ffd7b131f39411e49f9d09988cac6261f26",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\50\\50a25b80fa407aa8b31fa365e32b9ffd7b131f39411e49f9d09988cac6261f26"
+    },
+    "assets/app-capture/extracted/icons-manifest.json": {
+      "hash": "f4078467837f951b919bdaa379a31c5b85c2563158780946b88cae2a61850375",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\f4\\f4078467837f951b919bdaa379a31c5b85c2563158780946b88cae2a61850375"
+    },
+    "assets/app-capture/extracted/page.html": {
+      "hash": "fdcff02689c36affe1fadd7c2644022be940b7a3d9ba59c5d79c23ee16981c26",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\fd\\fdcff02689c36affe1fadd7c2644022be940b7a3d9ba59c5d79c23ee16981c26"
+    },
+    "assets/app-capture/extracted/response.json": {
+      "hash": "97fa47bce911b18406caf6d6a1c946fc751353cca043a2c97f63e61e6821072e",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\97\\97fa47bce911b18406caf6d6a1c946fc751353cca043a2c97f63e61e6821072e"
+    },
+    "assets/app-capture/extracted/tokens.json": {
+      "hash": "17ce94e233a16e461247d640d354bd76ba9800a0af4b1a7e0340823ffb83ec9f",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\17\\17ce94e233a16e461247d640d354bd76ba9800a0af4b1a7e0340823ffb83ec9f"
+    },
+    "assets/app-capture/extracted/visible-text.txt": {
+      "hash": "8ea5ea07841947744c66977420c920a6f0a32c4e6bf321bd6bde84b2e5687a51",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\8e\\8ea5ea07841947744c66977420c920a6f0a32c4e6bf321bd6bde84b2e5687a51"
+    },
+    "assets/app-capture/meta.json": {
+      "hash": "4df17f9251ec51d60f689e3587b32726dc2c21a2c6f5a92f698fe686a0706383",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\4d\\4df17f9251ec51d60f689e3587b32726dc2c21a2c6f5a92f698fe686a0706383"
+    },
+    "assets/app-capture/screenshots/contact-sheet.jpg": {
+      "hash": "eba1cf746037aaa6b84a4841b0970eb680a1417122f8f7ee97b0b4650445837a",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\eb\\eba1cf746037aaa6b84a4841b0970eb680a1417122f8f7ee97b0b4650445837a"
+    },
+    "assets/app-capture/screenshots/full-page.png": {
+      "hash": "ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\ec\\ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e"
+    },
+    "assets/app-capture/screenshots/scroll-000.png": {
+      "hash": "ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\ec\\ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e"
+    },
+    "assets/app-menu.png": {
+      "hash": "ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\ec\\ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e"
+    }
+  },
+  "revisions": {
+    "13b6a3e8-dfa6-4b42-96f2-65ea0880e05c": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792414240185,
+      "endedAt": 1792414240261,
+      "files": {
+        "assets/app-capture/AGENTS.md": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\55\\5569af567db521f028026c4998bb376a5ae08defe3d2361041dbbd86850c50f4"
+        },
+        "assets/app-capture/assets/ajisafe-pepper-rice.webp": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\f3\\f314536aa5bb76dea9c05f68f454fd4d4915db4cb97044af56d04d5281cbee66"
+        },
+        "assets/app-capture/assets/contact-sheet.jpg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\db\\db28d838e989939467f8ae0aa2cf0a4c1b97fe4acbe8ae5fc4249319a5f78c3c"
+        },
+        "assets/app-capture/assets/favicon.png": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\4a\\4ac743ad4da2e0404531ecb94843a2df7d7ef3b41d57f66f40fc267d9d659cd3"
+        },
+        "assets/app-capture/assets/icon-apple-touch-icon-unsized.png": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\4a\\4ac743ad4da2e0404531ecb94843a2df7d7ef3b41d57f66f40fc267d9d659cd3"
+        },
+        "assets/app-capture/assets/icon-icon-256x256.ico": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\2b\\2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932"
+        },
+        "assets/app-capture/assets/svgs/contact-sheet.jpg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\b8\\b82702f085304da2ade1699e2166d32b6eb1d2440fcd13b05972b0f85e03387b"
+        },
+        "assets/app-capture/assets/svgs/logo-1a24f54d.svg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\f0\\f01ddf7af39667349dae1798b08ff95439ab38b6ceaacadfad058fb025519a54"
+        },
+        "assets/app-capture/assets/svgs/logo-b7d11721.svg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\92\\92e14ce8798c618ac7d5c130b2b9d4ac1b29f8d5a3198456b5cbcf0bff8ca886"
+        },
+        "assets/app-capture/assets/svgs/svg-1e998517.svg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\2b\\2bc1aeb277ee1dc11dbdac6565e107cccea9059684a6b5d92994e7c9f41c4677"
+        },
+        "assets/app-capture/assets/svgs/svg-8ab228e9.svg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\11\\11f1d6767237ec0a5b876ca9dbc0074370b17061c1adbad129dea053d5fddef0"
+        },
+        "assets/app-capture/assets/svgs/svg-91bf946d.svg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\73\\73525b093cc16668f04fd74c3189cdda80cc2632c11c1dcca021da0d2715bf59"
+        },
+        "assets/app-capture/assets/svgs/svg-9ad70804.svg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\57\\572467e73bbfd0271e597f65312c8cbbeeed9372f384638a2fc62da6b2427e2e"
+        },
+        "assets/app-capture/assets/svgs/svg-c0eba316.svg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\aa\\aa5b524c93f66d2c1ff1f363d478095c59a028e97af09b5d3183a56565dc6f96"
+        },
+        "assets/app-capture/assets/svgs/svg-f8259864.svg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\c0\\c08bb74dabe35891f2f063fe6cbcf7507d8a0b089482aedf0ccbb6bb772f04bc"
+        },
+        "assets/app-capture/assets/the-place.jpg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\83\\8301fc9e5d540457c62e964e5ca5f2f64d9fac07c29db0d85bdc3d54007e7e73"
+        },
+        "assets/app-capture/CLAUDE.md": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\55\\5569af567db521f028026c4998bb376a5ae08defe3d2361041dbbd86850c50f4"
+        },
+        "assets/app-capture/extracted/animations.json": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\90\\90066361ac63737ebd33f977e9d0eb3c5d775c5d0bd1b822917f559e954eb016"
+        },
+        "assets/app-capture/extracted/asset-descriptions.md": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\bc\\bc18ae33a7a2dff9cb11f4de753458d546000e6a64150066c49e6ea38ee13cb2"
+        },
+        "assets/app-capture/extracted/design-styles.json": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\8e\\8edb5c5d37884e2fe58e481f1e5101e25699f680cab00d2745c61c74896876ba"
+        },
+        "assets/app-capture/extracted/fonts-manifest.json": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\50\\50a25b80fa407aa8b31fa365e32b9ffd7b131f39411e49f9d09988cac6261f26"
+        },
+        "assets/app-capture/extracted/icons-manifest.json": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\f4\\f4078467837f951b919bdaa379a31c5b85c2563158780946b88cae2a61850375"
+        },
+        "assets/app-capture/extracted/page.html": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\fd\\fdcff02689c36affe1fadd7c2644022be940b7a3d9ba59c5d79c23ee16981c26"
+        },
+        "assets/app-capture/extracted/response.json": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\97\\97fa47bce911b18406caf6d6a1c946fc751353cca043a2c97f63e61e6821072e"
+        },
+        "assets/app-capture/extracted/tokens.json": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\17\\17ce94e233a16e461247d640d354bd76ba9800a0af4b1a7e0340823ffb83ec9f"
+        },
+        "assets/app-capture/extracted/visible-text.txt": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\8e\\8ea5ea07841947744c66977420c920a6f0a32c4e6bf321bd6bde84b2e5687a51"
+        },
+        "assets/app-capture/meta.json": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\4d\\4df17f9251ec51d60f689e3587b32726dc2c21a2c6f5a92f698fe686a0706383"
+        },
+        "assets/app-capture/screenshots/contact-sheet.jpg": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\eb\\eba1cf746037aaa6b84a4841b0970eb680a1417122f8f7ee97b0b4650445837a"
+        },
+        "assets/app-capture/screenshots/full-page.png": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\ec\\ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e"
+        },
+        "assets/app-capture/screenshots/scroll-000.png": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\ec\\ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e"
+        },
+        "assets/app-menu.png": {
+          "before": null,
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\ec\\ec94c263903585f32f141e80cd38cce2ddbd139815bf6a67ee8c2a23fa44a21e"
+        },
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\37\\37eddbc2156d46143a5aac31b5ef0788968b3d81ddecf8c2284f48fb067b5557",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\68\\68d2deaf84484da90fc7da8228fb1b7f159532c55722946242d878b9ad543a1f"
+        }
+      }
+    },
+    "60aafaf4-4f30-45fe-a2a1-4a72ab3ac247": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792414627137,
+      "endedAt": 1792414627138,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\68\\68d2deaf84484da90fc7da8228fb1b7f159532c55722946242d878b9ad543a1f",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ba596807-4bde-420c-8857-197a6721124d\\blobs\\e8\\e86b0b8f009e23c8ff26e7de816bb2c33d297641d3b62ab8d638fe53721918eb"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "a71ac2c3-2c9e-422e-8271-3562fa93f217",
+      "completedAt": 1792414657370,
+      "output": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\chopdrop-promo-v2\\chopdrop-v2\\renders\\chopdrop-v2_2026-10-19_13-57-04.mp4",
+      "status": "completed",
+      "revision": "60aafaf4-4f30-45fe-a2a1-4a72ab3ac247"
+    },
+    "retainedRevisions": [
+      "60aafaf4-4f30-45fe-a2a1-4a72ab3ac247",
+      "13b6a3e8-dfa6-4b42-96f2-65ea0880e05c"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

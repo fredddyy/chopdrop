@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "historyId": "13088cc7-5032-4dcb-9348-1ebd5ba246e1",
+  "currentRevision": null,
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\13088cc7-5032-4dcb-9348-1ebd5ba246e1\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "CLAUDE.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\13088cc7-5032-4dcb-9348-1ebd5ba246e1\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "assets/voiceover.wav": {
+      "hash": "9277fc0e08626c4d00c681a358fc7335b477e364bafd8c3ea055d9e0a0239fa2",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\13088cc7-5032-4dcb-9348-1ebd5ba246e1\\blobs\\92\\9277fc0e08626c4d00c681a358fc7335b477e364bafd8c3ea055d9e0a0239fa2"
+    },
+    "hyperframes.json": {
+      "hash": "3af6ecb4d7f8c0cf28a50880f71291f27406c4548e5db2ea2d57430abd99e0e1",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\13088cc7-5032-4dcb-9348-1ebd5ba246e1\\blobs\\3a\\3af6ecb4d7f8c0cf28a50880f71291f27406c4548e5db2ea2d57430abd99e0e1"
+    },
+    "index.html": {
+      "hash": "0536c83d4bc69adc6edf96b0191ac93c4de974bcae1875783b1d1d1a2cf856ef",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\13088cc7-5032-4dcb-9348-1ebd5ba246e1\\blobs\\05\\0536c83d4bc69adc6edf96b0191ac93c4de974bcae1875783b1d1d1a2cf856ef"
+    },
+    "meta.json": {
+      "hash": "0b84a70270ed1fa2c63a594cde58c01e0635d1cb9aa274ba83f1272ec40ddc70",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\13088cc7-5032-4dcb-9348-1ebd5ba246e1\\blobs\\0b\\0b84a70270ed1fa2c63a594cde58c01e0635d1cb9aa274ba83f1272ec40ddc70"
+    },
+    "package.json": {
+      "hash": "39e6ca421cd7f0dcec4b4b976aeb3944c0314f06e0ba3a67c24bcc2bab93f521",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\13088cc7-5032-4dcb-9348-1ebd5ba246e1\\blobs\\39\\39e6ca421cd7f0dcec4b4b976aeb3944c0314f06e0ba3a67c24bcc2bab93f521"
+    },
+    "assets/music/happy-beats-business-moves-vol-10-by-ende-dot-app.mp3": {
+      "hash": "f9912f2c962ada1e579f5ccc5a7d854d67e5e81ee96a7dd8c885a8480ae58d09",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\13088cc7-5032-4dcb-9348-1ebd5ba246e1\\blobs\\f9\\f9912f2c962ada1e579f5ccc5a7d854d67e5e81ee96a7dd8c885a8480ae58d09"
+    }
+  },
+  "revisions": {},
+  "checks": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "7783a971-b0a7-48c5-b0fd-9cedb7741b7a",
+      "completedAt": 1792421101264,
+      "output": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-19-163000\\composition\\renders\\composition_2026-10-19_15-44-22.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
+}

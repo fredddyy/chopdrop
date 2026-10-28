@@ -1,0 +1,266 @@
+{
+  "version": 1,
+  "historyId": "ecac3e28-d699-4c41-b82c-21d3de10679c",
+  "currentRevision": "d7a83ab4-f485-4416-a63d-1f5c872a95bf",
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "CLAUDE.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "assets/vo/vo-scene1.mp3": {
+      "hash": "dbe66394216a051105d6f72b181e34a907838d4fa5daff3cc57638a20b770531",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\db\\dbe66394216a051105d6f72b181e34a907838d4fa5daff3cc57638a20b770531"
+    },
+    "assets/vo/vo-scene2.mp3": {
+      "hash": "0ff35a48348cf1eae25a3d3094e23909c629881b0edcec38f7f60cfaff534a24",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\0f\\0ff35a48348cf1eae25a3d3094e23909c629881b0edcec38f7f60cfaff534a24"
+    },
+    "assets/vo/vo-scene4.mp3": {
+      "hash": "7c5a99cb47fa7d58dbd1daf380014ff9e720a84b2dd6d38d47d62cb94668b2e0",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\7c\\7c5a99cb47fa7d58dbd1daf380014ff9e720a84b2dd6d38d47d62cb94668b2e0"
+    },
+    "hyperframes.json": {
+      "hash": "53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\53\\53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
+    },
+    "index.html": {
+      "hash": "698327a186d95ef2368b9b702b9b9a045d5bc812d41442f1b4f56a38b5192aaa",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\69\\698327a186d95ef2368b9b702b9b9a045d5bc812d41442f1b4f56a38b5192aaa"
+    },
+    "meta.json": {
+      "hash": "f6ccc31b5c89185feeb08397dbfbe4a8a6891ed4d79c117a8584e9f9d3ec94f7",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\f6\\f6ccc31b5c89185feeb08397dbfbe4a8a6891ed4d79c117a8584e9f9d3ec94f7"
+    },
+    "package.json": {
+      "hash": "1373d9b648cc0dc01c1ae0ce472c002730dd3427ac4a29e48e6464cfe0c6cd77",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\13\\1373d9b648cc0dc01c1ae0ce472c002730dd3427ac4a29e48e6464cfe0c6cd77"
+    },
+    "assets/music/happy-beats-business-moves-vol-10-by-ende-dot-app.mp3": {
+      "hash": "f9912f2c962ada1e579f5ccc5a7d854d67e5e81ee96a7dd8c885a8480ae58d09",
+      "content": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\f9\\f9912f2c962ada1e579f5ccc5a7d854d67e5e81ee96a7dd8c885a8480ae58d09"
+    }
+  },
+  "revisions": {
+    "c5550ea9-cbb7-4f56-a4f2-32fdf7cd43e1": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792152117474,
+      "endedAt": 1792152117476,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\8c\\8c23872b375a225db8182c849fd21b7e0ccc64e25b5e607da34805ca2d96f9ae",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\f4\\f4b3cad22d18c0d9dd88559bf6debdc81e350064b204e926b3413d7481000303"
+        }
+      }
+    },
+    "7edcdd2c-8bff-4e13-bd11-b4d7f10c81e2": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792153470374,
+      "endedAt": 1792153470376,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\f4\\f4b3cad22d18c0d9dd88559bf6debdc81e350064b204e926b3413d7481000303",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\f7\\f72c0e611e07507d434b5090c7e863bfa45e9d57d763d97d057572bdf344a8fa"
+        }
+      }
+    },
+    "03c49dd1-7de3-4e6a-98fb-741c41039344": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792153505001,
+      "endedAt": 1792153507004,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\f7\\f72c0e611e07507d434b5090c7e863bfa45e9d57d763d97d057572bdf344a8fa",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\b9\\b9e01ea077d565db4bbd73cd613c84278483c8789645ef164bba1b47a76b7d40"
+        }
+      }
+    },
+    "228ccb12-5903-403b-bc66-3f21f6ed9efb": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792153513412,
+      "endedAt": 1792153515421,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\b9\\b9e01ea077d565db4bbd73cd613c84278483c8789645ef164bba1b47a76b7d40",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\07\\07498d8c68359a37490c95c9ad01a76b30a197484033efd4c04e05be1e30b508"
+        }
+      }
+    },
+    "d7a83ab4-f485-4416-a63d-1f5c872a95bf": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792155187750,
+      "endedAt": 1792155189757,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\07\\07498d8c68359a37490c95c9ad01a76b30a197484033efd4c04e05be1e30b508",
+          "after": "C:\\Users\\GodfredBoakye\\.cache\\hyperframes\\history\\ecac3e28-d699-4c41-b82c-21d3de10679c\\blobs\\69\\698327a186d95ef2368b9b702b9b9a045d5bc812d41442f1b4f56a38b5192aaa"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "d7a83ab4-f485-4416-a63d-1f5c872a95bf",
+      "id": "49ac0014-f304-4952-a1df-18ff641ae4a9"
+    },
+    "revisions": {
+      "228ccb12-5903-403b-bc66-3f21f6ed9efb": [
+        {
+          "id": "6b717e3e-1305-4e97-b35a-afad2f9f7e28",
+          "scope": "project",
+          "report": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\.hyperframes\\artifacts\\checks\\6b717e3e-1305-4e97-b35a-afad2f9f7e28.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792153796850,
+          "contentHash": "b13666aafe60834021700866b0bd215046bb3c856dd8efecfbaceb86bdac0009",
+          "revision": "228ccb12-5903-403b-bc66-3f21f6ed9efb",
+          "inputFingerprint": "d055b9e389c914c2dc0dd153c67c577239a1afa90f4c23e100795f17d8f278da",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "d7a83ab4-f485-4416-a63d-1f5c872a95bf": [
+        {
+          "id": "76cd1753-1e91-4a50-99dd-631a90e40d9f",
+          "scope": "project",
+          "report": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\.hyperframes\\artifacts\\checks\\76cd1753-1e91-4a50-99dd-631a90e40d9f.json",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": true,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792155279939,
+          "contentHash": "9199b6c6712270ee577c7cd68c52aeb6269a77c6488991aff582aaa8cf394f32",
+          "revision": "d7a83ab4-f485-4416-a63d-1f5c872a95bf",
+          "inputFingerprint": "91371642594d65189c7d50ef6a3b138a4400b6d47222a2d179b251d8f8548a64",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "id": "49ac0014-f304-4952-a1df-18ff641ae4a9",
+          "scope": "project",
+          "report": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\.hyperframes\\artifacts\\checks\\49ac0014-f304-4952-a1df-18ff641ae4a9.json",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": true,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792155420497,
+          "contentHash": "9199b6c6712270ee577c7cd68c52aeb6269a77c6488991aff582aaa8cf394f32",
+          "revision": "d7a83ab4-f485-4416-a63d-1f5c872a95bf",
+          "inputFingerprint": "91371642594d65189c7d50ef6a3b138a4400b6d47222a2d179b251d8f8548a64",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "d3df902f-1318-41b9-849e-679cdb5d7f75",
+        "scope": "project",
+        "report": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-video\\.hyperframes\\artifacts\\checks\\d3df902f-1318-41b9-849e-679cdb5d7f75.json",
+        "metadata": {
+          "ok": true,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 3000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1792152012513,
+        "contentHash": "8fa690d5399274197b15b450254dc972cfeb7dfd6a74e43e4506aa5b37023f5d",
+        "revision": null,
+        "inputFingerprint": "92b433c3f5be852eb2b4cd063b0232c3c99dd0330d3a3f08bad3bb566d226df2",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "fab84f8f-09a6-4960-a730-89e694cb9ebf",
+      "completedAt": 1792153919243,
+      "output": "C:\\Users\\GodfredBoakye\\Desktop\\Buzzpay\\brag-output-2026-10-15-120000\\brag.mp4",
+      "status": "completed",
+      "revision": "228ccb12-5903-403b-bc66-3f21f6ed9efb"
+    },
+    "retainedRevisions": [
+      "228ccb12-5903-403b-bc66-3f21f6ed9efb",
+      "c5550ea9-cbb7-4f56-a4f2-32fdf7cd43e1"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

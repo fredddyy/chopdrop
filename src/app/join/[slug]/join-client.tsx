@@ -65,6 +65,26 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
   const [confirmPinCode, setConfirmPinCode] = useState(["", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // Auto-redirect: if user is already logged in and in this office, go to menu
+  useEffect(() => {
+    fetch("/api/auth/me").then(r => r.json()).then(d => {
+      if (d.success && d.data?.office?.id === office.id) {
+        window.location.href = "/menu";
+        return;
+      }
+      setCheckingAuth(false);
+    }).catch(() => setCheckingAuth(false));
+  }, [office.id]);
+
+  if (checkingAuth) {
+    return (
+      <main className="min-h-screen bg-[#fafaf8] flex items-center justify-center">
+        <div className="w-7 h-7 border-[2.5px] border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--coral)", borderTopColor: "transparent" }} />
+      </main>
+    );
+  }
 
   async function handleSetPin(pin: string) {
     setLoading(true);

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ChopDrop Brag</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+#root { width: 100%; height: 100%; position: relative; overflow: hidden; font-family: 'DM Sans', sans-serif; background: #0a0a0a; }
+.scene { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+/* Grain */
+.grain { position: absolute; inset: -20%; width: 140%; height: 140%; opacity: 0.05; mix-blend-mode: overlay; pointer-events: none; z-index: 50;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E"); }
+
+/* Backdrop */
+.bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bg.dark img { filter: blur(20px) brightness(0.12) saturate(0.7); transform: scale(1.15); }
+.bg.office img { filter: blur(28px) brightness(0.3) saturate(1.1); transform: scale(1.15); }
+.bg::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 15%, rgba(0,0,0,0.65) 100%); }
+
+/* ── Scene 1 ── */
+#s1 { background: #0a0a0a; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+#s1-number { font-family: 'Manrope'; font-weight: 800; font-size: 140px; color: #f05f4b; letter-spacing: -0.05em; text-align: center; z-index: 3; line-height: 1; }
+#s1-sub { font-family: 'Manrope'; font-weight: 600; font-size: 44px; color: #fff; text-align: center; z-index: 3; margin-top: 4px; }
+#s1-whisper { font-family: 'DM Sans'; font-size: 28px; color: rgba(255,255,255,0.3); text-align: center; z-index: 3; margin-top: 8px; }
+/* Accent line under number */
+#s1-line { width: 120px; height: 4px; background: #f05f4b; border-radius: 2px; z-index: 3; margin-top: 12px; }
+
+/* ── Phone (shared) ── */
+.phone-anchor { position: relative; z-index: 1; }
+.phone { width: 460px; height: 940px; background: #111; border-radius: 52px; padding: 12px; position: relative;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 30px 80px rgba(0,0,0,0.7), 0 60px 120px rgba(0,0,0,0.3); }
+.notch { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 140px; height: 36px; background: #0a0a0a; border-radius: 20px; z-index: 10; }
+.screen { width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: #fff; }
+.bar { height: 54px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 30px 8px; font-size: 15px; font-weight: 600; color: #1a1a1a; }
+.bar-r { font-size: 13px; }
+.red { color: #f05f4b; }
+
+/* App chrome */
+.hdr { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.lm { width: 24px; height: 26px; background: #f05f4b; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; margin-right: 8px; }
+.lt { font-family: 'Manrope'; font-weight: 800; font-size: 18px; color: #1a1a1a; }
+.tabs { display: flex; gap: 10px; margin: 12px 20px; }
+.tab { flex: 1; padding: 13px; border-radius: 14px; text-align: center; font-size: 14px; font-weight: 600; }
+.tab-a { background: #1a1a1a; color: #fff; }
+.tab-i { background: #f5f5f3; color: #9ca3af; }
+.hero-c { margin: 8px 20px; background: linear-gradient(135deg, #0f4030, #0a2e20); border-radius: 18px; padding: 16px 18px; color: #fff; overflow: hidden; position: relative; }
+.hero-c::after { content: ''; position: absolute; right: -16px; top: -16px; width: 60px; height: 60px; background: rgba(255,255,255,0.03); border-radius: 50%; }
+.ht { font-family: 'Manrope'; font-weight: 700; font-size: 16px; }
+.hs { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+.dg { display: flex; gap: 3px; margin-top: 10px; }
+.dg span { width: 20px; height: 24px; background: rgba(255,255,255,0.15); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-weight: 700; font-size: 13px; color: #fff; }
+.dg-s { color: rgba(255,255,255,0.4); font-size: 11px; display: flex; align-items: center; margin: 0 2px; }
+.sp { margin: 8px 20px; display: flex; align-items: center; gap: 6px; font-size: 10px; color: #6b7280; }
+.sp-dot { width: 5px; height: 5px; background: #22c55e; border-radius: 50%; }
+.rc { margin: 6px 20px; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 1px 8px rgba(0,0,0,0.03); }
+.rc img { width: 100%; height: 140px; object-fit: cover; display: block; }
+.rc-i { padding: 10px 14px; }
+.rc-n { font-family: 'Manrope'; font-weight: 700; font-size: 14px; color: #1a1a1a; }
+.rc-m { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+.touch { position: absolute; width: 56px; height: 56px; background: rgba(0,0,0,0.08); border-radius: 50%; z-index: 50; }
+
+/* Checkout */
+.co-t { font-family: 'Manrope'; font-weight: 700; font-size: 20px; color: #1a1a1a; letter-spacing: -0.03em; }
+.co-s { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+.ci { display: flex; align-items: center; gap: 12px; margin: 0 22px; padding: 14px; background: #fff; border-radius: 16px; }
+.ci img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; display: block; }
+.ci-n { font-weight: 600; font-size: 13px; color: #1a1a1a; }
+.ci-r { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+.ci-p { font-family: 'Manrope'; font-weight: 700; font-size: 14px; color: #1a1a1a; }
+.dl { margin: 12px 22px 0; }
+.dl-l { font-family: 'Manrope'; font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 8px; }
+.do { padding: 14px; border-radius: 12px; border: 2px solid #f0efeb; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; }
+.do.sel { border-color: #0f4030; background: rgba(15,64,48,0.03); }
+.rd { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #d1d5db; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rd.on { border-color: #0f4030; }
+.rd.on::after { content: ''; width: 8px; height: 8px; background: #0f4030; border-radius: 50%; }
+.do-n { font-weight: 600; font-size: 13px; color: #1a1a1a; }
+.do-d { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+.do-p { font-weight: 700; font-size: 13px; margin-left: auto; flex-shrink: 0; }
+.do-p.free { color: #22c55e; }
+.fb { background: rgba(15,64,48,0.1); color: #0f4030; font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; margin-left: 6px; }
+/* WA */
+.wa { position: absolute; top: -110px; left: 18px; right: 18px; background: rgba(255,255,255,0.97); border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 6px 28px rgba(0,0,0,0.12); z-index: 100; }
+.wa-i { width: 36px; height: 36px; background: #25D366; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+.wa-a { font-size: 10px; color: #9ca3af; font-weight: 600; }
+.wa-m { font-size: 12px; color: #1a1a1a; margin-top: 1px; line-height: 1.3; }
+.wa-t { font-size: 10px; color: #9ca3af; flex-shrink: 0; align-self: flex-start; }
+.badge { position: absolute; top: 58px; right: 22px; width: 18px; height: 18px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; z-index: 90; }
+
+/* ── Scene 5 ── */
+#s5 { background: #0a0a0a; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+#s5-content { display: flex; flex-direction: column; align-items: center; gap: 0; z-index: 3; }
+.setup { font-family: 'Manrope'; font-weight: 500; font-size: 40px; color: rgba(255,255,255,0.45); text-align: center; line-height: 1.35; max-width: 820px; }
+.punch { font-family: 'Manrope'; font-weight: 800; font-size: 80px; color: #f05f4b; text-align: center; line-height: 1; margin-top: 16px; }
+.logo-row { display: flex; align-items: center; gap: 14px; margin-top: 32px; }
+.drop-i { width: 40px; height: 44px; background: #f05f4b; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+.brand-t { font-family: 'Manrope'; font-weight: 800; font-size: 30px; color: #fff; letter-spacing: -0.03em; }
+.tagline { font-size: 16px; color: #6b7280; margin-top: 8px; }
+.pill { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 999px; padding: 10px 26px; margin-top: 20px; display: flex; align-items: center; gap: 8px; }
+.pill span { font-size: 14px; color: #fff; font-weight: 600; }
+.cursor { width: 48px; height: 48px; background: rgba(255,255,255,0.12); border-radius: 50%; position: absolute; z-index: 10; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="chopdrop-brag" data-width="1080" data-height="1920" data-duration="23">
+
+  <!-- S1: The Tax 0-3s -->
+  <div class="scene clip" id="s1" data-start="0" data-duration="3">
+    <div class="bg dark"><img src="https://images.unsplash.com/photo-1618828665011-0abd973f7bb8?w=1080&h=1920&fit=crop" alt=""></div>
+    <div class="grain" id="g1"></div>
+    <div id="s1-number" style="opacity:0">₦0</div>
+    <div id="s1-line" style="opacity:0"></div>
+    <div id="s1-sub" style="opacity:0">every month.</div>
+    <div id="s1-whisper" style="opacity:0">Just delivery fees.</div>
+  </div>
+
+  <!-- S2: Menu 3-9s -->
+  <div class="scene clip" id="s2" data-start="3" data-duration="6">
+    <div class="bg office"><img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1080&h=1920&fit=crop" alt=""></div>
+    <div class="phone-anchor" id="p2">
+      <div class="phone"><div class="notch"></div>
+        <div class="screen">
+          <div class="bar"><span>11:51</span><span class="bar-r">MTN-NG &nbsp; <span class="red">14%</span></span></div>
+          <div class="hdr"><div class="lm"></div><span class="lt">ChopDrop</span></div>
+          <div class="tabs"><div class="tab tab-a" id="tb">☀️ Breakfast</div><div class="tab tab-i" id="tl">🍛 Lunch</div></div>
+          <div class="hero-c"><div class="ht" id="htt">Breakfast Drop</div><div class="hs" id="hts">Arrives 8:30 AM · Prepaid</div><div class="dg"><span>0</span><span>2</span><div class="dg-s">:</div><span>4</span><span>1</span><div class="dg-s">:</div><span>0</span><span>7</span></div></div>
+          <div class="sp"><div class="sp-dot"></div><span>12 orders placed for this drop</span></div>
+          <div class="rc"><img src="https://res.cloudinary.com/rigeva3a/image/upload/v1791998598/chopdrop/ajisafe-pepper-rice.webp" alt=""><div class="rc-i"><div class="rc-n">Ajisafe Pepper Rice</div><div class="rc-m">3 meals · Ikeja</div></div></div>
+          <div class="rc"><img src="https://res.cloudinary.com/rigeva3a/image/upload/v1792060589/chopdrop/the-place-restaurant.jpg" alt=""><div class="rc-i"><div class="rc-n">The Place</div><div class="rc-m">4 meals · Ikeja GRA</div></div></div>
+          <div class="touch" id="t1" style="opacity:0; left:300px; top:210px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: Checkout 9-15s -->
+  <div class="scene clip" id="s3" data-start="9" data-duration="6">
+    <div class="bg office"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1080&h=1920&fit=crop" alt=""></div>
+    <div class="phone-anchor" id="p3">
+      <div class="phone"><div class="notch"></div>
+        <div class="screen" style="background:#fafaf8">
+          <div class="bar" style="background:#fafaf8"><span>11:51</span><span class="bar-r">MTN-NG &nbsp; <span class="red">14%</span></span></div>
+          <div style="padding:50px 22px 12px"><div class="co-t">Checkout</div><div class="co-s">2 items · ₦1,600</div></div>
+          <div class="ci"><img src="https://res.cloudinary.com/rigeva3a/image/upload/v1791998598/chopdrop/ajisafe-pepper-rice.webp" alt=""><div style="flex:1"><div class="ci-n">Jollof Rice & Beef</div><div class="ci-r">Ajisafe Pepper Rice</div></div><div class="ci-p">₦1,600</div></div>
+          <div class="dl">
+            <div class="dl-l">Delivery</div>
+            <div class="do sel" id="bopt"><div class="rd on"></div><div><div class="do-n">Office Batch Drop<span class="fb">Free</span></div><div class="do-d">Arrives together at 12:30 PM</div></div><div class="do-p free">FREE</div></div>
+            <div class="do"><div class="rd"></div><div><div class="do-n">Express Delivery</div><div class="do-d">Delivered to your address</div></div><div class="do-p">₦1,200</div></div>
+          </div>
+          <div style="margin:10px 22px 0"><div style="display:flex; justify-content:space-between; margin-bottom:6px"><span style="font-family:Manrope; font-weight:700; font-size:13px; color:#1a1a1a">Captain tip</span><span style="font-size:9px; color:#9ca3af">100% to assistant</span></div><div style="display:flex; gap:6px"><div style="background:#1a1a1a; color:#fff; padding:7px 14px; border-radius:8px; font-size:11px; font-weight:600">₦100</div><div style="background:#f5f5f3; padding:7px 14px; border-radius:8px; font-size:11px; font-weight:600; color:#1a1a1a">₦200</div><div style="background:#f5f5f3; padding:7px 14px; border-radius:8px; font-size:11px; font-weight:600; color:#1a1a1a">₦500</div></div></div>
+          <div style="margin:10px 22px; padding:12px; background:#fff; border-radius:12px; font-size:11px"><div style="display:flex; justify-content:space-between; margin-bottom:4px"><span style="color:#9ca3af">Subtotal</span><span style="font-weight:600">₦1,600</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px"><span style="color:#9ca3af">Delivery</span><span style="font-weight:600; color:#22c55e">FREE</span></div><div style="display:flex; justify-content:space-between; border-top:1px solid #f0efeb; padding-top:6px; margin-top:4px"><span style="font-weight:600">Total</span><span style="font-family:Manrope; font-weight:700; font-size:15px">₦1,780</span></div></div>
+          <div class="badge" id="wab" style="opacity:0">3</div>
+          <div class="wa" id="wan" data-layout-allow-overlap data-layout-allow-overflow><div class="wa-i">W</div><div style="flex:1"><div class="wa-a">WhatsApp · Tunde</div><div class="wa-m">Abeg, did the ChopDrop Captain reach our floor yet?</div></div><div class="wa-t">now</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4: Confirmation 15-18s -->
+  <div class="scene clip" id="s4" data-start="15" data-duration="3">
+    <div class="bg office"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1080&h=1920&fit=crop" alt=""></div>
+    <div class="phone-anchor" id="p4">
+      <div class="phone"><div class="notch"></div>
+        <div class="screen" style="background:#fafaf8">
+          <div class="bar" style="background:#fafaf8"><span>11:51</span><span class="bar-r">MTN-NG &nbsp; <span class="red">14%</span></span></div>
+          <div style="padding:16px 22px; text-align:center">
+            <div id="chk" style="width:56px; height:56px; background:#0f4030; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin:8px 0"><svg viewBox="0 0 24 24" style="width:26px; height:26px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round"><path d="m5 12 4 4L19 6"/></svg></div>
+            <div id="ct" style="font-family:Manrope; font-weight:700; font-size:20px; color:#1a1a1a; margin-top:6px">You're all set!</div>
+            <div id="cs" style="font-size:12px; color:#9ca3af; margin-top:3px">Food arrives at 12:30</div>
+          </div>
+          <div id="cc" style="margin:0 22px; background:#fff; border-radius:16px; padding:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.04)">
+            <div style="font-size:9px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.1em">Collection code</div>
+            <div style="font-family:Manrope; font-weight:800; font-size:44px; color:#1a1a1a; letter-spacing:0.04em; margin-top:4px; line-height:1">CD-B5AY</div>
+            <div style="font-size:11px; color:#0f4030; font-weight:600; margin-top:6px">Show this to your captain</div>
+          </div>
+          <div style="margin:12px 22px; padding:12px; background:#fff; border-radius:12px">
+            <div style="font-size:9px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px">What happens next</div>
+            <div style="display:flex; gap:8px; margin-bottom:6px; align-items:flex-start"><div style="min-width:18px; height:18px; background:#0f4030; border-radius:50%; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center">1</div><div><div style="font-size:11px; font-weight:600; color:#1a1a1a">Restaurant prepares your food</div></div></div>
+            <div style="display:flex; gap:8px; margin-bottom:6px; align-items:flex-start"><div style="min-width:18px; height:18px; background:#0f4030; border-radius:50%; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center">2</div><div><div style="font-size:11px; font-weight:600; color:#1a1a1a">Batch delivery at 12:30 PM</div></div></div>
+            <div style="display:flex; gap:8px; align-items:flex-start"><div style="min-width:18px; height:18px; background:#0f4030; border-radius:50%; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center">3</div><div><div style="font-size:11px; font-weight:600; color:#1a1a1a">Collect with code CD-B5AY</div></div></div>
+          </div>
+          <div style="margin:8px 22px; display:flex; gap:6px"><div style="flex:1; background:#1a1a1a; color:#fff; font-weight:600; font-size:12px; padding:11px; border-radius:10px; text-align:center">Track order</div><div style="flex:1; background:#f5f5f3; color:#1a1a1a; font-weight:600; font-size:12px; padding:11px; border-radius:10px; text-align:center">Order more</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: Closer 18-23s -->
+  <div class="scene clip" id="s5" data-start="18" data-duration="5">
+    <div class="bg dark"><img src="https://images.unsplash.com/photo-1618828665011-0abd973f7bb8?w=1080&h=1920&fit=crop" alt=""></div>
+    <div class="grain" id="g5"></div>
+    <div id="s5c" style="display:flex; flex-direction:column; align-items:center; z-index:3">
+      <div class="setup" id="f1">Some people in your office<br>deleted that expense last week.</div>
+      <div class="punch" id="f2">Nobody is talking.</div>
+      <div class="logo-row" id="f3"><div class="drop-i"></div><span class="brand-t">ChopDrop</span></div>
+      <div class="tagline" id="f4">Live in Ikeja</div>
+      <div class="pill" id="f5"><span>chopdrop-app.vercel.app</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg></div>
+    </div>
+    <div class="cursor" id="cur" style="opacity:0"></div>
+  </div>
+
+</div>
+
+<!-- Audio -->
+<audio id="music" data-start="0" data-duration="23" data-track-index="10" data-volume="0.14" src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"></audio>
+<audio id="vo" data-start="0" data-duration="22.9" data-track-index="3" data-volume="1" src="assets/voiceover-elevenlabs.mp3"></audio>
+<audio id="sfx1" data-start="0.05" data-duration="0.18" data-track-index="11" data-volume="0.8" src="assets/sfx/impact/impactSoft_medium_001.ogg"></audio>
+<audio id="sfx2" data-start="6.5" data-duration="0.1" data-track-index="12" data-volume="0.6" src="assets/sfx/interface/click_003.ogg"></audio>
+<audio id="sfx3" data-start="10" data-duration="0.11" data-track-index="13" data-volume="0.65" src="assets/sfx/interface/drop_001.ogg"></audio>
+<audio id="sfx4" data-start="15.5" data-duration="1.5" data-track-index="14" data-volume="0.75" src="assets/sfx/impact/impactBell_heavy_000.ogg"></audio>
+
+<script>
+const tl = gsap.timeline({ paused: true });
+
+// Grain drift
+tl.fromTo("#g1", { x: 0, y: 0 }, { x: -30, y: -20, duration: 3, ease: "none" }, 0)
+  .fromTo("#g5", { x: 0, y: 0 }, { x: -20, y: -15, duration: 5, ease: "none" }, 18);
+
+// ── S1: Counter + text ──
+const c = { v: 0 };
+tl.to("#s1-number", { opacity: 1, duration: 0.01 }, 0.05)
+  .to(c, { v: 32000, duration: 1.4, ease: "power2.in", onUpdate() { document.getElementById("s1-number").textContent = "₦" + Math.round(c.v).toLocaleString(); } }, 0.05)
+  .fromTo("#s1-line", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.3, ease: "expo.out" }, 1.5)
+  .fromTo("#s1-sub", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.2, ease: "expo.out" }, 1.6)
+  .fromTo("#s1-whisper", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.1);
+
+// ── S2: Phone slides up from below with spring ──
+tl.fromTo("#p2", { y: 400, scale: 0.9 }, { y: 0, scale: 1, duration: 0.7, ease: "expo.out" }, 3)
+  // Micro-drift
+  .fromTo("#p2", { x: 0, rotation: 0 }, { x: 3, rotation: 0.3, duration: 2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 3.7)
+  // Tab switch
+  .fromTo("#t1", { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 0.5, duration: 0.1 }, 6.4)
+  .to("#t1", { scale: 1.3, opacity: 0, duration: 0.2 }, 6.5)
+  .to("#tl", { scaleX: 0.94, scaleY: 0.96, duration: 0.06, ease: "power3.in" }, 6.45)
+  .to("#tl", { scaleX: 1, scaleY: 1, duration: 0.5, ease: "elastic.out(1.3, 0.35)" }, 6.52)
+  .set("#tb", { background: "#f5f5f3", color: "#9ca3af" }, 6.55)
+  .set("#tl", { background: "#1a1a1a", color: "#fff" }, 6.55)
+  .add(() => { document.getElementById("htt").textContent = "Lunch Drop"; document.getElementById("hts").textContent = "Arrives 12:30 PM · Prepaid"; }, 6.55);
+
+// ── S3: Phone slides in from right ──
+tl.fromTo("#p3", { x: 500 }, { x: 0, duration: 0.5, ease: "expo.out" }, 9)
+  .fromTo("#p3", { x: 0, rotation: 0 }, { x: -2, rotation: -0.2, duration: 2.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 9.5)
+  // Batch glow
+  .fromTo("#bopt", { boxShadow: "none" }, { boxShadow: "0 0 0 3px rgba(34,197,94,0.3)", duration: 0.25, ease: "expo.out" }, 10)
+  .to("#bopt", { boxShadow: "none", duration: 0.5 }, 10.6)
+  // WA notification — heavy drop with spring
+  .fromTo("#wan", { y: 0 }, { y: 130, duration: 0.3, ease: "expo.out" }, 12)
+  .to("#wan", { y: 124, duration: 0.12, ease: "power2.out" }, 12.3)
+  .to("#wan", { y: 126, duration: 0.08 }, 12.42)
+  .to("#wan", { y: 0, duration: 0.25, ease: "power2.in" }, 14.2)
+  .fromTo("#wab", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.2, ease: "back.out(3)" }, 14.45);
+
+// ── S4: Phone scales up from center ──
+tl.fromTo("#p4", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "expo.out" }, 15)
+  .fromTo("#chk", { scale: 0 }, { scale: 1, duration: 0.4, ease: "elastic.out(1.2, 0.5)" }, 15.3)
+  .fromTo("#ct", { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.2, ease: "expo.out" }, 15.6)
+  .fromTo("#cs", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 15.75)
+  .fromTo("#cc", { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "elastic.out(1.1, 0.5)" }, 15.9);
+
+// ── S5: Closer — whisper → scream → resolve ──
+// Slow upward drift on the whole block
+tl.fromTo("#s5c", { y: 20 }, { y: -10, duration: 4.5, ease: "sine.inOut" }, 18)
+  // Setup whispers
+  .fromTo("#f1", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power2.out" }, 18.3)
+  // Punchline SLAMS with anticipation (pulls back then snaps)
+  .fromTo("#f2", { scale: 1.2, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.18, ease: "expo.out" }, 19.1)
+  // Logo + tag resolve slowly
+  .fromTo("#f3", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 20.2)
+  .fromTo("#f4", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 20.6)
+  // Pill appears
+  .fromTo("#f5", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.25, ease: "expo.out" }, 21.0)
+  // Cursor sweeps in — fast acceleration, heavy deceleration with overshoot
+  .fromTo("#cur", { x: 250, y: 350, opacity: 0 }, { x: 0, y: 0, opacity: 0.4, duration: 0.45, ease: "power4.out" }, 21.4)
+  .to("#cur", { scale: 0.8, opacity: 0.6, duration: 0.06 }, 21.85)
+  .to("#cur", { scale: 1.3, opacity: 0, duration: 0.15, ease: "expo.out" }, 21.92)
+  .to("#f5", { scale: 0.95, duration: 0.05 }, 21.88)
+  .to("#f5", { scale: 1, background: "rgba(255,255,255,0.22)", duration: 0.25, ease: "elastic.out(1,0.5)" }, 21.94)
+  // Swipe up exit
+  .to("#s5", { y: -1920, duration: 0.3, ease: "power3.in" }, 22.7);
+
+window.__timelines = window.__timelines || {};
+window.__timelines["chopdrop-brag"] = tl;
+</script>
+</body>
+</html>

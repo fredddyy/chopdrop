@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=DM+Sans:wght@400;500;600;700&family=SF+Mono&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0a0a0a; }
+      .clip { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; display: flex; align-items: center; justify-content: center; }
+
+      /* Phone frame */
+      .phone-frame {
+        width: 420px; height: 860px; background: #101010; border-radius: 52px; padding: 14px;
+        box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+        position: relative; overflow: hidden;
+      }
+      .phone-screen { width: 100%; height: 100%; border-radius: 40px; overflow: hidden; position: relative; }
+      .phone-notch {
+        position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 130px; height: 32px;
+        background: #101010; border-radius: 0 0 20px 20px; z-index: 10;
+      }
+      .phone-status {
+        position: absolute; top: 6px; left: 28px; right: 28px; display: flex; justify-content: space-between;
+        font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: #1a1a1a; z-index: 11;
+      }
+
+      /* Scene 1: Dark hook with Lagos energy */
+      .hook-bg {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f1f18 100%);
+        flex-direction: column; gap: 20px; position: relative;
+      }
+      .hook-grain {
+        position: absolute; inset: 0; opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      .hook-text { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 84px; color: #ffffff; letter-spacing: -0.04em; line-height: 1; text-align: center; z-index: 2; }
+      .hook-sub { font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 32px; color: rgba(255,255,255,0.4); z-index: 2; opacity: 0; }
+      .hook-accent { color: #f05f4b; }
+
+      /* Scene 2: Notes-app style calc inside phone */
+      .notes-bg { background: #f5f5f3; }
+      .notes-app {
+        width: 100%; height: 100%; background: #fefce8; padding: 60px 24px 24px;
+        font-family: 'DM Sans', sans-serif;
+      }
+      .notes-header { font-size: 13px; color: #9ca3af; margin-bottom: 8px; display: flex; justify-content: space-between; }
+      .notes-title { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 22px; color: #1a1a1a; margin-bottom: 16px; }
+      .notes-line { font-size: 18px; color: #1a1a1a; line-height: 2; opacity: 0; }
+      .notes-line.red { color: #f05f4b; font-weight: 700; }
+      .notes-divider { height: 1px; background: #e5e7eb; margin: 8px 0; }
+      .notes-total { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 28px; color: #1a1a1a; opacity: 0; margin-top: 8px; }
+
+      /* Scene 3: Full checkout with food */
+      .checkout-bg { background: #fafaf8; }
+      .checkout-screen { width: 100%; height: 100%; background: #fafaf8; padding: 50px 16px 16px; overflow: hidden; }
+      .checkout-h { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 20px; color: #1a1a1a; margin-bottom: 12px; }
+      .food-row { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 16px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+      .food-img { width: 56px; height: 56px; border-radius: 12px; background: linear-gradient(135deg, #d4763a, #c0392b); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+      .food-info { flex: 1; }
+      .food-name { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px; color: #1a1a1a; }
+      .food-rest { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+      .food-price { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 15px; color: #1a1a1a; }
+      .delivery-section { margin-top: 8px; }
+      .delivery-label { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 8px; }
+      .delivery-opt { display: flex; align-items: center; gap: 12px; background: rgba(15,64,48,0.03); border: 2px solid #0f4030; border-radius: 14px; padding: 14px; }
+      .delivery-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #0f4030; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .delivery-radio-inner { width: 9px; height: 9px; background: #0f4030; border-radius: 50%; }
+      .delivery-opt-text { flex: 1; }
+      .delivery-opt-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: #1a1a1a; }
+      .delivery-opt-sub { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+      .delivery-free { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 16px; color: #22c55e; }
+      .first-note { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12px; color: #22c55e; font-weight: 600; }
+      .total-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid #f0efeb; }
+      .total-label { font-size: 13px; color: #6b7280; }
+      .total-price { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 22px; color: #1a1a1a; }
+      .pay-btn { width: 100%; background: #f05f4b; color: white; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 15px; padding: 14px; border-radius: 14px; border: none; margin-top: 12px; text-align: center; box-shadow: 0 4px 16px rgba(240,95,75,0.3); }
+
+      /* Scene 4: Premium ticket confirmation */
+      .confirm-bg { background: #fafaf8; }
+      .confirm-screen { width: 100%; height: 100%; background: #fafaf8; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; gap: 16px; }
+      .confirm-check { width: 56px; height: 56px; background: #0f4030; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+      .confirm-title { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 22px; color: #1a1a1a; }
+      .ticket { background: #fff; border-radius: 18px; padding: 24px; width: 100%; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px dashed #e5e7eb; position: relative; }
+      .ticket::before, .ticket::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fafaf8; border-radius: 50%; top: 50%; }
+      .ticket::before { left: -10px; }
+      .ticket::after { right: -10px; }
+      .ticket-label { font-size: 10px; font-weight: 700; color: #9ca3af; letter-spacing: 0.1em; text-transform: uppercase; }
+      .ticket-code { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 42px; color: #1a1a1a; letter-spacing: 0.06em; margin-top: 4px; }
+      .ticket-time { font-family: 'DM Sans', sans-serif; font-size: 14px; color: #0f4030; font-weight: 600; margin-top: 8px; }
+      .ticket-food { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0efeb; }
+      .ticket-food-dot { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #d4763a, #c0392b); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+      .ticket-food-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+
+      /* Scene 5: Punchline on warm dark bg */
+      .punch-bg {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1612 50%, #0a0a0a 100%);
+        flex-direction: column; gap: 24px; position: relative;
+      }
+      .punch-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(240,95,75,0.06) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+      .punch-text { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 48px; color: #ffffff; letter-spacing: -0.03em; line-height: 1.25; text-align: center; max-width: 1100px; z-index: 2; }
+      .punch-second { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 48px; color: rgba(255,255,255,0.5); letter-spacing: -0.03em; z-index: 2; opacity: 0; }
+      .punch-logo { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2; opacity: 0; margin-top: 32px; }
+      .punch-logo-name { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 28px; color: #f05f4b; }
+      .punch-logo-city { font-family: 'DM Sans', sans-serif; font-size: 16px; color: rgba(255,255,255,0.3); }
+
+      /* Side context — ambient elements flanking the phone */
+      .side-context { position: absolute; z-index: 1; }
+      .side-label { font-family: 'DM Sans', sans-serif; font-size: 18px; color: rgba(255,255,255,0.15); letter-spacing: 0.05em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1920" data-height="1080">
+
+      <!-- SCENE 1: Dark hook — 0-4s -->
+      <div id="scene1" class="clip hook-bg" data-start="0" data-duration="4" data-track-index="0">
+        <div class="hook-grain"></div>
+        <div id="s1-text" class="hook-text"><span class="hook-accent">₦32,000</span> a month.</div>
+        <div id="s1-sub" class="hook-sub">Just to eat at your desk.</div>
+      </div>
+
+      <!-- SCENE 2: Notes-app calc in phone — 4-8s -->
+      <div id="scene2" class="clip" data-start="4" data-duration="4" data-track-index="0" style="background:#1a1a1a;">
+        <div class="side-context" style="left: 160px; top: 200px;">
+          <div class="side-label" style="transform: rotate(-90deg); transform-origin: left top;">DAILY DELIVERY TAX</div>
+        </div>
+        <div class="phone-frame">
+          <div class="phone-screen notes-bg">
+            <div class="phone-notch"></div>
+            <div class="notes-app">
+              <div class="notes-header"><span>Notes</span><span>Just now</span></div>
+              <div class="notes-title">delivery fees lol</div>
+              <div id="s2-l1" class="notes-line">₦800 morning</div>
+              <div id="s2-l2" class="notes-line">₦800 afternoon</div>
+              <div class="notes-divider"></div>
+              <div id="s2-l3" class="notes-line red">₦1,600 / day × 20 days</div>
+              <div class="notes-divider"></div>
+              <div id="s2-total" class="notes-total">= ₦32,000 / month 😳</div>
+            </div>
+          </div>
+        </div>
+        <div class="side-context" style="right: 200px; bottom: 280px;">
+          <div class="side-label">THE MATH NOBODY DOES</div>
+        </div>
+      </div>
+
+      <!-- SCENE 3: Full checkout in phone — 8-13s -->
+      <div id="scene3" class="clip" data-start="8" data-duration="5" data-track-index="0" style="background:#111;">
+        <div class="phone-frame">
+          <div class="phone-screen checkout-bg">
+            <div class="phone-notch"></div>
+            <div id="s3-checkout" class="checkout-screen">
+              <div class="checkout-h">Checkout</div>
+              <div class="food-row">
+                <div class="food-img">🍛</div>
+                <div class="food-info">
+                  <div class="food-name">Jollof Rice &amp; Beef</div>
+                  <div class="food-rest">Ajisafe Pepper Rice</div>
+                </div>
+                <div class="food-price">₦800</div>
+              </div>
+              <div class="delivery-section">
+                <div class="delivery-label">Delivery</div>
+                <div class="delivery-opt">
+                  <div class="delivery-radio"><div class="delivery-radio-inner"></div></div>
+                  <div class="delivery-opt-text">
+                    <div class="delivery-opt-title">Office Batch Drop</div>
+                    <div class="delivery-opt-sub">Arrives together by 12 PM</div>
+                  </div>
+                  <div class="delivery-free">FREE</div>
+                </div>
+                <div class="first-note">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m5 12 4 4L19 6"/></svg>
+                  First order — delivery is free!
+                </div>
+              </div>
+              <div class="total-bar">
+                <span class="total-label">Total</span>
+                <span class="total-price">₦850</span>
+              </div>
+              <div class="pay-btn">Continue to payment →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCENE 4: Ticket confirmation in phone — 13-16.5s -->
+      <div id="scene4" class="clip" data-start="13" data-duration="3.5" data-track-index="0" style="background:#111;">
+        <div class="phone-frame">
+          <div class="phone-screen confirm-bg">
+            <div class="phone-notch"></div>
+            <div class="confirm-screen">
+              <div id="s4-check" class="confirm-check" style="transform:scale(0)">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="m5 12 4 4L19 6"/></svg>
+              </div>
+              <div class="confirm-title">You're all set!</div>
+              <div class="ticket">
+                <div class="ticket-label">Collection Code</div>
+                <div class="ticket-code">CD-B5AY</div>
+                <div class="ticket-time">Arrives by 12:00 PM</div>
+                <div class="ticket-food">
+                  <div class="ticket-food-dot">🍛</div>
+                  <div class="ticket-food-name">Jollof Rice &amp; Beef · Ajisafe</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCENE 5: Dark punchline — 16.5-23s -->
+      <div id="scene5" class="clip punch-bg" data-start="16.5" data-duration="6.5" data-track-index="0">
+        <div class="punch-glow"></div>
+        <div id="s5-main" class="punch-text">Some people in your office deleted that expense last week.</div>
+        <div id="s5-second" class="punch-second">Nobody said a word.</div>
+        <div id="s5-logo" class="punch-logo">
+          <div class="punch-logo-name">ChopDrop</div>
+          <div class="punch-logo-city">Ikeja</div>
+        </div>
+      </div>
+
+      <!-- AUDIO -->
+      <audio id="music" data-start="0" data-duration="23" data-track-index="1" data-volume="0.08" src="assets/music/happy-beats-business-moves-vol-10-by-ende-dot-app.mp3" data-has-audio="true"></audio>
+      <audio id="vo1" data-start="0.3" data-duration="3.5" data-track-index="2" data-volume="1" src="assets/vo/vo-scene1.mp3" data-has-audio="true"></audio>
+      <audio id="vo2" data-start="4.3" data-duration="3.5" data-track-index="3" data-volume="1" src="assets/vo/vo-scene2.mp3" data-has-audio="true"></audio>
+      <audio id="vo4" data-start="13.3" data-duration="2.5" data-track-index="4" data-volume="1" src="assets/vo/vo-scene4.mp3" data-has-audio="true"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1: Hook text visible, subtitle fades in
+      tl.set("#s1-text", { opacity: 1 }, 0);
+      tl.set("#s1-sub", { opacity: 0, y: 16 }, 0);
+      tl.to("#s1-sub", { opacity: 1, y: 0, duration: 0.6 }, 1.6);
+
+      // Scene 2: Notes lines appear one by one
+      tl.set(["#s2-l1","#s2-l2","#s2-l3","#s2-total"], { opacity: 0, x: -12 }, 4);
+      tl.to("#s2-l1", { opacity: 1, x: 0, duration: 0.35 }, 4.3);
+      tl.to("#s2-l2", { opacity: 1, x: 0, duration: 0.35 }, 5.1);
+      tl.to("#s2-l3", { opacity: 1, x: 0, duration: 0.35 }, 5.9);
+      tl.to("#s2-total", { opacity: 1, x: 0, duration: 0.5 }, 6.6);
+
+      // Scene 3: Checkout visible immediately
+      tl.set("#s3-checkout", { opacity: 1 }, 8);
+
+      // Scene 4: Checkmark scales in
+      tl.set("#s4-check", { scale: 0 }, 13);
+      tl.to("#s4-check", { scale: 1, duration: 0.4, ease: "back.out(1.7)" }, 13.3);
+
+      // Scene 5: Punchline
+      tl.set("#s5-main", { opacity: 1 }, 16.5);
+      tl.set("#s5-second", { opacity: 0, y: 10 }, 16.5);
+      tl.set("#s5-logo", { opacity: 0 }, 16.5);
+      tl.to("#s5-second", { opacity: 1, y: 0, duration: 0.5 }, 19.2);
+      tl.to("#s5-logo", { opacity: 1, duration: 0.7 }, 21.0);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

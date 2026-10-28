@@ -1,0 +1,125 @@
+[span] ChopDrop
+[a] How it works
+[a] Who it's for
+[a] About us
+[a] Use the App
+[a] Order on WhatsApp
+[div] Now serving Ikeja offices
+[h1] Meals for
+[span] Your Team,
+[strong] Sorted.
+[p] Pick your meal, pay on your phone. Fresh food arrives at your office — zero delivery fees, zero stress.
+[a] Order on WhatsApp
+[a] See how it works
+[b] Pick & pay individually
+[b] ₦0 delivery
+[span] 9:41
+[span] ● ●
+[div] Good morning, Ada
+[div] What's for lunch?
+[small] The Lunch Kitchen
+[strong] Work is stressful.
+[strong] Food shouldn't be.
+[span] Popular
+[span] Rice
+[span] Swallow
+[strong] Smoky jollof & beef
+[span] Freshly cooked today
+[b] ₦3,800
+[strong] Fried rice & chicken
+[span] With plantain
+[b] ₦4,200
+[strong] By 12 PM. Meals land.
+[small] One drop. Right on time.
+[strong] 20–30
+[span] meals
+[span] one drop
+[span] Currently serving select areas
+[strong] Allen Avenue · Opebi · Computer Village · Alausa · Toyin Street
+[span] 9:41
+[span] ● ●
+[div] Good morning, Ada
+[div] What's for lunch?
+[small] The Lunch Kitchen
+[strong] Work is stressful.
+[strong] Food shouldn't be.
+[span] Popular
+[span] Rice
+[span] Swallow
+[strong] Smoky jollof & beef
+[span] Freshly cooked today
+[b] ₦3,800
+[strong] Fried rice & chicken
+[span] With plantain
+[b] ₦4,200
+[strong] No chasing payments.
+[small] Everyone pays upfront.
+[div] Why groups choose us
+[h2] No More Food Chaos for Your Team
+[p] Group meals shouldn't mean collecting cash, fixing wrong orders, or wondering if there will be enough. With ChopDrop, everyone chooses and prepays for exactly what they want.
+[p] We bring it all together in one scheduled delivery, ready to hand out with simple collection codes. Office lunch is just where we're starting.
+[strong] 20–30
+[span] Meals per drop
+[span] Delivery fee
+[strong] 100%
+[span] Prepaid orders
+[div] Office lunch is where we begin
+[h2] How
+[strong] ChopDrop
+[h2] Works
+[p] Here's how one meal run comes together—from individual picks to one easy drop.
+[h3] Everyone Picks Their Meal
+[p] Choose from the menu and pay online. No cash collection, no chasing.
+[h3] Restaurants Cook to Order
+[p] Your prepaid order goes straight to the kitchen. No guesswork, no waste.
+[span] 9:41
+[span] ● ●
+[div] Today's order
+[div] Lunch is sorted.
+[strong] Paid & confirmed
+[span] We'll see you at lunchtime
+[b] by 12:00 PM
+[small] Fresh food at your desk. ₦0 delivery.
+[div] COLLECT WITH CODE · CD 028
+[h3] ₦0 Delivery to Your Office
+[p] Your meal reaches your desk in one smooth drop — free delivery, no hassle.
+[h3] Your Captain Distributes
+[p] Simple collection codes make handing out every meal quick and easy.
+[p] Office lunch today. Breakfasts, events, estates, and more tomorrow.
+[div] Our first ChopDrop community
+[h2] Built for
+[strong] Everyone Who Eats Together
+[p] Starting with the people who make great office meals happen.
+[h3] For Workers
+[p] Pick what you want. Pay on your phone. Collect at the set time. No queueing.
+[a] Start Ordering
+[small] Let's talk on WhatsApp
+[h3] For Captains
+[p] Bring your group together without chasing cash, orders, or restaurants.
+[a] Become a Captain
+[small] Let's talk on WhatsApp
+[h3] For Restaurants
+[p] Get guaranteed prepaid group orders, cook exactly what is needed, and reduce waste.
+[a] Partner With Us
+[small] Let's talk on WhatsApp
+[span] Make mealtime your time
+[h2] Ready to Eat
+[strong] Better Together?
+[p] Bring your group together with food everyone actually chose—no app download needed.
+[a] Order on WhatsApp
+[a] Join Waitlist
+[label] Get an email when ChopDrop reaches you.
+[button] Notify me →
+[small] App coming soon · WhatsApp ordering available now
+[span] ChopDrop
+[p] Work is stressful. Food shouldn't be.
+[a] How it works
+[a] Order on WhatsApp
+[a] For captains
+[a] About ChopDrop
+[a] Restaurant partners
+[a] Get in touch
+[a] Privacy policy
+[a] Terms of service
+[span] © 2026 ChopDrop · Ikeja, Lagos
+[span] Work is stressful. Food shouldn't be.

@@ -1,0 +1,351 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "Manrope",
+      "fontSize": "82px",
+      "fontWeight": "400",
+      "lineHeight": "77.08px",
+      "letterSpacing": "-4.51px",
+      "color": "#113B2D",
+      "sampleText": "Meals for Your Team, Sorted."
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Manrope",
+      "fontSize": "55px",
+      "fontWeight": "400",
+      "lineHeight": "59.4px",
+      "letterSpacing": "-3.025px",
+      "color": "#113B2D",
+      "sampleText": "No More Food Chaos for Your Team"
+    },
+    {
+      "role": "heading-2",
+      "fontFamily": "Manrope",
+      "fontSize": "44px",
+      "fontWeight": "400",
+      "lineHeight": "47.52px",
+      "letterSpacing": "-2.42px",
+      "color": "#FFFFFF",
+      "sampleText": "Ready to Eat Better Together?"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Manrope",
+      "fontSize": "18px",
+      "fontWeight": "400",
+      "lineHeight": "27px",
+      "letterSpacing": "normal",
+      "color": "#113B2D",
+      "sampleText": "For Workers"
+    },
+    {
+      "role": "body",
+      "fontFamily": "DM Sans",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "28px",
+      "letterSpacing": "normal",
+      "color": "#6E776E",
+      "sampleText": "Pick your meal, pay on your phone. Fresh food arrives at you"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "DM Sans",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "21px",
+      "letterSpacing": "normal",
+      "color": "#113B2D",
+      "sampleText": "Everyone Picks Their Meal"
+    },
+    {
+      "role": "link",
+      "fontFamily": "DM Sans",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "lineHeight": "18px",
+      "letterSpacing": "normal",
+      "color": "#C9D6D0",
+      "sampleText": "How it works"
+    },
+    {
+      "role": "body-small",
+      "fontFamily": "DM Sans",
+      "fontSize": "6px",
+      "fontWeight": "400",
+      "lineHeight": "9px",
+      "letterSpacing": "normal",
+      "color": "#B7C9BF",
+      "sampleText": "The Lunch Kitchen"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      4,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      14,
+      16,
+      17,
+      18,
+      19,
+      20,
+      22
+    ],
+    "baseUnit": 4
+  },
+  "radius": [
+    "6px",
+    "8px",
+    "9px",
+    "18px",
+    "50%",
+    "999px"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(30, 54, 44, 0.05) 0px 12px 35px 0px",
+      "count": 4
+    },
+    {
+      "value": "rgba(19, 34, 27, 0.2) 0px 22px 38px 0px",
+      "count": 3
+    },
+    {
+      "value": "rgba(20, 47, 37, 0.12) 0px 14px 35px 0px",
+      "count": 2
+    },
+    {
+      "value": "rgba(8, 42, 32, 0.16) 0px 14px 35px 0px",
+      "count": 1
+    }
+  ],
+  "buttons": [
+    {
+      "label": "Order on WhatsApp→See how it works→",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#113B2D",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(17, 59, 45)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "42px"
+    },
+    {
+      "label": "Make mealtime your timeReady to Eat Bett",
+      "background": "#0F4030",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "82px 0px",
+      "borderRadius": "36px 36px 0px 0px",
+      "border": "0px solid rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "455px"
+    },
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "0px",
+      "borderRadius": "50%",
+      "border": "10px solid rgb(238, 229, 213)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "290px"
+    },
+    {
+      "label": "Make mealtime your timeReady to Eat Bett",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "281.516px"
+    },
+    {
+      "label": "Notify me →",
+      "background": "#F8F4E9",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#0F4030",
+      "padding": "10px 16px",
+      "borderRadius": "999px",
+      "border": "0px none rgb(15, 64, 48)",
+      "boxShadow": "none",
+      "fontSize": "9px",
+      "fontWeight": "700",
+      "height": "33.5px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "#0F4030",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "12px",
+      "borderRadius": "9px",
+      "border": "0px solid rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "102px"
+    },
+    {
+      "label": "card",
+      "background": "#FFFFFF",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#113B2D",
+      "padding": "22px",
+      "borderRadius": "18px",
+      "border": "1px solid rgba(15, 64, 48, 0.08)",
+      "boxShadow": "rgba(30, 54, 44, 0.05) 0px 12px 35px 0px",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "163px"
+    },
+    {
+      "label": "card",
+      "background": "#F8F4E9",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#113B2D",
+      "padding": "38px",
+      "borderRadius": "16px 0px 0px 16px",
+      "border": "0px solid rgb(17, 59, 45)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "350px"
+    },
+    {
+      "label": "card",
+      "background": "#E5EEE3",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#113B2D",
+      "padding": "38px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(17, 59, 45)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "350px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "#082A20",
+    "backgroundImage": "",
+    "backdropFilter": "",
+    "color": "#FFFFFF",
+    "padding": "0px 10px 0px 20px",
+    "borderRadius": "999px",
+    "border": "1px solid rgba(255, 255, 255, 0.08)",
+    "boxShadow": "rgba(8, 42, 32, 0.16) 0px 14px 35px 0px",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "height": "62px"
+  },
+  "chips": [
+    {
+      "label": "Use the App →",
+      "background": "transparent",
+      "color": "#0F4030",
+      "padding": "0px 19px",
+      "borderRadius": "999px",
+      "border": "1px solid rgb(15, 64, 48)",
+      "boxShadow": "none",
+      "fontSize": "12px",
+      "fontWeight": "700",
+      "height": "42px"
+    },
+    {
+      "label": "Order on WhatsApp→",
+      "background": "#F05F4B",
+      "color": "#FFFFFF",
+      "padding": "0px 19px",
+      "borderRadius": "999px",
+      "border": "1px solid rgb(240, 95, 75)",
+      "boxShadow": "none",
+      "fontSize": "12px",
+      "fontWeight": "700",
+      "height": "42px"
+    },
+    {
+      "label": "Rice",
+      "background": "#EEEAE0",
+      "color": "#6F776F",
+      "padding": "4px 8px",
+      "borderRadius": "8px",
+      "border": "0px solid rgb(111, 119, 111)",
+      "boxShadow": "none",
+      "fontSize": "6px",
+      "fontWeight": "400",
+      "height": "17px"
+    },
+    {
+      "label": "Join Waitlist→",
+      "background": "transparent",
+      "color": "#FFFFFF",
+      "padding": "0px 19px",
+      "borderRadius": "999px",
+      "border": "1px solid rgba(255, 255, 255, 0.55)",
+      "boxShadow": "none",
+      "fontSize": "12px",
+      "fontWeight": "700",
+      "height": "42px"
+    }
+  ],
+  "statCells": [
+    {
+      "background": "transparent",
+      "borderRadius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "numberFontSize": "31px",
+      "numberFontWeight": "700",
+      "numberColor": "#113B2D"
+    }
+  ],
+  "tabs": [
+    {
+      "label": "PopularRiceSwallow",
+      "background": "transparent",
+      "color": "#113B2D",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(17, 59, 45)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "17px"
+    }
+  ],
+  "backgrounds": [],
+  "glass": []
+}

@@ -1,0 +1,26 @@
+[span] ChopDrop
+[span] Good evening
+[span] Serving Ikeja, Lagos
+[div] How ChopDrop works · Ikeja offices
+[div] Pick what you're eating today
+[div] Choose your meal, pay on your phone
+[div] Cooked fresh, delivered to your office
+[div] Fresh food at your desk, ₦0 delivery
+[div] Collect with your code — you paid ₦0 delivery
+[div] No cash, no wrong orders, no delivery fee
+[button] Got it, show me food
+[span] Breakfast
+[span] Closed
+[span] Lunch
+[span] Closed
+[h2] Today's orders are closed
+[p] Orders open at 7:00 AM tomorrow
+[h3] Tomorrow's kitchens
+[div] The Place
+[div] 108
+[div] meal
+[div] Ikeja GRA, Lagos
+[div] Ajisafe Pepper Rice
+[div] meal
+[div] Ikeja, Lagos
+[a] Check order status

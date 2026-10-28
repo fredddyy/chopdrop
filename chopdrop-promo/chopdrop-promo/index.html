@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <title>ChopDrop Promo</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    @font-face { font-family: 'Manrope'; src: url('https://fonts.googleapis.com/css2?family=Manrope:wght@800'); }
+    @font-face { font-family: 'DM Sans'; src: url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700'); }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { margin: 0; overflow: hidden; background: #FAFAF8; }
+    #root { width: 100%; height: 100%; position: relative; overflow: hidden; font-family: 'DM Sans', system-ui, sans-serif; }
+    .clip { position: absolute; inset: 0; overflow: hidden; }
+
+    /* ── Yellow blur circle (persistent) ── */
+    #yellow-blur {
+      position: absolute;
+      width: 900px; height: 900px;
+      left: 50%; top: 85%;
+      border-radius: 50%;
+      background: #FFCC00;
+      filter: blur(120px);
+      z-index: 0;
+      will-change: transform, opacity;
+    }
+
+    /* ── Scene 1: Intro ── */
+    #intro-text {
+      position: absolute;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 72px;
+      color: #1A1A1A;
+      left: 50%; top: 50%;
+      white-space: nowrap;
+      z-index: 2;
+    }
+    #intro-text span {
+      display: inline-block;
+      opacity: 0;
+    }
+
+    /* ── Logo ── */
+    #logo-group {
+      position: absolute;
+      left: 50%; top: 50%;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 5;
+      opacity: 0;
+    }
+    #logo-icon {
+      width: 120px; height: 132px;
+    }
+    #logo-wordmark {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 80px;
+      color: #1C2B24;
+      letter-spacing: -0.03em;
+      overflow: hidden;
+    }
+    #logo-wordmark span {
+      display: inline-block;
+      opacity: 0;
+    }
+
+    /* ── Hand (glove icon, not emoji) ── */
+    #hand {
+      position: absolute;
+      z-index: 6;
+      opacity: 0;
+      width: 64px; height: 64px;
+    }
+    .ghost-trail {
+      position: absolute;
+      width: 120px; height: 132px;
+      z-index: 4;
+      opacity: 0;
+    }
+
+    /* ── Scene 2: Search ── */
+    #search-bar {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 500px; height: 72px;
+      background: #0A0A0A;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      z-index: 10;
+      opacity: 0;
+    }
+    #search-text {
+      color: #FFFFFF;
+      font-size: 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    #search-cursor {
+      display: inline-block;
+      width: 2px; height: 28px;
+      background: #FFFFFF;
+      margin-left: 2px;
+      vertical-align: middle;
+    }
+    #search-icon {
+      position: absolute;
+      right: 24px; top: 50%;
+      width: 32px; height: 32px;
+      color: white;
+    }
+
+    /* Food icons — LARGE and CLOSE to search bar like reference */
+    .food-icon {
+      position: absolute;
+      font-size: 80px;
+      z-index: 8;
+      opacity: 0;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
+    }
+
+    /* ── Scene 3: Store Card ── */
+    #store-card {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 480px;
+      background: #1A1A1A;
+      border-radius: 24px;
+      padding: 32px;
+      z-index: 15;
+      opacity: 0;
+      overflow: hidden;
+    }
+    #store-header {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      color: #F5C565;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .store-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      position: relative;
+      isolation: isolate;
+    }
+    .store-row-bg {
+      position: absolute;
+      inset: -4px;
+      border-radius: 18px;
+      background: #FFCC00;
+      z-index: -1;
+      opacity: 0;
+    }
+    .store-logo {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .store-name {
+      font-size: 22px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+    #order-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 100px;
+      background: #F5C565;
+      color: #19342d;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    /* ── Scene 4: Side text ── */
+    #side-text {
+      position: absolute;
+      left: 8%; top: 38%;
+      z-index: 16;
+      opacity: 0;
+    }
+    #side-text .line {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 48px;
+      color: #888;
+      opacity: 0;
+    }
+    #side-text .coral { color: #F05F4B; }
+    #side-text .amber { color: #F5C565; }
+
+    /* ── Scene 5: Cart ── */
+    #cart-card {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 560px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+      z-index: 20;
+      opacity: 0;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: #FFF8F0;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      opacity: 0;
+    }
+    .cart-food-img {
+      width: 80px; height: 80px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    .cart-label { font-size: 14px; font-weight: 500; }
+    .cart-name { font-size: 20px; font-weight: 700; color: #19342d; }
+    .cart-price { font-size: 16px; font-weight: 600; color: #666; }
+    #checkout-btn {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 100px;
+      background: #216c4e;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      text-align: center;
+      opacity: 0;
+    }
+
+    /* ── Scene 6: Address + Map ── */
+    #address-bar {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 760px; height: 72px;
+      background: #F5F5F0;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px 0 24px;
+      gap: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      z-index: 25;
+      opacity: 0;
+    }
+    #address-pin { font-size: 24px; color: #999; }
+    #address-text {
+      flex: 1;
+      font-size: 22px;
+      font-weight: 500;
+      color: #19342d;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    #confirm-btn {
+      padding: 12px 24px;
+      border-radius: 100px;
+      background: #E8F5E9;
+      border: 1px solid #C8E6C9;
+      color: #216c4e;
+      font-weight: 600;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .map-pin {
+      position: absolute;
+      z-index: 24;
+      width: 36px; height: 48px;
+      opacity: 0;
+    }
+
+    /* Delivery overlay */
+    #delivery-text {
+      position: absolute;
+      left: 50%; top: 50%;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 60px;
+      color: #19342d;
+      text-align: center;
+      z-index: 27;
+      opacity: 0;
+      white-space: nowrap;
+    }
+    #delivery-tag {
+      position: absolute;
+      left: 50%; top: 65%;
+      background: white;
+      border-radius: 100px;
+      padding: 12px 24px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #19342d;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      z-index: 27;
+      opacity: 0;
+      white-space: nowrap;
+    }
+
+    /* ── Scene 7: Outro ── */
+    #outro-bg {
+      position: absolute;
+      inset: 0;
+      background: #19342d;
+      z-index: 28;
+      opacity: 0;
+    }
+    #outro-logo {
+      position: absolute;
+      left: 50%; top: 25%;
+      z-index: 30;
+      opacity: 0;
+    }
+    #outro-name {
+      position: absolute;
+      left: 50%; top: 52%;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 72px;
+      color: #F05F4B;
+      z-index: 30;
+      opacity: 0;
+      white-space: nowrap;
+    }
+    #outro-tagline {
+      position: absolute;
+      left: 50%; top: 65%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 28px;
+      color: #F5C565;
+      z-index: 30;
+      opacity: 0;
+      white-space: nowrap;
+    }
+    #outro-url {
+      position: absolute;
+      left: 50%; top: 75%;
+      background: #F05F4B;
+      color: white;
+      padding: 14px 40px;
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      z-index: 30;
+      opacity: 0;
+      white-space: nowrap;
+    }
+    #outro-handle {
+      position: absolute;
+      left: 50%; top: 88%;
+      font-size: 20px;
+      color: #888;
+      z-index: 30;
+      opacity: 0;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1920" data-height="1080">
+
+    <!-- ══ PERSISTENT: Yellow Blur Circle ══ -->
+    <div id="yellow-blur"></div>
+
+    <!-- ══ SCENE 1: Intro (0-2.8s) ══ -->
+    <section id="scene-intro" class="clip" data-start="0" data-duration="2.8" data-track-index="1">
+      <div id="intro-text">
+        <span>I</span><span>n</span><span>t</span><span>r</span><span>o</span><span>d</span><span>u</span><span>c</span><span>i</span><span>n</span><span>g</span>
+      </div>
+
+      <div id="logo-group">
+        <svg id="logo-icon" viewBox="0 0 100 110" width="120" height="132">
+          <path d="M50 4 C58 12 88 35 88 50 L88 80 A18 18 0 0 1 70 98 L30 98 A18 18 0 0 1 12 80 L12 50 C12 35 42 12 50 4 Z" fill="#F05F4B"/>
+          <path d="M32 70 Q50 86 68 70" stroke="white" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div id="logo-wordmark">
+          <span>C</span><span>h</span><span>o</span><span>p</span><span>D</span><span>r</span><span>o</span><span>p</span>
+        </div>
+      </div>
+
+      <svg id="hand" viewBox="0 0 64 64" width="64" height="64">
+        <rect x="8" y="24" width="48" height="32" rx="8" fill="white" stroke="#333" stroke-width="2"/>
+        <rect x="14" y="8" width="10" height="24" rx="5" fill="white" stroke="#333" stroke-width="2"/>
+        <rect x="27" y="4" width="10" height="28" rx="5" fill="white" stroke="#333" stroke-width="2"/>
+        <rect x="40" y="8" width="10" height="24" rx="5" fill="white" stroke="#333" stroke-width="2"/>
+        <line x1="20" y1="36" x2="20" y2="48" stroke="#ddd" stroke-width="1.5"/>
+        <line x1="32" y1="36" x2="32" y2="48" stroke="#ddd" stroke-width="1.5"/>
+        <line x1="44" y1="36" x2="44" y2="48" stroke="#ddd" stroke-width="1.5"/>
+      </svg>
+
+      <!-- Ghost trails -->
+      <svg class="ghost-trail" id="ghost1" viewBox="0 0 100 110" width="120" height="132">
+        <path d="M50 4 C58 12 88 35 88 50 L88 80 A18 18 0 0 1 70 98 L30 98 A18 18 0 0 1 12 80 L12 50 C12 35 42 12 50 4 Z" fill="#F05F4B"/>
+      </svg>
+      <svg class="ghost-trail" id="ghost2" viewBox="0 0 100 110" width="120" height="132">
+        <path d="M50 4 C58 12 88 35 88 50 L88 80 A18 18 0 0 1 70 98 L30 98 A18 18 0 0 1 12 80 L12 50 C12 35 42 12 50 4 Z" fill="#F05F4B"/>
+      </svg>
+      <svg class="ghost-trail" id="ghost3" viewBox="0 0 100 110" width="120" height="132">
+        <path d="M50 4 C58 12 88 35 88 50 L88 80 A18 18 0 0 1 70 98 L30 98 A18 18 0 0 1 12 80 L12 50 C12 35 42 12 50 4 Z" fill="#F05F4B"/>
+      </svg>
+    </section>
+
+    <!-- ══ SCENE 2: Search (2.8-4.8s) ══ -->
+    <section id="scene-search" class="clip" data-start="2.8" data-duration="2" data-track-index="2">
+      <!-- Camera zoom wrapper — scales everything together -->
+      <div id="search-zoom" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div id="search-bar">
+          <span id="search-text"></span>
+          <span id="search-cursor"></span>
+          <svg id="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </div>
+
+        <!-- Orbiting food icons — LARGE and CLOSE, tight ring -->
+        <span class="food-icon" id="fi1" style="left:22%;top:28%">&#127858;</span>
+        <span class="food-icon" id="fi2" style="left:38%;top:20%">&#127859;</span>
+        <span class="food-icon" id="fi3" style="left:58%;top:22%">&#127828;</span>
+        <span class="food-icon" id="fi4" style="left:20%;top:58%">&#127834;</span>
+        <span class="food-icon" id="fi5" style="left:38%;top:62%">&#127836;</span>
+        <span class="food-icon" id="fi6" style="left:56%;top:60%">&#127843;</span>
+        <span class="food-icon" id="fi7" style="left:70%;top:56%">&#128757;</span>
+
+        <!-- Pointer cursor for click -->
+        <svg id="click-cursor" style="position:absolute;right:32%;top:48%;z-index:12;opacity:0;" width="40" height="52" viewBox="0 0 40 52">
+          <path d="M4 4L4 38L14 30L22 46L28 42L20 26L34 24Z" fill="white" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ══ SCENE 3: Store Selection (4.8-6.2s) ══ -->
+    <section id="scene-store" class="clip" data-start="4.8" data-duration="2.8" data-track-index="3">
+      <div id="store-card">
+        <div id="store-header">Pick your restaurant</div>
+
+        <div class="store-row" id="store1">
+          <div class="store-row-bg" id="hl1"></div>
+          <div class="store-logo" style="background:#F05F4B">&#127859;</div>
+          <span class="store-name">Ajisafe Kitchen</span>
+        </div>
+        <div class="store-row" id="store2">
+          <div class="store-row-bg" id="hl2"></div>
+          <div class="store-logo" style="background:#216c4e">&#127869;</div>
+          <span class="store-name">The Place</span>
+        </div>
+        <div class="store-row" id="store3">
+          <div class="store-row-bg" id="hl3"></div>
+          <div class="store-logo" style="background:#8B5CF6">&#128105;&#8205;&#127859;</div>
+          <span class="store-name">Mama T's Kitchen</span>
+        </div>
+
+        <div id="order-btn">ORDER NOW</div>
+      </div>
+
+      <!-- Side text (appears during zoom) -->
+      <div id="side-text">
+        <div class="line">Top <span class="coral">restaurants</span></div>
+        <div class="line">in <span class="amber">Lagos</span></div>
+      </div>
+    </section>
+
+    <!-- ══ SCENE 5: Cart (7.6-9.2s) ══ -->
+    <section id="scene-cart" class="clip" data-start="7.6" data-duration="1.6" data-track-index="4">
+      <div id="cart-card">
+        <div class="cart-item" id="cart1">
+          <div class="cart-food-img" style="background:rgba(240,95,75,0.15)">&#127858;</div>
+          <div>
+            <div class="cart-label" style="color:#F05F4B">Ajisafe Kitchen</div>
+            <div class="cart-name">Pepper Rice</div>
+            <div class="cart-price">&#8358;2,500</div>
+          </div>
+        </div>
+        <div class="cart-item" id="cart2">
+          <div class="cart-food-img" style="background:rgba(33,108,78,0.15)">&#127831;</div>
+          <div>
+            <div class="cart-label" style="color:#216c4e">The Place</div>
+            <div class="cart-name">Jollof Rice + Chicken</div>
+            <div class="cart-price">&#8358;3,800</div>
+          </div>
+        </div>
+        <div id="checkout-btn">PROCEED TO CHECKOUT</div>
+      </div>
+    </section>
+
+    <!-- ══ SCENE 6: Address + Delivery (9.2-12.0s) ══ -->
+    <section id="scene-address" class="clip" data-start="9.2" data-duration="2.8" data-track-index="5">
+      <div id="address-bar">
+        <span id="address-pin">&#128205;</span>
+        <span id="address-text"></span>
+        <div id="confirm-btn">Confirm Office</div>
+      </div>
+
+      <svg class="map-pin" id="pin1" style="left:25%;top:20%" viewBox="0 0 36 48"><path d="M18 46C18 46 3 28 3 18a15 15 0 0130 0c0 10-15 28-15 28z" fill="#E53935"/><circle cx="18" cy="18" r="6" fill="white"/></svg>
+      <svg class="map-pin" id="pin2" style="left:65%;top:22%" viewBox="0 0 36 48"><path d="M18 46C18 46 3 28 3 18a15 15 0 0130 0c0 10-15 28-15 28z" fill="#E53935"/><circle cx="18" cy="18" r="6" fill="white"/></svg>
+      <svg class="map-pin" id="pin3" style="left:15%;top:65%" viewBox="0 0 36 48"><path d="M18 46C18 46 3 28 3 18a15 15 0 0130 0c0 10-15 28-15 28z" fill="#E53935"/><circle cx="18" cy="18" r="6" fill="white"/></svg>
+      <svg class="map-pin" id="pin4" style="left:45%;top:68%" viewBox="0 0 36 48"><path d="M18 46C18 46 3 28 3 18a15 15 0 0130 0c0 10-15 28-15 28z" fill="#E53935"/><circle cx="18" cy="18" r="6" fill="white"/></svg>
+      <svg class="map-pin" id="pin5" style="left:80%;top:60%" viewBox="0 0 36 48"><path d="M18 46C18 46 3 28 3 18a15 15 0 0130 0c0 10-15 28-15 28z" fill="#E53935"/><circle cx="18" cy="18" r="6" fill="white"/></svg>
+
+      <div id="delivery-text">Hot lunch, delivered to your desk</div>
+      <div id="delivery-tag">&#128757; Arrives by 12:00 PM &middot; 4.2 km</div>
+    </section>
+
+    <!-- ══ SCENE 7: Outro (12.0-15.0s) ══ -->
+    <section id="scene-outro" class="clip" data-start="12" data-duration="3" data-track-index="6">
+      <div id="outro-bg"></div>
+      <svg id="outro-logo" viewBox="0 0 100 110" width="160" height="176">
+        <path d="M50 4 C58 12 88 35 88 50 L88 80 A18 18 0 0 1 70 98 L30 98 A18 18 0 0 1 12 80 L12 50 C12 35 42 12 50 4 Z" fill="#F05F4B"/>
+        <path d="M32 70 Q50 86 68 70" stroke="white" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div id="outro-name">ChopDrop</div>
+      <div id="outro-tagline">Order your office lunch</div>
+      <div id="outro-url">chopdrop-app.vercel.app</div>
+      <div id="outro-handle">@chopdrop.ng</div>
+    </section>
+
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════
+       MASTER TIMELINE — ChopDrop Promo (15s)
+       ═══════════════════════════════════════════ */
+    const tl = gsap.timeline({ paused: true });
+
+    // ── PERSISTENT: Yellow blur circle (full 15s) ──
+    // Yellow blur starts at bottom (Y 85%), only top arc visible like reference
+    gsap.set("#yellow-blur", { xPercent: -50, yPercent: -50, scale: 0.5, opacity: 0.3 });
+    tl.to("#yellow-blur", { scale: 1.0, opacity: 0.7, duration: 0.8, ease: "power2.out" }, 0);
+    tl.to("#yellow-blur", { opacity: 0.5, duration: 0.4 }, 0.8);
+    // Slow rotation entire video
+    tl.to("#yellow-blur", { rotation: 15, duration: 15, ease: "none" }, 0);
+    // Scale up for search scene then back down
+    tl.to("#yellow-blur", { scale: 1.3, opacity: 0.8, duration: 0.5, ease: "power2.out", overwrite: "auto" }, 2.8);
+    tl.to("#yellow-blur", { scale: 0.9, opacity: 0.5, duration: 0.5, overwrite: "auto" }, 4.8);
+
+    // ── SCENE 1: INTRO (0 — 2.8s) ──
+
+    // "Introducing" letter scatter-in
+    gsap.set("#intro-text", { xPercent: -50, yPercent: -50 });
+    const introLetters = document.querySelectorAll("#intro-text span");
+    // Seeded scatter positions (deterministic)
+    const scatterY = [-18, 12, -8, 20, -14, 6, -20, 15, -10, 18, -5];
+    const scatterX = [-12, 8, -15, 10, -6, 14, -10, 5, -8, 12, -14];
+    const scatterR = [-12, 8, -15, 10, -8, 14, -10, 6, -12, 15, -5];
+    introLetters.forEach((span, i) => {
+      tl.fromTo(span,
+        { opacity: 0, y: scatterY[i] || 0, x: scatterX[i] || 0, rotation: scatterR[i] || 0 },
+        { opacity: 1, y: 0, x: 0, rotation: 0, duration: 0.25, ease: "back.out(2)" },
+        0.05 + i * 0.03
+      );
+    });
+    // Scale-through exit
+    tl.to("#intro-text", { scale: 4, opacity: 0, duration: 0.3, ease: "power2.in" }, 0.9);
+
+    // Logo icon drop-in
+    gsap.set("#logo-group", { xPercent: -50, yPercent: -50 });
+    tl.to("#logo-group", { opacity: 1, duration: 0.01 }, 1.2);
+    tl.fromTo("#logo-icon", { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(1.7)" }, 1.2);
+
+    // Subtle glow behind logo — don't overpower the icon
+    tl.to("#yellow-blur", { scale: 0.7, opacity: 0.4, duration: 0.3, ease: "power2.out", overwrite: "auto" }, 1.2);
+
+    // Hand enters from right, grabs icon (use x/y transforms, not left/top)
+    gsap.set("#hand", { left: "50%", top: "42%", xPercent: -50, yPercent: -50, x: 600 });
+    tl.to("#hand", { opacity: 1, duration: 0.01 }, 1.5);
+    tl.to("#hand", { x: 0, y: -20, duration: 0.4, ease: "back.out(1.4)" }, 1.5);
+
+    // Hand drags icon group left + ghost trails
+    tl.to("#logo-group", { xPercent: -70, duration: 0.4, ease: "power2.out" }, 1.9);
+    tl.to("#hand", { x: -120, duration: 0.4, ease: "power2.out" }, 1.9);
+
+    // Ghost trails at prior positions
+    gsap.set(".ghost-trail", { xPercent: -50, yPercent: -50, left: "50%", top: "50%" });
+    tl.to("#ghost1", { opacity: 0.2, duration: 0.1 }, 1.95);
+    tl.to("#ghost1", { opacity: 0, duration: 0.3 }, 2.1);
+    gsap.set("#ghost2", { left: "52%" });
+    tl.to("#ghost2", { opacity: 0.15, duration: 0.1 }, 2.0);
+    tl.to("#ghost2", { opacity: 0, duration: 0.3 }, 2.15);
+    gsap.set("#ghost3", { left: "54%" });
+    tl.to("#ghost3", { opacity: 0.1, duration: 0.1 }, 2.05);
+    tl.to("#ghost3", { opacity: 0, duration: 0.3 }, 2.2);
+
+    // Wordmark typed out letter by letter
+    const wordLetters = document.querySelectorAll("#logo-wordmark span");
+    wordLetters.forEach((span, i) => {
+      tl.fromTo(span,
+        { opacity: 0, y: -6 },
+        { opacity: 1, y: 0, duration: 0.08, ease: "back.out(3)" },
+        2.05 + i * 0.04
+      );
+    });
+
+    // Hand flick exit
+    tl.to("#hand", { y: 60, opacity: 0, duration: 0.2, ease: "power2.in" }, 2.4);
+
+    // Logo settle wobble
+    tl.to("#logo-group", { rotation: 2, duration: 0.08 }, 2.5);
+    tl.to("#logo-group", { rotation: -1.5, duration: 0.08 }, 2.58);
+    tl.to("#logo-group", { rotation: 0, duration: 0.06 }, 2.66);
+
+    // Logo exit (after wobble completes)
+    tl.to("#logo-group", { scale: 0, opacity: 0, duration: 0.08, ease: "power2.in" }, 2.73);
+
+    // ── SCENE 2: SEARCH + ICONS (2.8 — 4.8s) ──
+    // Camera zoom wrapper — everything zooms together
+    gsap.set("#search-bar", { xPercent: -50, yPercent: -50 });
+    tl.to("#search-bar", { opacity: 1, duration: 0.01 }, 2.8);
+    tl.fromTo("#search-bar", { scale: 0.5 }, { scale: 1, duration: 0.3, ease: "back.out(1.7)" }, 2.8);
+
+    // Food icons pop in with elastic — SIMULTANEOUSLY with bar
+    const icons = ["#fi1", "#fi2", "#fi3", "#fi4", "#fi5", "#fi6", "#fi7"];
+    icons.forEach((id, i) => {
+      tl.fromTo(id,
+        { opacity: 0, scale: 0 },
+        { opacity: 1, scale: 1, duration: 0.35, ease: "elastic.out(1, 0.5)" },
+        2.85 + i * 0.06
+      );
+    });
+
+    // Type "What's for lunch today?"
+    const searchStr = "What's for lunch today?";
+    const searchEl = document.getElementById("search-text");
+    searchStr.split("").forEach((char, i) => {
+      tl.call(() => { searchEl.textContent = searchStr.substring(0, i + 1); }, null, 2.95 + i * 0.04);
+    });
+
+    // Cursor blink
+    tl.to("#search-cursor", { opacity: 0, duration: 0.25, repeat: 5, yoyo: true }, 2.95);
+
+    // ── CAMERA ZOOM IN (whole scene scales up 2.2x while typing) ──
+    tl.fromTo("#search-zoom",
+      { scale: 1 },
+      { scale: 2.2, duration: 1.2, ease: "power2.inOut" },
+      3.0
+    );
+
+    // Gentle icon drift during zoom
+    icons.forEach((id, i) => {
+      const angle = (i / icons.length) * Math.PI * 2;
+      tl.to(id, {
+        x: Math.cos(angle) * 20,
+        y: Math.sin(angle) * 15,
+        duration: 1.5,
+        ease: "sine.inOut"
+      }, 3.0);
+    });
+
+    // ── CURSOR CLICKS SEARCH ICON (while zoomed in) ──
+    tl.to("#click-cursor", { opacity: 1, duration: 0.1 }, 3.8);
+    tl.to("#click-cursor", { scale: 0.85, duration: 0.08 }, 4.0); // click squash
+    tl.to("#click-cursor", { scale: 1, duration: 0.08 }, 4.08);
+
+    // ── CAMERA ZOOM BACK OUT ──
+    tl.to("#search-zoom", { scale: 1, duration: 0.4, ease: "power2.inOut" }, 4.15);
+    tl.to("#click-cursor", { opacity: 0, duration: 0.15 }, 4.15);
+
+    // ── EXIT: search morphs into store card ──
+    tl.to("#search-zoom", { scale: 3, opacity: 0, duration: 0.25, ease: "power2.in" }, 4.6);
+
+    // ── SCENE 3: STORE SELECTION (4.8 — 7.6s) ──
+
+    gsap.set("#store-card", { xPercent: -50, yPercent: -50 });
+
+    // Morph in: dark card scales from zero
+    tl.to("#store-card", { opacity: 1, duration: 0.01 }, 4.8);
+    tl.fromTo("#store-card",
+      { scale: 0.3, borderRadius: "100px" },
+      { scale: 1, borderRadius: "24px", duration: 0.5, ease: "power3.out" },
+      4.8
+    );
+
+    // Store rows stagger in
+    tl.fromTo("#store1", { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.25, ease: "power2.out" }, 5.1);
+    tl.fromTo("#store2", { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.25, ease: "power2.out" }, 5.18);
+    tl.fromTo("#store3", { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.25, ease: "power2.out" }, 5.26);
+
+    // Highlight scans down — bright yellow behind each row
+    tl.to("#hl1", { opacity: 0.85, duration: 0.15 }, 5.4);
+    tl.to("#hl1", { opacity: 0, duration: 0.15 }, 5.65);
+    tl.to("#hl2", { opacity: 0.85, duration: 0.15 }, 5.7);
+    tl.to("#hl2", { opacity: 0, duration: 0.15 }, 5.95);
+    tl.to("#hl3", { opacity: 0.85, duration: 0.15 }, 6.0);
+
+    // Order button pop
+    tl.fromTo("#order-btn", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "back.out(2)" }, 5.5);
+
+    // Card zoom right + side text
+    tl.to("#store-card", { xPercent: 20, scale: 1.3, duration: 0.6, ease: "power2.inOut" }, 6.3);
+
+    gsap.set("#side-text", { opacity: 0 });
+    tl.to("#side-text", { opacity: 1, duration: 0.01 }, 6.4);
+    const sideLines = document.querySelectorAll("#side-text .line");
+    sideLines.forEach((line, i) => {
+      tl.fromTo(line, { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3, ease: "power2.out" }, 6.5 + i * 0.12);
+    });
+
+    // Wipe out: card + text fade
+    tl.to("#store-card", { opacity: 0, scale: 1.5, duration: 0.25, ease: "power2.in" }, 7.3);
+    tl.to("#side-text", { opacity: 0, duration: 0.2 }, 7.3);
+
+    // ── SCENE 5: CART (7.6 — 9.2s) ──
+
+    gsap.set("#cart-card", { xPercent: -50, yPercent: -50 });
+    tl.to("#cart-card", { opacity: 1, duration: 0.01 }, 7.6);
+    tl.fromTo("#cart-card", { scale: 0.7 }, { scale: 1, duration: 0.3, ease: "back.out(1.4)" }, 7.6);
+
+    // Cart items appear fast — no blank card
+    tl.fromTo("#cart1", { x: -20, opacity: 0 }, { x: 0, opacity: 1, duration: 0.15, ease: "power2.out" }, 7.6);
+    tl.fromTo("#cart2", { x: -20, opacity: 0 }, { x: 0, opacity: 1, duration: 0.15, ease: "power2.out" }, 7.68);
+
+    // Checkout button
+    tl.fromTo("#checkout-btn", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.25, ease: "back.out(2)" }, 8.1);
+
+    // Cart exit
+    tl.to("#cart-card", { scale: 0.85, opacity: 0, duration: 0.3, ease: "power2.in" }, 8.9);
+
+    // ── SCENE 6: ADDRESS + DELIVERY (9.2 — 12.0s) ──
+
+    gsap.set("#address-bar", { xPercent: -50, yPercent: -50 });
+    tl.to("#address-bar", { opacity: 1, duration: 0.01 }, 9.2);
+    tl.fromTo("#address-bar", { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(1.7)" }, 9.2);
+
+    // Pins drop simultaneously with bar — no delay
+    const pins = ["#pin1", "#pin2", "#pin3", "#pin4", "#pin5"];
+    pins.forEach((id, i) => {
+      tl.fromTo(id,
+        { opacity: 0, y: -40 },
+        { opacity: 1, y: 0, duration: 0.35, ease: "elastic.out(1, 0.6)" },
+        9.2 + i * 0.04
+      );
+    });
+
+    // Pin color change: red → orange (SVG path fill)
+    tl.to(".map-pin path", { fill: "#F57C00", duration: 0.3 }, 9.8);
+
+    // Type address
+    const addrStr = "Victoria Island Office";
+    const addrEl = document.getElementById("address-text");
+    addrStr.split("").forEach((char, i) => {
+      tl.call(() => { addrEl.textContent = addrStr.substring(0, i + 1); }, null, 9.5 + i * 0.04);
+    });
+
+    // Transition: address fades, delivery text enters
+    tl.to("#address-bar", { opacity: 0, duration: 0.2 }, 10.6);
+    tl.to(".map-pin", { opacity: 0, duration: 0.2 }, 10.6);
+
+    gsap.set("#delivery-text", { xPercent: -50, yPercent: -50 });
+    gsap.set("#delivery-tag", { xPercent: -50, yPercent: -50 });
+
+    tl.fromTo("#delivery-text",
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+      10.9
+    );
+    tl.fromTo("#delivery-tag",
+      { opacity: 0, scale: 0 },
+      { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" },
+      11.2
+    );
+
+    // Delivery exit
+    tl.to("#delivery-text", { opacity: 0, duration: 0.2 }, 11.7);
+    tl.to("#delivery-tag", { opacity: 0, duration: 0.2 }, 11.7);
+
+    // ── SCENE 7: OUTRO (12.0 — 15.0s) ──
+
+    // Yellow blur fills screen then recedes (overwrite to avoid overlap with earlier rotation tween)
+    tl.to("#yellow-blur", { scale: 4, opacity: 1, duration: 0.3, ease: "power2.in", overwrite: "auto" }, 12.0);
+    tl.to("#yellow-blur", { scale: 1, opacity: 0, duration: 0.4, ease: "power2.out", overwrite: "auto" }, 12.35);
+
+    // Dark background fades in
+    tl.to("#outro-bg", { opacity: 1, duration: 0.3 }, 12.4);
+
+    // Logo drops in
+    gsap.set("#outro-logo", { xPercent: -50, yPercent: -50 });
+    tl.fromTo("#outro-logo",
+      { opacity: 0, y: -40, scale: 0 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.7)" },
+      12.6
+    );
+
+    // "ChopDrop" defocus to focus
+    gsap.set("#outro-name", { xPercent: -50, yPercent: -50, filter: "blur(12px)" });
+    tl.to("#outro-name", { opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "power2.out" }, 12.8);
+
+    // Tagline
+    gsap.set("#outro-tagline", { xPercent: -50, yPercent: -50 });
+    tl.fromTo("#outro-tagline",
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+      13.2
+    );
+
+    // URL button
+    gsap.set("#outro-url", { xPercent: -50, yPercent: -50 });
+    tl.fromTo("#outro-url",
+      { opacity: 0, scale: 0.9 },
+      { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.5)" },
+      13.5
+    );
+
+    // Handle — earlier so it's visible before video ends
+    gsap.set("#outro-handle", { xPercent: -50, yPercent: -50 });
+    tl.to("#outro-handle", { opacity: 0.7, duration: 0.3 }, 13.5);
+
+    // Register
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

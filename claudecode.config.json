@@ -1,0 +1,4 @@
+
+{
+  "agent_instructions": "When generating scripts or video briefs for the /brag command, strictly follow the ChopDrop Video Tone Guide. Use the 'sharp colleague at lunch' persona, the 4-stage energy progression (0-45s), and ensure the vocabulary matches the lowkey Lagos flex style provided in the prompt context. Reject all marketing buzzwords."
+}
