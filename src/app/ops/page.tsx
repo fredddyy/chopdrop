@@ -1376,8 +1376,8 @@ export default function OpsPage() {
                           </>
                         )}
                         <div>
-                          <label className="block text-[12px] font-bold mb-1.5">Pool pricing tiers <span className="font-normal text-ink-soft">(min:price pairs, e.g. 5:1450, 10:1300, 15:1150)</span></label>
-                          <input type="text" value={editMealPoolTiers} onChange={(e) => setEditMealPoolTiers(e.target.value)} placeholder="5:1450, 10:1300, 15:1150" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
+                          <label className="block text-[12px] font-bold mb-1.5">Pool pricing tiers <span className="font-normal text-ink-soft">(min:price pairs, e.g. 10:1940, 20:1900, 30:1840)</span></label>
+                          <input type="text" value={editMealPoolTiers} onChange={(e) => setEditMealPoolTiers(e.target.value)} placeholder="10:1940, 20:1900, 30:1840" className="w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30" />
                           {editMealPoolTiers.trim() && (
                             <div className="mt-1 text-[10px] text-ink-soft">
                               {editMealPoolTiers.split(",").map((t, i) => { const [min, price] = t.trim().split(":"); return min && price ? <span key={i} className="inline-block bg-green/10 text-green px-1.5 py-0.5 rounded mr-1">{min}+ orders → ₦{price}</span> : null; })}

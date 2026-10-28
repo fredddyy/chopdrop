@@ -1,7 +1,7 @@
 /**
  * Pool pricing — prices drop as more people from the same office order in the same time slot.
  *
- * Tiers are stored on Meal.poolTiers as JSON: [{min: 5, price: 145000}, {min: 10, price: 130000}]
+ * Tiers are stored on Meal.poolTiers as JSON: [{min: 10, price: 194000}, {min: 20, price: 190000}, {min: 30, price: 184000}]
  * - `min`: minimum paid orders from the office to unlock this tier
  * - `price`: the meal price in kobo at this tier
  * - Tiers must be sorted ascending by `min`

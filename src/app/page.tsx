@@ -191,7 +191,7 @@ export default function Home() {
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="flex gap-2 mb-2">
                     <div className="bg-[var(--emerald)] text-white text-[12px] font-bold px-3 py-1.5 rounded-full">₦0 delivery</div>
-                    <div className="bg-white text-[var(--text)] text-[12px] font-bold px-3 py-1.5 rounded-full">30% off</div>
+                    <div className="bg-white text-[var(--text)] text-[12px] font-bold px-3 py-1.5 rounded-full">Up to 30% off</div>
                   </div>
                   <div className="text-white text-[20px] font-extrabold leading-tight">Jollof Rice & Chicken</div>
                   <div className="text-white/70 text-[13px] mt-0.5">The Place · Admiralty Way</div>
@@ -343,12 +343,12 @@ export default function Home() {
         </div>
         <div className="flex gap-4 px-5 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-2">
           {[
-            { img: FOOD_JOLLOF, name: "Jollof Rice & Chicken", vendor: "The Place", orig: "₦4,800", pool: "₦3,360", save: "30%" },
-            { img: FOOD_CHICKEN, name: "Grilled Chicken", vendor: "Kilimanjaro", orig: "₦3,500", pool: "₦2,450", save: "30%" },
-            { img: FOOD_RICE, name: "Fried Rice Special", vendor: "Mama Tola's", orig: "₦3,200", pool: "₦2,240", save: "30%" },
-            { img: FOOD_SOUP, name: "Pepper Soup", vendor: "The Place", orig: "₦4,500", pool: "₦3,150", save: "30%" },
-            { img: FOOD_WRAP, name: "Chicken Shawarma", vendor: "ChickenWizz", orig: "₦3,900", pool: "₦2,730", save: "30%" },
-            { img: FOOD_BOWL, name: "Veggie Power Bowl", vendor: "Green Basket", orig: "₦3,000", pool: "₦2,100", save: "30%" },
+            { img: FOOD_JOLLOF, name: "Jollof Rice & Chicken", vendor: "The Place", orig: "₦4,800", pool: "₦4,416", save: "8%" },
+            { img: FOOD_CHICKEN, name: "Grilled Chicken", vendor: "Kilimanjaro", orig: "₦3,500", pool: "₦3,220", save: "8%" },
+            { img: FOOD_RICE, name: "Fried Rice Special", vendor: "Mama Tola's", orig: "₦3,200", pool: "₦3,040", save: "5%" },
+            { img: FOOD_SOUP, name: "Pepper Soup", vendor: "The Place", orig: "₦4,500", pool: "₦4,275", save: "5%" },
+            { img: FOOD_WRAP, name: "Chicken Shawarma", vendor: "ChickenWizz", orig: "₦3,900", pool: "₦3,783", save: "3%" },
+            { img: FOOD_BOWL, name: "Veggie Power Bowl", vendor: "Green Basket", orig: "₦3,000", pool: "₦2,910", save: "3%" },
           ].map((meal, i) => (
             <div key={i} className="shrink-0 w-[240px] lg:w-[280px] snap-start rounded-[20px] overflow-hidden bg-white group" style={{ border: "1px solid var(--border)" }}>
               <div className="h-[160px] lg:h-[190px] overflow-hidden relative">

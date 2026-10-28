@@ -74,7 +74,7 @@ Navigation Label     Inter | Medium | 11px | Active: #C4572A
 ### Tier Progress Bar
 * 6px height, flat solid fills
 * States: Gray → Gold → Terracotta → Forest Green
-* Adjacent text: "3 more → 20% off" in tier color, 13px
+* Adjacent text: "5 more → 5% off" in tier color, 13px
 
 ### Quick Reorder Card
 * 3px solid #C4572A left border (signature detail)
