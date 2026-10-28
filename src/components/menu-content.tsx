@@ -341,7 +341,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     {tiers.map((tier, i) => {
                       const isActive = i === currentTierIdx;
                       const isFuture = i > currentTierIdx;
-                      const tierPrice = Math.round(examplePrice * (1 - tier.pct / 100));
+                      const tierPrice = Math.round(examplePrice * (1 - tier.pct / 100) / 5000) * 5000;
                       return (
                         <div key={i} className="flex-1 rounded-[10px] py-2.5 text-center" style={{
                           background: isActive ? "var(--sand)" : "transparent",
