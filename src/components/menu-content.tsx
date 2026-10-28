@@ -571,160 +571,111 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   </section>
                 )}
 
-                {/* Full vendor sections — hero banner + horizontal scroll */}
-                {fullVendors.map(([rId, rData]) => {
-                  const heroMeal = rData.items[0];
-                  const restMeals = rData.items.slice(1, 6);
-                  const heroCartQty = cart.items.find((i) => i.dailyMenuId === heroMeal.id)?.quantity || 0;
-                  const heroPrice = getEffectivePrice(heroMeal.id, heroMeal.price);
-                  const heroHasDiscount = poolData.meals[heroMeal.id] && poolData.meals[heroMeal.id].savings > 0;
-                  const heroBg = rData.bannerUrl || heroMeal.imageUrl;
+                {/* Full vendor sections — adaptive by meal count */}
+                {fullVendors.map(([rId, rData]) => (
+              <section key={rId} className="mt-8 px-5">
+                {/* Vendor header */}
+                <div className="flex items-center gap-3 mb-3 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
+                  <div className="w-11 h-11 rounded-[12px] overflow-hidden shrink-0 border-2 border-white">
+                    {rData.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[13px] font-bold" style={{ background: "var(--card)", color: "var(--text-muted)" }}>{rData.name.charAt(0)}</div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-[16px] font-extrabold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
+                    <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""}</p>
+                  </div>
+                  {rData.hasBuild && (
+                    <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-full text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
+                      Build Plate
+                    </Link>
+                  )}
+                </div>
 
-                  return (
-                    <section key={rId} className="mt-8">
-                      {/* ── HERO — vendor banner with info overlaid + first meal below ── */}
-                      <div className="mx-5 rounded-[20px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ border: heroCartQty > 0 ? "2px solid var(--coral)" : "1px solid var(--border)" }} onClick={() => handleAddFixed(heroMeal)}>
-                        {/* Photo — banner or first meal fallback */}
-                        <div className="relative" style={{ height: 200, background: "var(--sand)" }}>
-                          {heroBg ? (
+                {/* Meal cards — grid, capped at 4 visible for 5+ meals */}
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                  {rData.items.slice(0, 4).map((meal) => {
+                    const cartQty = cart.items.find((i) => i.dailyMenuId === meal.id)?.quantity || 0;
+                    const effectivePrice = getEffectivePrice(meal.id, meal.price);
+                    const hasPoolDiscount = poolData.meals[meal.id] && poolData.meals[meal.id].savings > 0;
+                    const maxOrders = meal.tag === "DEAL" ? 20 : 50;
+                    const mealOrders = Math.max(0, maxOrders - meal.remaining);
+                    const isPopular = mealOrders >= 3;
+
+                    return (
+                      <div key={meal.id} className="rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: cartQty > 0 ? "2px solid var(--coral)" : "1px solid var(--border)" }} onClick={() => handleAddFixed(meal)}>
+                        {/* Large food photo */}
+                        <div className="relative h-[130px] lg:h-[160px]" style={{ background: "var(--sand)" }}>
+                          {meal.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={heroBg} alt={rData.name} className="w-full h-full object-cover" loading="lazy" />
+                            <img src={meal.imageUrl} alt={meal.name} className="w-full h-full object-cover" loading="lazy" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
                             </div>
                           )}
-                          {/* Vendor strip — overlaid on photo top */}
-                          <div className="absolute top-0 left-0 right-0 px-3 py-2.5 flex items-center gap-2.5" style={{ background: "rgba(20,20,19,0.6)" }}>
-                            <div className="rounded-[8px] overflow-hidden shrink-0" style={{ width: 32, height: 32, border: "1px solid rgba(255,255,255,0.15)" }}>
-                              {rData.imageUrl ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[11px] font-bold" style={{ background: "rgba(255,255,255,0.1)", color: "white" }}>{rData.name.charAt(0)}</div>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h2 className="text-[14px] font-bold text-white truncate">{rData.name}</h2>
-                              <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>{rData.items.length} meal{rData.items.length !== 1 ? "s" : ""}{rData.hasBuild ? " · custom plates" : ""}</p>
-                            </div>
-                            {rData.hasBuild && (
-                              <Link href={`/restaurant/${rId}`} onClick={(e) => e.stopPropagation()} className="h-8 px-4 rounded-[10px] text-[12px] font-bold flex items-center cursor-pointer active:scale-95 transition-transform" style={{ background: "var(--coral)", color: "white" }}>
-                                Build Plate
-                              </Link>
-                            )}
-                          </div>
-                          {/* Pool discount badge */}
-                          {heroHasDiscount && (
-                            <div className="absolute bottom-3 left-3 h-6 px-2 rounded-full flex items-center text-[11px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                              {Math.round((poolData.meals[heroMeal.id].savings / poolData.meals[heroMeal.id].basePrice) * 100)}% off
-                            </div>
-                          )}
-                        </div>
-                        {/* Info bar — meal name, price, add button */}
-                        <div className="px-3.5 py-3 flex items-center justify-between gap-3" style={{ background: "var(--card)" }}>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-[15px] font-bold truncate" style={{ color: "var(--text)" }}>
-                              {heroMeal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
-                            </h3>
-                            <div className="flex items-baseline gap-2 mt-0.5">
-                              <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(heroPrice)}</span>
-                              {heroHasDiscount && <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(poolData.meals[heroMeal.id].basePrice)}</span>}
-                              {heroMeal.originalPrice && heroMeal.originalPrice > heroMeal.price && !heroHasDiscount && (
-                                <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(heroMeal.originalPrice)}</span>
-                              )}
-                            </div>
-                          </div>
-                          <div onClick={(e) => e.stopPropagation()}>
-                            {heroCartQty > 0 ? (
-                              <div className="flex items-center rounded-[12px] h-10" style={{ background: "var(--coral)" }}>
-                                <button type="button" onClick={() => cart.changeQuantity(heroMeal.id, -1)} className="w-10 h-10 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                          {/* Add/quantity button */}
+                          <div className="absolute bottom-2 right-2" onClick={(e) => e.stopPropagation()}>
+                            {cartQty > 0 ? (
+                              <div className="flex items-center rounded-full h-8" style={{ background: "var(--coral)" }}>
+                                <button type="button" onClick={() => cart.changeQuantity(meal.id, -1)} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
                                 </button>
-                                <span className="text-white text-[14px] font-bold min-w-[20px] text-center tabular-nums">{heroCartQty}</span>
-                                <button type="button" onClick={() => handleAddFixed(heroMeal)} className="w-10 h-10 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                                <span className="text-white text-[13px] font-bold min-w-[18px] text-center tabular-nums">{cartQty}</span>
+                                <button type="button" onClick={() => handleAddFixed(meal)} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                                 </button>
                               </div>
                             ) : (
-                              <button type="button" onClick={() => handleAddFixed(heroMeal)} className="w-10 h-10 rounded-[12px] flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--coral)" }}>
+                              <button type="button" onClick={() => handleAddFixed(meal)} className="w-9 h-9 rounded-full flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--coral)" }}>
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                               </button>
                             )}
                           </div>
+                          {/* Pool discount badge */}
+                          {hasPoolDiscount && (
+                            <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center text-[11px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                              {Math.round((poolData.meals[meal.id].savings / poolData.meals[meal.id].basePrice) * 100)}% off
+                            </div>
+                          )}
+                          {/* Popularity indicator */}
+                          {isPopular && !hasPoolDiscount && (
+                            <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center gap-1 text-[11px] font-bold" style={{ background: "var(--card)", color: "var(--coral)" }}>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                              {mealOrders} ordered
+                            </div>
+                          )}
+                        </div>
+                        {/* Info */}
+                        <div className="p-3">
+                          <h3 className="text-[14px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                            {meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
+                          </h3>
+                          {meal.description && <p className="text-[11px] mt-0.5 leading-snug" style={{ color: "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{meal.description}</p>}
+                          <div className="flex items-baseline gap-2 mt-1.5">
+                            <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
+                            {hasPoolDiscount && <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(poolData.meals[meal.id].basePrice)}</span>}
+                            {meal.originalPrice && meal.originalPrice > meal.price && !hasPoolDiscount && (
+                              <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(meal.originalPrice)}</span>
+                            )}
+                          </div>
                         </div>
                       </div>
-
-                      {/* ── REMAINING MEALS — horizontal scroll strip ── */}
-                      {restMeals.length > 0 && (
-                        <div className="flex gap-3 overflow-x-auto hide-scrollbar mt-3 px-5 pb-1">
-                          {restMeals.map((meal) => {
-                            const cartQty = cart.items.find((i) => i.dailyMenuId === meal.id)?.quantity || 0;
-                            const effectivePrice = getEffectivePrice(meal.id, meal.price);
-                            const hasPoolDiscount = poolData.meals[meal.id] && poolData.meals[meal.id].savings > 0;
-                            return (
-                              <div key={meal.id} className="shrink-0 rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ width: 200, background: "var(--card)", border: cartQty > 0 ? "2px solid var(--coral)" : "1px solid var(--border)" }} onClick={() => handleAddFixed(meal)}>
-                                <div className="relative" style={{ height: 140, background: "var(--sand)" }}>
-                                  {meal.imageUrl ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={meal.imageUrl} alt={meal.name} className="w-full h-full object-cover" loading="lazy" />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
-                                    </div>
-                                  )}
-                                  {hasPoolDiscount && (
-                                    <div className="absolute top-2 left-2 h-5 px-1.5 rounded-full flex items-center text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                                      {Math.round((poolData.meals[meal.id].savings / poolData.meals[meal.id].basePrice) * 100)}% off
-                                    </div>
-                                  )}
-                                </div>
-                                {/* Info — name, price, + button all below the photo */}
-                                <div className="p-2.5 flex items-center justify-between gap-2">
-                                  <div className="flex-1 min-w-0">
-                                    <h3 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>
-                                      {meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
-                                    </h3>
-                                    <div className="flex items-baseline gap-1.5 mt-0.5">
-                                      <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
-                                      {hasPoolDiscount && <span className="text-[11px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(poolData.meals[meal.id].basePrice)}</span>}
-                                      {meal.originalPrice && meal.originalPrice > meal.price && !hasPoolDiscount && (
-                                        <span className="text-[11px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(meal.originalPrice)}</span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
-                                    {cartQty > 0 ? (
-                                      <div className="flex items-center rounded-[10px] h-8" style={{ background: "var(--coral)" }}>
-                                        <button type="button" onClick={() => cart.changeQuantity(meal.id, -1)} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg></button>
-                                        <span className="text-white text-[11px] font-bold min-w-[14px] text-center tabular-nums">{cartQty}</span>
-                                        <button type="button" onClick={() => handleAddFixed(meal)} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
-                                      </div>
-                                    ) : (
-                                      <button type="button" onClick={() => handleAddFixed(meal)} className="w-8 h-8 rounded-[10px] flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--coral)" }}>
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* See all — for vendors with many meals */}
-                      {rData.items.length > 6 && (
-                        <div className="px-5 mt-3">
-                          <Link href={`/restaurant/${rId}`} className="w-full h-10 rounded-full text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
-                            See all {rData.items.length} meals
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-                          </Link>
-                        </div>
-                      )}
-                    </section>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+                {/* "See all" link for vendors with 5+ meals */}
+                {rData.items.length > 4 && (
+                  <Link href={`/restaurant/${rId}`} className="mt-3 w-full h-10 rounded-full text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
+                    See all {rData.items.length} meals
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                  </Link>
+                )}
+              </section>
+                ))}
               </>
             );
           })()}
