@@ -155,7 +155,7 @@ export default function OpsPage() {
   const [officeDetails, setOfficeDetails] = useState<{
     office: { id: string; name: string; code: string; address: string; collectionPoint: string; assistantName: string | null; assistantPhone: string | null; assistantEmail: string | null };
     stats: { totalMembers: number; totalOrders: number; totalRevenue: number; totalTips: number; totalServiceFees: number; todayOrders: number; todayTips: number };
-    members: Array<{ id: string; name: string; email: string; phone: string; joinedAt: string; orderCount: number; totalSpent: number; lastOrder: string | null }>;
+    members: Array<{ id: string; name: string; email: string; phone: string; role: string; joinedAt: string; orderCount: number; totalSpent: number; lastOrder: string | null }>;
   } | null>(null);
   const [officeDetailsLoading, setOfficeDetailsLoading] = useState(false);
 
@@ -1767,14 +1767,26 @@ export default function OpsPage() {
                                   {m.name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2)}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <strong className="text-[12px] block truncate">{m.name}</strong>
+                                  <div className="flex items-center gap-1.5">
+                                    <strong className="text-[12px] truncate">{m.name}</strong>
+                                    {m.role === "CAPTAIN" && <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-gold/20 text-gold">Captain</span>}
+                                  </div>
                                   <span className="text-ink-soft text-[10px]">{m.phone} &middot; {m.orderCount} orders</span>
                                 </div>
-                                <div className="text-right flex-shrink-0">
-                                  <strong className="text-[12px] block">{formatNaira(m.totalSpent)}</strong>
-                                  <span className="text-ink-soft text-[9px]">
-                                    {m.lastOrder ? `Last: ${new Date(m.lastOrder).toLocaleDateString("en-US", { day: "numeric", month: "short" })}` : "No orders"}
-                                  </span>
+                                <div className="text-right flex-shrink-0 flex items-center gap-2">
+                                  {m.role !== "CAPTAIN" && (
+                                    <button type="button" onClick={async () => {
+                                      if (!confirm(`Make ${m.name} the captain?`)) return;
+                                      await fetch(`/api/admin/users/${m.id}/role`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: "CAPTAIN" }) });
+                                      loadAll();
+                                    }} className="text-[9px] font-bold text-coral hover:underline cursor-pointer">Make Captain</button>
+                                  )}
+                                  <div>
+                                    <strong className="text-[12px] block">{formatNaira(m.totalSpent)}</strong>
+                                    <span className="text-ink-soft text-[9px]">
+                                      {m.lastOrder ? `Last: ${new Date(m.lastOrder).toLocaleDateString("en-US", { day: "numeric", month: "short" })}` : "No orders"}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             ))}

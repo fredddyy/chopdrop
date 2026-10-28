@@ -17,6 +17,7 @@ export async function GET(
           lastName: true,
           email: true,
           phone: true,
+          role: true,
           createdAt: true,
           orders: {
             where: { paymentStatus: "SUCCESS" },
@@ -54,6 +55,7 @@ export async function GET(
     name: `${u.firstName} ${u.lastName}`,
     email: u.email,
     phone: u.phone,
+    role: u.role,
     joinedAt: u.createdAt,
     orderCount: u.orders.length,
     totalSpent: u.orders.reduce((s, o) => s + o.totalAmount, 0),
