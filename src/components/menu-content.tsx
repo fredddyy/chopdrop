@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { CountdownTimer } from "./countdown-timer";
 import { BottomNav } from "./bottom-nav";
 import { PwaInstallPrompt } from "./pwa-install-prompt";
+import { PushPrompt } from "./push-prompt";
 import { useCart } from "@/lib/cart";
 import { getCustomerProfile, clearCustomerProfile } from "@/lib/customer";
 import Link from "next/link";
@@ -962,6 +963,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
       <BottomNav />
       <PwaInstallPrompt />
+      <PushPrompt />
     </main>
   );
 }

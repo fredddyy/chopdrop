@@ -19,10 +19,22 @@ model User {
   officeId     String?
   createdAt    DateTime @default(now())
 
-  office   Office?       @relation(fields: [officeId], references: [id])
-  orders   Order[]
-  walletId String?
-  wallet   CreditWallet? @relation(fields: [walletId], references: [id])
+  office            Office?            @relation(fields: [officeId], references: [id])
+  orders            Order[]
+  walletId          String?
+  wallet            CreditWallet?      @relation(fields: [walletId], references: [id])
+  pushSubscriptions PushSubscription[]
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admin {
