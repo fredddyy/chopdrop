@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Logo } from "@/components/logo";
 
-type Step = "intro" | "phone" | "otp" | "name" | "choose" | "office" | "benefits" | "share";
+type Step = "intro" | "phone" | "name" | "pin" | "confirmPin" | "choose" | "office" | "benefits" | "share";
 
 export default function StartPage() {
   const [step, setStep] = useState<Step>("intro");
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
-  const [otpToken, setOtpToken] = useState("");
-  const [otpCode, setOtpCode] = useState(["", "", "", ""]);
-  const [testCode, setTestCode] = useState("");
-  const [resendTimer, setResendTimer] = useState(0);
+  const [pinCode, setPinCode] = useState(["", "", "", ""]);
+  const [confirmPinCode, setConfirmPinCode] = useState(["", "", "", ""]);
   const [officeName, setOfficeName] = useState("");
   const [officeAddress, setOfficeAddress] = useState("");
   const [officeSize, setOfficeSize] = useState("20-40");
@@ -21,48 +19,27 @@ export default function StartPage() {
   const [officeData, setOfficeData] = useState<{ name: string; code: string; slug: string; joinLink: string; captainLink: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (resendTimer <= 0) return;
-    const t = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-    return () => clearTimeout(t);
-  }, [resendTimer]);
-
   const appUrl = typeof window !== "undefined" ? window.location.origin : "";
 
-  async function handleSendOtp() {
-    const cleanPhone = phone.trim().replace(/\s/g, "");
-    if (cleanPhone.length < 10) return;
+  async function handleSetPin(pin: string) {
     setLoading(true); setError("");
     try {
-      const res = await fetch("/api/auth/send-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: cleanPhone }) });
+      const res = await fetch("/api/auth/set-pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phone.trim().replace(/\s/g, ""), pin, firstName: firstName.trim() }),
+      });
       const data = await res.json();
-      if (!data.success) { setError(data.error || "Failed to send code"); setLoading(false); return; }
-      setOtpToken(data.data.otpToken);
-      if (data.data.testCode) setTestCode(data.data.testCode);
-      setResendTimer(60);
-      setStep("otp");
-    } catch { setError("Network error."); }
-    setLoading(false);
-  }
-
-  async function handleVerifyOtp(code: string) {
-    setLoading(true); setError("");
-    try {
-      const res = await fetch("/api/auth/verify-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ otpToken, code, firstName: firstName || undefined }) });
-      const data = await res.json();
-      if (!data.success) { setError(data.error || "Wrong code"); setLoading(false); return; }
-      if (data.data.firstName && data.data.firstName !== "User") { setFirstName(data.data.firstName); setStep("choose"); }
-      else { setStep("name"); }
+      if (!data.success) { setError(data.error || "Failed"); setLoading(false); return; }
+      if (data.data.firstName && data.data.firstName !== "User") { setFirstName(data.data.firstName); }
+      setStep("choose");
     } catch { setError("Network error."); }
     setLoading(false);
   }
 
   async function handleSetName() {
     if (!firstName.trim()) return;
-    setLoading(true);
-    try { await fetch("/api/auth/verify-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ otpToken, code: otpCode.join(""), firstName: firstName.trim() }) }); } catch {}
-    setLoading(false);
-    setStep("choose");
+    setStep("pin");
   }
 
   async function handleCreateOffice() {
@@ -78,15 +55,15 @@ export default function StartPage() {
     setLoading(false);
   }
 
-  function handleOtpInput(index: number, value: string) {
-    if (!/^\d*$/.test(value)) return;
-    const c = [...otpCode]; c[index] = value.slice(-1); setOtpCode(c);
-    if (value && index < 3) document.getElementById(`otp-${index + 1}`)?.focus();
-    if (value && index === 3) { const full = c.join(""); if (full.length === 4) handleVerifyOtp(full); }
+  function handlePinInput(arr: string[], setArr: (v: string[]) => void, i: number, v: string, prefix: string, onComplete?: (full: string) => void) {
+    if (!/^\d*$/.test(v)) return;
+    const c = [...arr]; c[i] = v.slice(-1); setArr(c);
+    if (v && i < 3) document.getElementById(`${prefix}-${i + 1}`)?.focus();
+    if (v && i === 3) { const full = c.join(""); if (full.length === 4 && onComplete) onComplete(full); }
   }
 
-  function handleOtpKeyDown(index: number, key: string) {
-    if (key === "Backspace" && !otpCode[index] && index > 0) document.getElementById(`otp-${index - 1}`)?.focus();
+  function handlePinKeyDown(arr: string[], i: number, key: string, prefix: string) {
+    if (key === "Backspace" && !arr[i] && i > 0) document.getElementById(`${prefix}-${i - 1}`)?.focus();
   }
 
   const btnPrimary = "w-full bg-[var(--coral)] text-white font-bold text-[16px] h-[56px] rounded-full active:scale-[0.97] transition-all hover:bg-[var(--coral-dark)] cursor-pointer disabled:bg-[var(--border)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed disabled:hover:bg-[var(--border)]";
@@ -210,7 +187,7 @@ export default function StartPage() {
       </div>
       <div className="mb-8">
         <h2 className="text-[28px] font-extrabold text-[var(--text)] tracking-[-0.02em] leading-tight mb-2">What&apos;s your<br />phone number?</h2>
-        <p className="text-[16px] text-[var(--text-secondary)]">We&apos;ll send a 4-digit code via SMS</p>
+        <p className="text-[16px] text-[var(--text-secondary)]">You&apos;ll create a 4-digit PIN to log in</p>
       </div>
       {errorBox(error)}
       {/* Phone input — Nigerian flag as SVG */}
@@ -228,8 +205,8 @@ export default function StartPage() {
           <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="812 345 6789" className={inputCls} autoFocus />
         </div>
       </div>
-      <button type="button" onClick={handleSendOtp} disabled={loading || phone.replace(/\s/g, "").length < 10} className={btnPrimary}>
-        {loading ? "Sending..." : "Continue"}
+      <button type="button" onClick={() => { setError(""); setStep("name"); }} disabled={phone.replace(/\s/g, "").length < 10} className={btnPrimary}>
+        Continue
       </button>
       {/* Trust signal */}
       <div className="flex items-center justify-center gap-2 mt-6">
@@ -239,46 +216,57 @@ export default function StartPage() {
     </>);
   }
 
-  /* ═══════════════════ OTP ═══════════════════ */
-  if (step === "otp") {
+  /* ═══════════════════ PIN ═══════════════════ */
+  if (step === "pin") {
     return shell(<>
-      {back("phone")}
-      {/* Visual icon */}
-      <div className="w-14 h-14 rounded-[16px] bg-[var(--emerald)]/10 flex items-center justify-center mb-6">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+      {back("name")}
+      <div className="w-14 h-14 rounded-[16px] bg-[var(--coral)]/10 flex items-center justify-center mb-6">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
       </div>
       <div className="mb-8">
-        <h2 className="text-[28px] font-extrabold text-[var(--text)] tracking-[-0.02em] leading-tight mb-2">Enter verification code</h2>
-        <p className="text-[16px] text-[var(--text-secondary)]">Sent to <span className="font-bold text-[var(--text)]">{phone}</span></p>
+        <h2 className="text-[28px] font-extrabold text-[var(--text)] tracking-[-0.02em] leading-tight mb-2">Create your PIN</h2>
+        <p className="text-[16px] text-[var(--text-secondary)]">4 digits you&apos;ll use to log in</p>
       </div>
-      {testCode && (
-        <div className="bg-amber-50 border border-amber-200 rounded-[16px] px-5 py-5 mb-6 text-center">
-          <div className="text-[11px] font-bold text-amber-700 uppercase tracking-widest mb-2">Test mode</div>
-          <div className="text-[36px] font-extrabold text-[var(--text)] tracking-[0.3em] leading-none">{testCode}</div>
-        </div>
-      )}
       {errorBox(error)}
       <div className="flex justify-center gap-3 mb-8">
-        {otpCode.map((d, i) => (
-          <input key={i} id={`otp-${i}`} type="text" inputMode="numeric" maxLength={1} value={d}
-            onChange={(e) => handleOtpInput(i, e.target.value)}
-            onKeyDown={(e) => handleOtpKeyDown(i, e.key)}
+        {pinCode.map((d, i) => (
+          <input key={i} id={`pin-${i}`} type="password" inputMode="numeric" maxLength={1} value={d}
+            onChange={(e) => handlePinInput(pinCode, setPinCode, i, e.target.value, "pin", () => { setStep("confirmPin"); setConfirmPinCode(["","","",""]); setTimeout(() => document.getElementById("cpin-0")?.focus(), 100); })}
+            onKeyDown={(e) => handlePinKeyDown(pinCode, i, e.key, "pin")}
             className="w-[64px] h-[64px] text-center text-[24px] font-extrabold bg-white border-2 border-[var(--border)] rounded-[16px] focus:outline-none focus:border-[var(--coral)] focus:ring-4 focus:ring-[var(--coral)]/10 transition-all"
             autoFocus={i === 0} />
         ))}
       </div>
-      {loading && <p className="text-[15px] text-[var(--text-secondary)] text-center mb-4">Verifying...</p>}
-      <div className="text-center">
-        {resendTimer > 0 ? (
-          <p className="text-[14px] text-[var(--text-muted)]">Resend in {resendTimer}s</p>
-        ) : (
-          <div className="flex items-center justify-center gap-4">
-            <button type="button" onClick={handleSendOtp} className="text-[14px] font-bold text-[var(--coral)] cursor-pointer">Resend SMS</button>
-            <div className="w-1 h-1 rounded-full bg-[var(--border)]" />
-            <button type="button" onClick={handleSendOtp} className="text-[14px] font-bold text-[#25d366] cursor-pointer">WhatsApp</button>
-          </div>
-        )}
+      <p className="text-[13px] text-center text-[var(--text-muted)]">Choose something you&apos;ll remember</p>
+    </>);
+  }
+
+  /* ═══════════════════ CONFIRM PIN ═══════════════════ */
+  if (step === "confirmPin") {
+    return shell(<>
+      {back("pin")}
+      <div className="w-14 h-14 rounded-[16px] bg-[var(--emerald)]/10 flex items-center justify-center mb-6">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
       </div>
+      <div className="mb-8">
+        <h2 className="text-[28px] font-extrabold text-[var(--text)] tracking-[-0.02em] leading-tight mb-2">Confirm your PIN</h2>
+        <p className="text-[16px] text-[var(--text-secondary)]">Enter it one more time</p>
+      </div>
+      {errorBox(error)}
+      <div className="flex justify-center gap-3 mb-8">
+        {confirmPinCode.map((d, i) => (
+          <input key={i} id={`cpin-${i}`} type="password" inputMode="numeric" maxLength={1} value={d}
+            onChange={(e) => handlePinInput(confirmPinCode, setConfirmPinCode, i, e.target.value, "cpin", (full) => {
+              const original = pinCode.join("");
+              if (full !== original) { setError("PINs don't match. Try again."); setConfirmPinCode(["","","",""]); setTimeout(() => document.getElementById("cpin-0")?.focus(), 100); }
+              else { handleSetPin(full); }
+            })}
+            onKeyDown={(e) => handlePinKeyDown(confirmPinCode, i, e.key, "cpin")}
+            className="w-[64px] h-[64px] text-center text-[24px] font-extrabold bg-white border-2 border-[var(--border)] rounded-[16px] focus:outline-none focus:border-[var(--coral)] focus:ring-4 focus:ring-[var(--coral)]/10 transition-all"
+            autoFocus={i === 0} />
+        ))}
+      </div>
+      {loading && <p className="text-[15px] text-[var(--text-secondary)] text-center mb-4">Creating account...</p>}
     </>);
   }
 

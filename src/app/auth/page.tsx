@@ -1,28 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Logo } from "@/components/logo";
 import { saveCustomerProfile } from "@/lib/customer";
 
-type Step = "phone" | "otp" | "name" | "welcome";
+type Step = "phone" | "pin" | "forgot" | "welcome";
 
 export default function AuthPage() {
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
-  const [otpToken, setOtpToken] = useState("");
-  const [otpCode, setOtpCode] = useState(["", "", "", ""]);
-  const [testCode, setTestCode] = useState("");
-  const [resendTimer, setResendTimer] = useState(0);
+  const [pinCode, setPinCode] = useState(["", "", "", ""]);
   const [firstName, setFirstName] = useState("");
   const [officeName, setOfficeName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (resendTimer <= 0) return;
-    const t = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-    return () => clearTimeout(t);
-  }, [resendTimer]);
 
   function getReturnUrl(): string {
     if (typeof window === "undefined") return "/menu";
@@ -30,60 +21,63 @@ export default function AuthPage() {
     return params.get("returnTo") || "/menu";
   }
 
-  async function handleSendOtp() {
-    const clean = phone.trim().replace(/\s/g, "");
-    if (clean.length < 10) return;
+  async function handleLoginPin(code: string) {
     setLoading(true); setError("");
     try {
-      const res = await fetch("/api/auth/send-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: clean }) });
+      const res = await fetch("/api/auth/login-pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phone.trim().replace(/\s/g, ""), pin: code }),
+      });
       const data = await res.json();
-      if (!data.success) { setError(data.error || "Failed"); setLoading(false); return; }
-      setOtpToken(data.data.otpToken);
-      if (data.data.testCode) setTestCode(data.data.testCode);
-      setResendTimer(60);
-      setStep("otp");
-    } catch { setError("Network error."); }
-    setLoading(false);
-  }
-
-  async function handleVerifyOtp(code: string) {
-    setLoading(true); setError("");
-    try {
-      const res = await fetch("/api/auth/verify-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ otpToken, code, firstName: firstName || undefined }) });
-      const data = await res.json();
-      if (!data.success) { setError(data.error || "Wrong code"); setLoading(false); return; }
+      if (!data.success) {
+        if (data.needsSetup) {
+          setError("No PIN set. Please sign up first.");
+        } else {
+          setError(data.error || "Wrong PIN");
+        }
+        setPinCode(["", "", "", ""]);
+        setTimeout(() => document.getElementById("pin-0")?.focus(), 100);
+        setLoading(false);
+        return;
+      }
       if (data.data.office) {
         saveCustomerProfile({ name: data.data.firstName, phone: data.data.phone, email: "", deliveryAddress: "", preferredFulfillment: "PICKUP", officeId: data.data.office.id, officeName: data.data.office.name, officeCode: data.data.office.code, collectionPoint: data.data.office.collectionPoint });
       }
-      if (data.data.firstName && data.data.firstName !== "User") {
-        setFirstName(data.data.firstName);
-        setOfficeName(data.data.office?.name || "");
-        setStep("welcome");
-        setTimeout(() => { window.location.href = getReturnUrl(); }, 2000);
-      } else {
-        setStep("name");
-      }
+      setFirstName(data.data.firstName);
+      setOfficeName(data.data.office?.name || "");
+      setStep("welcome");
+      setTimeout(() => { window.location.href = getReturnUrl(); }, 2000);
     } catch { setError("Network error."); }
     setLoading(false);
   }
 
-  async function handleSetName() {
-    if (!firstName.trim()) return;
-    setLoading(true);
-    try { await fetch("/api/auth/verify-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ otpToken, code: otpCode.join(""), firstName: firstName.trim() }) }); } catch {}
+  async function handleForgotPin() {
+    setLoading(true); setError("");
+    try {
+      const res = await fetch("/api/auth/forgot-pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phone.trim().replace(/\s/g, "") }),
+      });
+      const data = await res.json();
+      if (!data.success) { setError(data.error || "Failed"); setLoading(false); return; }
+      // Open WhatsApp with pre-filled admin message
+      window.open(data.data.adminWhatsappUrl, "_blank");
+      setStep("forgot");
+    } catch { setError("Network error."); }
     setLoading(false);
-    window.location.href = getReturnUrl();
   }
 
-  function handleOtpInput(i: number, v: string) {
+  function handlePinInput(i: number, v: string) {
     if (!/^\d*$/.test(v)) return;
-    const c = [...otpCode]; c[i] = v.slice(-1); setOtpCode(c);
-    if (v && i < 3) document.getElementById(`otp-${i + 1}`)?.focus();
-    if (v && i === 3) { const full = c.join(""); if (full.length === 4) handleVerifyOtp(full); }
+    const c = [...pinCode]; c[i] = v.slice(-1); setPinCode(c);
+    if (v && i < 3) document.getElementById(`pin-${i + 1}`)?.focus();
+    if (v && i === 3) { const full = c.join(""); if (full.length === 4) handleLoginPin(full); }
   }
 
-  function handleOtpKeyDown(i: number, key: string) {
-    if (key === "Backspace" && !otpCode[i] && i > 0) document.getElementById(`otp-${i - 1}`)?.focus();
+  function handlePinKeyDown(i: number, key: string) {
+    if (key === "Backspace" && !pinCode[i] && i > 0) document.getElementById(`pin-${i - 1}`)?.focus();
   }
 
   const btnPrimary = "w-full h-[56px] rounded-full text-[16px] font-bold text-white active:scale-[0.97] transition-all cursor-pointer disabled:bg-[var(--border)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed";
@@ -112,8 +106,8 @@ export default function AuthPage() {
           <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="812 345 6789" className={inputCls} autoFocus />
         </div>
 
-        <button type="button" onClick={handleSendOtp} disabled={loading || phone.replace(/\s/g, "").length < 10} className={btnPrimary} style={{ background: loading || phone.replace(/\s/g, "").length < 10 ? undefined : "var(--coral)" }}>
-          {loading ? "Sending code..." : "Continue"}
+        <button type="button" onClick={() => { setError(""); setPinCode(["","","",""]); setStep("pin"); }} disabled={phone.replace(/\s/g, "").length < 10} className={btnPrimary} style={{ background: phone.replace(/\s/g, "").length < 10 ? undefined : "var(--coral)" }}>
+          Continue
         </button>
 
         <div className="text-center mt-8 space-y-2">
@@ -129,71 +123,68 @@ export default function AuthPage() {
     );
   }
 
-  // ── OTP ──
-  if (step === "otp") {
+  // ── PIN ──
+  if (step === "pin") {
     return shell(
       <>
-        <button type="button" onClick={() => { setStep("phone"); setOtpCode(["","","",""]); setError(""); }} className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-8 cursor-pointer" style={{ border: "1px solid var(--border)" }}>
+        <button type="button" onClick={() => { setStep("phone"); setPinCode(["","","",""]); setError(""); }} className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-8 cursor-pointer" style={{ border: "1px solid var(--border)" }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
 
-        <div className="w-14 h-14 rounded-[16px] flex items-center justify-center mb-6" style={{ background: "rgba(13,159,95,0.1)" }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+        <div className="w-14 h-14 rounded-[16px] flex items-center justify-center mb-6" style={{ background: "rgba(232,96,76,0.1)" }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
         </div>
 
-        <h2 className="text-[28px] font-extrabold tracking-[-0.02em] mb-2" style={{ color: "var(--text)" }}>Enter verification code</h2>
-        <p className="text-[16px] mb-8" style={{ color: "var(--text-secondary)" }}>Sent to <span className="font-bold" style={{ color: "var(--text)" }}>{phone}</span></p>
-
-        {testCode && (
-          <div className="bg-amber-50 border border-amber-200 rounded-[16px] px-5 py-5 mb-6 text-center">
-            <div className="text-[11px] font-bold text-amber-700 uppercase tracking-widest mb-2">Test mode</div>
-            <div className="text-[36px] font-extrabold tracking-[0.3em] leading-none" style={{ color: "var(--text)" }}>{testCode}</div>
-          </div>
-        )}
+        <h2 className="text-[28px] font-extrabold tracking-[-0.02em] mb-2" style={{ color: "var(--text)" }}>Enter your PIN</h2>
+        <p className="text-[16px] mb-8" style={{ color: "var(--text-secondary)" }}>4-digit PIN for <span className="font-bold" style={{ color: "var(--text)" }}>{phone}</span></p>
 
         {error && <div className="p-3 rounded-[14px] mb-4 text-[14px] font-medium" style={{ background: "#FEF2F2", color: "var(--coral)" }}>{error}</div>}
 
         <div className="flex justify-center gap-3 mb-8">
-          {otpCode.map((d, i) => (
-            <input key={i} id={`otp-${i}`} type="text" inputMode="numeric" maxLength={1} value={d}
-              onChange={(e) => handleOtpInput(i, e.target.value)}
-              onKeyDown={(e) => handleOtpKeyDown(i, e.key)}
+          {pinCode.map((d, i) => (
+            <input key={i} id={`pin-${i}`} type="password" inputMode="numeric" maxLength={1} value={d}
+              onChange={(e) => handlePinInput(i, e.target.value)}
+              onKeyDown={(e) => handlePinKeyDown(i, e.key)}
               className="w-[64px] h-[64px] text-center text-[24px] font-extrabold bg-white border-2 rounded-[16px] focus:outline-none focus:border-[var(--coral)] focus:ring-4 focus:ring-[var(--coral)]/10 transition-all"
               style={{ borderColor: "var(--border)", color: "var(--text)" }}
               autoFocus={i === 0} />
           ))}
         </div>
 
-        {loading && <p className="text-[14px] text-center mb-4" style={{ color: "var(--text-secondary)" }}>Verifying...</p>}
+        {loading && <p className="text-[14px] text-center mb-4" style={{ color: "var(--text-secondary)" }}>Checking...</p>}
 
         <div className="text-center">
-          {resendTimer > 0 ? (
-            <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>Resend in {resendTimer}s</p>
-          ) : (
-            <div className="flex items-center justify-center gap-4">
-              <button type="button" onClick={handleSendOtp} className="text-[14px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>Resend SMS</button>
-              <div className="w-1 h-1 rounded-full" style={{ background: "var(--border)" }} />
-              <button type="button" onClick={handleSendOtp} className="text-[14px] font-bold cursor-pointer" style={{ color: "#25d366" }}>WhatsApp</button>
-            </div>
-          )}
+          <button type="button" onClick={handleForgotPin} disabled={loading} className="text-[14px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>
+            Forgot PIN?
+          </button>
         </div>
       </>
     );
   }
 
-  // ── NAME (new users) ──
-  if (step === "name") {
+  // ── FORGOT PIN SENT ──
+  if (step === "forgot") {
     return shell(
       <>
-        <div className="w-14 h-14 rounded-[16px] flex items-center justify-center mb-6" style={{ background: "rgba(232,96,76,0.1)" }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+        <div className="w-14 h-14 rounded-[16px] flex items-center justify-center mb-6" style={{ background: "rgba(37,211,102,0.1)" }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
         </div>
-        <h2 className="text-[28px] font-extrabold tracking-[-0.02em] mb-2" style={{ color: "var(--text)" }}>What should we call you?</h2>
-        <p className="text-[16px] mb-8" style={{ color: "var(--text-secondary)" }}>This name goes on your lunch bag</p>
-        <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="e.g. Tunde" className={`${inputCls} mb-6`} autoFocus />
-        <button type="button" onClick={handleSetName} disabled={loading || !firstName.trim()} className={btnPrimary} style={{ background: loading || !firstName.trim() ? undefined : "var(--coral)" }}>
-          {loading ? "..." : "Continue"}
+
+        <h2 className="text-[28px] font-extrabold tracking-[-0.02em] mb-2" style={{ color: "var(--text)" }}>Reset request sent</h2>
+        <p className="text-[16px] mb-6 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          We&apos;ve opened WhatsApp with your reset request. Send the message — you&apos;ll get a reset link back shortly.
+        </p>
+
+        <div className="p-4 rounded-[16px] mb-8" style={{ background: "var(--sand)" }}>
+          <p className="text-[14px]" style={{ color: "var(--text-secondary)" }}>
+            Check your WhatsApp for a link from ChopDrop. Tap it to set a new PIN.
+          </p>
+        </div>
+
+        <button type="button" onClick={() => { setStep("pin"); setPinCode(["","","",""]); setError(""); }} className={btnPrimary} style={{ background: "var(--coral)" }}>
+          Try PIN again
         </button>
+        <a href="/auth" className="block text-center text-[14px] font-semibold mt-4" style={{ color: "var(--text-secondary)" }}>Back to login</a>
       </>
     );
   }
