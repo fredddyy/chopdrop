@@ -128,42 +128,44 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
   // Unified item row — Chowdeck style: text left, photo right
   function ItemRow({ item, cartId, qty, onAdd, onMinus }: { item: { name: string; description?: string | null; imageUrl?: string | null; price: number }; cartId: string; qty: number; onAdd: () => void; onMinus: () => void }) {
     return (
-      <div className="flex items-center gap-3 py-3.5" style={{ borderBottom: "1px solid var(--border)" }}>
-        <div className="flex-1 min-w-0">
+      <div className="flex gap-3 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="flex-1 min-w-0 flex flex-col justify-center">
           <h3 className="text-[15px] font-bold leading-snug" style={{ color: "var(--text)" }}>{cleanName(item.name)}</h3>
           {item.description && (
-            <p className="text-[13px] mt-0.5 leading-snug" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>
+            <p className="text-[12px] mt-1 leading-relaxed" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>
           )}
-          <div className="text-[15px] font-extrabold mt-1 tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price)}</div>
+          {/* #6: Price — bolder, larger, anchors the eye */}
+          <div className="text-[17px] font-extrabold mt-1.5 tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price)}</div>
         </div>
+        {/* #1: Rounded rectangle, not circle — shows more food */}
         <div className="relative shrink-0">
           {item.imageUrl ? (
-            <div className="w-[90px] h-[90px] rounded-[14px] overflow-hidden" style={{ background: "var(--sand)" }}>
+            <div className="w-[100px] h-[100px] rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.imageUrl} alt={cleanName(item.name)} className="w-full h-full object-cover" loading="lazy" />
             </div>
           ) : (
-            <div className="w-[90px] h-[90px] rounded-[14px] flex items-center justify-center" style={{ background: "var(--sand)" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
+            <div className="w-[100px] h-[100px] rounded-[12px] flex items-center justify-center" style={{ background: "var(--sand)" }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
             </div>
           )}
-          {/* Add button overlaid on bottom-right of image */}
-          <div className="absolute -bottom-2 -right-1">
+          {/* #2 & #5: Add button — filled, bold, clean on the corner */}
+          <div className="absolute -bottom-3 right-0">
             {qty > 0 ? (
-              <div className="flex items-center rounded-[10px] h-8" style={{ background: "var(--coral)" }}>
-                <button type="button" onClick={onMinus} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
+              <div className="flex items-center rounded-[10px] h-9" style={{ background: "var(--dark)" }}>
+                <button type="button" onClick={onMinus} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
                 </button>
-                <span className="text-white text-[13px] font-bold min-w-[16px] text-center">{qty}</span>
-                <button type="button" onClick={onAdd} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
+                <span className="text-white text-[14px] font-bold min-w-[18px] text-center tabular-nums">{qty}</span>
+                <button type="button" onClick={onAdd} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                 </button>
               </div>
             ) : (
               <button type="button" onClick={onAdd}
-                className="h-8 px-3 rounded-[10px] flex items-center justify-center gap-1 text-[13px] font-bold cursor-pointer active:scale-90 transition-transform"
-                style={{ background: "var(--card)", border: "1.5px solid var(--border)", color: "var(--text)" }}>
-                Add <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                className="h-9 px-4 rounded-[10px] flex items-center justify-center gap-1.5 text-[13px] font-bold cursor-pointer active:scale-95 transition-transform"
+                style={{ background: "var(--dark)", color: "white" }}>
+                Add <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
               </button>
             )}
           </div>
@@ -231,8 +233,10 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
       <div className="px-5 pt-2 pb-4">
         {sections.map(section => (
           <div key={section.id} ref={el => { sectionRefs.current[section.id] = el; }}>
-            {/* Section header */}
-            <h2 className="text-[18px] font-extrabold mt-6 mb-1" style={{ color: "var(--text)" }}>{section.label}</h2>
+            {/* #3: Section header — bold with subtle top border for rhythm */}
+            <div className="mt-8 mb-2 pt-4" style={{ borderTop: section === sections[0] ? "none" : "1px solid var(--border)" }}>
+              <h2 className="text-[18px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>{section.label}</h2>
+            </div>
 
             {/* Combos section */}
             {section.type === "combos" && combos.map(combo => {
