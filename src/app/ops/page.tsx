@@ -2045,8 +2045,24 @@ export default function OpsPage() {
                         <option value="PICK_ANY">Pick any</option>
                       </select>
                       <span className="text-ink-soft text-[10px]">&middot; {cat.items.length} items</span>
+                      {Boolean((cat as Record<string, unknown>).isPackaging) && <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-coral/10 text-coral">Packaging</span>}
+                      {Boolean((cat as Record<string, unknown>).isAddon) && <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-green-soft text-green">Add-on</span>}
                     </div>
                     <div className="flex items-center gap-2">
+                      <button type="button" onClick={async () => {
+                        const current = (cat as Record<string, unknown>).isPackaging as boolean;
+                        await fetch(`/api/admin/categories/${cat.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ isPackaging: !current, isAddon: false }) });
+                        loadAll();
+                      }} className={`text-[9px] font-bold px-2 py-1 rounded-full cursor-pointer ${(cat as Record<string, unknown>).isPackaging ? "bg-coral text-white" : "bg-cream text-ink-soft hover:bg-coral/10"}`}>
+                        {(cat as Record<string, unknown>).isPackaging ? "📦 Packaging" : "📦"}
+                      </button>
+                      <button type="button" onClick={async () => {
+                        const current = (cat as Record<string, unknown>).isAddon as boolean;
+                        await fetch(`/api/admin/categories/${cat.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ isAddon: !current, isPackaging: false }) });
+                        loadAll();
+                      }} className={`text-[9px] font-bold px-2 py-1 rounded-full cursor-pointer ${(cat as Record<string, unknown>).isAddon ? "bg-green text-white" : "bg-cream text-ink-soft hover:bg-green/10"}`}>
+                        {(cat as Record<string, unknown>).isAddon ? "➕ Add-on" : "➕"}
+                      </button>
                       <button
                         type="button"
                         onClick={() => { setNewItemCategoryId(cat.id); setNewItemName(""); setNewItemDescription(""); setNewItemPrice(""); }}

@@ -75,6 +75,8 @@ export default async function RestaurantPage({ params }: PageProps) {
     id: cat.id,
     name: cat.name,
     selectionRule: cat.selectionRule,
+    isPackaging: cat.isPackaging,
+    isAddon: cat.isAddon,
     items: cat.items.map((item) => ({
       id: item.id,
       name: item.name,
