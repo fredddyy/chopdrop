@@ -36,6 +36,7 @@ export function CustomizerModal({
   onConfirm,
 }: CustomizerProps) {
   const [selectedItems, setSelectedItems] = useState<Record<string, string[]>>({});
+  const [validationError, setValidationError] = useState("");
 
   function handleToggle(categoryId: string, itemId: string, rule: string) {
     setSelectedItems((prev) => {
@@ -59,16 +60,23 @@ export function CustomizerModal({
   }
 
   function validate(): string | null {
-    // All categories are now skippable — no forced sequence
-    // Just require at least one item selected total
+    // Require at least one item total
     const totalSelected = Object.values(selectedItems).flat().length;
     if (totalSelected === 0) return "Pick at least one item";
+    // Enforce required categories (PICK_ONE and PICK_ONE_OR_MORE must have a selection)
+    for (const cat of categories) {
+      if (cat.selectionRule === "PICK_ONE" || cat.selectionRule === "PICK_ONE_OR_MORE") {
+        const selected = selectedItems[cat.id] || [];
+        if (selected.length === 0) return `Pick a ${cat.name.toLowerCase()}`;
+      }
+    }
     return null;
   }
 
   function handleConfirm() {
     const err = validate();
-    if (err) return;
+    if (err) { setValidationError(err); return; }
+    setValidationError("");
 
     const allItems = Object.values(selectedItems).flat();
     const itemNames: string[] = [];
@@ -211,6 +219,9 @@ export function CustomizerModal({
               {formatNaira(total)}
             </strong>
           </div>
+          {validationError && (
+            <span className="text-[12px] font-semibold text-coral mr-2">{validationError}</span>
+          )}
           <button
             type="button"
             onClick={handleConfirm}
