@@ -53,7 +53,7 @@ function Calc() {
           <div className="text-[36px] lg:text-[48px] font-extrabold leading-none tabular-nums" style={{ color: pct > 0 ? "var(--emerald)" : "white" }}>
             ₦{price.toLocaleString()}
           </div>
-          {pct > 0 && <div className="text-[14px] font-semibold text-[var(--emerald)] mt-1">{pct}% cheaper</div>}
+          {pct > 0 && <div className="text-[14px] font-semibold text-[var(--emerald)] mt-1">{pct}% member rate</div>}
         </div>
       </div>
 
@@ -156,7 +156,7 @@ export default function Home() {
                 <span className="text-[var(--coral)]">ordered together?</span>
               </h1>
               <p className="text-[18px] text-[var(--text-secondary)] leading-[1.55] max-w-[420px] mb-6">
-                Pool orders from local vendors. More people = cheaper plates. ₦0 delivery. Breakfast by 9AM. Lunch by noon.
+                Pool orders from local vendors. More people = better rates for everyone. ₦0 delivery. Breakfast by 9AM. Lunch by noon.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -178,7 +178,7 @@ export default function Home() {
                   ))}
                 </div>
                 <div className="text-[13px] text-[var(--text-muted)]">
-                  <span className="font-semibold text-[var(--text)]">20+ offices</span> · 3,000+ meals · <span className="text-[var(--emerald)] font-semibold">₦2M+ saved</span>
+                  <span className="font-semibold text-[var(--text)]">20+ offices</span> · 3,000+ meals · <span className="text-[var(--emerald)] font-semibold">₦2M+ earned back</span>
                 </div>
               </div>
             </div>
@@ -191,7 +191,7 @@ export default function Home() {
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="flex gap-2 mb-2">
                     <div className="bg-[var(--emerald)] text-white text-[12px] font-bold px-3 py-1.5 rounded-full">₦0 delivery</div>
-                    <div className="bg-white text-[var(--text)] text-[12px] font-bold px-3 py-1.5 rounded-full">Up to 30% off</div>
+                    <div className="bg-white text-[var(--text)] text-[12px] font-bold px-3 py-1.5 rounded-full">Up to 30% back</div>
                   </div>
                   <div className="text-white text-[20px] font-extrabold leading-tight">Jollof Rice & Chicken</div>
                   <div className="text-white/70 text-[13px] mt-0.5">The Place · Admiralty Way</div>
@@ -255,7 +255,7 @@ export default function Home() {
       <section className="py-16 lg:py-24">
         <div className="max-w-[800px] mx-auto px-5 lg:px-8">
           <R>
-            <h2 className="text-[clamp(26px,4vw,40px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-3">The more you order together, the less everyone pays</h2>
+            <h2 className="text-[clamp(26px,4vw,40px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-3">The more your office orders, the better everyone&apos;s rate</h2>
             <p className="text-[17px] text-[var(--text-secondary)] leading-relaxed mb-10">Slide to see your office savings. Everyone gets the final price — even if you ordered first.</p>
           </R>
           <R d={80}><Calc /></R>
@@ -343,12 +343,12 @@ export default function Home() {
         </div>
         <div className="flex gap-4 px-5 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-2">
           {[
-            { img: FOOD_JOLLOF, name: "Jollof Rice & Chicken", vendor: "The Place", orig: "₦4,800", pool: "₦4,416", save: "8%" },
-            { img: FOOD_CHICKEN, name: "Grilled Chicken", vendor: "Kilimanjaro", orig: "₦3,500", pool: "₦3,220", save: "8%" },
-            { img: FOOD_RICE, name: "Fried Rice Special", vendor: "Mama Tola's", orig: "₦3,200", pool: "₦3,040", save: "5%" },
-            { img: FOOD_SOUP, name: "Pepper Soup", vendor: "The Place", orig: "₦4,500", pool: "₦4,275", save: "5%" },
-            { img: FOOD_WRAP, name: "Chicken Shawarma", vendor: "ChickenWizz", orig: "₦3,900", pool: "₦3,783", save: "3%" },
-            { img: FOOD_BOWL, name: "Veggie Power Bowl", vendor: "Green Basket", orig: "₦3,000", pool: "₦2,910", save: "3%" },
+            { img: FOOD_JOLLOF, name: "Jollof Rice & Chicken", vendor: "The Place", orig: "₦4,800", pool: "₦4,416", save: "8% back" },
+            { img: FOOD_CHICKEN, name: "Grilled Chicken", vendor: "Kilimanjaro", orig: "₦3,500", pool: "₦3,220", save: "8% back" },
+            { img: FOOD_RICE, name: "Fried Rice Special", vendor: "Mama Tola's", orig: "₦3,200", pool: "₦3,040", save: "5% back" },
+            { img: FOOD_SOUP, name: "Pepper Soup", vendor: "The Place", orig: "₦4,500", pool: "₦4,275", save: "5% back" },
+            { img: FOOD_WRAP, name: "Chicken Shawarma", vendor: "ChickenWizz", orig: "₦3,900", pool: "₦3,783", save: "3% back" },
+            { img: FOOD_BOWL, name: "Veggie Power Bowl", vendor: "Green Basket", orig: "₦3,000", pool: "₦2,910", save: "3% back" },
           ].map((meal, i) => (
             <div key={i} className="shrink-0 w-[240px] lg:w-[280px] snap-start rounded-[20px] overflow-hidden bg-white group" style={{ border: "1px solid var(--border)" }}>
               <div className="h-[160px] lg:h-[190px] overflow-hidden relative">
@@ -374,14 +374,14 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════ */}
       <section className="py-16 lg:py-24">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
-          <R><h2 className="text-[clamp(26px,4vw,40px)] font-extrabold text-[var(--text)] tracking-[-0.02em] text-center mb-4">Real offices. Real savings.</h2></R>
+          <R><h2 className="text-[clamp(26px,4vw,40px)] font-extrabold text-[var(--text)] tracking-[-0.02em] text-center mb-4">Real offices. Real results.</h2></R>
           <R d={40}><p className="text-[16px] text-[var(--text-muted)] text-center mb-12 max-w-[400px] mx-auto">The person who sets it up gets free lunch every day.</p></R>
 
           <div className="lg:grid lg:grid-cols-3 lg:gap-5 space-y-4 lg:space-y-0 mb-10">
             {[
-              { q: "I used to spend ₦6,000 a day. Now I spend ₦3,500. Same jollof from The Place.", who: "Adaeze O.", where: "Sterling Bank, VI", init: "AO", bg: "var(--coral)" },
+              { q: "Same jollof from The Place, but now the office orders together and we all eat better for less effort.", who: "Adaeze O.", where: "Sterling Bank, VI", init: "AO", bg: "var(--coral)" },
               { q: "Pre-ordered at 10pm, ate at 12:15 the next day. My colleague who ordered at noon? Sold out.", who: "Tunde M.", where: "GTBank, Ikeja", init: "TM", bg: "var(--gold)" },
-              { q: "We save over ₦400K per month as an office. Setup took literally 2 minutes.", who: "Kemi A.", where: "First Bank, Marina", init: "KA", bg: "var(--emerald)" },
+              { q: "Our office unlocked ₦400K in pool benefits last month. Setup took 2 minutes.", who: "Kemi A.", where: "First Bank, Marina", init: "KA", bg: "var(--emerald)" },
             ].map((t, i) => (
               <R key={i} d={i * 80}>
                 <div className="bg-white rounded-[20px] p-6 h-full flex flex-col" style={{ border: "1px solid var(--border)" }}>
@@ -422,7 +422,7 @@ export default function Home() {
           <R><h2 className="text-[clamp(24px,3.5vw,36px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-8">Questions</h2></R>
           {[
             { q: "Is it really free?", a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for guaranteed orders." },
-            { q: "What if only 3 people order?", a: "You still get your food at the regular price. Discounts kick in at 5+. Most offices hit 10+ in the first week." },
+            { q: "What if only 3 people order?", a: "You still get your food at the standard rate. Pool benefits unlock at 10+. Most offices hit that in the first week." },
             { q: "When can I order?", a: "Two daily windows. Breakfast: 6–8AM (arrives before 9). Lunch: 9–10:30AM (arrives before 12). Order during the window and your food shows up on time." },
             { q: "What vendors are available?", a: "Vetted local vendors near your office — The Place, Kilimanjaro, Mama Tola's, and more. Have a favourite? We'll onboard them." },
             { q: "How does payment work?", a: "Everyone pays via card or bank transfer through Paystack. No collecting cash. No chasing Emeka." },
@@ -450,7 +450,7 @@ export default function Home() {
         <div className="max-w-[600px] mx-auto px-5 lg:px-8">
           <R>
             <h2 className="text-[clamp(30px,5.5vw,50px)] font-extrabold text-white tracking-[-0.03em] leading-[1.05] mb-5">
-              Your office could save<br />
+              Your office could unlock<br />
               <span className="text-[var(--emerald)]">₦400K+ this month</span>
             </h2>
           </R>
@@ -476,7 +476,7 @@ export default function Home() {
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8 flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6">
           <div className="flex flex-col items-center lg:items-start gap-1.5">
             <Logo size={20} />
-            <p className="text-[13px] text-[var(--text-muted)]">Cheaper lunch. Zero stress.</p>
+            <p className="text-[13px] text-[var(--text-muted)]">Smarter lunch. Zero stress.</p>
           </div>
           <div className="flex gap-8 text-[13px] text-[var(--text-secondary)]">
             <a href="/menu" className="hover:text-[var(--text)] transition-colors">Menu</a>

@@ -340,9 +340,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               {/* The guarantee — the single most important line in the app */}
               <p className="text-[14px] leading-[1.55]" style={{ color: "rgba(255,255,255,0.6)" }}>
                 {orders === 0 ? (
-                  <>Order at today&apos;s price. As colleagues join, it drops — <span className="font-bold text-white">you get the difference back</span> as credit.</>
+                  <>Order at today&apos;s rate. As more colleagues join, your rate improves — <span className="font-bold text-white">bonus credit earned</span> automatically.</>
                 ) : orders < 15 ? (
-                  <>Your price is locked. More people order, price drops — <span className="font-bold text-white">difference refunded to you</span> automatically.</>
+                  <>Your rate is locked. More people order, rates improve — <span className="font-bold text-white">credit added to your wallet</span> automatically.</>
                 ) : (
                   <><span className="font-bold" style={{ color: "var(--emerald)" }}>Best tier unlocked.</span> Max savings for everyone in your pool.</>
                 )}
@@ -354,7 +354,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   <span className="text-[22px] font-extrabold tabular-nums leading-none" style={{ color: "var(--gold)" }}>{moreNeeded}</span>
                   <div className="flex-1 min-w-0">
                     <span className="text-[13px] font-bold text-white">
-                      more {moreNeeded === 1 ? "person" : "people"} to {nextTierData.pct}% off
+                      more {moreNeeded === 1 ? "person" : "people"} to unlock {nextTierData.pct}% back
                     </span>
                     <span className="text-[12px] ml-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
                       ~{formatPrice(nextSavings)}/plate back
@@ -412,7 +412,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           <div className="text-[10px] font-bold mt-0.5" style={{
                             color: isActive && currentPct > 0 ? "var(--emerald)" : isActive ? "var(--text-secondary)" : isFuture ? "var(--text-muted)" : "var(--text-secondary)",
                           }}>
-                            {tier.pct === 0 ? "Full" : `${tier.pct}% off`}
+                            {tier.pct === 0 ? "Standard" : `${tier.pct}% back`}
                           </div>
                           {isActive && <div className="text-[9px] font-bold mt-1" style={{ color: "var(--coral)" }}>Now</div>}
                         </div>
@@ -432,7 +432,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   <Link href="/rewards" className="mt-3 flex items-center justify-between p-3 rounded-[14px] cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--sand)" }}>
                     <div className="flex items-center gap-2">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-                      <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Unlock up to 30% off with milestone rewards</span>
+                      <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Unlock up to 30% back with milestone rewards</span>
                     </div>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
                   </Link>
@@ -835,7 +835,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     </div>
                     <h2 className="text-[17px] font-extrabold text-white">Group Deals</h2>
                   </div>
-                  <p className="text-[12px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>Buy together, pay wholesale</p>
+                  <p className="text-[12px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>Pool together, unlock group rates</p>
                 </div>
                 <Link href="/deals" className="text-[12px] font-bold flex items-center gap-1 px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.1)", color: "white" }}>
                   See all
@@ -859,7 +859,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
                           </div>
                         )}
-                        <div className="absolute top-2 left-2 text-[10px] font-extrabold px-2 py-1 rounded-full text-white" style={{ background: "var(--emerald)" }}>{savingsPct}% off</div>
+                        <div className="absolute top-2 left-2 text-[10px] font-extrabold px-2 py-1 rounded-full text-white" style={{ background: "var(--emerald)" }}>{savingsPct}% back</div>
                         <div className="absolute top-2 right-2 text-[9px] font-bold px-2 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.5)", color: "white" }}>{daysLeft > 0 ? `${daysLeft}d left` : "Ends today"}</div>
                       </div>
                       <div className="p-3">
@@ -894,13 +894,13 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   </div>
                   <div>
                     <p className="text-[15px] font-extrabold text-white">
-                      {moreForNextTier === 1 ? "1 more person" : `${moreForNextTier} more people`} for {nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% off
+                      {moreForNextTier === 1 ? "1 more person" : `${moreForNextTier} more people`} to unlock {nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% back
                     </p>
                     <p className="text-[12px] text-white/50">Everyone in {officeName} saves on every meal</p>
                   </div>
                 </div>
                 <a
-                  href={`https://wa.me/?text=${encodeURIComponent(`Hey! We're ${moreForNextTier} people away from ${nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% off lunch at ${officeName}. Order on ChopDrop before the pool closes!\n\n${typeof window !== "undefined" ? window.location.origin : ""}/menu`)}`}
+                  href={`https://wa.me/?text=${encodeURIComponent(`Hey! We're ${moreForNextTier} people away from unlocking ${nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% back on lunch at ${officeName}. Join us on ChopDrop before the pool closes!\n\n${typeof window !== "undefined" ? window.location.origin : ""}/menu`)}`}
                   target="_blank" rel="noopener noreferrer"
                   className="mt-3 w-full h-11 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold text-white active:scale-[0.97] transition-transform cursor-pointer"
                   style={{ background: "#25d366" }}

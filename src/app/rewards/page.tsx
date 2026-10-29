@@ -17,14 +17,14 @@ interface OfficeStats {
 
 const ACTIVE_TIERS = [
   { min: 0, pct: 0, label: "Base price", unlockLabel: "Starting tier" },
-  { min: 10, pct: 3, label: "3% off", unlockLabel: "10 orders in today's pool" },
-  { min: 20, pct: 5, label: "5% off", unlockLabel: "20 orders in today's pool" },
-  { min: 30, pct: 8, label: "8% off", unlockLabel: "30 orders in today's pool" },
+  { min: 10, pct: 3, label: "3% back", unlockLabel: "10 orders in today's pool" },
+  { min: 20, pct: 5, label: "5% back", unlockLabel: "20 orders in today's pool" },
+  { min: 30, pct: 8, label: "8% back", unlockLabel: "30 orders in today's pool" },
 ];
 
 const MILESTONE_TIERS = [
-  { lifetime: 50, pct: 15, label: "15% off", status: "coming" as const },
-  { lifetime: 100, pct: 30, label: "30% off", status: "coming" as const },
+  { lifetime: 50, pct: 15, label: "15% back", status: "coming" as const },
+  { lifetime: 100, pct: 30, label: "30% back", status: "coming" as const },
 ];
 
 export default function RewardsPage() {
@@ -102,7 +102,7 @@ export default function RewardsPage() {
                   )}
                 </div>
                 <p className="text-[13px] mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>
-                  More people order today, everyone saves more
+                  More people order today, better rates for everyone
                 </p>
               </div>
 

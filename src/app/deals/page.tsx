@@ -38,7 +38,7 @@ export default function DealsPage() {
           <div className="w-10" />
         </div>
         <h1 className="text-[28px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>Group Deals</h1>
-        <p className="text-[15px] mt-1" style={{ color: "var(--text-secondary)" }}>Buy together, pay wholesale. Pool fills → you save big.</p>
+        <p className="text-[15px] mt-1" style={{ color: "var(--text-secondary)" }}>Pool together, unlock group rates. The more join, the better the rate.</p>
       </div>
 
       {loading ? (

@@ -406,7 +406,7 @@ export default function CartPage() {
               <div className="mt-3 p-4 rounded-[14px]" style={{ background: "var(--dark)" }}>
                 <div className="flex items-center gap-2 mb-1.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  <span className="text-[14px] font-bold text-white">Pool refund guarantee</span>
+                  <span className="text-[14px] font-bold text-white">Pool member guarantee</span>
                 </div>
                 {poolData.officeOrderCount > 0 && poolData.officeOrderCount < 30 ? (() => {
                   const currentPct = poolData.officeOrderCount >= 30 ? 8 : poolData.officeOrderCount >= 20 ? 5 : poolData.officeOrderCount >= 10 ? 3 : 0;
@@ -424,7 +424,7 @@ export default function CartPage() {
                   );
                 })() : (
                   <p className="text-[13px] text-white/70 leading-relaxed">
-                    You pay full price now. As colleagues order, the price drops — you get the difference as <span className="font-bold" style={{ color: "var(--emerald)" }}>credit for your next meal</span>.
+                    Order at today&apos;s rate. As more colleagues join, your rate improves — <span className="font-bold" style={{ color: "var(--emerald)" }}>bonus credit added to your wallet</span>.
                   </p>
                 )}
               </div>

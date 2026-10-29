@@ -93,7 +93,7 @@ export default function StartPage() {
               <Logo size={26} variant="white" />
             </div>
             <h1 className="text-[clamp(32px,8vw,44px)] font-extrabold text-white tracking-[-0.03em] leading-[1.05] mb-4">
-              Your office eats<br />cheaper together
+              Your office eats<br />better together
             </h1>
             <p className="text-[16px] text-white/50 max-w-[320px] mx-auto leading-relaxed">
               Become the Pool Captain. Set up in 2 minutes. Everyone saves.
@@ -129,7 +129,7 @@ export default function StartPage() {
               {[
                 { n: "1", color: "var(--coral)", t: "Create your office pool", d: "Name & address — takes 30 seconds" },
                 { n: "2", color: "#25d366", t: "Share via WhatsApp", d: "Colleagues tap to join. No app needed." },
-                { n: "3", color: "var(--emerald)", t: "Everyone orders, food arrives", d: "₦0 delivery. More people = cheaper." },
+                { n: "3", color: "var(--emerald)", t: "Everyone orders, food arrives", d: "₦0 delivery. More people = better rates." },
               ].map((s, i) => (
                 <div key={i} className="flex gap-4 items-start relative">
                   <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-[14px] font-extrabold text-white shrink-0 relative z-10" style={{ background: s.color }}>

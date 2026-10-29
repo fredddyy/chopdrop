@@ -248,7 +248,7 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
             </div>
             <div className="flex items-center gap-1.5">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-              <span className="text-[10px] font-medium text-[#6b7280]">More people = cheaper</span>
+              <span className="text-[10px] font-medium text-[#6b7280]">More people = better rates</span>
             </div>
           </div>
 
