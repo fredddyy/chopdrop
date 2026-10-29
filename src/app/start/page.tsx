@@ -403,7 +403,7 @@ export default function StartPage() {
   /* ═══════════════════ SHARE ═══════════════════ */
   if (step === "share" && officeData) {
     const joinUrl = `${appUrl}/join/${officeData.slug}`;
-    const waText = encodeURIComponent(`I set up ChopDrop for our office! Order lunch together & save up to 40%. ₦0 delivery.\n\nJoin here: ${joinUrl}\n\nPick your own meal, pay on your phone. Food arrives together.`);
+    const waText = encodeURIComponent(`I set up ChopDrop for our office! Order lunch together, ₦0 delivery, pool benefits for everyone.\n\nJoin here: ${joinUrl}\n\nPick your own meal, pay on your phone. Food arrives together.`);
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(joinUrl)}&color=1A1A19&bgcolor=FAFAF8`;
 
     return (

@@ -344,7 +344,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 ) : orders < 15 ? (
                   <>Your rate is locked. More people order, rates improve — <span className="font-bold text-white">credit added to your wallet</span> automatically.</>
                 ) : (
-                  <><span className="font-bold" style={{ color: "var(--emerald)" }}>Best tier unlocked.</span> Max savings for everyone in your pool.</>
+                  <><span className="font-bold" style={{ color: "var(--emerald)" }}>Best tier unlocked.</span> Maximum benefits for everyone in your pool.</>
                 )}
               </p>
 
@@ -542,7 +542,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           return (
             <div className="mx-5 mt-3 rounded-[12px] p-3 flex items-center gap-3" style={{ background: "var(--sand)", border: "1px solid var(--border)" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>Order before <span style={{ color: "var(--coral)" }}>{p.cutoffTime || "8:00 AM"}</span> — save {reward}</span>
+              <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>Order before <span style={{ color: "var(--coral)" }}>{p.cutoffTime || "8:00 AM"}</span> — earn {reward} back</span>
             </div>
           );
         }
