@@ -73,7 +73,7 @@ export default function DealsPage() {
                     <img src={deal.imageUrl} alt={deal.name} className="w-full h-full object-cover" loading="lazy" />
                     <div className="absolute top-3 left-3">
                       <span className="text-[12px] font-extrabold px-2.5 py-1 rounded-full text-white" style={{ background: "var(--emerald)" }}>
-                        {savingsPct}% off
+                        Group rate
                       </span>
                     </div>
                     <div className="absolute top-3 right-3">
@@ -91,7 +91,7 @@ export default function DealsPage() {
                   {/* Price */}
                   <div className="flex items-baseline gap-2 mt-2">
                     <span className="text-[20px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(deal.poolPrice)}</span>
-                    <span className="text-[14px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(deal.marketPrice)}</span>
+                    <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>Market {formatPrice(deal.marketPrice)}</span>
                   </div>
 
                   {/* Progress */}

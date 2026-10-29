@@ -97,7 +97,7 @@ export default function DealDetailPage() {
           <Link href="/deals" className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center cursor-pointer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
           </Link>
-          <a href={`https://wa.me/?text=${encodeURIComponent(`${deal.name} — ${formatPrice(deal.poolPrice)} instead of ${formatPrice(deal.marketPrice)} (${savingsPct}% off)! ${remaining} more people needed. Join here: ${appUrl}/deals/${deal.id}`)}`}
+          <a href={`https://wa.me/?text=${encodeURIComponent(`${deal.name} — group rate ${formatPrice(deal.poolPrice)} (market price ${formatPrice(deal.marketPrice)}). ${remaining} more people to activate. Join: ${appUrl}/deals/${deal.id}`)}`}
             target="_blank" rel="noopener noreferrer"
             className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center cursor-pointer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
@@ -107,7 +107,7 @@ export default function DealDetailPage() {
         {/* Savings badge */}
         <div className="absolute bottom-4 left-4">
           <span className="text-[13px] font-extrabold px-3 py-1.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>
-            Save {savingsPct}%
+            Group rate
           </span>
         </div>
       </div>
@@ -119,10 +119,7 @@ export default function DealDetailPage() {
 
           <div className="flex items-baseline gap-3 mt-2">
             <span className="text-[28px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(deal.poolPrice)}</span>
-            <span className="text-[16px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(deal.marketPrice)}</span>
-            <span className="text-[13px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(13,159,95,0.1)", color: "var(--emerald)" }}>
-              -{formatPrice(savings)}
-            </span>
+            <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Market {formatPrice(deal.marketPrice)}</span>
           </div>
 
           {deal.description && (
@@ -248,7 +245,7 @@ export default function DealDetailPage() {
               style={{ background: "var(--coral)" }}>
               {joining ? "Joining..." : `Join for ${formatPrice(deal.poolPrice)}`}
             </button>
-            <a href={`https://wa.me/?text=${encodeURIComponent(`${deal.name} — ${formatPrice(deal.poolPrice)} instead of ${formatPrice(deal.marketPrice)} (${savingsPct}% off)! ${remaining} more people needed: ${appUrl}/deals/${deal.id}`)}`}
+            <a href={`https://wa.me/?text=${encodeURIComponent(`I just joined the ${deal.name} group deal on ChopDrop — group rate ${formatPrice(deal.poolPrice)} (market ${formatPrice(deal.marketPrice)}). ${remaining} more to activate: ${appUrl}/deals/${deal.id}`)}`}
               target="_blank" rel="noopener noreferrer"
               className="w-full h-12 rounded-full text-[15px] font-bold flex items-center justify-center gap-2 cursor-pointer active:scale-[0.97] transition-transform"
               style={{ background: "#25d366", color: "white" }}>

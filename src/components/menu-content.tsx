@@ -592,8 +592,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           </div>
                         )}
                         {hasDiscount && (
-                          <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center text-[11px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                            Save {formatPrice((deal.originalPrice || 0) - deal.price)}
+                          <div className="absolute top-2 left-2 h-5 px-2 rounded-full flex items-center text-[9px] font-bold tracking-wide uppercase" style={{ background: "rgba(0,0,0,0.55)", color: "white" }}>
+                            Special
                           </div>
                         )}
                         <div className="absolute bottom-2 right-2" onClick={(e) => e.stopPropagation()}>
@@ -618,7 +618,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         <div className="flex items-baseline gap-2 mt-1.5">
                           <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(getEffectivePrice(deal.id, deal.price))}</span>
                           {deal.originalPrice && deal.originalPrice > deal.price && (
-                            <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(deal.originalPrice)}</span>
+                            <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>was {formatPrice(deal.originalPrice)}</span>
                           )}
                         </div>
                         <div className="mt-2.5">
@@ -779,16 +779,15 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                               </button>
                             )}
                           </div>
-                          {/* Pool discount badge */}
+                          {/* Pool member badge — subtle, not screaming discount */}
                           {hasPoolDiscount && (
-                            <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center text-[11px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                              {Math.round((poolData.meals[meal.id].savings / poolData.meals[meal.id].basePrice) * 100)}% off
+                            <div className="absolute top-2 left-2 h-5 px-2 rounded-full flex items-center text-[9px] font-bold tracking-wide uppercase" style={{ background: "rgba(0,0,0,0.55)", color: "white" }}>
+                              Pool
                             </div>
                           )}
                           {/* Popularity indicator */}
                           {isPopular && !hasPoolDiscount && (
-                            <div className="absolute top-2 left-2 h-6 px-2 rounded-full flex items-center gap-1 text-[11px] font-bold" style={{ background: "var(--card)", color: "var(--coral)" }}>
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <div className="absolute top-2 left-2 h-5 px-2 rounded-full flex items-center gap-1 text-[10px] font-bold" style={{ background: "var(--card)", color: "var(--text-secondary)" }}>
                               {mealOrders} ordered
                             </div>
                           )}
@@ -801,10 +800,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           {meal.description && <p className="text-[11px] mt-0.5 leading-snug" style={{ color: "var(--text-secondary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{meal.description}</p>}
                           <div className="flex items-baseline gap-2 mt-1.5">
                             <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
-                            {hasPoolDiscount && <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(poolData.meals[meal.id].basePrice)}</span>}
-                            {meal.originalPrice && meal.originalPrice > meal.price && !hasPoolDiscount && (
-                              <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(meal.originalPrice)}</span>
-                            )}
+                            {hasPoolDiscount && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "var(--sand)", color: "var(--text-secondary)" }}>Member</span>}
                           </div>
                         </div>
                       </div>
@@ -859,14 +855,14 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
                           </div>
                         )}
-                        <div className="absolute top-2 left-2 text-[10px] font-extrabold px-2 py-1 rounded-full text-white" style={{ background: "var(--emerald)" }}>{savingsPct}% back</div>
+                        <div className="absolute top-2 left-2 text-[9px] font-bold tracking-wide uppercase px-2 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.55)", color: "white" }}>Group rate</div>
                         <div className="absolute top-2 right-2 text-[9px] font-bold px-2 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.5)", color: "white" }}>{daysLeft > 0 ? `${daysLeft}d left` : "Ends today"}</div>
                       </div>
                       <div className="p-3">
                         <h3 className="text-[13px] font-bold truncate text-white">{deal.name}</h3>
                         <div className="flex items-baseline gap-1.5 mt-1">
                           <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(deal.poolPrice)}</span>
-                          <span className="text-[11px] line-through" style={{ color: "rgba(255,255,255,0.35)" }}>{formatPrice(deal.marketPrice)}</span>
+                          <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>Market {formatPrice(deal.marketPrice)}</span>
                         </div>
                         <div className="mt-2">
                           <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
