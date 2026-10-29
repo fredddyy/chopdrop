@@ -32,18 +32,8 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Also count PENDING orders (people who've ordered but haven't paid yet — still counts towards social proof)
-    const pendingCount = await prisma.order.count({
-      where: {
-        officeId,
-        paymentStatus: "PENDING",
-        createdAt: { gte: todayStart, lte: todayEnd },
-        dailyMenu: { timeSlotId },
-      },
-    });
-
-    // Use paid + pending for tier calculation (people have committed)
-    const totalCommitted = officeOrderCount + pendingCount;
+    // Only count paid orders — PENDING orders include cancelled payments
+    const totalCommitted = officeOrderCount;
 
     // Get real names of people in the pool (for avatar stack — trust, not decoration)
     const recentOrderers = await prisma.order.findMany({
