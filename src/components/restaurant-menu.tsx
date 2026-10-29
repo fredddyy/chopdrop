@@ -226,9 +226,22 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
                     {item.description && <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                     <div className="text-[16px] font-extrabold mt-1 tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price)}</div>
                   </div>
-                  <div className="shrink-0">
+                  <div className="shrink-0" onClick={e => e.stopPropagation()}>
                     {qty > 0 ? (
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>{qty}</div>
+                      <div className="flex items-center rounded-full h-9" style={{ background: "var(--coral)" }}>
+                        <button type="button" onClick={() => {
+                          // Find the cart item for this meal and decrease
+                          const prefix = buildPlateDailyMenuId ? `${buildPlateDailyMenuId}-${item.id}` : item.id;
+                          const cartItem = cart.items.find(i => i.dailyMenuId.startsWith(prefix));
+                          if (cartItem) cart.changeQuantity(cartItem.dailyMenuId, -1);
+                        }} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                        </button>
+                        <span className="text-white text-[14px] font-bold min-w-[20px] text-center">{qty}</span>
+                        <button type="button" onClick={() => openMealModal(item, activeCategory)} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                        </button>
+                      </div>
                     ) : (
                       <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "var(--coral)" }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
