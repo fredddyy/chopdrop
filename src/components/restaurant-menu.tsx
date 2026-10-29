@@ -237,7 +237,11 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
                         </button>
                         <span className="text-white text-[14px] font-bold min-w-[20px] text-center">{qty}</span>
-                        <button type="button" onClick={() => openMealModal(item, activeCategory)} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
+                        <button type="button" onClick={() => {
+                          const prefix = buildPlateDailyMenuId ? `${buildPlateDailyMenuId}-${item.id}` : item.id;
+                          const cartItem = cart.items.find(i => i.dailyMenuId.startsWith(prefix));
+                          if (cartItem) cart.changeQuantity(cartItem.dailyMenuId, 1);
+                        }} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                         </button>
                       </div>
