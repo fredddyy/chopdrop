@@ -24,6 +24,7 @@ model User {
   walletId          String?
   wallet            CreditWallet?      @relation(fields: [walletId], references: [id])
   pushSubscriptions PushSubscription[]
+  dealParticipants  DealParticipant[]
 }
 
 model PushSubscription {
@@ -323,4 +324,63 @@ model Promo {
   imageUrl      String?   // banner background image URL (Cloudinary)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+// ═══════════════════════════════════════
+// GROUP DEALS — Pinduoduo-style bulk buying
+// ═══════════════════════════════════════
+
+model Deal {
+  id            String     @id @default(cuid())
+  name          String
+  description   String?
+  imageUrl      String?
+  marketPrice   Int        // kobo — retail price
+  poolPrice     Int        // kobo — bulk price when pool fills
+  minBuyers     Int        @default(30)
+  deadline      DateTime
+  status        DealStatus @default(ACTIVE)
+  pickupInfo    String?    // e.g. "Saturday morning at Ikeja pickup points"
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  participants DealParticipant[]
+  collectionPoints DealCollectionPoint[]
+}
+
+model DealParticipant {
+  id                String        @id @default(cuid())
+  dealId            String
+  userId            String
+  quantity          Int           @default(1)
+  totalAmount       Int           // kobo — poolPrice × quantity
+  paymentRef        String?
+  paymentStatus     PaymentStatus @default(PENDING)
+  collectionPointId String?
+  createdAt         DateTime      @default(now())
+
+  deal            Deal                 @relation(fields: [dealId], references: [id])
+  user            User                 @relation(fields: [userId], references: [id])
+  collectionPoint DealCollectionPoint? @relation(fields: [collectionPointId], references: [id])
+
+  @@unique([dealId, userId])
+}
+
+model DealCollectionPoint {
+  id       String @id @default(cuid())
+  dealId   String
+  name     String // "Regus Alausa" or "Ikeja City Mall pickup"
+  address  String
+  type     String @default("PICKUP") // OFFICE | PICKUP | DELIVERY
+
+  deal         Deal              @relation(fields: [dealId], references: [id])
+  participants DealParticipant[]
+}
+
+enum DealStatus {
+  ACTIVE
+  FILLED
+  COMPLETED
+  EXPIRED
+  CANCELLED
 }

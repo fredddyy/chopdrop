@@ -69,6 +69,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [userOfficeId, setUserOfficeId] = useState("");
   const [lastOrder, setLastOrder] = useState<{ name: string; price: number; imageUrl: string | null; restaurantName: string; dailyMenuId: string } | null>(null);
   const [creditBalance, setCreditBalance] = useState(0);
+  const [groupDeals, setGroupDeals] = useState<{ id: string; name: string; imageUrl: string | null; marketPrice: number; poolPrice: number; minBuyers: number; currentBuyers: number; deadline: string }[]>([]);
   const cart = useCart();
 
   useEffect(() => {
@@ -117,6 +118,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
     }).catch(() => {
       fetch("/api/promos/active").then((r2) => r2.json()).then((p) => { if (p.success && p.data) setActivePromo(p.data); }).catch(() => {});
     });
+    // Fetch group deals
+    fetch("/api/deals").then(r => r.json()).then(d => { if (d.success && d.data?.length > 0) setGroupDeals(d.data); }).catch(() => {});
   }, []);
 
   function dismissBanner() { localStorage.setItem("chopdrop-banner-dismissed", "1"); setBannerDismissed(true); }
@@ -694,6 +697,61 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </>
             );
           })()}
+
+          {/* ── GROUP DEALS — horizontal scroll strip ── */}
+          {groupDeals.length > 0 && (
+            <section className="mt-8 pb-2">
+              <div className="flex items-center justify-between px-5 mb-3">
+                <div>
+                  <h2 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Group Deals</h2>
+                  <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Buy together, pay wholesale</p>
+                </div>
+                <Link href="/deals" className="text-[13px] font-bold flex items-center gap-1" style={{ color: "var(--coral)" }}>
+                  See all
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                </Link>
+              </div>
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pb-1">
+                {groupDeals.map(deal => {
+                  const savingsPct = Math.round(((deal.marketPrice - deal.poolPrice) / deal.marketPrice) * 100);
+                  const progress = Math.min(100, (deal.currentBuyers / deal.minBuyers) * 100);
+                  const remaining = Math.max(0, deal.minBuyers - deal.currentBuyers);
+                  const daysLeft = Math.max(0, Math.floor((new Date(deal.deadline).getTime() - Date.now()) / 86400000));
+                  return (
+                    <Link key={deal.id} href={`/deals/${deal.id}`} className="shrink-0 rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform" style={{ width: 220, background: "var(--card)", border: "1px solid var(--border)" }}>
+                      <div className="relative h-[120px]" style={{ background: "var(--sand)" }}>
+                        {deal.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={deal.imageUrl} alt={deal.name} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
+                          </div>
+                        )}
+                        <div className="absolute top-2 left-2 text-[10px] font-extrabold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>{savingsPct}% off</div>
+                        <div className="absolute top-2 right-2 text-[9px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--dark)" }}>{daysLeft > 0 ? `${daysLeft}d` : "Today"}</div>
+                      </div>
+                      <div className="p-3">
+                        <h3 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{deal.name}</h3>
+                        <div className="flex items-baseline gap-1.5 mt-1">
+                          <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(deal.poolPrice)}</span>
+                          <span className="text-[11px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(deal.marketPrice)}</span>
+                        </div>
+                        <div className="mt-2">
+                          <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                            <div className="h-full rounded-full" style={{ width: `${Math.max(3, progress)}%`, background: progress > 70 ? "var(--emerald)" : "var(--gold)" }} />
+                          </div>
+                          <span className="text-[10px] font-semibold mt-1 block" style={{ color: remaining <= 5 ? "var(--coral)" : "var(--text-muted)" }}>
+                            {remaining} more to unlock
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
           {/* ── INVITE NUDGE — selfish incentive to share ── */}
           {slot && !slot.expired && moreForNextTier > 0 && moreForNextTier <= 5 && officeName && (
