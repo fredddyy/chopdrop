@@ -226,11 +226,10 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
                     {item.description && <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                     <div className="text-[16px] font-extrabold mt-1 tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price)}</div>
                   </div>
-                  <div className="shrink-0" onClick={e => e.stopPropagation()}>
+                  <div className="shrink-0">
                     {qty > 0 ? (
-                      <div className="flex items-center rounded-full h-9" style={{ background: "var(--coral)" }}>
+                      <div className="flex items-center rounded-full h-9" style={{ background: "var(--coral)" }} onClick={e => e.stopPropagation()}>
                         <button type="button" onClick={() => {
-                          // Find the cart item for this meal and decrease
                           const prefix = buildPlateDailyMenuId ? `${buildPlateDailyMenuId}-${item.id}` : item.id;
                           const cartItem = cart.items.find(i => i.dailyMenuId.startsWith(prefix));
                           if (cartItem) cart.changeQuantity(cartItem.dailyMenuId, -1);
