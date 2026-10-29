@@ -128,7 +128,8 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
   // Unified item row — Chowdeck style: text left, photo right
   function ItemRow({ item, cartId, qty, onAdd, onMinus }: { item: { name: string; description?: string | null; imageUrl?: string | null; price: number }; cartId: string; qty: number; onAdd: () => void; onMinus: () => void }) {
     return (
-      <div className="flex gap-3 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+      {/* #2 fix: tighter padding when no description */}
+      <div className={`flex gap-3 ${item.description ? "py-4" : "py-3"}`} style={{ borderBottom: "1px solid var(--border)" }}>
         <div className="flex-1 min-w-0 flex flex-col justify-center">
           <h3 className="text-[15px] font-bold leading-snug" style={{ color: "var(--text)" }}>{cleanName(item.name)}</h3>
           {item.description && (
@@ -152,7 +153,7 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
           {/* #2 & #5: Add button — filled, bold, clean on the corner */}
           <div className="absolute -bottom-3 right-0">
             {qty > 0 ? (
-              <div className="flex items-center rounded-[10px] h-9" style={{ background: "var(--dark)" }}>
+              <div className="flex items-center rounded-[10px] h-9" style={{ background: "var(--coral)" }}>
                 <button type="button" onClick={onMinus} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
                 </button>
@@ -164,7 +165,7 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
             ) : (
               <button type="button" onClick={onAdd}
                 className="h-9 px-4 rounded-[10px] flex items-center justify-center gap-1.5 text-[13px] font-bold cursor-pointer active:scale-95 transition-transform"
-                style={{ background: "var(--dark)", color: "white" }}>
+                style={{ background: "var(--coral)", color: "white" }}>
                 Add <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
               </button>
             )}
