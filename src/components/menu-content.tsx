@@ -63,8 +63,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [activePromo, setActivePromo] = useState<ActivePromo | null>(null);
   const [poolData, setPoolData] = useState<{ officeOrderCount: number; poolMembers: { initial: string; name: string }[]; meals: Record<string, { poolPrice: number; basePrice: number; savings: number; nextTier: { min: number; price: number } | null; tiers: { min: number; price: number }[] }> }>({ officeOrderCount: 0, poolMembers: [], meals: {} });
   const [poolCollapsed, setPoolCollapsed] = useState(() => {
-    if (typeof window !== "undefined") return localStorage.getItem("chopdrop-pool-collapsed") === "1";
-    return false;
+    if (typeof window !== "undefined") return localStorage.getItem("chopdrop-pool-collapsed") !== "0";
+    return true;
   });
   const [userOfficeId, setUserOfficeId] = useState("");
   const [lastOrder, setLastOrder] = useState<{ name: string; price: number; imageUrl: string | null; restaurantName: string; dailyMenuId: string } | null>(null);
