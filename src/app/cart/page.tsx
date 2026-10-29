@@ -143,41 +143,90 @@ export default function CartPage() {
         </div>
       ) : (
         <div className="px-5 space-y-4">
-          {/* Items */}
-          <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            {cart.items.map((item, idx) => (
-              <div key={item.dailyMenuId} className={`flex items-center gap-3 py-3.5 ${idx > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--border)" }}>
-                <div className="w-12 h-12 rounded-[12px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
+          {/* Items — grouped by pack */}
+          {(() => {
+            // Separate packed and unpacked items
+            const packedIds = [...new Set(cart.items.filter(i => i.packId).map(i => i.packId!))];
+            const unpackedItems = cart.items.filter(i => !i.packId);
+
+            const renderItem = (item: typeof cart.items[0], showBorder: boolean) => (
+              <div key={item.dailyMenuId} className={`flex items-center gap-3 py-3 ${showBorder ? "border-t" : ""}`} style={{ borderColor: "var(--border)" }}>
+                <div className="w-10 h-10 rounded-[10px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[14px] font-bold leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanName(item.name)}</h3>
+                  <h3 className="text-[13px] font-bold leading-tight" style={{ color: item.isPackItem ? "var(--text-secondary)" : "var(--text)" }}>{cleanName(item.name)}</h3>
                   <span className="text-[13px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button type="button" onClick={() => cart.changeQuantity(item.dailyMenuId, -1)}
-                    className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
+                    className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
                     style={{ background: item.quantity === 1 ? "#FEF2F2" : "var(--sand)" }}>
                     {item.quantity === 1 ? (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14H6L5 6" /></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14H6L5 6" /></svg>
                     ) : (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                     )}
                   </button>
-                  <span className="text-[14px] font-bold tabular-nums w-6 text-center" style={{ color: "var(--text)" }}>{item.quantity}</span>
+                  <span className="text-[13px] font-bold tabular-nums w-5 text-center" style={{ color: "var(--text)" }}>{item.quantity}</span>
                   <button type="button" onClick={() => cart.addItem(item)}
-                    className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--sand)" }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                    className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--sand)" }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                   </button>
                 </div>
               </div>
-            ))}
-          </section>
+            );
+
+            return (
+              <>
+                {/* Packed items — grouped */}
+                {packedIds.map((packId, packIdx) => {
+                  const packItems = cart.items.filter(i => i.packId === packId && !i.isPackItem);
+                  const packContainer = cart.items.find(i => i.packId === packId && i.isPackItem);
+                  const packTotal = packItems.reduce((s, i) => s + i.price * i.quantity, 0) + (packContainer ? packContainer.price * packContainer.quantity : 0);
+                  return (
+                    <section key={packId} className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                      {/* Pack header */}
+                      <div className="px-4 py-2.5 flex items-center justify-between" style={{ background: "var(--sand)" }}>
+                        <div className="flex items-center gap-2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                          <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Pack {packIdx + 1}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[13px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(packTotal)}</span>
+                          <button type="button" onClick={() => cart.removePack(packId)} className="text-[11px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                      <div className="px-4">
+                        {packItems.map((item, idx) => renderItem(item, idx > 0))}
+                        {packContainer && renderItem(packContainer, packItems.length > 0)}
+                        {!packContainer && (
+                          <div className="py-2.5 flex items-center gap-1.5" style={{ borderTop: packItems.length > 0 ? "1px solid var(--border)" : "none" }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+                            <span className="text-[12px] font-semibold" style={{ color: "var(--coral)" }}>No pack selected — add a pack size</span>
+                          </div>
+                        )}
+                      </div>
+                    </section>
+                  );
+                })}
+
+                {/* Unpacked items — regular display */}
+                {unpackedItems.length > 0 && (
+                  <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                    {unpackedItems.map((item, idx) => renderItem(item, idx > 0))}
+                  </section>
+                )}
+              </>
+            );
+          })()}
 
           {/* Not authenticated */}
           {isAuthenticated === false && (

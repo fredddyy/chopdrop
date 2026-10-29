@@ -12,6 +12,8 @@ export interface CartItem {
   price: number; // kobo
   quantity: number;
   customItems?: { menuItemId: string; quantity: number }[];
+  packId?: string; // groups items into a pack (Chowdeck-style)
+  isPackItem?: boolean; // true if this is the container (Small pack, Large pack)
 }
 
 interface CartContextType {
@@ -19,6 +21,7 @@ interface CartContextType {
   addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
   removeItem: (dailyMenuId: string) => void;
   changeQuantity: (dailyMenuId: string, delta: number) => void;
+  removePack: (packId: string) => void;
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
@@ -75,13 +78,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }
 
+  function removePack(packId: string) {
+    setItems((prev) => prev.filter((i) => i.packId !== packId));
+  }
+
   function clearCart() { setItems([]); }
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, changeQuantity, clearCart, totalItems, subtotal }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, changeQuantity, removePack, clearCart, totalItems, subtotal }}>
       {children}
     </CartContext.Provider>
   );

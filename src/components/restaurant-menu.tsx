@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { formatNaira } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
@@ -27,33 +27,89 @@ function cleanName(name: string): string {
     .trim();
 }
 
+function generatePackId(): string {
+  return `pack-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+}
+
 export function RestaurantMenu({ restaurant, combos, categories, buildPlateDailyMenuId, allExpired }: RestaurantMenuProps) {
-  // All categories show as tabs — simple direct-add for all
+  const packagingCats = categories.filter(c => c.isPackaging);
+  const foodCats = categories.filter(c => !c.isPackaging);
+  const hasPackaging = packagingCats.length > 0;
+
+  // Tabs: combos + food categories (packaging hidden — shown inline)
   const tabs: { id: string; label: string }[] = [];
   if (combos.length > 0) tabs.push({ id: "combos", label: "Combos" });
-  categories.forEach(cat => tabs.push({ id: cat.id, label: cat.name }));
+  foodCats.forEach(cat => tabs.push({ id: cat.id, label: cat.name }));
 
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || "combos");
   const [toast, setToast] = useState("");
+  const [currentPackId, setCurrentPackId] = useState(() => generatePackId());
   const cart = useCart();
+
+  // Get items in current pack
+  const currentPackItems = cart.items.filter(i => i.packId === currentPackId && !i.isPackItem);
+  const currentPackContainer = cart.items.find(i => i.packId === currentPackId && i.isPackItem);
+  const currentPackTotal = currentPackItems.reduce((s, i) => s + i.price * i.quantity, 0) + (currentPackContainer ? currentPackContainer.price : 0);
+
+  // All packs in cart
+  const packIds = [...new Set(cart.items.filter(i => i.packId).map(i => i.packId!))];
 
   function addComboToCart(combo: ComboMeal) {
     cart.addItem({ dailyMenuId: combo.dailyMenuId, name: combo.name, description: combo.description || "", imageUrl: combo.imageUrl, restaurantName: restaurant.name, price: combo.price });
     showToast(cleanName(combo.name));
   }
 
-  function addItemToCart(item: MenuItem) {
+  const addItemToPack = useCallback((item: MenuItem) => {
     if (!buildPlateDailyMenuId) return;
-    cart.addItem({ dailyMenuId: `${buildPlateDailyMenuId}-${item.id}`, realDailyMenuId: buildPlateDailyMenuId, name: item.name, description: item.description || "", imageUrl: item.imageUrl || null, restaurantName: restaurant.name, price: item.price, customItems: [{ menuItemId: item.id, quantity: 1 }] });
+    cart.addItem({
+      dailyMenuId: `${buildPlateDailyMenuId}-${item.id}-${currentPackId}`,
+      realDailyMenuId: buildPlateDailyMenuId,
+      name: item.name,
+      description: item.description || "",
+      imageUrl: item.imageUrl || null,
+      restaurantName: restaurant.name,
+      price: item.price,
+      customItems: [{ menuItemId: item.id, quantity: 1 }],
+      packId: currentPackId,
+    });
     showToast(cleanName(item.name));
+  }, [buildPlateDailyMenuId, currentPackId, cart, restaurant.name]);
+
+  function selectPackSize(packItem: MenuItem) {
+    if (!buildPlateDailyMenuId) return;
+    // Remove existing pack container for this pack if any
+    if (currentPackContainer) {
+      cart.removeItem(currentPackContainer.dailyMenuId);
+    }
+    cart.addItem({
+      dailyMenuId: `${buildPlateDailyMenuId}-pack-${packItem.id}-${currentPackId}`,
+      realDailyMenuId: buildPlateDailyMenuId,
+      name: packItem.name,
+      description: "",
+      imageUrl: packItem.imageUrl || null,
+      restaurantName: restaurant.name,
+      price: packItem.price,
+      customItems: [{ menuItemId: packItem.id, quantity: 1 }],
+      packId: currentPackId,
+      isPackItem: true,
+    });
+    showToast(packItem.name);
+  }
+
+  function startNewPack() {
+    setCurrentPackId(generatePackId());
   }
 
   function showToast(name: string) { setToast(name); setTimeout(() => setToast(""), 1500); }
 
-  function getCartId(item: MenuItem): string { return buildPlateDailyMenuId ? `${buildPlateDailyMenuId}-${item.id}` : item.id; }
-  function getQty(cartId: string): number { return cart.items.find(i => i.dailyMenuId === cartId)?.quantity || 0; }
+  function getCartId(item: MenuItem): string {
+    return buildPlateDailyMenuId ? `${buildPlateDailyMenuId}-${item.id}-${currentPackId}` : item.id;
+  }
+  function getQty(cartId: string): number {
+    return cart.items.find(i => i.dailyMenuId === cartId)?.quantity || 0;
+  }
 
-  const activeCategory = categories.find(c => c.id === activeTab);
+  const activeCategory = foodCats.find(c => c.id === activeTab);
 
   return (
     <main className="flex-1 max-w-[480px] lg:max-w-2xl mx-auto w-full pb-20" style={{ background: "var(--bg)" }}>
@@ -85,7 +141,7 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
           )}
         </div>
 
-        {/* Category tabs — packaging tabs hidden */}
+        {/* Category tabs — packaging hidden */}
         {tabs.length > 0 && (
           <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 pb-3">
             {tabs.map(tab => (
@@ -115,7 +171,7 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
         {activeTab === "combos" && combos.length > 0 && (
           <div className="space-y-3">
             {combos.map(combo => {
-              const qty = getQty(combo.dailyMenuId);
+              const qty = cart.items.find(i => i.dailyMenuId === combo.dailyMenuId)?.quantity || 0;
               const disabled = combo.expired || combo.remaining <= 0;
               return (
                 <div key={combo.dailyMenuId} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: qty > 0 ? "2px solid var(--coral)" : "1px solid var(--border)" }}>
@@ -153,7 +209,7 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
           </div>
         )}
 
-        {/* All categories — simple direct +/- add */}
+        {/* Food categories — items go into current pack */}
         {activeCategory && (
           <div>
             {activeCategory.items.map((item, idx) => {
@@ -177,10 +233,10 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
                       <div className="flex items-center rounded-full h-9" style={{ background: "var(--coral)" }}>
                         <button type="button" onClick={() => cart.changeQuantity(cartId, -1)} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg></button>
                         <span className="text-white text-[14px] font-bold min-w-[20px] text-center">{qty}</span>
-                        <button type="button" onClick={() => addItemToCart(item)} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
+                        <button type="button" onClick={() => addItemToPack(item)} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
                       </div>
                     ) : (
-                      <button type="button" onClick={() => addItemToCart(item)} disabled={!buildPlateDailyMenuId && !allExpired}
+                      <button type="button" onClick={() => addItemToPack(item)} disabled={!buildPlateDailyMenuId && !allExpired}
                         className="w-10 h-10 rounded-full flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform disabled:opacity-40"
                         style={{ background: "var(--coral)" }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
@@ -205,6 +261,61 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
           </Link>
         )}
       </div>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* PACK SUMMARY BAR — shows current pack + pack picker */}
+      {/* ═══════════════════════════════════════════════════ */}
+      {currentPackItems.length > 0 && hasPackaging && (
+        <div className="fixed bottom-28 left-0 right-0 z-40 px-4 md:hidden">
+          <div className="max-w-[480px] mx-auto rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            {/* Pack header */}
+            <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>
+                  Pack {packIds.indexOf(currentPackId) + 1}
+                </span>
+                <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>
+                  · {currentPackItems.length} item{currentPackItems.length !== 1 ? "s" : ""}
+                </span>
+              </div>
+              <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(currentPackTotal)}</span>
+            </div>
+
+            {/* Pack size selector */}
+            <div className="px-4 py-2.5 flex items-center gap-2">
+              <span className="text-[12px] font-bold shrink-0" style={{ color: currentPackContainer ? "var(--emerald)" : "var(--coral)" }}>
+                {currentPackContainer ? "✓ " : ""}Pack:
+              </span>
+              <div className="flex gap-2 flex-1 overflow-x-auto hide-scrollbar">
+                {packagingCats.flatMap(cat => cat.items).map(pack => {
+                  const isSelected = currentPackContainer?.dailyMenuId.includes(pack.id);
+                  return (
+                    <button key={pack.id} type="button" onClick={() => selectPackSize(pack)}
+                      className="h-8 px-3 rounded-full text-[12px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
+                      style={{
+                        background: isSelected ? "var(--emerald)" : "var(--sand)",
+                        color: isSelected ? "white" : "var(--text-secondary)",
+                      }}>
+                      {pack.name} +{formatNaira(pack.price)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* New pack button — only if current pack has a container */}
+            {currentPackContainer && (
+              <button type="button" onClick={startNewPack}
+                className="w-full px-4 py-2.5 text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] transition-transform"
+                style={{ borderTop: "1px solid var(--border)", color: "var(--coral)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                Start new pack
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Floating cart bar */}
       {cart.totalItems > 0 && (
@@ -233,7 +344,6 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
       )}
 
       <BottomNav />
-
     </main>
   );
 }
