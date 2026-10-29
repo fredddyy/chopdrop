@@ -66,18 +66,13 @@ export default function DealsPage() {
 
             return (
               <Link key={deal.id} href={`/deals/${deal.id}`} className="block rounded-[20px] overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                {/* Image */}
+                {/* Image — cleaner with only deadline badge, no "Group rate" sticker */}
                 {deal.imageUrl && (
-                  <div className="relative h-[160px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                  <div className="relative h-[180px] overflow-hidden" style={{ background: "var(--sand)" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={deal.imageUrl} alt={deal.name} className="w-full h-full object-cover" loading="lazy" />
-                    <div className="absolute top-3 left-3">
-                      <span className="text-[12px] font-extrabold px-2.5 py-1 rounded-full text-white" style={{ background: "var(--emerald)" }}>
-                        Group rate
-                      </span>
-                    </div>
                     <div className="absolute top-3 right-3">
-                      <span className="text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{ background: "var(--dark)" }}>
+                      <span className="text-[11px] font-bold px-2.5 py-1 rounded-full text-white" style={{ background: "rgba(0,0,0,0.5)" }}>
                         {daysLeft > 0 ? `${daysLeft}d left` : "Ends today"}
                       </span>
                     </div>
@@ -85,16 +80,21 @@ export default function DealsPage() {
                 )}
 
                 <div className="p-4">
+                  {/* #3 fix: "Group rate" moved below image as text badge, not on the photo */}
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-[9px] font-bold tracking-wide uppercase px-2 py-0.5 rounded" style={{ background: "var(--sand)", color: "var(--text-secondary)" }}>Group rate</span>
+                    {deal.currentBuyers < 5 && <span className="text-[9px] font-bold tracking-wide uppercase px-2 py-0.5 rounded" style={{ background: "var(--coral)", color: "white" }}>New</span>}
+                  </div>
                   <h3 className="text-[17px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>{deal.name}</h3>
                   {deal.description && <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>{deal.description}</p>}
 
-                  {/* Price */}
-                  <div className="flex items-baseline gap-2 mt-2">
-                    <span className="text-[20px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(deal.poolPrice)}</span>
-                    <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>Market {formatPrice(deal.marketPrice)}</span>
+                  {/* #4 fix: Price with stronger hierarchy — pool price is THE number */}
+                  <div className="flex items-baseline gap-2.5 mt-3">
+                    <span className="text-[24px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(deal.poolPrice)}</span>
+                    <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Market {formatPrice(deal.marketPrice)}</span>
                   </div>
 
-                  {/* Progress */}
+                  {/* #2 fix: Hide count when <5, show "Just launched" instead */}
                   <div className="mt-3">
                     <div className="h-[6px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
                       <div className="h-full rounded-full transition-all duration-500" style={{
@@ -104,7 +104,7 @@ export default function DealsPage() {
                     </div>
                     <div className="flex items-center justify-between mt-1.5">
                       <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>
-                        {deal.currentBuyers}/{deal.minBuyers} joined
+                        {deal.currentBuyers < 5 ? "Just launched" : `${deal.currentBuyers}/${deal.minBuyers} joined`}
                       </span>
                       <span className="text-[12px] font-bold" style={{ color: remaining <= 5 ? "var(--coral)" : "var(--text-muted)" }}>
                         {remaining} more needed
