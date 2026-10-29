@@ -147,27 +147,36 @@ export default function CartPage() {
           <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             {cart.items.map((item, idx) => (
               <div key={item.dailyMenuId} className={`flex items-center gap-3 py-3.5 ${idx > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--border)" }}>
-                <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
-                      </div>
-                    )}
-                  </div>
-                  <span className="absolute -top-1.5 -left-1.5 text-[10px] font-bold text-white w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "var(--dark)" }}>{item.quantity}x</span>
+                <div className="w-12 h-12 rounded-[12px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[15px] font-bold leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanName(item.name)}</h3>
-                  <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
+                  <h3 className="text-[14px] font-bold leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanName(item.name)}</h3>
+                  <span className="text-[13px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
                 </div>
-                <span className="text-[16px] font-extrabold tabular-nums shrink-0" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button type="button" onClick={() => cart.changeQuantity(item.dailyMenuId, -1)}
+                    className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
+                    style={{ background: item.quantity === 1 ? "#FEF2F2" : "var(--sand)" }}>
+                    {item.quantity === 1 ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14H6L5 6" /></svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                    )}
+                  </button>
+                  <span className="text-[14px] font-bold tabular-nums w-6 text-center" style={{ color: "var(--text)" }}>{item.quantity}</span>
+                  <button type="button" onClick={() => cart.addItem(item)}
+                    className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--sand)" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                  </button>
+                </div>
               </div>
             ))}
-            <div className="pt-3" style={{ borderTop: "1px solid var(--border)" }}>
-              <Link href="/menu" className="text-[13px] font-semibold" style={{ color: "var(--text-secondary)" }}>Edit items</Link>
-            </div>
           </section>
 
           {/* Not authenticated */}
