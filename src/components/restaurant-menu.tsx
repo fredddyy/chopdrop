@@ -128,7 +128,6 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
   // Unified item row — Chowdeck style: text left, photo right
   function ItemRow({ item, cartId, qty, onAdd, onMinus }: { item: { name: string; description?: string | null; imageUrl?: string | null; price: number }; cartId: string; qty: number; onAdd: () => void; onMinus: () => void }) {
     return (
-      {/* #2 fix: tighter padding when no description */}
       <div className={`flex gap-3 ${item.description ? "py-4" : "py-3"}`} style={{ borderBottom: "1px solid var(--border)" }}>
         <div className="flex-1 min-w-0 flex flex-col justify-center">
           <h3 className="text-[15px] font-bold leading-snug" style={{ color: "var(--text)" }}>{cleanName(item.name)}</h3>
