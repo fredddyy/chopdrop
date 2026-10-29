@@ -112,7 +112,7 @@ export default function CartPage() {
       const data = await res.json();
       if (!data.success) { if (data.error === "Menu item not found") { setError("Cart expired. Re-add from menu."); cart.clearCart(); } else { setError(data.error || "Something went wrong"); } setLoading(false); return; }
       const redirectUrl = data.data.authorizationUrl;
-      if (redirectUrl) { localStorage.removeItem("chopdrop-cart"); window.location.href = redirectUrl; }
+      if (redirectUrl) { window.location.href = redirectUrl; }
       else { setError("Payment failed. Try again."); setLoading(false); }
     } catch { setError("Network error."); setLoading(false); }
   }

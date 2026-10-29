@@ -49,7 +49,10 @@ function ConfirmationContent() {
       if (reference) { setVerifying(true); await fetch(`/api/payments/verify?reference=${reference}`); setVerifying(false); }
       const res = await fetch(`/api/orders/${orderCode}`);
       const data = await res.json();
-      if (data.success) setOrder(data.data);
+      if (data.success) {
+        setOrder(data.data);
+        if (data.data.paymentStatus === "SUCCESS") localStorage.removeItem("chopdrop-cart");
+      }
       setLoading(false);
       try { const stored = localStorage.getItem("chopdrop-customer"); if (stored) { const profile = JSON.parse(stored); if (profile.officeId) setOfficeConnected(true); } } catch {}
     }
@@ -65,7 +68,7 @@ function ConfirmationContent() {
       try {
         const res = await fetch(`/api/orders/${orderCode}`);
         const data = await res.json();
-        if (data.success && data.data.paymentStatus === "SUCCESS") { setOrder(data.data); clearInterval(interval); }
+        if (data.success && data.data.paymentStatus === "SUCCESS") { setOrder(data.data); clearInterval(interval); localStorage.removeItem("chopdrop-cart"); }
       } catch { /* retry on next interval */ }
     }, 3000);
     return () => clearInterval(interval);
