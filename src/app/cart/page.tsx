@@ -259,7 +259,7 @@ export default function CartPage() {
                         <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>{officeName}</span>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>FREE</span>
                       </div>
-                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-secondary)" }}>Arrives by 1:00 PM at {collectionPoint || "reception"}</p>
+                      <p className="text-[13px] mt-0.5" style={{ color: "var(--text-secondary)" }}>Arrives by 12:00 PM at {collectionPoint || "reception"}</p>
                     </div>
                   </div>
                 </div>
@@ -434,7 +434,7 @@ export default function CartPage() {
             {officeId && (
               <div className="flex items-center gap-2 mt-3 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>Arriving by 1:00 PM at {collectionPoint || "reception"}</span>
+                <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>Arriving by 12:00 PM at {collectionPoint || "reception"}</span>
               </div>
             )}
 
