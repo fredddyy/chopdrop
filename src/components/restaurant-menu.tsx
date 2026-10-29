@@ -11,7 +11,7 @@ interface ComboMeal {
   imageUrl: string | null; price: number; tag: string; remaining: number; expired: boolean;
 }
 interface MenuItem { id: string; name: string; price: number; description?: string | null; imageUrl?: string | null; }
-interface Category { id: string; name: string; items: MenuItem[]; }
+interface Category { id: string; name: string; selectionRule: string; items: MenuItem[]; }
 interface RestaurantMenuProps {
   restaurant: { id: string; name: string; address: string; imageUrl?: string | null };
   combos: ComboMeal[]; categories: Category[];
@@ -203,6 +203,30 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
           </Link>
         )}
       </div>
+
+      {/* Missing required category warning */}
+      {cart.totalItems > 0 && (() => {
+        // Check if user has build-a-plate items but is missing required categories
+        const requiredCats = categories.filter(c => c.selectionRule === "PICK_ONE" || c.selectionRule === "PICK_ONE_OR_MORE");
+        const cartItemIds = cart.items.filter(i => i.customItems?.length).flatMap(i => i.customItems || []).map(ci => ci.menuItemId);
+        const missingCats = requiredCats.filter(cat => !cat.items.some(item => cartItemIds.includes(item.id)));
+        if (missingCats.length > 0 && cartItemIds.length > 0) {
+          return (
+            <div className="fixed bottom-28 left-0 right-0 z-40 px-4 md:hidden">
+              <div className="max-w-[480px] mx-auto rounded-[12px] px-4 py-3 flex items-center gap-2" style={{ background: "var(--dark)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+                <span className="text-[13px] text-white font-semibold">
+                  Don&apos;t forget: {missingCats.map(c => c.name.toLowerCase()).join(", ")}
+                </span>
+                <button type="button" onClick={() => setActiveTab(missingCats[0].id)} className="text-[12px] font-bold px-3 py-1 rounded-full shrink-0 cursor-pointer" style={{ background: "var(--coral)", color: "white" }}>
+                  Select
+                </button>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      })()}
 
       {/* Floating cart bar */}
       {cart.totalItems > 0 && (

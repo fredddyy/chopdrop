@@ -74,6 +74,7 @@ export default async function RestaurantPage({ params }: PageProps) {
   const categories = restaurant.menuCategories.map((cat) => ({
     id: cat.id,
     name: cat.name,
+    selectionRule: cat.selectionRule,
     items: cat.items.map((item) => ({
       id: item.id,
       name: item.name,
