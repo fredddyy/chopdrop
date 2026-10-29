@@ -26,7 +26,7 @@ interface RestaurantReadiness {
   percent: number;
 }
 
-type OpsTab = "overview" | "restaurants" | "offices" | "meals" | "menu" | "items" | "promos";
+type OpsTab = "overview" | "restaurants" | "offices" | "meals" | "menu" | "items" | "promos" | "deals";
 
 interface RestaurantData {
   id: string;
@@ -844,6 +844,7 @@ export default function OpsPage() {
             ["offices", "Offices", "M4 21V4h11v17M15 9h5v12M8 8h3M8 12h3M8 16h3"],
             ["items", "Menu Items", "M4 6h16M4 10h16M4 14h8M4 18h8"],
             ["promos", "Promos", "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"],
+            ["deals", "Group Deals", "M6 7h12l1 14H5L6 7ZM9 9V6a3 3 0 0 1 6 0v3"],
           ] as const).map(([id, label, path]) => (
             <button
               key={id}
@@ -2438,7 +2439,230 @@ export default function OpsPage() {
           </>
         )}
 
+        {/* Group Deals Tab */}
+        {tab === "deals" && (
+          <DealsAdmin loadAll={loadAll} formatNaira={formatNaira} />
+        )}
+
       </main>
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════ */
+/* DEALS ADMIN — separate component to    */
+/* keep the main ops page manageable      */
+/* ═══════════════════════════════════════ */
+function DealsAdmin({ loadAll, formatNaira }: { loadAll: () => void; formatNaira: (kobo: number) => string }) {
+  const [deals, setDeals] = useState<{ id: string; name: string; imageUrl: string | null; marketPrice: number; poolPrice: number; minBuyers: number; currentBuyers: number; deadline: string; status: string; collectionPoints: { id: string; name: string; address: string; type: string }[] }[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [marketPrice, setMarketPrice] = useState("");
+  const [poolPrice, setPoolPrice] = useState("");
+  const [minBuyers, setMinBuyers] = useState("30");
+  const [deadline, setDeadline] = useState("");
+  const [pickupInfo, setPickupInfo] = useState("");
+  const [cpName, setCpName] = useState("");
+  const [cpAddress, setCpAddress] = useState("");
+  const [collectionPoints, setCollectionPoints] = useState<{ name: string; address: string; type: string }[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/deals").then(r => r.json()).then(d => { if (d.success) setDeals(d.data); }).catch(() => {});
+  }, []);
+
+  function reload() {
+    fetch("/api/admin/deals").then(r => r.json()).then(d => { if (d.success) setDeals(d.data); }).catch(() => {});
+  }
+
+  function addCollectionPoint() {
+    if (!cpName.trim() || !cpAddress.trim()) return;
+    setCollectionPoints([...collectionPoints, { name: cpName.trim(), address: cpAddress.trim(), type: "PICKUP" }]);
+    setCpName(""); setCpAddress("");
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "chopdrop");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.success) setImageUrl(data.url);
+    } finally { setUploadingImage(false); }
+  }
+
+  async function createDeal() {
+    if (!name.trim() || !marketPrice || !poolPrice || !deadline) return;
+    setSaving(true);
+    await fetch("/api/admin/deals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name.trim(),
+        description: description.trim() || null,
+        imageUrl: imageUrl.trim() || null,
+        marketPrice: Math.round(parseFloat(marketPrice) * 100),
+        poolPrice: Math.round(parseFloat(poolPrice) * 100),
+        minBuyers: parseInt(minBuyers) || 30,
+        deadline,
+        pickupInfo: pickupInfo.trim() || null,
+        collectionPoints: collectionPoints.length > 0 ? collectionPoints : undefined,
+      }),
+    });
+    setShowForm(false);
+    setName(""); setDescription(""); setImageUrl(""); setMarketPrice(""); setPoolPrice(""); setMinBuyers("30"); setDeadline(""); setPickupInfo(""); setCollectionPoints([]);
+    setSaving(false);
+    reload();
+    loadAll();
+  }
+
+  const inputCls = "w-full px-3.5 py-2.5 border border-line rounded-[10px] text-sm bg-cream/50 focus:outline-none focus:ring-2 focus:ring-green/30";
+
+  return (
+    <>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.13em]">Group buying</div>
+          <h2 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-1">Group Deals</h2>
+          <p className="text-ink-soft text-[13px] mt-1">Pinduoduo-style bulk buying deals</p>
+        </div>
+        <button type="button" onClick={() => setShowForm(!showForm)} className="bg-coral text-white font-bold px-4 py-2.5 rounded-[10px] text-sm inline-flex items-center gap-2 shadow-[0_5px_14px_rgba(240,100,73,0.22)] hover:bg-[#d95038] transition-all">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+          New deal
+        </button>
+      </div>
+
+      {/* Create deal form */}
+      {showForm && (
+        <div className="bg-paper border border-line rounded-[15px] p-5 mb-5">
+          <div className="font-display font-bold text-[17px] mb-4">Create group deal</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Deal name</label>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="10kg Royal Stallion Rice" className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Description</label>
+              <input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="Premium long-grain rice" className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Market price (₦)</label>
+              <input type="number" value={marketPrice} onChange={e => setMarketPrice(e.target.value)} placeholder="12000" className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Pool price (₦)</label>
+              <input type="number" value={poolPrice} onChange={e => setPoolPrice(e.target.value)} placeholder="8500" className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Min buyers</label>
+              <input type="number" value={minBuyers} onChange={e => setMinBuyers(e.target.value)} placeholder="30" className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Deadline</label>
+              <input type="datetime-local" value={deadline} onChange={e => setDeadline(e.target.value)} className={inputCls} />
+            </div>
+            <div className="col-span-full">
+              <label className="block text-[12px] font-bold mb-1.5">Pickup info</label>
+              <input type="text" value={pickupInfo} onChange={e => setPickupInfo(e.target.value)} placeholder="Saturday morning at pickup points" className={inputCls} />
+            </div>
+            <div className="col-span-full">
+              <label className="block text-[12px] font-bold mb-1.5">Image</label>
+              <div className="flex items-center gap-3">
+                <label className={`px-4 py-2.5 border border-line rounded-[10px] text-sm cursor-pointer transition-colors ${uploadingImage ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
+                  {uploadingImage ? "Uploading..." : imageUrl ? "Change image" : "Choose image"}
+                  <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className="hidden" />
+                </label>
+                {imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={imageUrl} alt="Preview" className="w-16 h-12 rounded-lg object-cover border border-line" />
+                )}
+              </div>
+            </div>
+            {/* Collection points */}
+            <div className="col-span-full">
+              <label className="block text-[12px] font-bold mb-1.5">Collection points</label>
+              {collectionPoints.map((cp, i) => (
+                <div key={i} className="flex items-center gap-2 mb-1.5 text-[12px]">
+                  <span className="font-semibold">{cp.name}</span> — <span className="text-ink-soft">{cp.address}</span>
+                  <button type="button" onClick={() => setCollectionPoints(collectionPoints.filter((_, j) => j !== i))} className="text-coral text-[10px] font-bold ml-auto cursor-pointer">Remove</button>
+                </div>
+              ))}
+              <div className="flex gap-2 mt-1">
+                <input type="text" value={cpName} onChange={e => setCpName(e.target.value)} placeholder="Point name" className={`${inputCls} flex-1`} />
+                <input type="text" value={cpAddress} onChange={e => setCpAddress(e.target.value)} placeholder="Address" className={`${inputCls} flex-1`} />
+                <button type="button" onClick={addCollectionPoint} className="bg-ink text-white font-bold px-3 py-2 rounded-[10px] text-sm shrink-0 cursor-pointer">Add</button>
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-4">
+            <button type="button" onClick={createDeal} disabled={saving || !name.trim() || !marketPrice || !poolPrice || !deadline} className="bg-coral text-white font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-[#d95038] transition-colors disabled:opacity-50 cursor-pointer">
+              {saving ? "Creating..." : "Create deal"}
+            </button>
+            <button type="button" onClick={() => setShowForm(false)} className="bg-cream text-ink-soft font-bold px-5 py-2.5 rounded-[10px] text-sm hover:bg-line transition-colors cursor-pointer">Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* Deals list */}
+      <div className="space-y-3">
+        {deals.map(deal => {
+          const progress = Math.min(100, (deal.currentBuyers / deal.minBuyers) * 100);
+          const isActive = deal.status === "ACTIVE";
+          const deadlineDate = new Date(deal.deadline);
+          const expired = deadlineDate < new Date();
+          return (
+            <div key={deal.id} className={`bg-paper border border-line rounded-[16px] overflow-hidden ${!isActive ? "opacity-60" : ""}`}>
+              <div className="p-4 flex items-center gap-4">
+                {deal.imageUrl && (
+                  <div className="w-16 h-16 rounded-[10px] overflow-hidden shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={deal.imageUrl} alt={deal.name} className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <strong className="text-[14px] truncate">{deal.name}</strong>
+                    <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${isActive ? "bg-green-soft text-green" : deal.status === "FILLED" ? "bg-amber-soft text-[#7d5716]" : "bg-cream text-ink-soft"}`}>
+                      {deal.status}
+                    </span>
+                  </div>
+                  <div className="text-[12px] text-ink-soft mt-0.5">
+                    {formatNaira(deal.poolPrice)} (was {formatNaira(deal.marketPrice)}) · {deal.currentBuyers}/{deal.minBuyers} joined
+                  </div>
+                  <div className="text-[11px] text-ink-soft mt-0.5">
+                    Deadline: {deadlineDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    {expired && !isActive ? "" : expired ? " (expired)" : ""}
+                  </div>
+                  {/* Progress bar */}
+                  <div className="h-1.5 rounded-full overflow-hidden mt-2" style={{ background: "var(--line)" }}>
+                    <div className="h-full rounded-full" style={{ width: `${Math.max(3, progress)}%`, background: progress >= 100 ? "var(--green)" : progress > 50 ? "var(--gold)" : "var(--coral)" }} />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1 shrink-0">
+                  {isActive && (
+                    <>
+                      <button type="button" onClick={async () => { await fetch(`/api/admin/deals/${deal.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "COMPLETED" }) }); reload(); }}
+                        className="text-[9px] font-bold px-3 py-1.5 rounded-full bg-green-soft text-green hover:bg-green hover:text-white transition-colors cursor-pointer">Complete</button>
+                      <button type="button" onClick={async () => { if (!confirm("Cancel this deal?")) return; await fetch(`/api/admin/deals/${deal.id}`, { method: "DELETE" }); reload(); }}
+                        className="text-[9px] font-bold px-3 py-1.5 rounded-full bg-cream text-coral hover:bg-coral hover:text-white transition-colors cursor-pointer">Cancel</button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {deals.length === 0 && (
+          <div className="text-center py-12 text-ink-soft text-sm">No deals yet. Click &quot;New deal&quot; to create your first group deal.</div>
+        )}
+      </div>
+    </>
   );
 }
