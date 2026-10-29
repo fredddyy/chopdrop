@@ -706,50 +706,55 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             );
           })()}
 
-          {/* ── GROUP DEALS — horizontal scroll strip ── */}
+          {/* ── GROUP DEALS — dark section, visually distinct from food ── */}
           {groupDeals.length > 0 && (
-            <section className="mt-8 pb-2">
-              <div className="flex items-center justify-between px-5 mb-3">
+            <section className="mt-8 rounded-[24px] mx-5 overflow-hidden" style={{ background: "var(--dark)" }}>
+              <div className="flex items-center justify-between px-5 pt-5 pb-3">
                 <div>
-                  <h2 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Group Deals</h2>
-                  <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Buy together, pay wholesale</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "var(--emerald)" }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                    </div>
+                    <h2 className="text-[17px] font-extrabold text-white">Group Deals</h2>
+                  </div>
+                  <p className="text-[12px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>Buy together, pay wholesale</p>
                 </div>
-                <Link href="/deals" className="text-[13px] font-bold flex items-center gap-1" style={{ color: "var(--coral)" }}>
+                <Link href="/deals" className="text-[12px] font-bold flex items-center gap-1 px-3 py-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.1)", color: "white" }}>
                   See all
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
                 </Link>
               </div>
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pb-1">
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pb-5">
                 {groupDeals.map(deal => {
                   const savingsPct = Math.round(((deal.marketPrice - deal.poolPrice) / deal.marketPrice) * 100);
                   const progress = Math.min(100, (deal.currentBuyers / deal.minBuyers) * 100);
                   const remaining = Math.max(0, deal.minBuyers - deal.currentBuyers);
                   const daysLeft = Math.max(0, Math.floor((new Date(deal.deadline).getTime() - Date.now()) / 86400000));
                   return (
-                    <Link key={deal.id} href={`/deals/${deal.id}`} className="shrink-0 rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform" style={{ width: 220, background: "var(--card)", border: "1px solid var(--border)" }}>
-                      <div className="relative h-[120px]" style={{ background: "var(--sand)" }}>
+                    <Link key={deal.id} href={`/deals/${deal.id}`} className="shrink-0 rounded-[14px] overflow-hidden active:scale-[0.98] transition-transform" style={{ width: 200, background: "rgba(255,255,255,0.08)" }}>
+                      <div className="relative h-[110px]" style={{ background: "rgba(255,255,255,0.05)" }}>
                         {deal.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={deal.imageUrl} alt={deal.name} className="w-full h-full object-cover" loading="lazy" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
                           </div>
                         )}
-                        <div className="absolute top-2 left-2 text-[10px] font-extrabold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>{savingsPct}% off</div>
-                        <div className="absolute top-2 right-2 text-[9px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--dark)" }}>{daysLeft > 0 ? `${daysLeft}d` : "Today"}</div>
+                        <div className="absolute top-2 left-2 text-[10px] font-extrabold px-2 py-1 rounded-full text-white" style={{ background: "var(--emerald)" }}>{savingsPct}% off</div>
+                        <div className="absolute top-2 right-2 text-[9px] font-bold px-2 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.5)", color: "white" }}>{daysLeft > 0 ? `${daysLeft}d left` : "Ends today"}</div>
                       </div>
                       <div className="p-3">
-                        <h3 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{deal.name}</h3>
+                        <h3 className="text-[13px] font-bold truncate text-white">{deal.name}</h3>
                         <div className="flex items-baseline gap-1.5 mt-1">
-                          <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(deal.poolPrice)}</span>
-                          <span className="text-[11px] line-through" style={{ color: "var(--text-muted)" }}>{formatPrice(deal.marketPrice)}</span>
+                          <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(deal.poolPrice)}</span>
+                          <span className="text-[11px] line-through" style={{ color: "rgba(255,255,255,0.35)" }}>{formatPrice(deal.marketPrice)}</span>
                         </div>
                         <div className="mt-2">
-                          <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                          <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
                             <div className="h-full rounded-full" style={{ width: `${Math.max(3, progress)}%`, background: progress > 70 ? "var(--emerald)" : "var(--gold)" }} />
                           </div>
-                          <span className="text-[10px] font-semibold mt-1 block" style={{ color: remaining <= 5 ? "var(--coral)" : "var(--text-muted)" }}>
+                          <span className="text-[10px] font-semibold mt-1 block" style={{ color: remaining <= 5 ? "var(--coral)" : "rgba(255,255,255,0.4)" }}>
                             {remaining} more to unlock
                           </span>
                         </div>
