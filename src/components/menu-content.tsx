@@ -119,15 +119,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       fetch("/api/promos/active").then((r2) => r2.json()).then((p) => { if (p.success && p.data) setActivePromo(p.data); }).catch(() => {});
     });
     // Fetch group deals
-    fetch("/api/deals").then(r => r.json()).then(d => {
-      if (d.success && d.data?.length > 0) { setGroupDeals(d.data); return; }
-      // Dummy deals for preview
-      setGroupDeals([
-        { id: "demo-1", name: "10kg Royal Stallion Rice", imageUrl: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop", marketPrice: 1200000, poolPrice: 850000, minBuyers: 30, currentBuyers: 23, deadline: new Date(Date.now() + 3 * 86400000).toISOString() },
-        { id: "demo-3", name: "Carton of Indomie (40 packs)", imageUrl: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=400&h=300&fit=crop", marketPrice: 650000, poolPrice: 480000, minBuyers: 25, currentBuyers: 19, deadline: new Date(Date.now() + 2 * 86400000).toISOString() },
-        { id: "demo-5", name: "25kg Golden Penny Semovita", imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop", marketPrice: 1500000, poolPrice: 1100000, minBuyers: 30, currentBuyers: 27, deadline: new Date(Date.now() + 1 * 86400000).toISOString() },
-      ]);
-    }).catch(() => {});
+    fetch("/api/deals").then(r => r.json()).then(d => { if (d.success && d.data?.length > 0) setGroupDeals(d.data); }).catch(() => {});
   }, []);
 
   function dismissBanner() { localStorage.setItem("chopdrop-banner-dismissed", "1"); setBannerDismissed(true); }

@@ -21,15 +21,7 @@ export default function DealsPage() {
 
   useEffect(() => {
     fetch("/api/deals").then(r => r.json()).then(d => {
-      if (d.success && d.data?.length > 0) { setDeals(d.data); setLoading(false); return; }
-      // Dummy deals for preview when no real deals exist
-      setDeals([
-        { id: "demo-1", name: "10kg Royal Stallion Rice", description: "Premium long-grain parboiled rice. Perfect for the whole family.", imageUrl: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop", marketPrice: 1200000, poolPrice: 850000, minBuyers: 30, currentBuyers: 23, deadline: new Date(Date.now() + 3 * 86400000).toISOString(), status: "ACTIVE" },
-        { id: "demo-2", name: "5L Kings Vegetable Oil", description: "Pure refined vegetable oil for all your cooking needs.", imageUrl: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=300&fit=crop", marketPrice: 800000, poolPrice: 550000, minBuyers: 30, currentBuyers: 12, deadline: new Date(Date.now() + 5 * 86400000).toISOString(), status: "ACTIVE" },
-        { id: "demo-3", name: "Carton of Indomie (40 packs)", description: "Indomie instant noodles — the office staple. Chicken flavour.", imageUrl: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=400&h=300&fit=crop", marketPrice: 650000, poolPrice: 480000, minBuyers: 25, currentBuyers: 19, deadline: new Date(Date.now() + 2 * 86400000).toISOString(), status: "ACTIVE" },
-        { id: "demo-4", name: "Christmas Turkey (whole)", description: "Premium frozen turkey for the festive season. 6-8kg average.", imageUrl: "https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?w=400&h=300&fit=crop", marketPrice: 2500000, poolPrice: 1800000, minBuyers: 40, currentBuyers: 8, deadline: new Date(Date.now() + 14 * 86400000).toISOString(), status: "ACTIVE" },
-        { id: "demo-5", name: "25kg Golden Penny Semovita", description: "Smooth semolina flour for the perfect swallow.", imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop", marketPrice: 1500000, poolPrice: 1100000, minBuyers: 30, currentBuyers: 27, deadline: new Date(Date.now() + 1 * 86400000).toISOString(), status: "ACTIVE" },
-      ]);
+      if (d.success) setDeals(d.data);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
