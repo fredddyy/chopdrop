@@ -70,6 +70,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [lastOrder, setLastOrder] = useState<{ name: string; price: number; imageUrl: string | null; restaurantName: string; dailyMenuId: string } | null>(null);
   const [creditBalance, setCreditBalance] = useState(0);
   const [groupDeals, setGroupDeals] = useState<{ id: string; name: string; imageUrl: string | null; marketPrice: number; poolPrice: number; minBuyers: number; currentBuyers: number; deadline: string }[]>([]);
+  const [activeOrder, setActiveOrder] = useState<{ orderCode: string; mealName: string; status: string; restaurantName: string } | null>(null);
   const cart = useCart();
 
   useEffect(() => {
@@ -103,6 +104,12 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           if (o.success && o.data?.length > 0) {
             const last = o.data[0];
             setLastOrder({ name: last.dailyMenu.meal.name, price: last.totalAmount / last.quantity, imageUrl: last.dailyMenu.meal.imageUrl, restaurantName: last.dailyMenu.meal.restaurant.name, dailyMenuId: last.dailyMenuId });
+            // Check for active order today (not completed/cancelled)
+            const todayStr = new Date().toLocaleDateString("en-CA");
+            const todayOrder = o.data.find((ord: { status: string; paymentStatus: string; createdAt: string }) => ord.paymentStatus === "SUCCESS" && ord.status !== "COMPLETED" && ord.status !== "CANCELLED" && new Date(ord.createdAt).toLocaleDateString("en-CA") === todayStr);
+            if (todayOrder) {
+              setActiveOrder({ orderCode: todayOrder.orderCode, mealName: todayOrder.dailyMenu.meal.name, status: todayOrder.status, restaurantName: todayOrder.dailyMenu.meal.restaurant.name });
+            }
           }
         }).catch(() => {});
         const userId = d.data.id || "";
@@ -128,6 +135,24 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
     if (!userOfficeId || !activeSlot) return;
     fetch(`/api/pool-price?officeId=${userOfficeId}&timeSlotId=${activeSlot}`).then((r) => r.json()).then((d) => { if (d.success && d.data) setPoolData(d.data); }).catch(() => {});
   }, [userOfficeId, activeSlot]);
+
+  // Poll active order status every 30s
+  useEffect(() => {
+    if (!activeOrder) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/orders/${activeOrder.orderCode}`);
+        const data = await res.json();
+        if (data.success) {
+          if (data.data.status === "COMPLETED" || data.data.status === "CANCELLED") { setActiveOrder(null); return; }
+          if (data.data.status !== activeOrder.status) {
+            setActiveOrder(prev => prev ? { ...prev, status: data.data.status } : null);
+          }
+        }
+      } catch { /* retry */ }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [activeOrder]);
 
   useEffect(() => {
     function handleScroll() { setShowStickyBar(window.scrollY > 140); }
@@ -228,6 +253,32 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       {/* ── Desktop layout ── */}
       <div className="lg:flex lg:gap-8 lg:px-5 lg:pt-5">
       <div className="flex-1 min-w-0">
+
+      {/* ── ACTIVE ORDER BANNER — reduces anxiety between ordering and delivery ── */}
+      {activeOrder && (
+        <Link href={`/order/confirmation/${activeOrder.orderCode}`} className="mx-5 mt-4 flex items-center gap-3 p-3.5 rounded-[16px] active:scale-[0.98] transition-transform" style={{ background: "var(--dark)" }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{
+            background: activeOrder.status === "READY" ? "var(--emerald)" : activeOrder.status === "CONFIRMED" ? "var(--gold)" : "var(--coral)",
+          }}>
+            {activeOrder.status === "READY" ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+            ) : (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[14px] font-bold text-white truncate">
+              {activeOrder.status === "PENDING" && "Order placed — preparing soon"}
+              {activeOrder.status === "CONFIRMED" && `${activeOrder.restaurantName} is preparing your food`}
+              {activeOrder.status === "READY" && "Food is on the way to your office"}
+            </div>
+            <div className="text-[12px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>
+              {activeOrder.mealName} · Arrives by 12:00 PM
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+        </Link>
+      )}
 
       {/* ── THE POOL — promise (always visible) + tier journey (collapsible) ── */}
       {slot && !slot.expired && (() => {
