@@ -71,6 +71,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [creditBalance, setCreditBalance] = useState(0);
   const [groupDeals, setGroupDeals] = useState<{ id: string; name: string; imageUrl: string | null; marketPrice: number; poolPrice: number; minBuyers: number; currentBuyers: number; deadline: string }[]>([]);
   const [activeOrder, setActiveOrder] = useState<{ orderCode: string; mealName: string; status: string; restaurantName: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const cart = useCart();
 
   useEffect(() => {
@@ -247,6 +248,26 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               })}
             </div>
           )}
+
+          {/* Search bar */}
+          <div className="mt-3 relative">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2.5" strokeLinecap="round" className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search meals, restaurants..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-11 pl-10 pr-4 rounded-[12px] text-[14px] font-medium placeholder:text-white/30 outline-none"
+              style={{ background: "rgba(255,255,255,0.08)", color: "white", border: "1px solid rgba(255,255,255,0.06)" }}
+            />
+            {searchQuery && (
+              <button type="button" onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "rgba(255,255,255,0.15)" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -280,182 +301,14 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </Link>
       )}
 
-      {/* ── THE POOL — only show for users with an office (they understand pooling) ── */}
-      {slot && !slot.expired && userOfficeId && (() => {
-        const tiers = [
-          { min: 0, pct: 0 },
-          { min: 10, pct: 3 },
-          { min: 20, pct: 5 },
-          { min: 30, pct: 8 },
-        ];
-        const orders = poolData.officeOrderCount;
-        const currentTierIdx = orders >= 30 ? 3 : orders >= 20 ? 2 : orders >= 10 ? 1 : 0;
-        const mealPrices = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).map(i => i.price);
-        const rawAvg = mealPrices.length > 0 ? mealPrices.reduce((a, b) => a + b, 0) / mealPrices.length : 200000;
-        const examplePrice = Math.round(rawAvg / 5000) * 5000;
-        const currentPct = tiers[currentTierIdx].pct;
-        const nextTierData = currentTierIdx < 3 ? tiers[currentTierIdx + 1] : null;
-        const moreNeeded = nextTierData ? nextTierData.min - orders : 0;
-        const nextSavings = nextTierData ? Math.round(examplePrice * (nextTierData.pct - currentPct) / 100) : 0;
-        const barColors = ["var(--text-muted)", "var(--gold)", "var(--coral)", "var(--emerald)"];
-
-        return (
-          <div className="mx-5 mt-4 rounded-[20px] overflow-hidden" style={{ border: "1px solid var(--border)" }}>
-
-            {/* ═══ THE PROMISE — dark, never collapses, the hero ═══ */}
-            <div className="px-4 pt-4 pb-3.5" style={{ background: "var(--dark)" }}>
-              {/* Status: live count + current tier badge */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2.5">
-                  {poolData.poolMembers.length > 0 && (
-                    <div className="flex -space-x-1.5">
-                      {poolData.poolMembers.slice(0, 4).map((member, i) => (
-                        <div key={i} className="rounded-full flex items-center justify-center text-[8px] font-bold"
-                          style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: ["#C4572A", "#D4A24E", "#1A7D4B", "#6B6560"][i % 4], zIndex: 4 - i }}>
-                          {member.initial}
-                        </div>
-                      ))}
-                      {orders > poolData.poolMembers.length && (
-                        <div className="rounded-full flex items-center justify-center text-[8px] font-bold text-white/70"
-                          style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: "rgba(255,255,255,0.15)", zIndex: 0 }}>
-                          +{orders - poolData.poolMembers.length}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1.5">
-                    <div className="rounded-full animate-pulse" style={{ width: 5, height: 5, background: orders > 0 ? "var(--emerald)" : "var(--text-muted)" }} />
-                    <span className="text-[12px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
-                      {orders === 0 ? "Pool open — be first" : `${orders} from ${officeName || "your office"}`}
-                    </span>
-                  </div>
-                </div>
-                {currentPct > 0 && (
-                  <span className="text-[11px] font-extrabold tracking-wide px-2 rounded-full" style={{ background: "var(--emerald)", color: "white", paddingTop: 3, paddingBottom: 3 }}>
-                    &minus;{currentPct}%
-                  </span>
-                )}
-              </div>
-
-              {/* The guarantee — the single most important line in the app */}
-              <p className="text-[14px] leading-[1.55]" style={{ color: "rgba(255,255,255,0.6)" }}>
-                {orders === 0 ? (
-                  <>Order at today&apos;s rate. As more colleagues join, your rate improves — <span className="font-bold text-white">bonus credit earned</span> automatically.</>
-                ) : orders < 15 ? (
-                  <>Your rate is locked. More people order, rates improve — <span className="font-bold text-white">credit added to your wallet</span> automatically.</>
-                ) : (
-                  <><span className="font-bold" style={{ color: "var(--emerald)" }}>Best tier unlocked.</span> Maximum benefits for everyone in your pool.</>
-                )}
-              </p>
-
-              {/* Quick next-tier nudge — inline, tight, only when close */}
-              {nextTierData && moreNeeded > 0 && moreNeeded <= 8 && (
-                <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                  <span className="text-[22px] font-extrabold tabular-nums leading-none" style={{ color: "var(--gold)" }}>{moreNeeded}</span>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[13px] font-bold text-white">
-                      more {moreNeeded === 1 ? "person" : "people"} to unlock {nextTierData.pct}% back
-                    </span>
-                    <span className="text-[12px] ml-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
-                      ~{formatPrice(nextSavings)}/plate back
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* ═══ TIER JOURNEY — light, collapsible detail ═══ */}
-            <div style={{ background: "var(--card)" }}>
-              <button
-                type="button"
-                className="w-full px-4 py-3 flex items-center justify-between cursor-pointer"
-                onClick={() => { const n = !poolCollapsed; setPoolCollapsed(n); localStorage.setItem("chopdrop-pool-collapsed", n ? "1" : "0"); }}
-              >
-                <span className="text-[13px] font-bold" style={{ color: "var(--text-secondary)" }}>How pool pricing works</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                  className={`transition-transform ${poolCollapsed ? "" : "rotate-180"}`}>
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </button>
-
-              <div className={`transition-all overflow-hidden ${poolCollapsed ? "max-h-0" : "max-h-[400px]"}`} style={{ transitionDuration: "300ms" }}>
-                <div className="px-4 pb-4">
-                  {/* Segmented progress — 6px flat, crisp color transitions per design system */}
-                  <div className="flex gap-[3px]">
-                    {tiers.map((_, i) => (
-                      <div key={i} className="flex-1 rounded-full" style={{
-                        height: 6,
-                        background: i <= currentTierIdx ? barColors[i] : "var(--sand)",
-                      }} />
-                    ))}
-                  </div>
-
-                  {/* Tier milestones — dramatic type scale: 10px label vs 15px price */}
-                  <div className="flex gap-[3px] mt-3">
-                    {tiers.map((tier, i) => {
-                      const isActive = i === currentTierIdx;
-                      const isFuture = i > currentTierIdx;
-                      const tierPrice = Math.round(examplePrice * (1 - tier.pct / 100) / 5000) * 5000;
-                      return (
-                        <div key={i} className="flex-1 rounded-[10px] py-2.5 text-center" style={{
-                          background: isActive ? "var(--sand)" : "transparent",
-                          outline: isActive ? "1.5px solid var(--border)" : "none",
-                        }}>
-                          <div className="text-[10px] font-bold" style={{ color: isFuture ? "var(--text-muted)" : "var(--text-secondary)" }}>
-                            {tier.min === 0 ? "1–4" : `${tier.min}+`}
-                          </div>
-                          <div className="text-[15px] font-extrabold tabular-nums mt-0.5" style={{
-                            color: isActive && currentPct > 0 ? "var(--emerald)" : isActive ? "var(--text)" : isFuture ? "var(--text-muted)" : "var(--text-secondary)",
-                          }}>
-                            {formatPrice(tierPrice)}
-                          </div>
-                          <div className="text-[10px] font-bold mt-0.5" style={{
-                            color: isActive && currentPct > 0 ? "var(--emerald)" : isActive ? "var(--text-secondary)" : isFuture ? "var(--text-muted)" : "var(--text-secondary)",
-                          }}>
-                            {tier.pct === 0 ? "Standard" : `${tier.pct}% back`}
-                          </div>
-                          {isActive && <div className="text-[9px] font-bold mt-1" style={{ color: "var(--coral)" }}>Now</div>}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Max tier celebration */}
-                  {currentTierIdx >= 3 && (
-                    <div className="mt-3 p-3 rounded-[14px] flex items-center gap-2" style={{ background: "rgba(13,159,95,0.08)" }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-                      <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>Best price — max credit for everyone</span>
-                    </div>
-                  )}
-
-                  {/* Milestone teaser + link */}
-                  <Link href="/rewards" className="mt-3 flex items-center justify-between p-3 rounded-[14px] cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--sand)" }}>
-                    <div className="flex items-center gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-                      <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Unlock up to 30% back with milestone rewards</span>
-                    </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* ── Credit balance banner — show when user has credits ── */}
+      {/* ── Credit balance — compact inline when user has credits ── */}
       {creditBalance > 0 && (
-        <div className="mx-5 mt-4 p-3.5 rounded-[14px] flex items-center gap-3" style={{ background: "rgba(13,159,95,0.08)", border: "1px solid rgba(13,159,95,0.12)" }}>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
-          </div>
-          <div className="flex-1">
-            <div className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(creditBalance)} credit</div>
-            <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>From pool refunds — auto-applied at checkout</p>
-          </div>
+        <div className="mx-5 mt-4 p-3 rounded-[12px] flex items-center gap-2.5" style={{ background: "rgba(13,159,95,0.08)", border: "1px solid rgba(13,159,95,0.12)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+          <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>{formatPrice(creditBalance)} credit</span>
+          <span className="text-[12px]" style={{ color: "var(--text-secondary)" }}>· auto-applied at checkout</span>
         </div>
       )}
-
 
       {/* ── How it works — first-time ONLY, compact ── */}
       {!bannerDismissed && (
@@ -477,7 +330,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </div>
             ))}
           </div>
-          <button type="button" onClick={dismissBanner} className="w-full h-10 rounded-full text-[14px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>
+          <button type="button" onClick={dismissBanner} className="w-full h-10 rounded-[12px] text-[14px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>
             Show me food
           </button>
         </div>
@@ -562,6 +415,68 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
       {/* ═══════════════════════════════════════════════ */}
       {slot && !slot.expired && !allExpired && (
         <>
+          {/* ── SEARCH RESULTS — shown when user is searching ── */}
+          {searchQuery.trim() ? (() => {
+            const q = searchQuery.toLowerCase().trim();
+            const matchedMeals = slot.items.filter(i =>
+              i.type !== "BUILD_YOUR_PLATE" &&
+              (i.name.toLowerCase().includes(q) || i.restaurantName.toLowerCase().includes(q) || (i.description && i.description.toLowerCase().includes(q)))
+            );
+            return (
+              <section className="mt-4 px-5">
+                <p className="text-[13px] font-semibold mb-3" style={{ color: "var(--text-secondary)" }}>
+                  {matchedMeals.length > 0 ? `${matchedMeals.length} result${matchedMeals.length !== 1 ? "s" : ""} for "${searchQuery.trim()}"` : `No meals found for "${searchQuery.trim()}"`}
+                </p>
+                {matchedMeals.length > 0 ? (
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                    {matchedMeals.map((meal) => {
+                      const cartQty = cart.items.find((i) => i.dailyMenuId === meal.id)?.quantity || 0;
+                      const effectivePrice = getEffectivePrice(meal.id, meal.price);
+                      return (
+                        <div key={meal.id} className="rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: cartQty > 0 ? "2px solid var(--coral)" : "1px solid var(--border)" }} onClick={() => handleAddFixed(meal)}>
+                          <div className="relative h-[130px]" style={{ background: "var(--sand)" }}>
+                            {meal.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={meal.imageUrl} alt={meal.name} className="w-full h-full object-cover" loading="lazy" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
+                              </div>
+                            )}
+                            <div className="absolute bottom-2 right-2" onClick={(e) => e.stopPropagation()}>
+                              {cartQty > 0 ? (
+                                <div className="flex items-center rounded-[10px] h-8" style={{ background: "var(--coral)" }}>
+                                  <button type="button" onClick={() => cart.changeQuantity(meal.id, -1)} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg></button>
+                                  <span className="text-white text-[13px] font-bold min-w-[18px] text-center tabular-nums">{cartQty}</span>
+                                  <button type="button" onClick={() => handleAddFixed(meal)} className="w-8 h-8 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
+                                </div>
+                              ) : (
+                                <button type="button" onClick={() => handleAddFixed(meal)} className="w-9 h-9 rounded-full flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--coral)" }}>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <div className="p-3">
+                            <h3 className="text-[14px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}</h3>
+                            <div className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{meal.restaurantName}</div>
+                            <span className="text-[17px] font-extrabold tabular-nums mt-1.5 block" style={{ color: "var(--text)" }}>{formatPrice(effectivePrice)}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="py-12 text-center">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" className="mx-auto mb-3"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                    <p className="text-[14px] font-semibold" style={{ color: "var(--text-secondary)" }}>Try a different search</p>
+                    <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Search by meal name or restaurant</p>
+                  </div>
+                )}
+              </section>
+            );
+          })() : (<>
+
           {/* ── TODAY'S DEALS — urgency first, before the menu ── */}
           {slot.items.some((i) => i.tag === "DEAL") && (
             <section className="mt-4 pb-2 pt-4 mx-5 rounded-[20px]" style={{ background: "var(--sand)", border: "1px solid var(--border)" }}>
@@ -733,7 +648,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""}</p>
                   </div>
                   {rData.hasBuild && (
-                    <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-full text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
+                    <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-[12px] text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
                       Build Plate
                     </Link>
                   )}
@@ -809,7 +724,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 </div>
                 {/* "See all" link for vendors with 5+ meals */}
                 {rData.items.length > 4 && (
-                  <Link href={`/restaurant/${rId}`} className="mt-3 w-full h-10 rounded-full text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
+                  <Link href={`/restaurant/${rId}`} className="mt-3 w-full h-10 rounded-[12px] text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
                     See all {rData.items.length} meals
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
                   </Link>
@@ -817,6 +732,140 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               </section>
                 ))}
               </>
+            );
+          })()}
+
+          {/* ── THE POOL — shown after food so users see meals first ── */}
+          {userOfficeId && (() => {
+            const tiers = [
+              { min: 0, pct: 0 },
+              { min: 10, pct: 3 },
+              { min: 20, pct: 5 },
+              { min: 30, pct: 8 },
+            ];
+            const orders = poolData.officeOrderCount;
+            const currentTierIdx = orders >= 30 ? 3 : orders >= 20 ? 2 : orders >= 10 ? 1 : 0;
+            const mealPrices = slot.items.filter(i => i.type !== "BUILD_YOUR_PLATE" && i.price > 0).map(i => i.price);
+            const rawAvg = mealPrices.length > 0 ? mealPrices.reduce((a, b) => a + b, 0) / mealPrices.length : 200000;
+            const examplePrice = Math.round(rawAvg / 5000) * 5000;
+            const currentPct = tiers[currentTierIdx].pct;
+            const nextTierData = currentTierIdx < 3 ? tiers[currentTierIdx + 1] : null;
+            const moreNeeded = nextTierData ? nextTierData.min - orders : 0;
+            const nextSavings = nextTierData ? Math.round(examplePrice * (nextTierData.pct - currentPct) / 100) : 0;
+            const barColors = ["var(--text-muted)", "var(--gold)", "var(--coral)", "var(--emerald)"];
+
+            return (
+              <div className="mx-5 mt-8 rounded-[20px] overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+                <div className="px-4 pt-4 pb-3.5" style={{ background: "var(--dark)" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2.5">
+                      {poolData.poolMembers.length > 0 && (
+                        <div className="flex -space-x-1.5">
+                          {poolData.poolMembers.slice(0, 4).map((member, i) => (
+                            <div key={i} className="rounded-full flex items-center justify-center text-[8px] font-bold"
+                              style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: ["#C4572A", "#D4A24E", "#1A7D4B", "#6B6560"][i % 4], zIndex: 4 - i }}>
+                              {member.initial}
+                            </div>
+                          ))}
+                          {orders > poolData.poolMembers.length && (
+                            <div className="rounded-full flex items-center justify-center text-[8px] font-bold text-white/70"
+                              style={{ width: 22, height: 22, border: "1.5px solid var(--dark)", background: "rgba(255,255,255,0.15)", zIndex: 0 }}>
+                              +{orders - poolData.poolMembers.length}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5">
+                        <div className="rounded-full animate-pulse" style={{ width: 5, height: 5, background: orders > 0 ? "var(--emerald)" : "var(--text-muted)" }} />
+                        <span className="text-[12px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
+                          {orders === 0 ? "Pool open — be first" : `${orders} from ${officeName || "your office"}`}
+                        </span>
+                      </div>
+                    </div>
+                    {currentPct > 0 && (
+                      <span className="text-[11px] font-extrabold tracking-wide px-2 rounded-full" style={{ background: "var(--emerald)", color: "white", paddingTop: 3, paddingBottom: 3 }}>
+                        &minus;{currentPct}%
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-[14px] leading-[1.55]" style={{ color: "rgba(255,255,255,0.6)" }}>
+                    {orders === 0 ? (
+                      <>Order at today&apos;s rate. As more colleagues join, your rate improves — <span className="font-bold text-white">bonus credit earned</span> automatically.</>
+                    ) : orders < 15 ? (
+                      <>Your rate is locked. More people order, rates improve — <span className="font-bold text-white">credit added to your wallet</span> automatically.</>
+                    ) : (
+                      <><span className="font-bold" style={{ color: "var(--emerald)" }}>Best tier unlocked.</span> Maximum benefits for everyone in your pool.</>
+                    )}
+                  </p>
+
+                  {nextTierData && moreNeeded > 0 && moreNeeded <= 8 && (
+                    <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                      <span className="text-[22px] font-extrabold tabular-nums leading-none" style={{ color: "var(--gold)" }}>{moreNeeded}</span>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[13px] font-bold text-white">
+                          more {moreNeeded === 1 ? "person" : "people"} to unlock {nextTierData.pct}% back
+                        </span>
+                        <span className="text-[12px] ml-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                          ~{formatPrice(nextSavings)}/plate back
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ background: "var(--card)" }}>
+                  <button
+                    type="button"
+                    className="w-full px-4 py-3 flex items-center justify-between cursor-pointer"
+                    onClick={() => { const n = !poolCollapsed; setPoolCollapsed(n); localStorage.setItem("chopdrop-pool-collapsed", n ? "1" : "0"); }}
+                  >
+                    <span className="text-[13px] font-bold" style={{ color: "var(--text-secondary)" }}>How pool pricing works</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                      className={`transition-transform ${poolCollapsed ? "" : "rotate-180"}`}>
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+
+                  <div className={`transition-all overflow-hidden ${poolCollapsed ? "max-h-0" : "max-h-[400px]"}`} style={{ transitionDuration: "300ms" }}>
+                    <div className="px-4 pb-4">
+                      <div className="flex gap-[3px]">
+                        {tiers.map((_, i) => (
+                          <div key={i} className="flex-1 rounded-full" style={{ height: 6, background: i <= currentTierIdx ? barColors[i] : "var(--sand)" }} />
+                        ))}
+                      </div>
+                      <div className="flex gap-[3px] mt-3">
+                        {tiers.map((tier, i) => {
+                          const isActive = i === currentTierIdx;
+                          const isFuture = i > currentTierIdx;
+                          const tierPrice = Math.round(examplePrice * (1 - tier.pct / 100) / 5000) * 5000;
+                          return (
+                            <div key={i} className="flex-1 rounded-[10px] py-2.5 text-center" style={{ background: isActive ? "var(--sand)" : "transparent", outline: isActive ? "1.5px solid var(--border)" : "none" }}>
+                              <div className="text-[10px] font-bold" style={{ color: isFuture ? "var(--text-muted)" : "var(--text-secondary)" }}>{tier.min === 0 ? "1–4" : `${tier.min}+`}</div>
+                              <div className="text-[15px] font-extrabold tabular-nums mt-0.5" style={{ color: isActive && currentPct > 0 ? "var(--emerald)" : isActive ? "var(--text)" : isFuture ? "var(--text-muted)" : "var(--text-secondary)" }}>{formatPrice(tierPrice)}</div>
+                              <div className="text-[10px] font-bold mt-0.5" style={{ color: isActive && currentPct > 0 ? "var(--emerald)" : isActive ? "var(--text-secondary)" : isFuture ? "var(--text-muted)" : "var(--text-secondary)" }}>{tier.pct === 0 ? "Standard" : `${tier.pct}% back`}</div>
+                              {isActive && <div className="text-[9px] font-bold mt-1" style={{ color: "var(--coral)" }}>Now</div>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {currentTierIdx >= 3 && (
+                        <div className="mt-3 p-3 rounded-[14px] flex items-center gap-2" style={{ background: "rgba(13,159,95,0.08)" }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                          <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>Best price — max credit for everyone</span>
+                        </div>
+                      )}
+                      <Link href="/rewards" className="mt-3 flex items-center justify-between p-3 rounded-[14px] cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--sand)" }}>
+                        <div className="flex items-center gap-2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                          <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Unlock up to 30% back with milestone rewards</span>
+                        </div>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
             );
           })()}
 
@@ -898,7 +947,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(`Hey! We're ${moreForNextTier} people away from unlocking ${nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% back on lunch at ${officeName}. Join us on ChopDrop before the pool closes!\n\n${typeof window !== "undefined" ? window.location.origin : ""}/menu`)}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="mt-3 w-full h-11 rounded-full flex items-center justify-center gap-2 text-[14px] font-bold text-white active:scale-[0.97] transition-transform cursor-pointer"
+                  className="mt-3 w-full h-11 rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white active:scale-[0.97] transition-transform cursor-pointer"
                   style={{ background: "#25d366" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
@@ -911,6 +960,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             </div>
           )}
 
+        </>)}
         </>
       )}
 
@@ -936,7 +986,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>Reminder set for 7:00 AM</span>
             </div>
           ) : (
-            <button type="button" onClick={handleSetReminder} className="w-full h-12 rounded-full text-[14px] font-bold cursor-pointer active:scale-[0.98] transition-transform mb-5" style={{ background: "var(--gold)", color: "white" }}>
+            <button type="button" onClick={handleSetReminder} className="w-full h-12 rounded-[12px] text-[14px] font-bold cursor-pointer active:scale-[0.98] transition-transform mb-5" style={{ background: "var(--gold)", color: "white" }}>
               Remind me when orders open
             </button>
           )}
@@ -1029,7 +1079,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             const openSlot = slots.find((s) => !s.expired);
             if (!openSlot) return null;
             return (
-              <button type="button" onClick={() => setActiveSlot(openSlot.id)} className="h-12 px-8 rounded-full text-[15px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--coral)" }}>
+              <button type="button" onClick={() => setActiveSlot(openSlot.id)} className="h-12 px-8 rounded-[12px] text-[15px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--coral)" }}>
                 Show {getSlotShortName(openSlot.label)} menu
               </button>
             );

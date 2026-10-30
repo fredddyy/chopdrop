@@ -235,7 +235,10 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
               {/* Pack container display */}
               {currentPackContainer && (
                 <div className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid var(--border)" }}>
-                  <span className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>📦 {currentPackContainer.name}</span>
+                  <span className="text-[12px] font-semibold flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                    {currentPackContainer.name}
+                  </span>
                   <span className="text-[12px] font-bold tabular-nums" style={{ color: "var(--text-secondary)" }}>{formatNaira(currentPackContainer.price)}</span>
                 </div>
               )}
