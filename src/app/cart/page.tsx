@@ -493,10 +493,17 @@ export default function CartPage() {
                   style={{ background: isAuthenticated === false ? "var(--dark)" : "var(--coral)" }}>
                   {loading ? "Processing..." : isAuthenticated === false ? "Log in to pay" : "Continue to payment →"}
                 </button>
-                <p className="text-[11px] text-center mt-2 flex items-center justify-center gap-1" style={{ color: "var(--text-muted)" }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-                  Secure checkout · Powered by Paystack
-                </p>
+                <div className="flex items-center justify-center gap-3 mt-2">
+                  <div className="flex items-center gap-1">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Money-back guarantee</span>
+                  </div>
+                  <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
+                  <div className="flex items-center gap-1">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Paystack secured</span>
+                  </div>
+                </div>
               </>
             )}
           </div>

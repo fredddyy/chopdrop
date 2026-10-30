@@ -72,6 +72,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [groupDeals, setGroupDeals] = useState<{ id: string; name: string; imageUrl: string | null; marketPrice: number; poolPrice: number; minBuyers: number; currentBuyers: number; deadline: string }[]>([]);
   const [activeOrder, setActiveOrder] = useState<{ orderCode: string; mealName: string; status: string; restaurantName: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [pastMealNames, setPastMealNames] = useState<Set<string>>(new Set());
+  const [captainOrdering, setCaptainOrdering] = useState(false);
   const cart = useCart();
 
   useEffect(() => {
@@ -105,6 +107,10 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           if (o.success && o.data?.length > 0) {
             const last = o.data[0];
             setLastOrder({ name: last.dailyMenu.meal.name, price: last.totalAmount / last.quantity, imageUrl: last.dailyMenu.meal.imageUrl, restaurantName: last.dailyMenu.meal.restaurant.name, dailyMenuId: last.dailyMenuId });
+            // Build set of past meal names for "You've had this" badges
+            const names = new Set<string>();
+            o.data.forEach((ord: { dailyMenu: { meal: { name: string } } }) => names.add(ord.dailyMenu.meal.name));
+            setPastMealNames(names);
             // Check for active order today (not completed/cancelled)
             const todayStr = new Date().toLocaleDateString("en-CA");
             const todayOrder = o.data.find((ord: { status: string; paymentStatus: string; createdAt: string }) => ord.paymentStatus === "SUCCESS" && ord.status !== "COMPLETED" && ord.status !== "CANCELLED" && new Date(ord.createdAt).toLocaleDateString("en-CA") === todayStr);
@@ -410,6 +416,24 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         return null;
       })()}
 
+      {/* ── Trust signals — guarantee + captain ── */}
+      {slot && !slot.expired && !allExpired && (
+        <div className="mx-5 mt-4 flex items-center gap-3">
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <span className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>Your food or your money back</span>
+          </div>
+          {captainName && poolData.officeOrderCount > 0 && (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: "var(--gold)" }}>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+              </div>
+              <span className="text-[12px] font-semibold" style={{ color: "var(--text-muted)" }}>{captainName.split(" ")[0]} is ordering</span>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ═══════════════════════════════════════════════ */}
       {/*  ACTIVE SLOT — Adaptive layout by meal count     */}
       {/* ═══════════════════════════════════════════════ */}
@@ -644,8 +668,11 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-[16px] font-extrabold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
-                    <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""}</p>
+                    <div className="flex items-center gap-1.5">
+                      <h2 className="text-[16px] font-extrabold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--emerald)" stroke="white" strokeWidth="2" className="shrink-0"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10" fill="var(--emerald)" stroke="var(--emerald)"/><path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </div>
+                    <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""} · ~30 min</p>
                   </div>
                   {rData.hasBuild && (
                     <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-[12px] text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
@@ -662,7 +689,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     const hasPoolDiscount = poolData.meals[meal.id] && poolData.meals[meal.id].savings > 0;
                     const maxOrders = meal.tag === "DEAL" ? 20 : 50;
                     const mealOrders = Math.max(0, maxOrders - meal.remaining);
-                    const isPopular = mealOrders >= 3;
+                    const sellingFast = mealOrders >= Math.floor(maxOrders * 0.4);
+                    const userHadThis = pastMealNames.has(meal.name);
 
                     return (
                       <div key={meal.id} className="rounded-[16px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: cartQty > 0 ? "2px solid var(--coral)" : "1px solid var(--border)" }} onClick={() => handleAddFixed(meal)}>
@@ -694,18 +722,22 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                               </button>
                             )}
                           </div>
-                          {/* Pool member badge — subtle, not screaming discount */}
-                          {hasPoolDiscount && (
+                          {/* Trust badges — priority: selling fast > you've had this > pool */}
+                          {sellingFast ? (
+                            <div className="absolute top-2 left-2 h-5 px-2 rounded-full flex items-center gap-1 text-[9px] font-bold tracking-wide" style={{ background: "var(--coral)", color: "white" }}>
+                              <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                              Selling fast
+                            </div>
+                          ) : userHadThis ? (
+                            <div className="absolute top-2 left-2 h-5 px-2 rounded-full flex items-center gap-1 text-[9px] font-bold" style={{ background: "var(--card)", color: "var(--text-secondary)" }}>
+                              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                              Had before
+                            </div>
+                          ) : hasPoolDiscount ? (
                             <div className="absolute top-2 left-2 h-5 px-2 rounded-full flex items-center text-[9px] font-bold tracking-wide uppercase" style={{ background: "rgba(0,0,0,0.55)", color: "white" }}>
                               Pool
                             </div>
-                          )}
-                          {/* Popularity indicator */}
-                          {isPopular && !hasPoolDiscount && (
-                            <div className="absolute top-2 left-2 h-5 px-2 rounded-full flex items-center gap-1 text-[10px] font-bold" style={{ background: "var(--card)", color: "var(--text-secondary)" }}>
-                              {mealOrders} ordered
-                            </div>
-                          )}
+                          ) : null}
                         </div>
                         {/* Info */}
                         <div className="p-3">
