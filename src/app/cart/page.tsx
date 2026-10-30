@@ -307,7 +307,7 @@ export default function CartPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Express Delivery</span>
-                        <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>~30 min to your address</p>
+                        <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>Under 15 min to your address</p>
                       </div>
                       <span className="text-[15px] font-extrabold shrink-0" style={{ color: "var(--text)" }}>
                         {formatNaira(EXPRESS_FEE)}
