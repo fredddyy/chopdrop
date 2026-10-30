@@ -224,6 +224,19 @@ function ConfirmationContent() {
           </div>
         )}
 
+        {/* What to do next — clear instruction */}
+        {isConfirmed && (
+          <div className="rounded-[16px] p-4 flex items-start gap-3" style={{ background: "var(--sand)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+            <div>
+              <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>What happens next</p>
+              <p className="text-[13px] mt-1 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                Stay at your desk. Your food arrives at {isOffice ? order.office!.collectionPoint : "the pickup point"} by 12:00 PM. Show your code <span className="font-bold" style={{ color: "var(--text)" }}>{order.orderCode}</span> to collect.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* WhatsApp save — send order details to yourself or captain */}
         {isConfirmed && (() => {
           const mealName = order.meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "");

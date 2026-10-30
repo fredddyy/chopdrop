@@ -280,8 +280,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         </Link>
       )}
 
-      {/* ── THE POOL — promise (always visible) + tier journey (collapsible) ── */}
-      {slot && !slot.expired && (() => {
+      {/* ── THE POOL — only show for users with an office (they understand pooling) ── */}
+      {slot && !slot.expired && userOfficeId && (() => {
         const tiers = [
           { min: 0, pct: 0 },
           { min: 10, pct: 3 },
