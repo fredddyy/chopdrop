@@ -73,7 +73,7 @@ export default function CartPage() {
   }, []);
 
   const EXPRESS_FEE = 120000;
-  const deliveryFee = fulfillment === "delivery" ? EXPRESS_FEE : 0;
+  const deliveryFee = fulfillment === "delivery" ? (isFirstOrder ? 0 : EXPRESS_FEE) : 0;
   // Service charge: ₦150 per pack (15000 kobo per pack)
   const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
   const serviceFee = packCount * 15000;
@@ -250,7 +250,7 @@ export default function CartPage() {
               <h2 className="text-[16px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Delivery</h2>
 
               {officeId ? (
-                /* Connected to office — just show confirmation, no radio */
+                /* ── STATE 1: Connected to office — confirmed, no choices needed ── */
                 <div className="p-4 rounded-[14px]" style={{ background: "rgba(13,159,95,0.04)", border: "1px solid rgba(13,159,95,0.15)" }}>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
@@ -265,10 +265,21 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
+              ) : isFirstOrder ? (
+                /* ── STATE 2: First order, no office — just ask for address, free delivery ── */
+                <div className="p-4 rounded-[14px]" style={{ background: "rgba(13,159,95,0.04)", border: "1px solid rgba(13,159,95,0.15)" }}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                    <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Your first delivery is free</span>
+                  </div>
+                  <input type="text" value={deliveryAddress} onChange={(e) => { setDeliveryAddress(e.target.value); setFulfillment("delivery"); }} placeholder="Enter your address — building, street, area" className="w-full px-4 h-12 rounded-[12px] text-[14px] focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
+                  <p className="text-[12px] mt-3" style={{ color: "var(--text-muted)" }}>
+                    Have an office code? <button type="button" onClick={() => setIsFirstOrder(false)} className="font-bold underline cursor-pointer" style={{ color: "var(--text-secondary)" }}>Enter it for free delivery every time</button>
+                  </p>
+                </div>
               ) : (
-                /* Not connected — show office code input + express fallback */
+                /* ── STATE 3: Returning user, no office — office code + express choice ── */
                 <div className="space-y-3">
-                  {/* Office code input */}
                   <div className="p-4 rounded-[14px]" style={{ border: fulfillment === "office" ? "2px solid var(--emerald)" : "1px solid var(--border)", background: fulfillment === "office" ? "rgba(13,159,95,0.04)" : "var(--card)" }}>
                     <button type="button" onClick={() => setFulfillment("office")} className="w-full text-left cursor-pointer">
                       <div className="flex items-center gap-2 mb-3">
@@ -284,22 +295,13 @@ export default function CartPage() {
                           <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="h-11 px-4 rounded-[10px] text-[14px] font-bold text-white disabled:opacity-50 cursor-pointer shrink-0" style={{ background: "var(--dark)" }}>{codeLoading ? "..." : "Join"}</button>
                         </div>
                         {codeError && <p className="text-[12px] mt-1.5" style={{ color: "var(--coral)" }}>{codeError}</p>}
-                        {isFirstOrder && (
-                          <div className="mt-2.5 flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: "var(--emerald)" }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-                            First order — delivery is free!
-                          </div>
-                        )}
-                        {!isFirstOrder && (
-                          <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
-                            No code? <a href="https://wa.me/2349120532827?text=I%20need%20an%20office%20code" target="_blank" rel="noopener noreferrer" className="font-bold underline" style={{ color: "var(--text-secondary)" }}>Get one via WhatsApp</a>
-                          </p>
-                        )}
+                        <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
+                          No code? <a href="https://wa.me/2349120532827?text=I%20need%20an%20office%20code" target="_blank" rel="noopener noreferrer" className="font-bold underline" style={{ color: "var(--text-secondary)" }}>Get one via WhatsApp</a>
+                        </p>
                       </div>
                     )}
                   </div>
 
-                  {/* Express fallback */}
                   <button type="button" onClick={() => setFulfillment("delivery")} className="w-full text-left p-4 rounded-[14px] transition-all cursor-pointer" style={{
                     border: fulfillment === "delivery" ? "2px solid var(--coral)" : "1px solid var(--border)",
                     background: fulfillment === "delivery" ? "rgba(232,96,76,0.04)" : "var(--card)",
