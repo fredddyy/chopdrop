@@ -560,12 +560,20 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                           )}
                         </div>
                         <div className="mt-2.5">
-                          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
-                            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pctClaimed, 5)}%`, background: pctClaimed > 80 ? "var(--coral)" : "var(--gold)" }} />
-                          </div>
-                          <div className="text-[11px] font-semibold mt-1" style={{ color: deal.remaining <= 3 ? "var(--coral)" : "var(--text-muted)" }}>
-                            {deal.remaining <= 0 ? "Sold out" : deal.remaining <= 3 ? `Only ${deal.remaining} left!` : deal.remaining <= 5 ? `${deal.remaining} spots left` : `${maxSpots - claimed} spots open`}
-                          </div>
+                          {deal.remaining <= 0 ? (
+                            <div className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>Sold out</div>
+                          ) : realClaimed === 0 ? (
+                            <div className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>{maxSpots} {maxSpots === 1 ? "spot" : "spots"} available</div>
+                          ) : (
+                            <>
+                              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+                                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(pctClaimed, 8)}%`, background: pctClaimed > 70 ? "var(--coral)" : "var(--gold)" }} />
+                              </div>
+                              <div className="text-[11px] font-semibold mt-1" style={{ color: deal.remaining <= Math.ceil(maxSpots * 0.3) ? "var(--coral)" : "var(--text-muted)" }}>
+                                {deal.remaining === 1 ? "Last spot!" : deal.remaining <= Math.ceil(maxSpots * 0.3) ? `Only ${deal.remaining} left!` : `${realClaimed} claimed · ${deal.remaining} left`}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
