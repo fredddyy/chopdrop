@@ -36,7 +36,7 @@ export async function POST() {
           date: today,
           mealId: entry.mealId,
           timeSlotId: entry.timeSlotId,
-          maxOrders: entry.maxOrders,
+          maxOrders: entry.meal.tag === "DEAL" ? (entry.meal.maxDeals || entry.maxOrders) : entry.maxOrders,
           currentOrders: 0,
         },
       });

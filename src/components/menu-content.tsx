@@ -201,7 +201,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   }
 
   // Compute pool progress
-  const totalOrdered = slot && !slot.expired ? slot.items.reduce((sum, i) => { const maxO = i.tag === "DEAL" ? 20 : 50; return sum + Math.max(0, maxO - i.remaining); }, 0) : 0;
+  const totalOrdered = slot && !slot.expired ? slot.items.reduce((sum, i) => { const maxO = i.tag === "DEAL" ? (i.maxDeals || 20) : 50; return sum + Math.max(0, maxO - i.remaining); }, 0) : 0;
   const poolPct = Math.min(100, (poolData.officeOrderCount / 15) * 100);
   const nextDiscount = poolData.officeOrderCount >= 30 ? 8 : poolData.officeOrderCount >= 20 ? 5 : poolData.officeOrderCount >= 10 ? 3 : 0;
   const nextTierTarget = nextDiscount >= 8 ? 0 : nextDiscount >= 5 ? 30 : nextDiscount >= 3 ? 20 : 10;

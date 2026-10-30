@@ -115,7 +115,7 @@ export default async function MenuPage() {
           tag: dm.meal.tag, type: dm.meal.type,
           restaurantId: dm.meal.restaurant.id, restaurantName: dm.meal.restaurant.name, restaurantAddress: dm.meal.restaurant.address, restaurantImageUrl: dm.meal.restaurant.imageUrl, restaurantBannerUrl: dm.meal.restaurant.bannerUrl, restaurantSortOrder: dm.meal.restaurant.sortOrder,
           startTime: dm.timeSlot.startTime, endTime: dm.timeSlot.endTime,
-          remaining: dm.maxOrders - dm.currentOrders, expired,
+          remaining: (dm.meal.tag === "DEAL" && dm.meal.maxDeals > 0 ? Math.min(dm.maxOrders, dm.meal.maxDeals) : dm.maxOrders) - dm.currentOrders, expired,
           categories: dm.meal.type === "BUILD_YOUR_PLATE"
             ? dm.meal.restaurant.menuCategories.map((cat) => ({
                 id: cat.id, name: cat.name, selectionRule: cat.selectionRule,
