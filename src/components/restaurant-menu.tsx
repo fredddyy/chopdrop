@@ -19,12 +19,7 @@ interface RestaurantMenuProps {
 }
 
 function cleanName(name: string): string {
-  return name
-    .replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")
-    .replace(/\bF\/rice\b/gi, "Fried Rice")
-    .replace(/\bJ\/rice\b/gi, "Jollof Rice")
-    .replace(/\bChick\b/gi, "Chicken")
-    .trim();
+  return name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "").replace(/\bF\/rice\b/gi, "Fried Rice").replace(/\bJ\/rice\b/gi, "Jollof Rice").replace(/\bChick\b/gi, "Chicken").trim();
 }
 
 function generatePackId(): string {
@@ -36,7 +31,6 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
   const foodCats = categories.filter(c => !c.isPackaging);
   const hasPackaging = packagingCats.length > 0;
 
-  // Build sections: combos first, then food categories
   const sections: { id: string; label: string; type: "combos" | "category"; category?: Category }[] = [];
   if (combos.length > 0) sections.push({ id: "combos", label: "Combos", type: "combos" });
   foodCats.forEach(cat => sections.push({ id: cat.id, label: cat.name, type: "category", category: cat }));
@@ -49,13 +43,11 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
   const tabBarRef = useRef<HTMLDivElement>(null);
   const cart = useCart();
 
-  // Current pack data
   const currentPackItems = cart.items.filter(i => i.packId === currentPackId && !i.isPackItem);
   const currentPackContainer = cart.items.find(i => i.packId === currentPackId && i.isPackItem);
   const currentPackTotal = currentPackItems.reduce((s, i) => s + i.price * i.quantity, 0) + (currentPackContainer ? currentPackContainer.price : 0);
   const packIds = [...new Set(cart.items.filter(i => i.packId).map(i => i.packId!))];
 
-  // Auto-highlight tab on scroll
   useEffect(() => {
     function handleScroll() {
       if (userScrolling) return;
@@ -67,7 +59,6 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
       }
       if (current !== activeSection) {
         setActiveSection(current);
-        // Auto-scroll tab into view
         const tabEl = document.getElementById(`tab-${current}`);
         tabEl?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
       }
@@ -77,13 +68,9 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
   }, [activeSection, sections, userScrolling]);
 
   function scrollToSection(sectionId: string) {
-    setActiveSection(sectionId);
-    setUserScrolling(true);
+    setActiveSection(sectionId); setUserScrolling(true);
     const el = sectionRefs.current[sectionId];
-    if (el) {
-      const top = el.offsetTop - 110;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
+    if (el) window.scrollTo({ top: el.offsetTop - 110, behavior: "smooth" });
     setTimeout(() => setUserScrolling(false), 800);
   }
 
@@ -125,19 +112,14 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
   function getQty(cartId: string): number { return cart.items.find(i => i.dailyMenuId === cartId)?.quantity || 0; }
   function getComboQty(id: string): number { return cart.items.find(i => i.dailyMenuId === id)?.quantity || 0; }
 
-  // Unified item row — Chowdeck style: text left, photo right
   function ItemRow({ item, cartId, qty, onAdd, onMinus }: { item: { name: string; description?: string | null; imageUrl?: string | null; price: number }; cartId: string; qty: number; onAdd: () => void; onMinus: () => void }) {
     return (
       <div className={`flex gap-3 ${item.description ? "py-4" : "py-3"}`} style={{ borderBottom: "1px solid var(--border)" }}>
         <div className="flex-1 min-w-0 flex flex-col justify-center">
           <h3 className="text-[15px] font-bold leading-snug" style={{ color: "var(--text)" }}>{cleanName(item.name)}</h3>
-          {item.description && (
-            <p className="text-[12px] mt-1 leading-relaxed" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>
-          )}
-          {/* #6: Price — bolder, larger, anchors the eye */}
+          {item.description && <p className="text-[12px] mt-1 leading-relaxed" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
           <div className="text-[17px] font-extrabold mt-1.5 tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price)}</div>
         </div>
-        {/* #1: Rounded rectangle, not circle — shows more food */}
         <div className="relative shrink-0">
           {item.imageUrl ? (
             <div className="w-[100px] h-[100px] rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
@@ -149,22 +131,15 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
             </div>
           )}
-          {/* #2 & #5: Add button — filled, bold, clean on the corner */}
           <div className="absolute -bottom-3 right-0">
             {qty > 0 ? (
               <div className="flex items-center rounded-[10px] h-9" style={{ background: "var(--coral)" }}>
-                <button type="button" onClick={onMinus} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
-                </button>
+                <button type="button" onClick={onMinus} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg></button>
                 <span className="text-white text-[14px] font-bold min-w-[18px] text-center tabular-nums">{qty}</span>
-                <button type="button" onClick={onAdd} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                </button>
+                <button type="button" onClick={onAdd} className="w-9 h-9 flex items-center justify-center text-white cursor-pointer active:scale-90 transition-transform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
               </div>
             ) : (
-              <button type="button" onClick={onAdd}
-                className="h-9 px-4 rounded-[10px] flex items-center justify-center gap-1.5 text-[13px] font-bold cursor-pointer active:scale-95 transition-transform"
-                style={{ background: "var(--coral)", color: "white" }}>
+              <button type="button" onClick={onAdd} className="h-9 px-4 rounded-[10px] flex items-center justify-center gap-1.5 text-[13px] font-bold cursor-pointer active:scale-95 transition-transform" style={{ background: "var(--coral)", color: "white" }}>
                 Add <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
               </button>
             )}
@@ -204,7 +179,7 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
           )}
         </div>
 
-        {/* Sticky tab bar — auto-highlights on scroll */}
+        {/* Tab bar */}
         <div ref={tabBarRef} className="flex overflow-x-auto hide-scrollbar px-5 gap-2 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
           {sections.map(s => (
             <button key={s.id} id={`tab-${s.id}`} type="button" onClick={() => scrollToSection(s.id)}
@@ -215,6 +190,92 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
           ))}
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════ */}
+      {/* YOUR PACK — the centerpiece, always visible     */}
+      {/* ═══════════════════════════════════════════════ */}
+      {hasPackaging && !allExpired && (
+        <div className="mx-5 mt-4 rounded-[20px] overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
+          {/* Pack header */}
+          <div className="px-4 py-3 flex items-center justify-between" style={{ background: "var(--dark)" }}>
+            <div className="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+              <span className="text-[14px] font-bold text-white">
+                {currentPackItems.length === 0 ? "Build your pack" : `Pack ${packIds.indexOf(currentPackId) + 1}`}
+              </span>
+            </div>
+            {currentPackItems.length > 0 && (
+              <span className="text-[15px] font-extrabold text-white tabular-nums">{formatNaira(currentPackTotal)}</span>
+            )}
+          </div>
+
+          {/* Pack contents — empty or filled */}
+          {currentPackItems.length === 0 ? (
+            <div className="px-4 py-5 text-center">
+              <p className="text-[14px] font-semibold" style={{ color: "var(--text-secondary)" }}>Tap items below to add to your pack</p>
+              <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Pick your food, protein, and a pack size</p>
+            </div>
+          ) : (
+            <div className="px-4 py-2">
+              {currentPackItems.map(item => (
+                <div key={item.dailyMenuId} className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid var(--border)" }}>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-[13px] font-semibold truncate" style={{ color: "var(--text)" }}>{cleanName(item.name)}</span>
+                    {item.quantity > 1 && <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>×{item.quantity}</span>}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
+                    <button type="button" onClick={() => cart.changeQuantity(item.dailyMenuId, -1)} className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* Pack container display */}
+              {currentPackContainer && (
+                <div className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid var(--border)" }}>
+                  <span className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>📦 {currentPackContainer.name}</span>
+                  <span className="text-[12px] font-bold tabular-nums" style={{ color: "var(--text-secondary)" }}>{formatNaira(currentPackContainer.price)}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Pack size selector — always visible when items exist */}
+          {currentPackItems.length > 0 && (
+            <div className="px-4 py-3" style={{ borderTop: currentPackItems.length > 0 ? "none" : "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold shrink-0" style={{ color: currentPackContainer ? "var(--emerald)" : "var(--coral)" }}>
+                  {currentPackContainer ? "✓ Pack:" : "Select pack:"}
+                </span>
+                <div className="flex gap-2 flex-1 overflow-x-auto hide-scrollbar">
+                  {packagingCats.flatMap(cat => cat.items).map(pack => {
+                    const isSelected = currentPackContainer?.dailyMenuId.includes(pack.id);
+                    return (
+                      <button key={pack.id} type="button" onClick={() => selectPackSize(pack)}
+                        className="h-8 px-3 rounded-full text-[12px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
+                        style={{ background: isSelected ? "var(--emerald)" : "var(--sand)", color: isSelected ? "white" : "var(--text-secondary)" }}>
+                        {pack.name} +{formatNaira(pack.price)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* New pack button */}
+          {currentPackContainer && (
+            <button type="button" onClick={startNewPack}
+              className="w-full px-4 py-2.5 text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] transition-transform"
+              style={{ borderTop: "1px solid var(--border)", color: "var(--coral)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+              Start new pack
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Closed banner */}
       {allExpired && (
@@ -233,41 +294,20 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
       <div className="px-5 pt-2 pb-4">
         {sections.map(section => (
           <div key={section.id} ref={el => { sectionRefs.current[section.id] = el; }}>
-            {/* #3: Section header — bold with subtle top border for rhythm */}
             <div className="mt-8 mb-2 pt-4" style={{ borderTop: section === sections[0] ? "none" : "1px solid var(--border)" }}>
               <h2 className="text-[18px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>{section.label}</h2>
             </div>
 
-            {/* Combos section */}
             {section.type === "combos" && combos.map(combo => {
               const qty = getComboQty(combo.dailyMenuId);
               const disabled = combo.expired || combo.remaining <= 0;
-              return (
-                <ItemRow
-                  key={combo.dailyMenuId}
-                  item={{ name: combo.name, description: combo.description, imageUrl: combo.imageUrl, price: combo.price }}
-                  cartId={combo.dailyMenuId}
-                  qty={qty}
-                  onAdd={() => !disabled && addComboToCart(combo)}
-                  onMinus={() => cart.changeQuantity(combo.dailyMenuId, -1)}
-                />
-              );
+              return <ItemRow key={combo.dailyMenuId} item={{ name: combo.name, description: combo.description, imageUrl: combo.imageUrl, price: combo.price }} cartId={combo.dailyMenuId} qty={qty} onAdd={() => !disabled && addComboToCart(combo)} onMinus={() => cart.changeQuantity(combo.dailyMenuId, -1)} />;
             })}
 
-            {/* Category section */}
             {section.type === "category" && section.category && section.category.items.map(item => {
               const cartId = getCartId(item);
               const qty = getQty(cartId);
-              return (
-                <ItemRow
-                  key={item.id}
-                  item={item}
-                  cartId={cartId}
-                  qty={qty}
-                  onAdd={() => addItemToPack(item)}
-                  onMinus={() => cart.changeQuantity(cartId, -1)}
-                />
-              );
+              return <ItemRow key={item.id} item={item} cartId={cartId} qty={qty} onAdd={() => addItemToPack(item)} onMinus={() => cart.changeQuantity(cartId, -1)} />;
             })}
           </div>
         ))}
@@ -278,49 +318,6 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
           </Link>
         )}
       </div>
-
-      {/* ═══════════════════════════════════════════════ */}
-      {/* PACK SUMMARY BAR                                 */}
-      {/* ═══════════════════════════════════════════════ */}
-      {currentPackItems.length > 0 && hasPackaging && (
-        <div className="fixed left-0 right-0 z-40 px-4 md:hidden" style={{ bottom: cart.totalItems > 0 ? 140 : 80 }}>
-          <div className="max-w-[480px] mx-auto rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-                <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Pack {packIds.indexOf(currentPackId) + 1}</span>
-                <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>· {currentPackItems.length} item{currentPackItems.length !== 1 ? "s" : ""}</span>
-              </div>
-              <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(currentPackTotal)}</span>
-            </div>
-            <div className="px-4 py-2.5 flex items-center gap-2">
-              <span className="text-[12px] font-bold shrink-0" style={{ color: currentPackContainer ? "var(--emerald)" : "var(--coral)" }}>
-                {currentPackContainer ? "✓" : ""} Pack:
-              </span>
-              <div className="flex gap-2 flex-1 overflow-x-auto hide-scrollbar">
-                {packagingCats.flatMap(cat => cat.items).map(pack => {
-                  const isSelected = currentPackContainer?.dailyMenuId.includes(pack.id);
-                  return (
-                    <button key={pack.id} type="button" onClick={() => selectPackSize(pack)}
-                      className="h-8 px-3 rounded-full text-[12px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
-                      style={{ background: isSelected ? "var(--emerald)" : "var(--sand)", color: isSelected ? "white" : "var(--text-secondary)" }}>
-                      {pack.name} +{formatNaira(pack.price)}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            {currentPackContainer && (
-              <button type="button" onClick={startNewPack}
-                className="w-full px-4 py-2.5 text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] transition-transform"
-                style={{ borderTop: "1px solid var(--border)", color: "var(--coral)" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                Start new pack
-              </button>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Floating cart bar */}
       {cart.totalItems > 0 && (
