@@ -35,14 +35,19 @@ export function CountdownTimer({ cutoffTime, compact = false }: CountdownTimerPr
       return <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>Closed</span>;
     }
     const totalMinutes = timeLeft.hours * 60 + timeLeft.minutes;
+    // Only show timer when it creates urgency (under 2 hours)
+    if (totalMinutes > 120) return null;
     const isUrgent = totalMinutes < 30;
     const timeStr = timeLeft.hours > 0
       ? `${timeLeft.hours}h ${timeLeft.minutes}m left`
       : `${timeLeft.minutes} min left`;
     return (
-      <span className={`text-[12px] font-bold ${isUrgent ? "animate-pulse" : ""}`} style={{ color: isUrgent ? "var(--coral)" : "rgba(255,255,255,0.5)" }}>
-        {timeStr}
-      </span>
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[8px]" style={{ background: isUrgent ? "rgba(232,96,76,0.2)" : "rgba(255,255,255,0.1)" }}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ color: isUrgent ? "var(--coral)" : "rgba(255,255,255,0.7)" }}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+        <span className={`text-[12px] font-bold ${isUrgent ? "animate-pulse" : ""}`} style={{ color: isUrgent ? "var(--coral)" : "rgba(255,255,255,0.7)" }}>
+          {timeStr}
+        </span>
+      </div>
     );
   }
 
