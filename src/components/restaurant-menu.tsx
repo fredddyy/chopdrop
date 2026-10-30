@@ -189,96 +189,93 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
             </button>
           ))}
         </div>
-      </div>
 
-      {/* ═══════════════════════════════════════════════ */}
-      {/* YOUR PACK — the centerpiece, always visible     */}
-      {/* ═══════════════════════════════════════════════ */}
-      {hasPackaging && !allExpired && (
-        <div className="mx-5 mt-4 rounded-[20px] overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
-          {/* Pack header */}
-          <div className="px-4 py-3 flex items-center justify-between" style={{ background: "var(--dark)" }}>
-            <div className="flex items-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-              <span className="text-[14px] font-bold text-white">
-                {currentPackItems.length === 0 ? "Build your pack" : `Pack ${packIds.indexOf(currentPackId) + 1}`}
-              </span>
-            </div>
-            {currentPackItems.length > 0 && (
-              <span className="text-[15px] font-extrabold text-white tabular-nums">{formatNaira(currentPackTotal)}</span>
-            )}
-          </div>
-
-          {/* Pack contents — empty or filled */}
-          {currentPackItems.length === 0 ? (
-            <div className="px-4 py-5 text-center">
-              <p className="text-[14px] font-semibold" style={{ color: "var(--text-secondary)" }}>Tap items below to add to your pack</p>
-              <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Pick your food, protein, and a pack size</p>
-            </div>
-          ) : (
-            <div className="px-4 py-2">
-              {currentPackItems.map(item => (
-                <div key={item.dailyMenuId} className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid var(--border)" }}>
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-[13px] font-semibold truncate" style={{ color: "var(--text)" }}>{cleanName(item.name)}</span>
-                    {item.quantity > 1 && <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>×{item.quantity}</span>}
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
-                    <button type="button" onClick={() => cart.changeQuantity(item.dailyMenuId, -1)} className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-              {/* Pack container display */}
-              {currentPackContainer && (
-                <div className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid var(--border)" }}>
-                  <span className="text-[12px] font-semibold flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-                    {currentPackContainer.name}
+        {/* ═══════════════════════════════════════════════ */}
+        {/* YOUR PACK — sticky inside header, always visible */}
+        {/* ═══════════════════════════════════════════════ */}
+        {hasPackaging && !allExpired && (
+          <div className="px-5 pt-3 pb-2" style={{ background: "var(--bg)" }}>
+            <div className="rounded-[16px] overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
+              {/* Pack header — always compact */}
+              <div className="px-4 py-2.5 flex items-center justify-between" style={{ background: "var(--dark)" }}>
+                <div className="flex items-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                  <span className="text-[13px] font-bold text-white">
+                    {currentPackItems.length === 0 ? "Build your pack" : `Pack ${packIds.indexOf(currentPackId) + 1}`}
                   </span>
-                  <span className="text-[12px] font-bold tabular-nums" style={{ color: "var(--text-secondary)" }}>{formatNaira(currentPackContainer.price)}</span>
+                  {currentPackItems.length > 0 && (
+                    <span className="text-[11px] text-white/50 ml-1">{currentPackItems.length} item{currentPackItems.length !== 1 ? "s" : ""}</span>
+                  )}
+                </div>
+                {currentPackItems.length > 0 ? (
+                  <span className="text-[14px] font-extrabold text-white tabular-nums">{formatNaira(currentPackTotal)}</span>
+                ) : (
+                  <span className="text-[11px] text-white/40">Tap items below</span>
+                )}
+              </div>
+
+              {/* Pack contents — scrollable when many items */}
+              {currentPackItems.length > 0 && (
+                <div className="px-4 py-1 max-h-[120px] overflow-y-auto" style={{ scrollbarWidth: "thin" }}>
+                  {currentPackItems.map(item => (
+                    <div key={item.dailyMenuId} className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid var(--border)" }}>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <span className="text-[12px] font-semibold truncate" style={{ color: "var(--text)" }}>{cleanName(item.name)}</span>
+                        {item.quantity > 1 && <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>x{item.quantity}</span>}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[12px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
+                        <button type="button" onClick={() => cart.changeQuantity(item.dailyMenuId, -1)} className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
+                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {currentPackContainer && (
+                    <div className="flex items-center justify-between py-1.5">
+                      <span className="text-[11px] font-semibold flex items-center gap-1" style={{ color: "var(--text-secondary)" }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                        {currentPackContainer.name}
+                      </span>
+                      <span className="text-[11px] font-bold tabular-nums" style={{ color: "var(--text-secondary)" }}>{formatNaira(currentPackContainer.price)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Pack size selector + new pack — compact row */}
+              {currentPackItems.length > 0 && (
+                <div className="px-4 py-2 flex items-center gap-2" style={{ borderTop: "1px solid var(--border)" }}>
+                  <span className="text-[10px] font-bold shrink-0" style={{ color: currentPackContainer ? "var(--emerald)" : "var(--coral)" }}>
+                    {currentPackContainer ? "✓" : "Pack:"}
+                  </span>
+                  <div className="flex gap-1.5 flex-1 overflow-x-auto hide-scrollbar">
+                    {packagingCats.flatMap(cat => cat.items).map(pack => {
+                      const isSelected = currentPackContainer?.dailyMenuId.includes(pack.id);
+                      return (
+                        <button key={pack.id} type="button" onClick={() => selectPackSize(pack)}
+                          className="h-7 px-2.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
+                          style={{ background: isSelected ? "var(--emerald)" : "var(--sand)", color: isSelected ? "white" : "var(--text-secondary)" }}>
+                          {pack.name} +{formatNaira(pack.price)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {currentPackContainer && (
+                    <button type="button" onClick={startNewPack}
+                      className="shrink-0 text-[11px] font-bold px-2.5 h-7 rounded-full flex items-center gap-1 cursor-pointer active:scale-[0.95] transition-transform"
+                      style={{ background: "var(--coral)", color: "white" }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                      New
+                    </button>
+                  )}
                 </div>
               )}
             </div>
-          )}
-
-          {/* Pack size selector — always visible when items exist */}
-          {currentPackItems.length > 0 && (
-            <div className="px-4 py-3" style={{ borderTop: currentPackItems.length > 0 ? "none" : "1px solid var(--border)" }}>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold shrink-0" style={{ color: currentPackContainer ? "var(--emerald)" : "var(--coral)" }}>
-                  {currentPackContainer ? "✓ Pack:" : "Select pack:"}
-                </span>
-                <div className="flex gap-2 flex-1 overflow-x-auto hide-scrollbar">
-                  {packagingCats.flatMap(cat => cat.items).map(pack => {
-                    const isSelected = currentPackContainer?.dailyMenuId.includes(pack.id);
-                    return (
-                      <button key={pack.id} type="button" onClick={() => selectPackSize(pack)}
-                        className="h-8 px-3 rounded-full text-[12px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
-                        style={{ background: isSelected ? "var(--emerald)" : "var(--sand)", color: isSelected ? "white" : "var(--text-secondary)" }}>
-                        {pack.name} +{formatNaira(pack.price)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* New pack button */}
-          {currentPackContainer && (
-            <button type="button" onClick={startNewPack}
-              className="w-full px-4 py-2.5 text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98] transition-transform"
-              style={{ borderTop: "1px solid var(--border)", color: "var(--coral)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-              Start new pack
-            </button>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       {/* Closed banner */}
       {allExpired && (
