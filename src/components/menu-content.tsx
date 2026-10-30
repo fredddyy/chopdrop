@@ -73,7 +73,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   const [activeOrder, setActiveOrder] = useState<{ orderCode: string; mealName: string; status: string; restaurantName: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [pastMealNames, setPastMealNames] = useState<Set<string>>(new Set());
-  const [captainOrdering, setCaptainOrdering] = useState(false);
+  const [restaurantSignals, setRestaurantSignals] = useState<Record<string, { lastDeliveredMinAgo: number | null; avgRating: number | null; ratingCount: number; officeOrderCount: number }>>({});
   const cart = useCart();
 
   useEffect(() => {
@@ -141,7 +141,14 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
   useEffect(() => {
     if (!userOfficeId || !activeSlot) return;
     fetch(`/api/pool-price?officeId=${userOfficeId}&timeSlotId=${activeSlot}`).then((r) => r.json()).then((d) => { if (d.success && d.data) setPoolData(d.data); }).catch(() => {});
+    fetch(`/api/restaurants/signals?officeId=${userOfficeId}`).then((r) => r.json()).then((d) => { if (d.success && d.data) setRestaurantSignals(d.data); }).catch(() => {});
   }, [userOfficeId, activeSlot]);
+
+  // Also fetch signals for non-office users
+  useEffect(() => {
+    if (userOfficeId) return; // already fetched above
+    fetch("/api/restaurants/signals").then((r) => r.json()).then((d) => { if (d.success && d.data) setRestaurantSignals(d.data); }).catch(() => {});
+  }, [userOfficeId]);
 
   // Poll active order status every 30s
   useEffect(() => {
@@ -655,29 +662,62 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                 )}
 
                 {/* Full vendor sections — adaptive by meal count */}
-                {fullVendors.map(([rId, rData]) => (
+                {fullVendors.map(([rId, rData]) => {
+              const sig = restaurantSignals[rId];
+              return (
               <section key={rId} className="mt-8 px-5">
                 {/* Vendor header */}
-                <div className="flex items-center gap-3 mb-3 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
-                  <div className="w-11 h-11 rounded-[12px] overflow-hidden shrink-0 border-2 border-white">
-                    {rData.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[13px] font-bold" style={{ background: "var(--card)", color: "var(--text-muted)" }}>{rData.name.charAt(0)}</div>
+                <div className="mb-3 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-[12px] overflow-hidden shrink-0 border-2 border-white">
+                      {rData.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={rData.imageUrl} alt={rData.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[13px] font-bold" style={{ background: "var(--card)", color: "var(--text-muted)" }}>{rData.name.charAt(0)}</div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h2 className="text-[16px] font-extrabold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--emerald)" stroke="white" strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="10" fill="var(--emerald)" stroke="var(--emerald)"/><path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                      <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""} · ~30 min</p>
+                    </div>
+                    {rData.hasBuild && (
+                      <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-[12px] text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
+                        Build Plate
+                      </Link>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <h2 className="text-[16px] font-extrabold truncate" style={{ color: "var(--text)" }}>{rData.name}</h2>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--emerald)" stroke="white" strokeWidth="2" className="shrink-0"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10" fill="var(--emerald)" stroke="var(--emerald)"/><path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+
+                  {/* Trust signals row */}
+                  {sig && (sig.avgRating || sig.lastDeliveredMinAgo !== null || sig.officeOrderCount > 0) && (
+                    <div className="flex items-center gap-3 mt-2.5 pt-2.5 flex-wrap" style={{ borderTop: "1px solid var(--border)" }}>
+                      {sig.avgRating && sig.ratingCount >= 3 && (
+                        <div className="flex items-center gap-1">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                          <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{sig.avgRating}</span>
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>({sig.ratingCount})</span>
+                        </div>
+                      )}
+                      {sig.lastDeliveredMinAgo !== null && sig.lastDeliveredMinAgo < 180 && (
+                        <div className="flex items-center gap-1">
+                          <div className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--emerald)" }} />
+                          <span className="text-[11px] font-semibold" style={{ color: "var(--emerald)" }}>
+                            Delivered {sig.lastDeliveredMinAgo < 60 ? `${sig.lastDeliveredMinAgo} min ago` : `${Math.round(sig.lastDeliveredMinAgo / 60)}h ago`}
+                          </span>
+                        </div>
+                      )}
+                      {sig.officeOrderCount > 0 && (
+                        <div className="flex items-center gap-1">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                          <span className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+                            {sig.officeOrderCount} from your office
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""} · ~30 min</p>
-                  </div>
-                  {rData.hasBuild && (
-                    <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-[12px] text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
-                      Build Plate
-                    </Link>
                   )}
                 </div>
 
@@ -762,7 +802,8 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   </Link>
                 )}
               </section>
-                ))}
+              );
+                })}
               </>
             );
           })()}
