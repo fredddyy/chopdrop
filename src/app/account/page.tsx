@@ -85,17 +85,20 @@ export default function AccountPage() {
     setOfficeCodeLoading(true); setOfficeCodeError("");
     try {
       const res = await fetch("/api/auth/connect-office", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: officeCodeInput.trim() }) });
-      if (res.status === 401) {
-        const lookupRes = await fetch(`/api/offices/lookup?code=${encodeURIComponent(officeCodeInput.trim().toUpperCase())}`);
-        const lookupData = await lookupRes.json();
-        if (lookupData.success) { save({ officeId: lookupData.data.id, officeName: lookupData.data.name, officeCode: lookupData.data.code, collectionPoint: lookupData.data.collectionPoint }); setOfficeCodeInput(""); setEditingOffice(false); }
-        else { setOfficeCodeError(lookupData.error || "Office not found"); }
-        setOfficeCodeLoading(false); return;
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) { save({ officeId: data.data.id, officeName: data.data.name, officeCode: data.data.code, collectionPoint: data.data.collectionPoint }); setOfficeCodeInput(""); setEditingOffice(false); setOfficeCodeLoading(false); return; }
       }
-      const data = await res.json();
-      if (data.success) { save({ officeId: data.data.id, officeName: data.data.name, officeCode: data.data.code, collectionPoint: data.data.collectionPoint }); setOfficeCodeInput(""); setEditingOffice(false); }
-      else { setOfficeCodeError(data.error || "Office not found"); }
-    } catch { setOfficeCodeError("Connection error"); }
+      // If connect-office failed (401, 500, etc.), fall back to lookup
+      const lookupRes = await fetch(`/api/offices/lookup?code=${encodeURIComponent(officeCodeInput.trim().toUpperCase())}`);
+      const lookupData = await lookupRes.json();
+      if (lookupData.success) {
+        save({ officeId: lookupData.data.id, officeName: lookupData.data.name, officeCode: lookupData.data.code, collectionPoint: lookupData.data.collectionPoint });
+        setOfficeCodeInput(""); setEditingOffice(false);
+      } else {
+        setOfficeCodeError(lookupData.error || "Office not found. Check your code.");
+      }
+    } catch { setOfficeCodeError("Network error — check your connection and try again"); }
     setOfficeCodeLoading(false);
   }
 

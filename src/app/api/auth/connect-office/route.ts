@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
     data: { officeId: office.id },
   });
 
-  // Re-sign token with updated officeId
-  const newToken = signUserToken({ ...payload, officeId: office.id });
+  // Re-sign token with updated officeId — extract only the fields we need
+  const newToken = signUserToken({ id: payload.id, email: payload.email, phone: payload.phone, firstName: payload.firstName, officeId: office.id });
 
   const response = NextResponse.json({
     success: true,
