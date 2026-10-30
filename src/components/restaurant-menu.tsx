@@ -283,7 +283,7 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
       {/* PACK SUMMARY BAR                                 */}
       {/* ═══════════════════════════════════════════════ */}
       {currentPackItems.length > 0 && hasPackaging && (
-        <div className="fixed bottom-28 left-0 right-0 z-40 px-4 md:hidden">
+        <div className="fixed left-0 right-0 z-40 px-4 md:hidden" style={{ bottom: cart.totalItems > 0 ? 140 : 80 }}>
           <div className="max-w-[480px] mx-auto rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
               <div className="flex items-center gap-2">
