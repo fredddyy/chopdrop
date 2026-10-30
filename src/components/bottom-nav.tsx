@@ -18,7 +18,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl z-50 md:hidden" style={{ borderTop: "1px solid var(--border)" }}>
+    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl z-50 md:hidden" style={{ background: "rgba(250,247,242,0.95)", borderTop: "1px solid var(--border)" }}>
       <div className="max-w-lg mx-auto grid grid-cols-4 py-2 px-4">
         {links.map((link) => {
           const active = pathname === link.href || pathname.startsWith(link.href + "/");
