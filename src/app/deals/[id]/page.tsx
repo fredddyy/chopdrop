@@ -93,7 +93,7 @@ export default function DealDetailPage() {
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
           </div>
         )}
-        <div className="absolute top-0 left-0 right-0 h-20" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)" }} />
+        <div className="absolute top-0 left-0 right-0 h-20" style={{ background: "rgba(0,0,0,0.35)" }} />
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
           <Link href="/deals" className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center cursor-pointer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>

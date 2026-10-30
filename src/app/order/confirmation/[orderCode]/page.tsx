@@ -359,7 +359,7 @@ function ConfirmationContent() {
         </div>
 
         {/* Rating — only when order is delivered */}
-        {isConfirmed && (order.status === "COMPLETED" || order.status === "READY") && !ratingSubmitted && (
+        {isConfirmed && order.status === "COMPLETED" && !ratingSubmitted && (
           <div className="rounded-[20px] p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             {ratingScore === 0 ? (
               <>

@@ -140,7 +140,7 @@ export default function CartPage() {
           </div>
           <h2 className="text-[18px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Your plate is empty</h2>
           <p className="text-[14px] mb-6" style={{ color: "var(--text-muted)" }}>Browse meals and add something tasty</p>
-          <Link href="/menu" className="h-11 px-6 rounded-full text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse meals</Link>
+          <Link href="/menu" className="h-11 px-6 rounded-[12px] text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse meals</Link>
         </div>
       ) : (
         <div className="px-5 space-y-4">
@@ -237,7 +237,7 @@ export default function CartPage() {
               </div>
               <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Log in to checkout</h2>
               <p className="text-[14px] mb-5" style={{ color: "var(--text-secondary)" }}>Verify your phone to complete your order</p>
-              <a href="/auth?returnTo=/cart" className="w-full h-12 rounded-full text-[15px] font-bold text-white flex items-center justify-center" style={{ background: "var(--coral)" }}>
+              <a href="/auth?returnTo=/cart" className="w-full h-12 rounded-[12px] text-[15px] font-bold text-white flex items-center justify-center" style={{ background: "var(--coral)" }}>
                 Log in with phone number
               </a>
             </section>
@@ -245,7 +245,7 @@ export default function CartPage() {
 
           {/* Delivery */}
           {isAuthenticated && (
-            <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <section data-delivery-section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <h2 className="text-[16px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Delivery</h2>
 
               {officeId ? (
@@ -458,7 +458,7 @@ export default function CartPage() {
 
       {/* Sticky bottom CTA */}
       {cart.items.length > 0 && (
-        <div className="fixed bottom-[52px] left-0 right-0 z-40 bg-white/95 backdrop-blur-lg px-5 py-4 md:hidden" style={{ borderTop: "1px solid var(--border)" }}>
+        <div className="fixed bottom-[52px] left-0 right-0 z-40 backdrop-blur-lg px-5 py-4 md:hidden" style={{ background: "rgba(250,247,242,0.95)", borderTop: "1px solid var(--border)" }}>
           <div className="max-w-[480px] mx-auto">
             {orderingClosed ? (
               <div className="text-center">
@@ -467,7 +467,7 @@ export default function CartPage() {
                   <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Pre-order saved!</span>
                 </div>
                 <p className="text-[13px] mb-3" style={{ color: "var(--text-muted)" }}>Ready when orders open at 7:00 AM</p>
-                <Link href="/menu" className="w-full h-12 rounded-full text-[14px] font-bold flex items-center justify-center" style={{ background: "var(--sand)", color: "var(--text)" }}>
+                <Link href="/menu" className="w-full h-12 rounded-[12px] text-[14px] font-bold flex items-center justify-center" style={{ background: "var(--sand)", color: "var(--text)" }}>
                   Back to menu
                 </Link>
               </div>
@@ -479,11 +479,19 @@ export default function CartPage() {
                   <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
                 </div>
                 <button type="button"
-                  onClick={() => { if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; } handlePay(); }}
-                  disabled={loading || (fulfillment === "office" && !officeId && !isFirstOrder)}
-                  className="w-full h-14 rounded-full text-[16px] font-bold text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; }
+                    if (fulfillment === "office" && !officeId && !isFirstOrder) {
+                      setError("Choose a delivery method — enter your office code for free delivery, or switch to Express");
+                      document.querySelector('[data-delivery-section]')?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      return;
+                    }
+                    handlePay();
+                  }}
+                  disabled={loading}
+                  className="w-full h-14 rounded-[12px] text-[16px] font-bold text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ background: isAuthenticated === false ? "var(--dark)" : "var(--coral)" }}>
-                  {loading ? "Processing..." : isAuthenticated === false ? "Log in to pay" : fulfillment === "office" && !officeId && !isFirstOrder ? "Enter office code" : "Continue to payment →"}
+                  {loading ? "Processing..." : isAuthenticated === false ? "Log in to pay" : "Continue to payment →"}
                 </button>
                 <p className="text-[11px] text-center mt-2 flex items-center justify-center gap-1" style={{ color: "var(--text-muted)" }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
