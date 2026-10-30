@@ -218,19 +218,11 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         <div className="px-5 py-3 lg:max-w-[1120px] lg:mx-auto">
           {/* Row 1: Office name + timer + cart */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" className="shrink-0 opacity-40">
-                  <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /><path d="M10 6h4" /><path d="M10 10h4" /><path d="M10 14h4" /><path d="M10 18h4" />
-                </svg>
-                <h1 className="text-[15px] font-bold text-white truncate">{officeName || "ChopDrop"}</h1>
-              </div>
-              {slot && !slot.expired && totalOrdered > 0 && (
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--emerald)" }} />
-                  <span className="text-[12px] font-medium text-white/50">{totalOrdered} ordering</span>
-                </div>
-              )}
+            <div className="flex items-center gap-2 min-w-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" className="shrink-0 opacity-40">
+                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+              </svg>
+              <h1 className="text-[15px] font-bold text-white truncate">{officeName || "ChopDrop"}</h1>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               {slot && !slot.expired && <CountdownTimer cutoffTime={slot.cutoffTime} compact />}

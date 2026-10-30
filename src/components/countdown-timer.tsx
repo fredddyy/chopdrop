@@ -30,34 +30,19 @@ export function CountdownTimer({ cutoffTime, compact = false }: CountdownTimerPr
     return () => clearInterval(interval);
   }, [cutoffTime]);
 
-  const pad = (n: number) => String(n).padStart(2, "0");
-
   if (compact) {
     if (timeLeft.expired) {
       return <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>Closed</span>;
     }
     const totalMinutes = timeLeft.hours * 60 + timeLeft.minutes;
     const isUrgent = totalMinutes < 30;
-    const digitBg = isUrgent ? "var(--coral)" : "var(--dark)";
+    const timeStr = timeLeft.hours > 0
+      ? `${timeLeft.hours}h ${timeLeft.minutes}m left`
+      : `${timeLeft.minutes} min left`;
     return (
-      <div className="flex flex-col items-end gap-0.5">
-        <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: isUrgent ? "var(--coral)" : "rgba(255,255,255,0.35)" }}>
-          {isUrgent ? "Closing soon" : "Pool closes in"}
-        </span>
-        <div className="flex items-center gap-[3px]">
-          {pad(timeLeft.hours).split("").map((d, i) => (
-            <span key={`h${i}`} className={`w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white ${isUrgent ? "animate-pulse" : ""}`} style={{ background: digitBg }}>{d}</span>
-          ))}
-          <span className="text-[12px] font-bold mx-[1px]" style={{ color: "var(--text-muted)" }}>:</span>
-          {pad(timeLeft.minutes).split("").map((d, i) => (
-            <span key={`m${i}`} className={`w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white ${isUrgent ? "animate-pulse" : ""}`} style={{ background: digitBg }}>{d}</span>
-          ))}
-          <span className="text-[12px] font-bold mx-[1px]" style={{ color: "var(--text-muted)" }}>:</span>
-          {pad(timeLeft.seconds).split("").map((d, i) => (
-            <span key={`s${i}`} className="w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white" style={{ background: isUrgent ? "var(--coral)" : "var(--coral)" }}>{d}</span>
-          ))}
-        </div>
-      </div>
+      <span className={`text-[12px] font-bold ${isUrgent ? "animate-pulse" : ""}`} style={{ color: isUrgent ? "var(--coral)" : "rgba(255,255,255,0.5)" }}>
+        {timeStr}
+      </span>
     );
   }
 
@@ -70,22 +55,19 @@ export function CountdownTimer({ cutoffTime, compact = false }: CountdownTimerPr
     );
   }
 
+  // Full mode — still conversational
+  const totalMinutes = timeLeft.hours * 60 + timeLeft.minutes;
+  const isUrgent = totalMinutes < 30;
+  const timeStr = timeLeft.hours > 0
+    ? `${timeLeft.hours}h ${timeLeft.minutes}m left`
+    : `${timeLeft.minutes} min left`;
+
   return (
-    <div className="inline-flex items-center gap-2 rounded-full px-3.5 py-2" style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.1)" }}>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--emerald)" }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-      <div className="flex items-center gap-[3px]">
-        {pad(timeLeft.hours).split("").map((d, i) => (
-          <span key={`h${i}`} className="w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white" style={{ background: "rgba(255,255,255,0.15)" }}>{d}</span>
-        ))}
-        <span className="text-white/40 text-[12px] font-bold mx-[1px]">:</span>
-        {pad(timeLeft.minutes).split("").map((d, i) => (
-          <span key={`m${i}`} className="w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white" style={{ background: "rgba(255,255,255,0.15)" }}>{d}</span>
-        ))}
-        <span className="text-white/40 text-[12px] font-bold mx-[1px]">:</span>
-        {pad(timeLeft.seconds).split("").map((d, i) => (
-          <span key={`s${i}`} className="w-[22px] h-[26px] rounded-[6px] flex items-center justify-center text-[13px] font-mono font-bold text-white" style={{ background: "rgba(255,255,255,0.15)" }}>{d}</span>
-        ))}
-      </div>
+    <div className="inline-flex items-center gap-2 rounded-full px-3.5 py-2" style={{ background: isUrgent ? "rgba(232,96,76,0.15)" : "rgba(255,255,255,0.1)", border: `1px solid ${isUrgent ? "rgba(232,96,76,0.2)" : "rgba(255,255,255,0.1)"}` }}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: isUrgent ? "var(--coral)" : "var(--emerald)" }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+      <span className={`text-[12px] font-bold ${isUrgent ? "animate-pulse" : ""}`} style={{ color: isUrgent ? "var(--coral)" : "white" }}>
+        {timeStr}
+      </span>
     </div>
   );
 }
