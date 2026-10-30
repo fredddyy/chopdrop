@@ -225,7 +225,21 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               <h1 className="text-[15px] font-bold text-white truncate">{officeName || "ChopDrop"}</h1>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              {slot && !slot.expired && <CountdownTimer cutoffTime={slot.cutoffTime} compact />}
+              {slot && (slot.expired ? (
+                <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>Closed</span>
+              ) : (() => {
+                const [ch, cm] = slot.cutoffTime.split(":").map(Number);
+                const cutoff = new Date(); cutoff.setHours(ch, cm, 0, 0);
+                const minLeft = Math.max(0, Math.floor((cutoff.getTime() - Date.now()) / 60000));
+                return minLeft <= 120 ? (
+                  <CountdownTimer cutoffTime={slot.cutoffTime} compact />
+                ) : (
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--emerald)" }} />
+                    <span className="text-[12px] font-medium text-white/50">Ordering open</span>
+                  </div>
+                );
+              })())}
               <Link href="/cart" className="relative w-9 h-9 rounded-full bg-white/10 flex items-center justify-center lg:hidden">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
                 {cart.totalItems > 0 && <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>{cart.totalItems}</span>}
