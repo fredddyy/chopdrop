@@ -88,7 +88,7 @@ export function CartSidebar() {
             <span className="font-semibold text-[#1a1a1a]">{formatNaira(cart.subtotal)}</span>
           </div>
           <div className="flex justify-between text-[12px] mb-1.5">
-            <span className="text-[#6b7280]">Service charge</span>
+            <span className="text-[#6b7280]">Order handling</span>
             <span className="font-semibold text-[#1a1a1a]">{formatNaira(serviceFee)}</span>
           </div>
           <div className="flex justify-between text-[12px] mb-1.5">

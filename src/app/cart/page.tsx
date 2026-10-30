@@ -363,7 +363,7 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-1.5">
-                  <span style={{ color: "var(--text-secondary)" }}>Service charge</span>
+                  <span style={{ color: "var(--text-secondary)" }}>Order handling</span>
                   <span className="text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>₦150 × {packCount} {packCount === 1 ? "pack" : "packs"}</span>
                 </div>
                 <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
