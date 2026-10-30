@@ -709,8 +709,9 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                       <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{rData.items.length} meals{rData.hasBuild ? " · custom plates" : ""} · ~30 min</p>
                     </div>
                     {rData.hasBuild && (
-                      <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-[12px] text-[13px] font-bold flex items-center transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
-                        Build Plate
+                      <Link href={`/restaurant/${rId}`} className="h-9 px-5 rounded-[12px] text-[13px] font-bold flex items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.97]" style={{ background: "var(--coral)", color: "white" }}>
+                        Full Menu
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
                       </Link>
                     )}
                   </div>
@@ -818,13 +819,18 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                     );
                   })}
                 </div>
-                {/* "See all" link for vendors with 5+ meals */}
-                {rData.items.length > 4 && (
+                {/* "See full menu" for build-a-plate vendors or "See all" for 5+ meals */}
+                {rData.hasBuild ? (
+                  <Link href={`/restaurant/${rId}`} className="mt-3 w-full h-10 rounded-[12px] text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
+                    See full menu — rice, protein, sides & more
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                  </Link>
+                ) : rData.items.length > 4 ? (
                   <Link href={`/restaurant/${rId}`} className="mt-3 w-full h-10 rounded-[12px] text-[13px] font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
                     See all {rData.items.length} meals
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
                   </Link>
-                )}
+                ) : null}
               </section>
               );
                 })}
