@@ -11,6 +11,7 @@ function formatPrice(kobo: number): string {
 
 interface DealData {
   id: string; name: string; description: string | null; imageUrl: string | null;
+  category: string; brandName: string | null; brandLogoUrl: string | null;
   marketPrice: number; poolPrice: number; minBuyers: number; currentBuyers: number;
   deadline: string; pickupInfo: string | null; status: string;
   collectionPoints: { id: string; name: string; address: string; type: string }[];
@@ -116,6 +117,21 @@ export default function DealDetailPage() {
         {/* Price card — overlaps the image */}
         <div className="rounded-[20px] p-5 relative" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
           <h1 className="text-[24px] font-extrabold tracking-[-0.02em] leading-tight" style={{ color: "var(--text)" }}>{deal.name}</h1>
+
+          {/* Brand credential */}
+          {deal.brandName && (
+            <div className="flex items-center gap-2 mt-2">
+              {deal.brandLogoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={deal.brandLogoUrl} alt={deal.brandName} className="w-6 h-6 rounded-full object-cover" style={{ border: "1px solid var(--border)" }} />
+              ) : (
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold" style={{ background: "var(--sand)", color: "var(--text-secondary)" }}>
+                  {deal.brandName.charAt(0)}
+                </div>
+              )}
+              <span className="text-[12px] font-semibold" style={{ color: "var(--text-muted)" }}>by {deal.brandName}</span>
+            </div>
+          )}
 
           <div className="flex items-baseline gap-3 mt-2">
             <span className="text-[28px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(deal.poolPrice)}</span>

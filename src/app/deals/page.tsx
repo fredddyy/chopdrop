@@ -10,6 +10,7 @@ function formatPrice(kobo: number): string {
 
 interface DealSummary {
   id: string; name: string; description: string | null; imageUrl: string | null;
+  category: string; brandName: string | null; brandLogoUrl: string | null;
   marketPrice: number; poolPrice: number; minBuyers: number; currentBuyers: number;
   deadline: string; status: string;
 }
@@ -17,6 +18,7 @@ interface DealSummary {
 export default function DealsPage() {
   const [deals, setDeals] = useState<DealSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
     fetch("/api/deals").then(r => r.json()).then(d => {
@@ -63,6 +65,26 @@ export default function DealsPage() {
         <div className="absolute -left-8 -bottom-8 w-32 h-32 rounded-full" style={{ background: "radial-gradient(circle, rgba(26,125,75,0.1) 0%, transparent 70%)" }} />
       </div>
 
+      {/* ── CATEGORY FILTER PILLS ── */}
+      {deals.length > 0 && (() => {
+        const categories = ["All", ...new Set(deals.map(d => d.category))];
+        return (
+          <div className="flex overflow-x-auto hide-scrollbar px-6 gap-2 pb-4">
+            {categories.map(cat => (
+              <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
+                className="h-8 px-4 rounded-full text-[12px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
+                style={{
+                  background: activeCategory === cat ? "rgba(255,255,255,0.12)" : "transparent",
+                  color: activeCategory === cat ? "white" : "rgba(255,255,255,0.35)",
+                  border: activeCategory === cat ? "1px solid rgba(255,255,255,0.15)" : "1px solid transparent",
+                }}>
+                {cat}
+              </button>
+            ))}
+          </div>
+        );
+      })()}
+
       {deals.length === 0 ? (
         <div className="px-6 py-20 text-center">
           <div className="text-[48px] font-extrabold" style={{ color: "rgba(255,255,255,0.08)" }}>0</div>
@@ -71,7 +93,7 @@ export default function DealsPage() {
         </div>
       ) : (
         <div className="px-5 pt-2 space-y-5">
-          {deals.map((deal, idx) => {
+          {deals.filter(d => activeCategory === "All" || d.category === activeCategory).map((deal, idx) => {
             const progress = Math.min(100, (deal.currentBuyers / deal.minBuyers) * 100);
             const remaining = Math.max(0, deal.minBuyers - deal.currentBuyers);
             const deadlineDate = new Date(deal.deadline);
@@ -115,6 +137,24 @@ export default function DealsPage() {
                   <h3 className={`${isFirst ? "text-[20px]" : "text-[17px]"} font-extrabold leading-tight`} style={{ color: isFirst ? "var(--text)" : "white" }}>
                     {deal.name}
                   </h3>
+
+                  {/* Brand — subtle credential */}
+                  {deal.brandName && (
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      {deal.brandLogoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={deal.brandLogoUrl} alt={deal.brandName} className="w-5 h-5 rounded-full object-cover" style={{ border: isFirst ? "1px solid var(--border)" : "1px solid rgba(255,255,255,0.1)" }} />
+                      ) : (
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ background: isFirst ? "var(--sand)" : "rgba(255,255,255,0.1)", color: isFirst ? "var(--text-secondary)" : "rgba(255,255,255,0.5)" }}>
+                          {deal.brandName.charAt(0)}
+                        </div>
+                      )}
+                      <span className="text-[11px] font-semibold" style={{ color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.4)" }}>
+                        by {deal.brandName}
+                      </span>
+                    </div>
+                  )}
+
                   {deal.description && (
                     <p className="text-[13px] mt-1.5 leading-relaxed" style={{ color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.4)" }}>
                       {deal.description}

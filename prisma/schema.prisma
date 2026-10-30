@@ -335,6 +335,9 @@ model Deal {
   name          String
   description   String?
   imageUrl      String?
+  category      String     @default("Groceries") // Electronics, Groceries, Fashion, Household, etc.
+  brandName     String?    // "HP", "Royal Stallion", "Zara"
+  brandLogoUrl  String?    // small logo image
   marketPrice   Int        // kobo — retail price
   poolPrice     Int        // kobo — bulk price when pool fills
   minBuyers     Int        @default(30)

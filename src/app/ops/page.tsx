@@ -2467,8 +2467,12 @@ function DealsAdmin({ loadAll, formatNaira }: { loadAll: () => void; formatNaira
   const [cpName, setCpName] = useState("");
   const [cpAddress, setCpAddress] = useState("");
   const [collectionPoints, setCollectionPoints] = useState<{ name: string; address: string; type: string }[]>([]);
+  const [category, setCategory] = useState("Groceries");
+  const [brandName, setBrandName] = useState("");
+  const [brandLogoUrl, setBrandLogoUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingBrandLogo, setUploadingBrandLogo] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/deals").then(r => r.json()).then(d => { if (d.success) setDeals(d.data); }).catch(() => {});
@@ -2508,6 +2512,9 @@ function DealsAdmin({ loadAll, formatNaira }: { loadAll: () => void; formatNaira
         name: name.trim(),
         description: description.trim() || null,
         imageUrl: imageUrl.trim() || null,
+        category,
+        brandName: brandName.trim() || null,
+        brandLogoUrl: brandLogoUrl.trim() || null,
         marketPrice: Math.round(parseFloat(marketPrice) * 100),
         poolPrice: Math.round(parseFloat(poolPrice) * 100),
         minBuyers: parseInt(minBuyers) || 30,
@@ -2517,7 +2524,7 @@ function DealsAdmin({ loadAll, formatNaira }: { loadAll: () => void; formatNaira
       }),
     });
     setShowForm(false);
-    setName(""); setDescription(""); setImageUrl(""); setMarketPrice(""); setPoolPrice(""); setMinBuyers("30"); setDeadline(""); setPickupInfo(""); setCollectionPoints([]);
+    setName(""); setDescription(""); setImageUrl(""); setCategory("Groceries"); setBrandName(""); setBrandLogoUrl(""); setMarketPrice(""); setPoolPrice(""); setMinBuyers("30"); setDeadline(""); setPickupInfo(""); setCollectionPoints([]);
     setSaving(false);
     reload();
     loadAll();
@@ -2551,6 +2558,39 @@ function DealsAdmin({ loadAll, formatNaira }: { loadAll: () => void; formatNaira
             <div>
               <label className="block text-[12px] font-bold mb-1.5">Description</label>
               <input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="Premium long-grain rice" className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Category</label>
+              <select value={category} onChange={e => setCategory(e.target.value)} className={inputCls}>
+                <option value="Groceries">Groceries</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Household">Household</option>
+                <option value="Office Supplies">Office Supplies</option>
+                <option value="Health & Beauty">Health & Beauty</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Brand name <span className="font-normal text-ink-soft">(optional)</span></label>
+              <input type="text" value={brandName} onChange={e => setBrandName(e.target.value)} placeholder="HP, Royal Stallion, Zara..." className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-[12px] font-bold mb-1.5">Brand logo <span className="font-normal text-ink-soft">(optional)</span></label>
+              <div className="flex items-center gap-3">
+                <label className={`px-4 py-2.5 border border-line rounded-[10px] text-sm cursor-pointer transition-colors ${uploadingBrandLogo ? "bg-line text-ink-soft" : "bg-cream/50 hover:bg-cream text-ink"}`}>
+                  {uploadingBrandLogo ? "Uploading..." : brandLogoUrl ? "Change" : "Upload logo"}
+                  <input type="file" accept="image/*" onChange={async (e) => {
+                    const file = e.target.files?.[0]; if (!file) return;
+                    setUploadingBrandLogo(true);
+                    try { const fd = new FormData(); fd.append("file", file); fd.append("folder", "chopdrop"); const res = await fetch("/api/upload", { method: "POST", body: fd }); const data = await res.json(); if (data.success) setBrandLogoUrl(data.url); } finally { setUploadingBrandLogo(false); }
+                  }} disabled={uploadingBrandLogo} className="hidden" />
+                </label>
+                {brandLogoUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={brandLogoUrl} alt="Logo" className="w-8 h-8 rounded-full object-cover border border-line" />
+                )}
+              </div>
             </div>
             <div>
               <label className="block text-[12px] font-bold mb-1.5">Market price (₦)</label>
