@@ -169,9 +169,17 @@ function ConfirmationContent() {
           </>
         ) : isConfirmed ? (
           <>
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "var(--emerald)", animation: "fu 0.4s ease" }}>
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+            {/* Celebration burst */}
+            <div className="relative flex items-center justify-center mb-4">
+              <div className="absolute w-24 h-24 rounded-full" style={{ background: "radial-gradient(circle, rgba(26,125,75,0.3) 0%, transparent 70%)", animation: "celebPulse 1.5s ease infinite" }} />
+              <div className="w-16 h-16 rounded-full flex items-center justify-center relative z-10" style={{ background: "var(--emerald)", animation: "celebBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)" }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+              </div>
             </div>
+            <style>{`
+              @keyframes celebBounce { 0% { transform: scale(0); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+              @keyframes celebPulse { 0%,100% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 0; } }
+            `}</style>
             <h1 className="text-[24px] font-extrabold text-white tracking-[-0.02em]">You&apos;re all set!</h1>
             <p className="text-[15px] text-white/50 mt-1 max-w-[300px] mx-auto">
               {isOffice ? `Arrives at ${dropTime} · Show your code at ${order.office!.collectionPoint}` : `Ready at ${dropTime}`}

@@ -324,7 +324,7 @@ export function RestaurantMenu({ restaurant, combos, categories, buildPlateDaily
 
       {/* Floating cart bar */}
       {cart.totalItems > 0 && (
-        <div className="fixed bottom-14 left-0 right-0 z-40 px-4 pb-2 md:hidden">
+        <div className="fixed bottom-16 left-0 right-0 z-40 px-4 pb-2 md:hidden">
           <Link href="/cart" className="max-w-[480px] mx-auto rounded-full px-5 h-14 flex items-center justify-between text-white block active:scale-[0.98] transition-transform" style={{ background: "var(--coral)" }}>
             <div className="flex items-center gap-2">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>

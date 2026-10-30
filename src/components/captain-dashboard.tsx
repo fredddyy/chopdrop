@@ -187,8 +187,8 @@ export function CaptainDashboard({
           </div>
         </div>
 
-        {/* ── Handoff tracker — only when orders exist ── */}
-        {hasOrders && (
+        {/* ── Handoff tracker ── */}
+        {hasOrders ? (
         <div className="bg-white rounded-[20px] p-5 mb-5" style={{ border: "1px solid var(--border)" }}>
           <div className="text-[16px] font-bold text-[var(--text)] mb-4">Handoff</div>
           <div className="flex gap-2 mb-5">
@@ -217,6 +217,19 @@ export function CaptainDashboard({
               ? `Drop received at ${receivedTime}`
               : `Confirm ${totalBoxes} boxes received`}
           </button>
+        </div>
+        ) : (
+        <div className="bg-white rounded-[20px] p-5 mb-5" style={{ border: "1px solid var(--border)" }}>
+          <div className="text-[16px] font-bold mb-2" style={{ color: "var(--text)" }}>Handoff</div>
+          <div className="flex gap-2 mb-3">
+            {["Orders closed", "Preparing", "Received", "Distribute"].map((label) => (
+              <div key={label} className="flex-1">
+                <div className="h-2 rounded-full" style={{ background: "var(--sand)" }} />
+                <span className="text-[11px] mt-1.5 block font-medium" style={{ color: "var(--text-muted)" }}>{label}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[13px] text-center py-4" style={{ color: "var(--text-muted)" }}>Waiting for orders — check back after the pool closes</p>
         </div>
         )}
 

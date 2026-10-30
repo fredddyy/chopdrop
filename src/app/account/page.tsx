@@ -5,6 +5,7 @@ import { getCustomerProfile, saveCustomerProfile, clearCustomerProfile, type Cus
 import { formatNaira } from "@/lib/utils";
 import { BottomNav } from "@/components/bottom-nav";
 import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import Link from "next/link";
 
 export default function AccountPage() {
@@ -13,6 +14,7 @@ export default function AccountPage() {
     preferredFulfillment: "PICKUP", collectionPoint: "", reminders: true,
   });
   const [editingProfile, setEditingProfile] = useState(false);
+  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
   const [editingOffice, setEditingOffice] = useState(false);
   const [officeCodeInput, setOfficeCodeInput] = useState("");
   const [officeCodeError, setOfficeCodeError] = useState("");
@@ -223,13 +225,7 @@ export default function AccountPage() {
               </div>
               <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid var(--border)" }}>
                 <span className="text-[13px] font-mono font-bold tabular-nums" style={{ color: "var(--text-muted)" }}>{profile.officeCode}</span>
-                <button type="button"
-                  onClick={async () => {
-                    if (confirm("Disconnect from this office?")) {
-                      await fetch("/api/auth/disconnect-office", { method: "POST" });
-                      save({ officeId: undefined, officeName: undefined, officeCode: undefined, collectionPoint: "" });
-                    }
-                  }}
+                <button type="button" onClick={() => setShowDisconnectConfirm(true)}
                   className="text-[13px] font-semibold cursor-pointer" style={{ color: "var(--coral)" }}>
                   Disconnect
                 </button>
@@ -335,6 +331,20 @@ export default function AccountPage() {
         </div>
       )}
 
+      {showDisconnectConfirm && (
+        <ConfirmDialog
+          title="Disconnect from office?"
+          message="You'll lose free delivery and pool benefits for this office."
+          confirmLabel="Disconnect"
+          destructive
+          onConfirm={async () => {
+            setShowDisconnectConfirm(false);
+            await fetch("/api/auth/disconnect-office", { method: "POST" });
+            save({ officeId: undefined, officeName: undefined, officeCode: undefined, collectionPoint: "" });
+          }}
+          onCancel={() => setShowDisconnectConfirm(false)}
+        />
+      )}
       <BottomNav />
     </main>
   );
