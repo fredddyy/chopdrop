@@ -82,7 +82,7 @@ export default function AuthPage() {
     if (key === "Backspace" && !pinCode[i] && i > 0) document.getElementById(`pin-${i - 1}`)?.focus();
   }
 
-  const btnPrimary = "w-full h-[56px] rounded-full text-[16px] font-bold text-white active:scale-[0.97] transition-all cursor-pointer disabled:bg-[var(--border)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed";
+  const btnPrimary = "w-full h-[56px] rounded-[12px] text-[16px] font-bold text-white active:scale-[0.97] transition-all cursor-pointer disabled:bg-[var(--border)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed";
   const inputCls = "w-full px-5 h-[56px] bg-white border-2 border-[var(--border)] rounded-[16px] text-[16px] focus:outline-none focus:border-[var(--coral)] focus:ring-4 focus:ring-[var(--coral)]/10 transition-all placeholder:text-[var(--text-muted)]";
   const shell = (children: React.ReactNode) => (
     <main className="min-h-svh flex flex-col items-center justify-center px-6" style={{ background: "var(--bg)" }}>
@@ -95,7 +95,7 @@ export default function AuthPage() {
     return shell(
       <>
         <div className="flex items-center justify-center mb-10"><Logo size={28} /></div>
-        <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-center mb-2" style={{ color: "var(--text)" }}>Welcome back</h1>
+        <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-center mb-2" style={{ color: "var(--text)" }}>Log in to ChopDrop</h1>
         <p className="text-[16px] text-center mb-8" style={{ color: "var(--text-secondary)" }}>Enter your phone number to continue</p>
 
         {error && <div className="p-3 rounded-[14px] mb-4 text-[14px] font-medium" style={{ background: "#FEF2F2", color: "var(--coral)" }}>{error}</div>}

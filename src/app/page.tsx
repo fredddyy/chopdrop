@@ -66,9 +66,9 @@ function Calc() {
       <div className="flex gap-2 mb-8">
         {[
           { label: "1-9", pct: "Base", idx: -1 },
-          { label: "10+", pct: "3% off", idx: 1 },
-          { label: "20+", pct: "5% off", idx: 2 },
-          { label: "30+", pct: "8% off", idx: 3 },
+          { label: "10+", pct: "3% back", idx: 1 },
+          { label: "20+", pct: "5% back", idx: 2 },
+          { label: "30+", pct: "8% back", idx: 3 },
         ].map((t) => (
           <div key={t.label} className="flex-1 text-center rounded-[12px] py-3 transition-all duration-300" style={{
             background: tier >= t.idx && t.idx >= 0 ? "rgba(13,159,95,0.15)" : "rgba(255,255,255,0.05)",
@@ -130,13 +130,13 @@ export default function Home() {
       </nav>
 
       {/* ── Mobile bottom bar ── */}
-      <div className="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-white/95 backdrop-blur-lg" style={{ borderTop: "1px solid var(--border)" }}>
+      <div className="fixed bottom-0 inset-x-0 z-50 lg:hidden backdrop-blur-lg" style={{ background: "rgba(250,247,242,0.95)", borderTop: "1px solid var(--border)" }}>
         <div className="flex items-center justify-between px-5 h-16">
           <div>
             <div className="text-[12px] text-[var(--text-muted)]">From</div>
             <div className="text-[16px] font-bold text-[var(--emerald)]">₦1,400/plate</div>
           </div>
-          <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[15px] h-11 px-7 inline-flex items-center rounded-full active:scale-[0.97] transition-transform">
+          <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[15px] h-11 px-7 inline-flex items-center rounded-[12px] active:scale-[0.97] transition-transform">
             Set Up My Office
           </a>
         </div>
@@ -160,7 +160,7 @@ export default function Home() {
               </p>
 
               <div className="flex flex-wrap items-center gap-3 mb-6">
-                <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[16px] h-[52px] px-8 inline-flex items-center rounded-full active:scale-[0.97] transition-all hover:bg-[var(--coral-dark)] hover:scale-[1.02]">
+                <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[16px] h-[52px] px-8 inline-flex items-center rounded-[12px] active:scale-[0.97] transition-all hover:bg-[var(--coral-dark)] hover:scale-[1.02]">
                   Set Up My Office — Free
                 </a>
                 <a href="/menu" className="text-[var(--text)] font-semibold text-[15px] h-[52px] px-5 inline-flex items-center gap-1.5 hover:text-[var(--coral)] transition-colors">
@@ -187,7 +187,7 @@ export default function Home() {
               <div className="rounded-[24px] overflow-hidden relative aspect-[4/3]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={HERO} alt="Nigerian jollof rice — the lunch everyone orders" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="flex gap-2 mb-2">
                     <div className="bg-[var(--emerald)] text-white text-[12px] font-bold px-3 py-1.5 rounded-full">₦0 delivery</div>
@@ -406,7 +406,7 @@ export default function Home() {
                 <h3 className="text-[20px] font-bold text-white mb-2">The person who sets it up eats free.</h3>
                 <p className="text-[15px] text-white/50 leading-relaxed">15+ colleagues order? Your meal is on us. Plus up to ₦10K/month cash. Your effort: one WhatsApp message.</p>
               </div>
-              <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[15px] h-12 px-8 inline-flex items-center rounded-full shrink-0 active:scale-[0.97] transition-transform hover:bg-[var(--coral-dark)]">
+              <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[15px] h-12 px-8 inline-flex items-center rounded-[12px] shrink-0 active:scale-[0.97] transition-transform hover:bg-[var(--coral-dark)]">
                 Become Captain
               </a>
             </div>
@@ -459,7 +459,7 @@ export default function Home() {
           </R>
           <R d={120}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[17px] h-[54px] px-10 inline-flex items-center rounded-full active:scale-[0.97] transition-all hover:scale-[1.03]">
+              <a href="/start" className="bg-[var(--coral)] text-white font-bold text-[17px] h-[54px] px-10 inline-flex items-center rounded-[12px] active:scale-[0.97] transition-all hover:scale-[1.03]">
                 Set Up My Office
               </a>
               <a href={WA} className="text-white/60 font-medium text-[15px] h-[54px] px-6 inline-flex items-center gap-2 hover:text-white transition-colors">
