@@ -29,181 +29,174 @@ export default function DealsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-svh flex items-center justify-center" style={{ background: "#141413" }}>
+      <main className="min-h-svh flex items-center justify-center" style={{ background: "var(--bg)" }}>
         <div className="w-8 h-8 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
       </main>
     );
   }
 
+  const categories = ["All", ...new Set(deals.map(d => d.category))];
+  const filtered = deals.filter(d => activeCategory === "All" || d.category === activeCategory);
+
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "#141413" }}>
+    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* ── DARK HERO HEADER — drop culture ── */}
-      <div className="relative overflow-hidden">
-        <div className="px-6 pt-8 pb-6 relative z-10">
-          <Link href="/menu" className="w-10 h-10 rounded-full flex items-center justify-center mb-6" style={{ background: "rgba(255,255,255,0.08)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+      {/* ── WARM HEADER — matches the rest of ChopDrop ── */}
+      <div className="px-5 pt-6 pb-2">
+        <div className="flex items-center justify-between mb-5">
+          <Link href="/menu" className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
           </Link>
-
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--emerald)" }} />
-            <span className="text-[11px] font-bold tracking-[0.15em] uppercase" style={{ color: "var(--emerald)" }}>
-              {deals.length} active {deals.length === 1 ? "drop" : "drops"}
+            <span className="text-[11px] font-bold tracking-[0.1em] uppercase" style={{ color: "var(--emerald)" }}>
+              {filtered.length} active
             </span>
           </div>
-
-          <h1 className="text-[32px] font-extrabold text-white tracking-[-0.03em] leading-[1.1]">
-            Group<br />Drops
-          </h1>
-          <p className="text-[14px] mt-3 leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
-            Limited runs. The more people join,<br />the better the rate. When it&apos;s gone, it&apos;s gone.
-          </p>
         </div>
-
-        {/* Decorative glow */}
-        <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full" style={{ background: "radial-gradient(circle, rgba(196,87,42,0.15) 0%, transparent 70%)" }} />
-        <div className="absolute -left-8 -bottom-8 w-32 h-32 rounded-full" style={{ background: "radial-gradient(circle, rgba(26,125,75,0.1) 0%, transparent 70%)" }} />
+        <h1 className="text-[28px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>Group Drops</h1>
+        <p className="text-[14px] mt-1" style={{ color: "var(--text-secondary)" }}>Limited runs. The more join, the better the rate.</p>
       </div>
 
-      {/* ── CATEGORY FILTER PILLS ── */}
-      {deals.length > 0 && (() => {
-        const categories = ["All", ...new Set(deals.map(d => d.category))];
-        return (
-          <div className="flex overflow-x-auto hide-scrollbar px-6 gap-2 pb-4">
-            {categories.map(cat => (
-              <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
-                className="h-8 px-4 rounded-full text-[12px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
-                style={{
-                  background: activeCategory === cat ? "rgba(255,255,255,0.12)" : "transparent",
-                  color: activeCategory === cat ? "white" : "rgba(255,255,255,0.35)",
-                  border: activeCategory === cat ? "1px solid rgba(255,255,255,0.15)" : "1px solid transparent",
-                }}>
-                {cat}
-              </button>
-            ))}
-          </div>
-        );
-      })()}
-
-      {deals.length === 0 ? (
-        <div className="px-6 py-20 text-center">
-          <div className="text-[48px] font-extrabold" style={{ color: "rgba(255,255,255,0.08)" }}>0</div>
-          <p className="text-[16px] font-semibold text-white mt-2">No drops right now</p>
-          <p className="text-[14px] mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>New drops land weekly. Check back soon.</p>
+      {/* ── CATEGORY PILLS — warm style ── */}
+      {deals.length > 0 && (
+        <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 pb-4">
+          {categories.map(cat => (
+            <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
+              className="h-8 px-4 rounded-full text-[12px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
+              style={{
+                background: activeCategory === cat ? "var(--dark)" : "var(--sand)",
+                color: activeCategory === cat ? "white" : "var(--text-secondary)",
+              }}>
+              {cat}
+            </button>
+          ))}
         </div>
-      ) : (
-        <div className="px-5 pt-2 space-y-5">
-          {deals.filter(d => activeCategory === "All" || d.category === activeCategory).map((deal, idx) => {
-            const progress = Math.min(100, (deal.currentBuyers / deal.minBuyers) * 100);
-            const remaining = Math.max(0, deal.minBuyers - deal.currentBuyers);
-            const deadlineDate = new Date(deal.deadline);
-            const now = new Date();
-            const daysLeft = Math.max(0, Math.floor((deadlineDate.getTime() - now.getTime()) / 86400000));
-            const hoursLeft = Math.max(0, Math.floor((deadlineDate.getTime() - now.getTime()) / 3600000));
-            const isHot = progress > 60;
-            const isFirst = idx === 0;
+      )}
 
-            return (
-              <Link key={deal.id} href={`/deals/${deal.id}`}
-                className="block rounded-[20px] overflow-hidden active:scale-[0.98] transition-transform"
-                style={{ background: isFirst ? "var(--card)" : "rgba(255,255,255,0.04)", border: isFirst ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+      {/* ── TRANSITION — warm cream fades into dark drop zone ── */}
+      <div className="mx-5 rounded-t-[24px] overflow-hidden" style={{ background: "var(--dark)" }}>
+        <div className="px-5 pt-5 pb-3 flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+          <span className="text-[12px] font-bold text-white/50 tracking-wide uppercase">Drop zone</span>
+        </div>
 
-                {/* Product image */}
-                {deal.imageUrl && (
-                  <div className="relative overflow-hidden" style={{ height: isFirst ? 220 : 180, background: "var(--sand)" }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={deal.imageUrl} alt={deal.name} className="w-full h-full object-cover" loading="lazy" />
+        {filtered.length === 0 ? (
+          <div className="px-5 py-16 text-center">
+            <div className="text-[48px] font-extrabold" style={{ color: "rgba(255,255,255,0.06)" }}>0</div>
+            <p className="text-[16px] font-semibold text-white mt-2">No drops right now</p>
+            <p className="text-[13px] mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>New drops land weekly. Check back soon.</p>
+          </div>
+        ) : (
+          <div className="px-4 pb-5 space-y-4">
+            {filtered.map((deal, idx) => {
+              const progress = Math.min(100, (deal.currentBuyers / deal.minBuyers) * 100);
+              const remaining = Math.max(0, deal.minBuyers - deal.currentBuyers);
+              const deadlineDate = new Date(deal.deadline);
+              const now = new Date();
+              const daysLeft = Math.max(0, Math.floor((deadlineDate.getTime() - now.getTime()) / 86400000));
+              const hoursLeft = Math.max(0, Math.floor((deadlineDate.getTime() - now.getTime()) / 3600000));
+              const isHot = progress > 60;
+              const isFirst = idx === 0;
 
-                    <div className="absolute top-3 right-3">
-                      <span className="text-[11px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm" style={{
-                        background: daysLeft <= 1 ? "rgba(196,87,42,0.85)" : "rgba(0,0,0,0.5)",
-                        color: "white",
-                      }}>
-                        {daysLeft > 1 ? `${daysLeft} days left` : daysLeft === 1 ? "Last day" : hoursLeft > 0 ? `${hoursLeft}h left` : "Ending now"}
-                      </span>
+              return (
+                <Link key={deal.id} href={`/deals/${deal.id}`}
+                  className="block rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform"
+                  style={{ background: isFirst ? "var(--card)" : "rgba(255,255,255,0.05)", border: isFirst ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+
+                  {/* Product image */}
+                  {deal.imageUrl && (
+                    <div className="relative overflow-hidden" style={{ height: isFirst ? 200 : 160, background: "var(--sand)" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={deal.imageUrl} alt={deal.name} className="w-full h-full object-cover" loading="lazy" />
+                      <div className="absolute top-3 right-3">
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{
+                          background: daysLeft <= 1 ? "var(--coral)" : "rgba(0,0,0,0.5)",
+                          color: "white",
+                        }}>
+                          {daysLeft > 1 ? `${daysLeft}d left` : daysLeft === 1 ? "Last day" : hoursLeft > 0 ? `${hoursLeft}h left` : "Ending now"}
+                        </span>
+                      </div>
+                      {isHot && (
+                        <div className="absolute top-3 left-3">
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--coral)", color: "white" }}>
+                            Filling fast
+                          </span>
+                        </div>
+                      )}
                     </div>
+                  )}
 
-                    {isHot && (
-                      <div className="absolute top-3 left-3">
-                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--coral)", color: "white" }}>
-                          Filling fast
+                  <div className="p-4">
+                    <h3 className={`${isFirst ? "text-[18px]" : "text-[16px]"} font-extrabold leading-tight`} style={{ color: isFirst ? "var(--text)" : "white" }}>
+                      {deal.name}
+                    </h3>
+
+                    {/* Brand credential */}
+                    {deal.brandName && (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        {deal.brandLogoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={deal.brandLogoUrl} alt={deal.brandName} className="w-4 h-4 rounded-full object-cover" style={{ border: isFirst ? "1px solid var(--border)" : "1px solid rgba(255,255,255,0.1)" }} />
+                        ) : (
+                          <div className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold" style={{ background: isFirst ? "var(--sand)" : "rgba(255,255,255,0.1)", color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.5)" }}>
+                            {deal.brandName.charAt(0)}
+                          </div>
+                        )}
+                        <span className="text-[10px] font-semibold" style={{ color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.35)" }}>
+                          by {deal.brandName}
                         </span>
                       </div>
                     )}
-                  </div>
-                )}
 
-                <div className="p-5">
-                  <h3 className={`${isFirst ? "text-[20px]" : "text-[17px]"} font-extrabold leading-tight`} style={{ color: isFirst ? "var(--text)" : "white" }}>
-                    {deal.name}
-                  </h3>
+                    {deal.description && (
+                      <p className="text-[12px] mt-1.5 leading-relaxed" style={{ color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.35)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {deal.description}
+                      </p>
+                    )}
 
-                  {/* Brand — subtle credential */}
-                  {deal.brandName && (
-                    <div className="flex items-center gap-1.5 mt-1.5">
-                      {deal.brandLogoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={deal.brandLogoUrl} alt={deal.brandName} className="w-5 h-5 rounded-full object-cover" style={{ border: isFirst ? "1px solid var(--border)" : "1px solid rgba(255,255,255,0.1)" }} />
-                      ) : (
-                        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ background: isFirst ? "var(--sand)" : "rgba(255,255,255,0.1)", color: isFirst ? "var(--text-secondary)" : "rgba(255,255,255,0.5)" }}>
-                          {deal.brandName.charAt(0)}
-                        </div>
-                      )}
-                      <span className="text-[11px] font-semibold" style={{ color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.4)" }}>
-                        by {deal.brandName}
+                    {/* Price */}
+                    <div className="flex items-baseline gap-2.5 mt-3">
+                      <span className={`${isFirst ? "text-[22px]" : "text-[20px]"} font-extrabold tabular-nums`} style={{ color: isFirst ? "var(--text)" : "white" }}>
+                        {formatPrice(deal.poolPrice)}
+                      </span>
+                      <span className="text-[12px]" style={{ color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.25)" }}>
+                        Market {formatPrice(deal.marketPrice)}
                       </span>
                     </div>
-                  )}
 
-                  {deal.description && (
-                    <p className="text-[13px] mt-1.5 leading-relaxed" style={{ color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.4)" }}>
-                      {deal.description}
-                    </p>
-                  )}
-
-                  {/* Price — hero element */}
-                  <div className="flex items-baseline gap-3 mt-4">
-                    <span className={`${isFirst ? "text-[28px]" : "text-[24px]"} font-extrabold tabular-nums`} style={{ color: isFirst ? "var(--text)" : "white" }}>
-                      {formatPrice(deal.poolPrice)}
-                    </span>
-                    <span className="text-[13px]" style={{ color: isFirst ? "var(--text-muted)" : "rgba(255,255,255,0.3)" }}>
-                      Market {formatPrice(deal.marketPrice)}
-                    </span>
-                  </div>
-
-                  {/* Progress — minimal */}
-                  <div className="mt-4">
-                    <div className="h-[5px] rounded-full overflow-hidden" style={{ background: isFirst ? "var(--sand)" : "rgba(255,255,255,0.08)" }}>
-                      <div className="h-full rounded-full transition-all duration-700" style={{
-                        width: `${Math.max(3, progress)}%`,
-                        background: isHot ? "var(--emerald)" : "var(--coral)",
-                      }} />
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-[12px] font-semibold" style={{ color: isFirst ? "var(--text-secondary)" : "rgba(255,255,255,0.4)" }}>
-                        {deal.currentBuyers < 5 ? "Just dropped" : `${deal.currentBuyers} of ${deal.minBuyers} joined`}
-                      </span>
-                      {remaining <= 10 && remaining > 0 && (
-                        <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>
-                          {remaining} spots left
+                    {/* Progress */}
+                    <div className="mt-3">
+                      <div className="h-[4px] rounded-full overflow-hidden" style={{ background: isFirst ? "var(--sand)" : "rgba(255,255,255,0.08)" }}>
+                        <div className="h-full rounded-full transition-all duration-700" style={{
+                          width: `${Math.max(3, progress)}%`,
+                          background: isHot ? "var(--emerald)" : "var(--coral)",
+                        }} />
+                      </div>
+                      <div className="flex items-center justify-between mt-1.5">
+                        <span className="text-[11px] font-semibold" style={{ color: isFirst ? "var(--text-secondary)" : "rgba(255,255,255,0.35)" }}>
+                          {deal.currentBuyers < 5 ? "Just dropped" : `${deal.currentBuyers} of ${deal.minBuyers} joined`}
                         </span>
-                      )}
+                        {remaining <= 10 && remaining > 0 && (
+                          <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>
+                            {remaining} spots left
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* CTA */}
+                    <div className="mt-3 flex items-center justify-between pt-3" style={{ borderTop: isFirst ? "1px solid var(--border)" : "1px solid rgba(255,255,255,0.06)" }}>
+                      <span className="text-[13px] font-bold" style={{ color: "var(--coral)" }}>Join this drop</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
                     </div>
                   </div>
-
-                  {/* CTA */}
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-[13px] font-bold" style={{ color: "var(--coral)" }}>
-                      Join this drop
-                    </span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <BottomNav />
     </main>
