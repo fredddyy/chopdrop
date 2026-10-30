@@ -32,12 +32,12 @@
       "Bash(vercel env:*)",
       "Bash(npx sharp-cli:*)",
       "Bash(vercel --prod --yes)",
-      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rz5JVmNDxiM9@ep-winter-thunder-b7wesor1.c-13.us-east-1.aws.neon.tech/neondb?sslmode=require\" npx tsx seed-ajisafe.ts)",
+      "Bash(DATABASE_URL=\"$DATABASE_URL\" npx tsx seed-ajisafe.ts)",
       "Bash(vercel alias:*)",
       "Bash(npx tsc:*)",
       "Bash(mkdir -p \"C:/Users/GodfredBoakye/Desktop/Buzzpay/tmp-theplace\")",
       "Bash(unzip -o \"C:/Users/GodfredBoakye/Downloads/WhatsApp Unknown 2026-10-15 at 11.20.43 AM.zip\" -d tmp-theplace)",
-      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rz5JVmNDxiM9@ep-winter-thunder-b7wesor1.c-13.us-east-1.aws.neon.tech/neondb?sslmode=require\" npx prisma:*)",
+      "Bash(DATABASE_URL=\"$DATABASE_URL\" npx prisma:*)",
       "Bash(curl:*)",
       "Bash(ls C:/Users/GodfredBoakye/Desktop/Buzzpay/src/app/api/admin/restaurants/[id]/)",
       "Bash(ls C:/Users/GodfredBoakye/Desktop/Buzzpay/src/app/api/admin/offices/[id]/)",
@@ -102,7 +102,8 @@
       "Bash(grep -rn \"interpolate\\(\" src/scenes/*.tsx)",
       "Bash(grep -r \"PAYSTACK\" .env*)",
       "Bash(find /c/Users/GodfredBoakye/Desktop/Buzzpay/src -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) -exec grep -l \"poolTiers\\\\|officeOrderCount\\\\|tier.*price\\\\|30.*off\\\\|10.*off\\\\|20.*off\" {} \\\\;)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(echo \"EXIT: $?\")"
     ]
   }
 }
