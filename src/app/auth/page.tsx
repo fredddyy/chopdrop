@@ -140,9 +140,10 @@ export default function AuthPage() {
         <h2 className="text-[28px] font-extrabold tracking-[-0.02em] mb-2" style={{ color: "var(--text)" }}>Enter your PIN</h2>
         <p className="text-[16px] mb-8" style={{ color: "var(--text-secondary)" }}>4-digit PIN for <span className="font-bold" style={{ color: "var(--text)" }}>{phone}</span></p>
 
-        {error && <div className="p-3 rounded-[14px] mb-4 text-[14px] font-medium" style={{ background: "#FEF2F2", color: "var(--coral)" }}>{error}</div>}
+        {error && <div className="p-3 rounded-[14px] mb-4 text-[14px] font-medium" style={{ background: "#FEF2F2", color: "var(--coral)", animation: "shake 0.4s ease" }}>{error}</div>}
 
-        <div className="flex justify-center gap-3 mb-8">
+        <div className={`flex justify-center gap-3 mb-8 ${error ? "animate-[shake_0.4s_ease]" : ""}`}>
+        <style>{`@keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }`}</style>
           {pinCode.map((d, i) => (
             <input key={i} id={`pin-${i}`} type="password" inputMode="numeric" maxLength={1} value={d}
               onChange={(e) => handlePinInput(i, e.target.value)}

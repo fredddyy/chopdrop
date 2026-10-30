@@ -344,15 +344,20 @@ function ConfirmationContent() {
               <>
                 <h3 className="text-[16px] font-bold text-center mb-1" style={{ color: "var(--text)" }}>How was your meal?</h3>
                 <p className="text-[13px] text-center mb-4" style={{ color: "var(--text-muted)" }}>{order.restaurant.name}</p>
-                <div className="flex justify-center gap-3">
+                <div className="flex justify-center gap-2">
                   {[
-                    { label: "Bad", score: 1 }, { label: "Meh", score: 2 },
-                    { label: "OK", score: 3 }, { label: "Good", score: 4 }, { label: "Great", score: 5 },
+                    { emoji: "😞", label: "Bad", score: 1 },
+                    { emoji: "😕", label: "Meh", score: 2 },
+                    { emoji: "🙂", label: "OK", score: 3 },
+                    { emoji: "😋", label: "Good", score: 4 },
+                    { emoji: "🤩", label: "Great", score: 5 },
                   ].map((r) => (
                     <button key={r.score} type="button" onClick={() => handleRate(r.score)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-[14px] font-bold cursor-pointer active:scale-90 transition-transform"
-                      style={{ background: "var(--sand)", color: "var(--text)" }}>
-                      {r.score}
+                      className="flex flex-col items-center gap-1 cursor-pointer active:scale-90 transition-transform">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-[22px]" style={{ background: "var(--sand)" }}>
+                        {r.emoji}
+                      </div>
+                      <span className="text-[10px] font-semibold" style={{ color: "var(--text-muted)" }}>{r.label}</span>
                     </button>
                   ))}
                 </div>

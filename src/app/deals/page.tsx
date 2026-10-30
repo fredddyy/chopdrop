@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
+import { SkeletonDealCard } from "@/components/skeleton";
 
 function formatPrice(kobo: number): string {
   return "₦" + (kobo / 100).toLocaleString();
@@ -29,8 +30,17 @@ export default function DealsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-svh flex items-center justify-center" style={{ background: "var(--bg)" }}>
-        <div className="w-8 h-8 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
+      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-6 pb-4">
+          <div className="w-10 h-10 rounded-full animate-pulse mb-5" style={{ background: "var(--sand)" }} />
+          <div className="rounded-[8px] animate-pulse mb-2" style={{ width: "50%", height: 28, background: "var(--sand)" }} />
+          <div className="rounded-[8px] animate-pulse" style={{ width: "70%", height: 14, background: "var(--sand)" }} />
+        </div>
+        <div className="px-5 space-y-4">
+          <SkeletonDealCard />
+          <SkeletonDealCard />
+        </div>
+        <BottomNav />
       </main>
     );
   }

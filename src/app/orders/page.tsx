@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { formatNaira } from "@/lib/utils";
+import { SkeletonListItem } from "@/components/skeleton";
 import { BottomNav } from "@/components/bottom-nav";
 import Link from "next/link";
 
@@ -53,8 +54,16 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24 flex items-center justify-center min-h-svh" style={{ background: "var(--bg)" }}>
-        <div className="w-7 h-7 border-[2.5px] border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--coral)", borderTopColor: "transparent" }} />
+      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-6 pb-4">
+          <div className="rounded-[8px] animate-pulse mb-2" style={{ width: "40%", height: 24, background: "var(--sand)" }} />
+          <div className="rounded-[8px] animate-pulse" style={{ width: "55%", height: 14, background: "var(--sand)" }} />
+        </div>
+        <div className="px-5">
+          <SkeletonListItem />
+          <SkeletonListItem />
+          <SkeletonListItem />
+        </div>
         <BottomNav />
       </main>
     );
@@ -86,8 +95,8 @@ export default function OrdersPage() {
               <div className="flex rounded-full p-[3px]" style={{ background: "var(--sand)" }}>
                 {(["active", "past"] as const).map((t) => (
                   <button key={t} type="button" onClick={() => setTab(t)}
-                    className={`flex-1 h-10 rounded-full text-[14px] font-bold transition-all cursor-pointer ${tab === t ? "bg-white" : ""}`}
-                    style={{ color: tab === t ? "var(--text)" : "var(--text-muted)" }}>
+                    className={`flex-1 h-10 rounded-full text-[14px] font-bold transition-all cursor-pointer`}
+                    style={{ background: tab === t ? "var(--dark)" : "transparent", color: tab === t ? "white" : "var(--text-secondary)" }}>
                     {t === "active" ? `Active (${activeOrders.length})` : `Past (${pastOrders.length})`}
                   </button>
                 ))}
