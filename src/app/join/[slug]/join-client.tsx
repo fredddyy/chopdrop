@@ -53,8 +53,8 @@ function PoolCountdown({ cutoffTime }: { cutoffTime: string }) {
     return () => clearInterval(interval);
   }, [cutoffTime]);
 
-  if (expired) return <span className="text-[#f05f4b] font-bold">Closed</span>;
-  return <span className="text-[#22c55e] font-bold">{timeLeft} left</span>;
+  if (expired) return <span className="text-[var(--coral)] font-bold">Closed</span>;
+  return <span className="text-[var(--emerald)] font-bold">{timeLeft} left</span>;
 }
 
 export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: JoinClientProps) {
@@ -80,7 +80,7 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
 
   if (checkingAuth) {
     return (
-      <main className="min-h-screen bg-[#fafaf8] flex items-center justify-center">
+      <main className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
         <div className="w-7 h-7 border-[2.5px] border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--coral)", borderTopColor: "transparent" }} />
       </main>
     );
@@ -132,12 +132,12 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
   // ═══════════════════════════════════════════════════
   if (step === "preview") {
     return (
-      <main className="min-h-screen bg-[#fafaf8]">
+      <main className="min-h-screen bg-[var(--bg)]">
         <div className="max-w-[480px] mx-auto">
           {/* Top bar */}
           <div className="flex items-center justify-between px-5 py-4">
             <Logo size={24} />
-            <a href="/auth" className="text-[12px] font-semibold text-[#6b7280] hover:text-[#1a1a1a]">Log in</a>
+            <a href="/auth" className="text-[12px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text)]">Log in</a>
           </div>
 
           {/* Office hero card */}
@@ -146,7 +146,7 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
               <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/[0.04]" />
               <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-[#f5c565]/10" />
               <div className="relative">
-                <div className="text-[10px] font-bold text-[#6ee7b7] uppercase tracking-[0.1em] mb-2">You&apos;ve been invited to</div>
+                <div className="text-[10px] font-bold text-[var(--emerald)] uppercase tracking-[0.1em] mb-2">You&apos;ve been invited to</div>
                 <h1 className="font-display font-bold text-[24px] text-white tracking-[-0.03em] leading-tight">{office.name}</h1>
                 <p className="text-[12px] text-white/50 mt-1">{office.address}</p>
               </div>
@@ -155,16 +155,16 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
             {/* Social proof stats */}
             <div className="grid grid-cols-3 divide-x divide-black/[0.06] py-3.5">
               <div className="text-center px-2">
-                <div className="font-display font-bold text-[18px] text-[#1a1a1a]">{office.memberCount}</div>
-                <div className="text-[9px] text-[#9ca3af] font-medium">colleagues</div>
+                <div className="font-display font-bold text-[18px] text-[var(--text)]">{office.memberCount}</div>
+                <div className="text-[9px] text-[var(--text-muted)] font-medium">colleagues</div>
               </div>
               <div className="text-center px-2">
-                <div className="font-display font-bold text-[18px] text-[#1a1a1a]">{office.totalOrders > 0 ? office.totalOrders.toLocaleString() : "—"}</div>
-                <div className="text-[9px] text-[#9ca3af] font-medium">lunches ordered</div>
+                <div className="font-display font-bold text-[18px] text-[var(--text)]">{office.totalOrders > 0 ? office.totalOrders.toLocaleString() : "—"}</div>
+                <div className="text-[9px] text-[var(--text-muted)] font-medium">lunches ordered</div>
               </div>
               <div className="text-center px-2">
-                <div className="font-display font-bold text-[18px] text-[#f05f4b]">₦0</div>
-                <div className="text-[9px] text-[#9ca3af] font-medium">delivery fee</div>
+                <div className="font-display font-bold text-[18px] text-[var(--coral)]">₦0</div>
+                <div className="text-[9px] text-[var(--text-muted)] font-medium">delivery fee</div>
               </div>
             </div>
           </div>
@@ -173,10 +173,10 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
           {poolTimer && (
             <div className="mx-5 mt-3 bg-white rounded-xl border border-black/[0.06] px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-[var(--emerald)] animate-pulse" />
                 <div>
-                  <div className="text-[12px] font-semibold text-[#1a1a1a]">Lunch pool is LIVE</div>
-                  <div className="text-[10px] text-[#9ca3af]">{office.todayOrders} ordering today · {restaurantCount} kitchen{restaurantCount !== 1 ? "s" : ""}</div>
+                  <div className="text-[12px] font-semibold text-[var(--text)]">Lunch pool is LIVE</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">{office.todayOrders} ordering today · {restaurantCount} kitchen{restaurantCount !== 1 ? "s" : ""}</div>
                 </div>
               </div>
               <div className="text-[12px]">
@@ -189,8 +189,8 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
             <div className="mx-5 mt-3 bg-[#fffbf0] rounded-xl border border-[#f5c565]/20 px-4 py-3 flex items-center gap-2.5">
               <span className="text-[16px]">&#x1F559;</span>
               <div>
-                <div className="text-[12px] font-semibold text-[#1a1a1a]">Next pool opens tomorrow</div>
-                <div className="text-[10px] text-[#92702a]">Join now so you&apos;re ready when orders open</div>
+                <div className="text-[12px] font-semibold text-[var(--text)]">Next pool opens tomorrow</div>
+                <div className="text-[10px] text-[var(--gold)]">Join now so you&apos;re ready when orders open</div>
               </div>
             </div>
           )}
@@ -198,14 +198,14 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
           {/* Today's menu preview */}
           {menuPreview.length > 0 && (
             <div className="mx-5 mt-4">
-              <h2 className="text-[11px] font-bold text-[#9ca3af] uppercase tracking-[0.06em] mb-2.5">Today&apos;s lunch</h2>
+              <h2 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-[0.06em] mb-2.5">Today&apos;s lunch</h2>
               <div className="space-y-2">
                 {menuPreview.map((item) => {
                   const hasDiscount = item.originalPrice && item.originalPrice > item.price;
                   const savingsPercent = hasDiscount ? Math.round(((item.originalPrice! - item.price) / item.originalPrice!) * 100) : 0;
                   return (
                     <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-black/[0.04]">
-                      <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f5f5f3] flex-shrink-0">
+                      <div className="w-14 h-14 rounded-xl overflow-hidden bg-[var(--sand)] flex-shrink-0">
                         {item.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
@@ -214,14 +214,14 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-semibold text-[#1a1a1a] truncate">{item.name}</div>
-                        <div className="text-[10px] text-[#9ca3af]">{item.restaurantName}</div>
+                        <div className="text-[13px] font-semibold text-[var(--text)] truncate">{item.name}</div>
+                        <div className="text-[10px] text-[var(--text-muted)]">{item.restaurantName}</div>
                         <div className="flex items-center gap-1.5 mt-1">
-                          <span className="font-display font-bold text-[14px] text-[#0f4030]">{formatNaira(item.price)}</span>
+                          <span className="font-display font-bold text-[14px] text-[var(--dark)]">{formatNaira(item.price)}</span>
                           {hasDiscount && (
                             <>
-                              <span className="text-[11px] text-[#d1d5db] line-through">{formatNaira(item.originalPrice!)}</span>
-                              <span className="text-[8px] font-bold text-white bg-[#f05f4b] px-1.5 py-0.5 rounded-full">-{savingsPercent}%</span>
+                              <span className="text-[11px] text-[var(--text-muted)] line-through">{formatNaira(item.originalPrice!)}</span>
+                              <span className="text-[8px] font-bold text-white bg-[var(--coral)] px-1.5 py-0.5 rounded-full">-{savingsPercent}%</span>
                             </>
                           )}
                         </div>
@@ -231,7 +231,7 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
                 })}
               </div>
               {menuPreview.length >= 4 && (
-                <p className="text-[10px] text-[#9ca3af] text-center mt-2">+ more on the full menu</p>
+                <p className="text-[10px] text-[var(--text-muted)] text-center mt-2">+ more on the full menu</p>
               )}
             </div>
           )}
@@ -239,16 +239,16 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
           {/* How it works — ultra compact */}
           <div className="mx-5 mt-4 flex items-center justify-center gap-5">
             <div className="flex items-center gap-1.5">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-              <span className="text-[10px] font-medium text-[#6b7280]">₦0 delivery</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+              <span className="text-[10px] font-medium text-[var(--text-secondary)]">₦0 delivery</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-              <span className="text-[10px] font-medium text-[#6b7280]">Pay on your phone</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+              <span className="text-[10px] font-medium text-[var(--text-secondary)]">Pay on your phone</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-              <span className="text-[10px] font-medium text-[#6b7280]">More people = better rates</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+              <span className="text-[10px] font-medium text-[var(--text-secondary)]">More people = better rates</span>
             </div>
           </div>
 
@@ -257,18 +257,18 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
             <button
               type="button"
               onClick={() => setStep("phone")}
-              className="w-full bg-[#f05f4b] text-white font-bold text-[15px] py-4 rounded-2xl shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform"
+              className="w-full bg-[var(--coral)] text-white font-bold text-[15px] py-4 rounded-2xl shadow-[0_4px_16px_rgba(240,95,75,0.3)] active:scale-[0.98] transition-transform"
             >
               Join &amp; Order Lunch
             </button>
-            <p className="text-[10px] text-[#9ca3af] text-center mt-2.5">Takes 60 seconds · No app download needed</p>
-            <p className="text-[12px] text-[#4b5563] text-center mt-3">Already a member? <a href="/auth" className="text-[#f05f4b] font-bold">Log in</a></p>
+            <p className="text-[10px] text-[var(--text-muted)] text-center mt-2.5">Takes 60 seconds · No app download needed</p>
+            <p className="text-[12px] text-[var(--text-secondary)] text-center mt-3">Already a member? <a href="/auth" className="text-[var(--coral)] font-bold">Log in</a></p>
           </div>
 
           {/* Captain credit */}
           {office.captainName && (
             <div className="mx-5 mb-6 text-center">
-              <span className="text-[10px] text-[#9ca3af]">Pool Captain: <span className="font-semibold text-[#6b7280]">{office.captainName}</span></span>
+              <span className="text-[10px] text-[var(--text-muted)]">Pool Captain: <span className="font-semibold text-[var(--text-secondary)]">{office.captainName}</span></span>
             </div>
           )}
         </div>
@@ -281,18 +281,18 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
   // ═══════════════════════════════════════════════════
   if (step === "phone") {
     return (
-      <main className="min-h-screen bg-[#fafaf8]">
+      <main className="min-h-screen bg-[var(--bg)]">
         <div className="max-w-[480px] mx-auto px-5 py-6">
-          <button type="button" onClick={() => setStep("preview")} className="flex items-center gap-1 text-[12px] text-[#9ca3af] mb-6">
+          <button type="button" onClick={() => setStep("preview")} className="flex items-center gap-1 text-[12px] text-[var(--text-muted)] mb-6">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
             Back
           </button>
 
-          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-1">Enter your phone number</h2>
-          <p className="text-[13px] text-[#9ca3af] mb-6">to join <span className="font-semibold text-[#1a1a1a]">{office.name}</span></p>
+          <h2 className="font-display font-bold text-[22px] text-[var(--text)] tracking-[-0.03em] mb-1">Enter your phone number</h2>
+          <p className="text-[13px] text-[var(--text-muted)] mb-6">to join <span className="font-semibold text-[var(--text)]">{office.name}</span></p>
 
           <div className="flex items-center gap-2 mb-4">
-            <div className="flex items-center gap-1.5 bg-[#f5f5f3] rounded-xl px-3 py-3.5 text-[14px] text-[#6b7280] flex-shrink-0">
+            <div className="flex items-center gap-1.5 bg-[var(--sand)] rounded-xl px-3 py-3.5 text-[14px] text-[var(--text-secondary)] flex-shrink-0">
               <span>🇳🇬</span>
               <span>+234</span>
             </div>
@@ -301,7 +301,7 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="812 345 6789"
-              className="flex-1 px-4 py-3.5 border border-[#e5e5e3] rounded-xl text-[15px] focus:outline-none focus:ring-2 focus:ring-[#f05f4b]/30 focus:border-[#f05f4b]"
+              className="flex-1 px-4 py-3.5 border border-[var(--border)] rounded-xl text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--coral)]/30 focus:border-[var(--coral)]"
               autoFocus
             />
           </div>
@@ -310,12 +310,12 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
             type="button"
             onClick={() => { setError(""); setStep("name"); }}
             disabled={phone.replace(/\s/g, "").length < 10}
-            className="w-full bg-[#f05f4b] text-white font-bold text-[14px] py-3.5 rounded-xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] disabled:opacity-40 disabled:shadow-none active:scale-[0.98] transition-all"
+            className="w-full bg-[var(--coral)] text-white font-bold text-[14px] py-3.5 rounded-xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] disabled:opacity-40 disabled:shadow-none active:scale-[0.98] transition-all"
           >
             Continue
           </button>
 
-          <p className="text-[9px] text-[#9ca3af] text-center mt-3">
+          <p className="text-[9px] text-[var(--text-muted)] text-center mt-3">
             You&apos;ll create a 4-digit PIN to log in
           </p>
         </div>
@@ -328,29 +328,29 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
   // ═══════════════════════════════════════════════════
   if (step === "pin") {
     return (
-      <main className="min-h-screen bg-[#fafaf8]">
+      <main className="min-h-screen bg-[var(--bg)]">
         <div className="max-w-[480px] mx-auto px-5 py-6">
-          <button type="button" onClick={() => { setStep("name"); setPinCode(["","","",""]); setError(""); }} className="flex items-center gap-1 text-[12px] text-[#9ca3af] mb-6">
+          <button type="button" onClick={() => { setStep("name"); setPinCode(["","","",""]); setError(""); }} className="flex items-center gap-1 text-[12px] text-[var(--text-muted)] mb-6">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
             Back
           </button>
 
-          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-1">Create your PIN</h2>
-          <p className="text-[13px] text-[#9ca3af] mb-6">4 digits you&apos;ll use to log in</p>
+          <h2 className="font-display font-bold text-[22px] text-[var(--text)] tracking-[-0.03em] mb-1">Create your PIN</h2>
+          <p className="text-[13px] text-[var(--text-muted)] mb-6">4 digits you&apos;ll use to log in</p>
 
-          {error && <div className="bg-[#fee2e2] text-[#f05f4b] text-[12px] font-medium px-4 py-2.5 rounded-xl mb-4">{error}</div>}
+          {error && <div className="bg-[#FEF2F2] text-[var(--coral)] text-[12px] font-medium px-4 py-2.5 rounded-xl mb-4">{error}</div>}
 
           <div className="flex justify-center gap-3 mb-6">
             {pinCode.map((digit, i) => (
               <input key={i} id={`pin-${i}`} type="password" inputMode="numeric" maxLength={1} value={digit}
                 onChange={(e) => handlePinInput(pinCode, setPinCode, i, e.target.value, "pin", () => { setStep("confirmPin"); setConfirmPinCode(["","","",""]); setTimeout(() => document.getElementById("cpin-0")?.focus(), 100); })}
                 onKeyDown={(e) => handlePinKeyDown(pinCode, i, e.key, "pin")}
-                className="w-14 h-14 text-center text-[22px] font-display font-bold border-2 border-[#e5e5e3] rounded-xl focus:outline-none focus:border-[#f05f4b] focus:ring-2 focus:ring-[#f05f4b]/20 transition-colors"
+                className="w-14 h-14 text-center text-[22px] font-display font-bold border-2 border-[var(--border)] rounded-xl focus:outline-none focus:border-[var(--coral)] focus:ring-2 focus:ring-[var(--coral)]/20 transition-colors"
                 autoFocus={i === 0} />
             ))}
           </div>
 
-          <p className="text-[11px] text-[#9ca3af] text-center">Choose something you&apos;ll remember</p>
+          <p className="text-[11px] text-[var(--text-muted)] text-center">Choose something you&apos;ll remember</p>
         </div>
       </main>
     );
@@ -361,17 +361,17 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
   // ═══════════════════════════════════════════════════
   if (step === "confirmPin") {
     return (
-      <main className="min-h-screen bg-[#fafaf8]">
+      <main className="min-h-screen bg-[var(--bg)]">
         <div className="max-w-[480px] mx-auto px-5 py-6">
-          <button type="button" onClick={() => { setStep("pin"); setConfirmPinCode(["","","",""]); setError(""); }} className="flex items-center gap-1 text-[12px] text-[#9ca3af] mb-6">
+          <button type="button" onClick={() => { setStep("pin"); setConfirmPinCode(["","","",""]); setError(""); }} className="flex items-center gap-1 text-[12px] text-[var(--text-muted)] mb-6">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
             Back
           </button>
 
-          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-1">Confirm your PIN</h2>
-          <p className="text-[13px] text-[#9ca3af] mb-6">Enter it one more time</p>
+          <h2 className="font-display font-bold text-[22px] text-[var(--text)] tracking-[-0.03em] mb-1">Confirm your PIN</h2>
+          <p className="text-[13px] text-[var(--text-muted)] mb-6">Enter it one more time</p>
 
-          {error && <div className="bg-[#fee2e2] text-[#f05f4b] text-[12px] font-medium px-4 py-2.5 rounded-xl mb-4">{error}</div>}
+          {error && <div className="bg-[#FEF2F2] text-[var(--coral)] text-[12px] font-medium px-4 py-2.5 rounded-xl mb-4">{error}</div>}
 
           <div className="flex justify-center gap-3 mb-6">
             {confirmPinCode.map((digit, i) => (
@@ -382,12 +382,12 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
                   else { handleSetPin(full); }
                 })}
                 onKeyDown={(e) => handlePinKeyDown(confirmPinCode, i, e.key, "cpin")}
-                className="w-14 h-14 text-center text-[22px] font-display font-bold border-2 border-[#e5e5e3] rounded-xl focus:outline-none focus:border-[#f05f4b] focus:ring-2 focus:ring-[#f05f4b]/20 transition-colors"
+                className="w-14 h-14 text-center text-[22px] font-display font-bold border-2 border-[var(--border)] rounded-xl focus:outline-none focus:border-[var(--coral)] focus:ring-2 focus:ring-[var(--coral)]/20 transition-colors"
                 autoFocus={i === 0} />
             ))}
           </div>
 
-          {loading && <p className="text-[12px] text-[#9ca3af] text-center mb-4">Creating account...</p>}
+          {loading && <p className="text-[12px] text-[var(--text-muted)] text-center mb-4">Creating account...</p>}
         </div>
       </main>
     );
@@ -398,17 +398,17 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
   // ═══════════════════════════════════════════════════
   if (step === "name") {
     return (
-      <main className="min-h-screen bg-[#fafaf8]">
+      <main className="min-h-screen bg-[var(--bg)]">
         <div className="max-w-[480px] mx-auto px-5 py-6">
-          <h2 className="font-display font-bold text-[22px] text-[#1a1a1a] tracking-[-0.03em] mb-1">What&apos;s your first name?</h2>
-          <p className="text-[13px] text-[#9ca3af] mb-6">This goes on your lunch bag so you can find it at pickup</p>
+          <h2 className="font-display font-bold text-[22px] text-[var(--text)] tracking-[-0.03em] mb-1">What&apos;s your first name?</h2>
+          <p className="text-[13px] text-[var(--text-muted)] mb-6">This goes on your lunch bag so you can find it at pickup</p>
 
           <input
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="e.g. Tunde"
-            className="w-full px-4 py-3.5 border border-[#e5e5e3] rounded-xl text-[15px] focus:outline-none focus:ring-2 focus:ring-[#f05f4b]/30 focus:border-[#f05f4b] mb-5"
+            className="w-full px-4 py-3.5 border border-[var(--border)] rounded-xl text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--coral)]/30 focus:border-[var(--coral)] mb-5"
             autoFocus
           />
 
@@ -416,7 +416,7 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
             type="button"
             onClick={handleSetName}
             disabled={loading || !firstName.trim()}
-            className="w-full bg-[#f05f4b] text-white font-bold text-[14px] py-3.5 rounded-xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] disabled:opacity-40 disabled:shadow-none active:scale-[0.98] transition-all"
+            className="w-full bg-[var(--coral)] text-white font-bold text-[14px] py-3.5 rounded-xl shadow-[0_2px_10px_rgba(240,95,75,0.3)] disabled:opacity-40 disabled:shadow-none active:scale-[0.98] transition-all"
           >
             {loading ? "Setting up..." : "Continue"}
           </button>
@@ -430,23 +430,23 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
   // ═══════════════════════════════════════════════════
   if (step === "welcome") {
     return (
-      <main className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center px-6" style={{ animation: "welcomeFadeIn 0.5s ease" }}>
-        <div className="w-16 h-16 rounded-full bg-[#22c55e]/10 flex items-center justify-center mb-5" style={{ animation: "welcomeCheck 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both" }}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
+      <main className="min-h-screen bg-[var(--bg)] flex flex-col items-center justify-center px-6" style={{ animation: "welcomeFadeIn 0.5s ease" }}>
+        <div className="w-16 h-16 rounded-full bg-[var(--emerald)]/10 flex items-center justify-center mb-5" style={{ animation: "welcomeCheck 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both" }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg>
         </div>
 
-        <h2 className="font-display font-bold text-[24px] text-[#1a1a1a] tracking-[-0.03em] text-center mb-1">Welcome to</h2>
-        <h2 className="font-display font-bold text-[24px] text-[#0f4030] tracking-[-0.03em] text-center mb-3">{office.name}</h2>
+        <h2 className="font-display font-bold text-[24px] text-[var(--text)] tracking-[-0.03em] text-center mb-1">Welcome to</h2>
+        <h2 className="font-display font-bold text-[24px] text-[var(--dark)] tracking-[-0.03em] text-center mb-3">{office.name}</h2>
 
-        <div className="bg-[#0f4030] text-white text-[11px] font-bold px-4 py-1.5 rounded-full mb-4">
+        <div className="bg-[var(--dark)] text-white text-[11px] font-bold px-4 py-1.5 rounded-full mb-4">
           You&apos;re Colleague #{office.memberCount + 1}
         </div>
 
-        <p className="text-[13px] text-[#9ca3af] text-center">
-          Collect food at: <span className="font-semibold text-[#1a1a1a]">{office.collectionPoint}</span>
+        <p className="text-[13px] text-[var(--text-muted)] text-center">
+          Collect food at: <span className="font-semibold text-[var(--text)]">{office.collectionPoint}</span>
         </p>
 
-        <p className="text-[11px] text-[#9ca3af] mt-6 animate-pulse">Taking you to the menu...</p>
+        <p className="text-[11px] text-[var(--text-muted)] mt-6 animate-pulse">Taking you to the menu...</p>
 
         <style jsx>{`
           @keyframes welcomeFadeIn { from { opacity: 0; } to { opacity: 1; } }
