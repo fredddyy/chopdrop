@@ -73,7 +73,7 @@ export default function CartPage() {
   }, []);
 
   const EXPRESS_FEE = 120000;
-  const deliveryFee = isFirstOrder ? 0 : fulfillment === "delivery" ? EXPRESS_FEE : 0;
+  const deliveryFee = fulfillment === "delivery" ? EXPRESS_FEE : 0;
   // Service charge: ₦150 per pack (15000 kobo per pack)
   const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
   const serviceFee = packCount * 15000;
@@ -280,8 +280,8 @@ export default function CartPage() {
                       <div>
                         <p className="text-[13px] mb-3" style={{ color: "var(--text-secondary)" }}>Enter your office code for free delivery</p>
                         <div className="flex gap-2">
-                          <input type="text" value={codeInput} onChange={(e) => setCodeInput(e.target.value)} placeholder="e.g. STERL-001" className="flex-1 px-4 h-11 rounded-[10px] text-[14px] focus:outline-none uppercase" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
-                          <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="h-11 px-5 rounded-[10px] text-[14px] font-bold text-white disabled:opacity-50 cursor-pointer" style={{ background: "var(--dark)" }}>{codeLoading ? "..." : "Join"}</button>
+                          <input type="text" value={codeInput} onChange={(e) => setCodeInput(e.target.value)} placeholder="e.g. STERL-001" className="flex-1 min-w-0 px-3 h-11 rounded-[10px] text-[14px] focus:outline-none uppercase" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
+                          <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="h-11 px-4 rounded-[10px] text-[14px] font-bold text-white disabled:opacity-50 cursor-pointer shrink-0" style={{ background: "var(--dark)" }}>{codeLoading ? "..." : "Join"}</button>
                         </div>
                         {codeError && <p className="text-[12px] mt-1.5" style={{ color: "var(--coral)" }}>{codeError}</p>}
                         {isFirstOrder && (
@@ -307,10 +307,10 @@ export default function CartPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Express Delivery</span>
-                        <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>45 min to your address</p>
+                        <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>~30 min to your address</p>
                       </div>
-                      <span className="text-[15px] font-extrabold shrink-0" style={{ color: isFirstOrder ? "var(--emerald)" : "var(--text)" }}>
-                        {isFirstOrder ? "₦0" : formatNaira(EXPRESS_FEE)}
+                      <span className="text-[15px] font-extrabold shrink-0" style={{ color: "var(--text)" }}>
+                        {formatNaira(EXPRESS_FEE)}
                       </span>
                     </div>
                     {fulfillment === "delivery" && (
