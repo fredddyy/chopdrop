@@ -566,7 +566,17 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         <h3 className="text-[14px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                           {deal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "")}
                         </h3>
-                        <div className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{deal.restaurantName}</div>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <div className="w-4 h-4 rounded-full overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
+                            {deal.restaurantImageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={deal.restaurantImageUrl} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[7px] font-bold" style={{ color: "var(--text-muted)" }}>{deal.restaurantName.charAt(0)}</div>
+                            )}
+                          </div>
+                          <span className="text-[12px] truncate" style={{ color: "var(--text-muted)" }}>{deal.restaurantName}</span>
+                        </div>
                         <div className="flex items-baseline gap-2 mt-1.5">
                           <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(getEffectivePrice(deal.id, deal.price))}</span>
                           {deal.originalPrice && deal.originalPrice > deal.price && (
