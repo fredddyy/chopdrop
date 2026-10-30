@@ -88,7 +88,7 @@ export default function OrdersPage() {
           </div>
           <h2 className="text-[18px] font-extrabold mb-1" style={{ color: "var(--text)" }}>No orders yet</h2>
           <p className="text-[14px] mb-6 text-center" style={{ color: "var(--text-muted)" }}>Your orders will appear here</p>
-          <Link href="/menu" className="h-11 px-6 rounded-full text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse meals</Link>
+          <Link href="/menu" className="h-11 px-6 rounded-[12px] text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse meals</Link>
         </div>
       ) : (
         <>
@@ -143,7 +143,7 @@ export default function OrdersPage() {
                   <div className="flex items-center gap-2 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>
-                      Arrives by {order.dailyMenu.timeSlot.startTime}
+                      Arrives by 12:00 PM
                       {order.office?.collectionPoint && ` · ${order.office.collectionPoint}`}
                     </span>
                   </div>
@@ -176,11 +176,15 @@ export default function OrdersPage() {
                       </div>
                       <div className="flex flex-col items-end gap-1.5 shrink-0">
                         <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(order.totalAmount)}</span>
-                        <button type="button" onClick={(e) => { e.preventDefault(); handleReorder(order); }}
-                          className="text-[12px] font-bold px-3 py-1 rounded-full cursor-pointer active:scale-95 transition-transform"
-                          style={{ background: "rgba(232,96,76,0.1)", color: "var(--coral)" }}>
-                          Reorder
-                        </button>
+                        {order.status === "CANCELLED" ? (
+                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full" style={{ background: "rgba(232,96,76,0.1)", color: "var(--coral)" }}>Cancelled</span>
+                        ) : (
+                          <button type="button" onClick={(e) => { e.preventDefault(); handleReorder(order); }}
+                            className="text-[12px] font-bold px-3 py-1 rounded-full cursor-pointer active:scale-95 transition-transform"
+                            style={{ background: "rgba(232,96,76,0.1)", color: "var(--coral)" }}>
+                            Reorder
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
@@ -193,7 +197,7 @@ export default function OrdersPage() {
               <div className="text-center py-10">
                 <p className="text-[15px] font-semibold mb-1" style={{ color: "var(--text)" }}>No active orders</p>
                 <p className="text-[14px] mb-4" style={{ color: "var(--text-muted)" }}>Browse the menu to start a new order</p>
-                <Link href="/menu" className="h-10 px-5 rounded-full text-[13px] font-bold inline-flex items-center" style={{ background: "var(--sand)", color: "var(--text)" }}>Browse meals</Link>
+                <Link href="/menu" className="h-10 px-5 rounded-[12px] text-[13px] font-bold inline-flex items-center" style={{ background: "var(--sand)", color: "var(--text)" }}>Browse meals</Link>
               </div>
             )}
           </div>
