@@ -24,7 +24,8 @@ export function CartSidebar() {
   }
 
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
-  const serviceFee = 10000; // flat ₦100
+  const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
+  const serviceFee = packCount * 15000; // ₦150 per pack
 
   return (
     <div className="hidden lg:block w-[360px] flex-shrink-0">

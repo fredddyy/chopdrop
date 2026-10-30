@@ -74,8 +74,9 @@ export default function CartPage() {
 
   const EXPRESS_FEE = 120000;
   const deliveryFee = isFirstOrder ? 0 : fulfillment === "delivery" ? EXPRESS_FEE : 0;
-  // Service charge: flat ₦100 (10000 kobo)
-  const serviceFee = 10000;
+  // Service charge: ₦150 per pack (15000 kobo per pack)
+  const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
+  const serviceFee = packCount * 15000;
   const creditsToApply = Math.min(creditBalance, cart.subtotal + deliveryFee + serviceFee);
   const orderTotal = cart.subtotal + deliveryFee + serviceFee - creditsToApply;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
@@ -363,7 +364,7 @@ export default function CartPage() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-1.5">
                   <span style={{ color: "var(--text-secondary)" }}>Service charge</span>
-                  <span className="text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>covers payment processing</span>
+                  <span className="text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>₦150 × {packCount} {packCount === 1 ? "pack" : "packs"}</span>
                 </div>
                 <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
               </div>
