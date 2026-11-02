@@ -190,19 +190,16 @@ export default function DiscoverPage() {
 
       {/* ── Content ── */}
       {loading ? (
-        <div className="px-5 pt-4 flex flex-col gap-3.5">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+        <div className="px-5 pt-3 flex flex-col gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="rounded-[14px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <div
                 className="w-full"
-                style={{ height: i === 0 ? 200 : 170, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 150}ms` }}
+                style={{ height: i === 0 ? 150 : 125, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }}
               />
-              <div className="p-4 space-y-2.5">
-                <div className="h-5 rounded w-[55%]" style={{ background: "var(--sand)" }} />
-                <div className="h-3 rounded w-[40%]" style={{ background: "var(--sand)" }} />
-                <div className="flex gap-2 mt-1">
-                  {[0, 1, 2].map((j) => <div key={j} className="w-8 h-8 rounded-full" style={{ background: "var(--sand)" }} />)}
-                </div>
+              <div className="px-3.5 py-3 space-y-2">
+                <div className="h-4 rounded w-[50%]" style={{ background: "var(--sand)" }} />
+                <div className="h-3 rounded w-[65%]" style={{ background: "var(--sand)" }} />
               </div>
             </div>
           ))}
@@ -222,11 +219,11 @@ export default function DiscoverPage() {
           </p>
         </div>
       ) : (
-        <div className="px-5 pt-4 flex flex-col gap-3.5">
+        <div className="px-5 pt-3 flex flex-col gap-3">
 
           {/* Value prop */}
           <div className="flex items-center gap-2 px-1 head-enter">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <p className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>
@@ -234,18 +231,17 @@ export default function DiscoverPage() {
             </p>
           </div>
 
-          {/* ═══ STORE CARDS ═══ */}
+          {/* ═══ STORE CARDS — compact, Glovo density ═══ */}
           {filtered.map((store, idx) => {
-            const imgHeight = idx === 0 ? 200 : 170;
+            const imgHeight = idx === 0 ? 150 : 125;
             const hasPromo = store.bestSaving >= 15 && store.bestDealName;
-            // Best fallback image from product previews
             const fallbackImg = store.previews.find((p) => p.imageUrl)?.imageUrl ?? null;
 
             return (
               <Link
                 key={store.id}
                 href={`/store/${store.id}`}
-                className={`block rounded-[16px] overflow-hidden active:scale-[0.985] transition-transform card-enter card-enter-${(idx % 8) + 1}`}
+                className={`block rounded-[14px] overflow-hidden active:scale-[0.985] transition-transform card-enter card-enter-${(idx % 8) + 1}`}
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
               >
                 {/* ── Photo ── */}
@@ -257,83 +253,40 @@ export default function DiscoverPage() {
                     height={imgHeight}
                   />
 
-                  {/* Promo overlay — warm tint, not dark */}
+                  {/* Promo overlay — compact */}
                   {hasPromo && (
                     <div
-                      className="absolute bottom-0 left-0 right-0 px-3.5 py-2.5 flex items-center gap-2"
+                      className="absolute bottom-0 left-0 right-0 px-3 py-1.5 flex items-center gap-1.5"
                       style={{ background: "rgba(26,125,75,0.88)" }}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" className="shrink-0">
-                        <path d="M20 12H4M4 12l6-6M4 12l6 6" />
-                      </svg>
-                      <span className="text-[12px] font-bold text-white truncate">
+                      <span className="text-[11px] font-bold text-white truncate">
                         Save {store.bestSaving}% on {store.bestDealName}
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* ── Info ── */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-3">
+                {/* ── Info — tight ── */}
+                <div className="px-3.5 py-3">
+                  {/* Name + pool dot + price — all one dense block */}
+                  <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <h2 className="text-[18px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
+                      <h2 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
                         {store.name}
                       </h2>
-                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-                        {store.productCount} {store.productCount === 1 ? "item" : "items"} · {store.categories.join(", ")}
-                      </p>
-                    </div>
-                    {/* Arrow indicator — card is tappable */}
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                  </div>
-
-                  {/* Pool pulse — the ChopDrop signature */}
-                  {store.bestSaving >= 10 && (
-                    <div className="flex items-center gap-1.5 mt-2.5">
-                      <span className="pool-dot" />
-                      <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>
-                        Pools open · Save up to {store.bestSaving}%
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Preview row + price */}
-                  <div className="flex items-center justify-between mt-3">
-                    {store.previews.length > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <div className="flex -space-x-2">
-                          {store.previews.slice(0, 3).map((p) => (
-                            <div
-                              key={p.id}
-                              className="w-9 h-9 rounded-full overflow-hidden shrink-0"
-                              style={{ border: "2px solid var(--card)" }}
-                            >
-                              {p.imageUrl ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full" style={{ background: "var(--sand)" }} />
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                        {store.productCount > 3 && (
-                          <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>
-                            +{store.productCount - 3}
-                          </span>
-                        )}
+                      <div className="flex items-center gap-1.5 mt-1">
+                        {store.bestSaving >= 10 && <span className="pool-dot" />}
+                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                          {store.productCount} items · {store.categories.join(", ")}
+                          {store.bestSaving >= 10 && (
+                            <span style={{ color: "var(--emerald)" }}> · -{store.bestSaving}%</span>
+                          )}
+                        </span>
                       </div>
-                    )}
-
-                    <div className="text-right shrink-0">
-                      <span className="text-[10px] font-semibold" style={{ color: "var(--text-muted)" }}>From </span>
-                      <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>
-                        {fmt(store.lowestPrice)}
-                      </span>
                     </div>
+                    <span className="text-[17px] font-extrabold tabular-nums shrink-0 mt-0.5" style={{ color: "var(--text)" }}>
+                      {fmt(store.lowestPrice)}
+                    </span>
                   </div>
                 </div>
               </Link>
