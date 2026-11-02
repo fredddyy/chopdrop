@@ -11,7 +11,7 @@ export function BottomNav() {
   const cart = useCart();
 
   const links = [
-    { href: "/discover", label: "Discover", icon: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0zM12 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2z", match: ["/discover", "/menu", "/product"], count: 0 },
+    { href: "/discover", label: "Discover", icon: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5", match: ["/discover", "/menu", "/product"], count: 0 },
     { href: "/pools", label: "Pools", icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75", count: 0 },
     { href: "/cart", label: cart.totalItems > 0 ? formatNaira(cart.subtotal) : "Cart", icon: "M6 7h12l1 14H5L6 7ZM9 9V6a3 3 0 0 1 6 0v3", count: cart.totalItems },
     { href: "/account", label: "Me", icon: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z", count: 0 },
