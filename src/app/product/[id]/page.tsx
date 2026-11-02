@@ -82,15 +82,25 @@ export default function ProductDetailPage() {
         ) : (
           <div className="w-full h-full" style={{ background: "var(--sand)" }} />
         )}
-        {/* Back */}
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="absolute top-4 left-5 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
-          style={{ background: "rgba(255,255,255,0.9)" }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-        </button>
+        {/* Back + Share */}
+        <div className="absolute top-4 left-5 right-5 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+            style={{ background: "rgba(255,255,255,0.9)" }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => { if (navigator.share) navigator.share({ title: product.name, url: window.location.href }); }}
+            className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+            style={{ background: "rgba(255,255,255,0.9)" }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" x2="12" y1="2" y2="15" /></svg>
+          </button>
+        </div>
       </div>
 
       {/* ── Content — no card overlap, just clean flow ── */}
@@ -132,32 +142,19 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* ── Pool progress — the signature element ── */}
+        {/* ── Pool CTA — smart: no sad empty bar, just a clear invitation ── */}
         <div className="mt-5 pt-5" style={{ borderTop: "1px solid var(--border)" }}>
-          <div className="flex items-center justify-between mb-2.5">
-            <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Pool progress</span>
-            <div className="flex items-center gap-1.5">
-              <span className="pool-dot" />
-              <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Open</span>
-            </div>
-          </div>
-          <div className="h-[5px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-            <div className="h-full rounded-full" style={{ width: "15%", background: "var(--emerald)" }} />
-          </div>
-          <div className="flex items-center justify-between mt-1.5">
-            <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>0 joined</span>
-            <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>{product.minPoolSize} needed</span>
-          </div>
+          <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>
+            Share with {product.minPoolSize - 1} friends, everyone saves {fp(product.retailPrice - product.groupPrice)}
+          </p>
+          <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>
+            Didn&apos;t fill? Every kobo back.
+          </p>
         </div>
-
-        {/* ── Pool guarantee — one line, not a card ── */}
-        <p className="text-[12px] mt-4" style={{ color: "var(--text-muted)" }}>
-          Pool doesn&apos;t fill? Full refund. No risk.
-        </p>
       </div>
 
       {/* ── Sticky CTAs ── */}
-      <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-3" style={{ background: "rgba(250,250,248,0.95)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
+      <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-3" style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto flex gap-2.5">
           <button type="button" onClick={handleBuyNow}
             className="flex-[45] h-[50px] rounded-[12px] flex items-center justify-between px-4 text-[14px] font-bold cursor-pointer active:scale-[0.97] transition-transform"

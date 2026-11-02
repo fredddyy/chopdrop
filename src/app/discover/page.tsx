@@ -14,6 +14,8 @@ interface Store {
   deliveryEstimate: string;
   bestSaving: number;
   bestDealName: string | null;
+  rating: number;
+  orderCount: number;
 }
 
 interface PoolProduct {
@@ -103,7 +105,7 @@ export default function DiscoverPage() {
       {/* ── Header ── */}
       <header
         className="sticky top-0 z-40"
-        style={{ background: "rgba(250,250,248,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
+        style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
       >
         <div className="px-5 h-14 flex items-center justify-between">
           <div>
@@ -299,9 +301,13 @@ export default function DiscoverPage() {
                       <h2 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
                         {store.name}
                       </h2>
-                      <div className="flex items-center gap-1.5 mt-1">
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <span className="text-[11px] font-medium" style={{ color: "var(--text-secondary)" }}>
+                          ★ {store.rating}
+                        </span>
+                        <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
                         <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                          {store.topItems.length > 0 ? store.topItems.join(", ") : `${store.productCount} items`}
+                          {store.orderCount}+ orders
                         </span>
                         <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
                         <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>

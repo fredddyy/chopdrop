@@ -2,19 +2,19 @@
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop v4 — Nigerian Food Money ── */
-  --bg: #FAFAF8;
+  /* ── ChopDrop v5 — clean white, not cream ── */
+  --bg: #FFFFFF;
   --card: #FFFFFF;
-  --border: #E5E4E1;
+  --border: #EBEBEB;
   --coral: #E8604C;
   --coral-dark: #D14E3B;
   --emerald: #0D9F5F;
   --gold: #D4A24E;
-  --dark: #141413;
-  --text: #1A1A19;
-  --text-secondary: #71706E;
-  --text-muted: #A3A09D;
-  --sand: #F2F0EC;
+  --dark: #111111;
+  --text: #111111;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --sand: #F5F5F4;
 
   /* Legacy compat */
   --ink: var(--text);
@@ -114,15 +114,11 @@ html { scroll-behavior: smooth; }
   animation: headIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
-/* Pool pulse — live indicator dot */
-@keyframes poolPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.5); }
-}
+/* Pool status dot — static, not pulsing (pulsing dots are an AI tell) */
 .pool-dot {
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--emerald);
-  animation: poolPulse 2s ease-in-out infinite;
+  display: inline-block;
 }
 
 @media (prefers-reduced-motion: reduce) {

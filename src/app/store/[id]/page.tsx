@@ -168,11 +168,11 @@ export default function StorePage() {
           />
         ) : (
           <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ background: "var(--coral)" }}
+            className="w-full h-full flex items-end px-5 pb-4"
+            style={{ background: "var(--sand)" }}
           >
-            <span className="text-[72px] font-extrabold text-white/20">
-              {store.name.charAt(0)}
+            <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)" }}>
+              {store.name}
             </span>
           </div>
         )}
@@ -226,74 +226,22 @@ export default function StorePage() {
         </Link>
       </div>
 
-      {/* ── Store Info ── */}
-      <div
-        className="px-5 py-4 -mt-5 relative z-10 mx-4 rounded-[16px]"
-        style={{
-          background: "var(--card)",
-          border: "1px solid var(--border)",
-        }}
-      >
-        <div className="flex items-center gap-3">
-          {/* Logo */}
-          <div
-            className="w-12 h-12 rounded-[12px] shrink-0 overflow-hidden"
-            style={{ border: "2px solid var(--border)" }}
-          >
-            {store.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={store.imageUrl}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div
-                className="w-full h-full flex items-center justify-center text-[16px] font-extrabold text-white"
-                style={{ background: "var(--coral)" }}
-              >
-                {store.name.charAt(0)}
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1
-              className="text-[24px] font-extrabold leading-tight"
-              style={{ color: "var(--text)" }}
-            >
-              {store.name}
-            </h1>
-            <p
-              className="text-[12px] mt-0.5 truncate"
-              style={{ color: "var(--text-muted)" }}
-            >
-              {store.address}
-            </p>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="flex items-center gap-4 mt-3">
-          <span
-            className="text-[11px] font-bold"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            {store.products.length}{" "}
-            {store.products.length === 1 ? "item" : "items"}
+      {/* ── Store Info — editorial flow, no overlapping card ── */}
+      <div className="px-5 pt-4">
+        <h1 className="text-[22px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
+          {store.name}
+        </h1>
+        <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>
+          {store.address}
+        </p>
+        <div className="flex items-center gap-1.5 mt-2">
+          <span className="text-[11px] font-medium" style={{ color: "var(--text-secondary)" }}>
+            {store.products.length} {store.products.length === 1 ? "item" : "items"}
           </span>
-          <span
-            className="w-[3px] h-[3px] rounded-full"
-            style={{ background: "var(--border)" }}
-          />
-          <div className="flex items-center gap-1.5">
-            <span className="pool-dot" />
-            <span
-              className="text-[12px] font-bold"
-              style={{ color: "var(--emerald)" }}
-            >
-              Pools available · Save up to 35%
-            </span>
-          </div>
+          <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
+          <span className="text-[11px]" style={{ color: "var(--emerald)" }}>
+            Pool to save on any item
+          </span>
         </div>
       </div>
 
