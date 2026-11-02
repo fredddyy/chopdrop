@@ -15,45 +15,72 @@ export async function POST(request: NextRequest) {
   if (event.event === "charge.success") {
     const { reference, amount } = event.data;
 
-    const order = await prisma.order.findFirst({
-      where: { paymentRef: reference },
-    });
-
-    if (!order) {
-      return NextResponse.json({ status: "ok" });
+    // Route by payment reference prefix
+    if (reference.startsWith("instant_")) {
+      await handleInstantOrderPayment(reference, amount);
+    } else {
+      await handleLegacyOrderPayment(reference, amount);
     }
-
-    // Idempotent — skip if already processed
-    if (order.paymentStatus === "SUCCESS") {
-      return NextResponse.json({ status: "ok" });
-    }
-
-    // Verify amount matches
-    if (amount !== order.totalAmount) {
-      await prisma.order.update({
-        where: { id: order.id },
-        data: { paymentStatus: "FAILED", status: "CANCELLED" },
-      });
-      return NextResponse.json({ status: "amount_mismatch" });
-    }
-
-    // Atomic update: confirm order and increment capacity
-    await prisma.$transaction(async (tx) => {
-      await tx.order.update({
-        where: { id: order.id },
-        data: {
-          paymentStatus: "SUCCESS",
-          status: "CONFIRMED",
-          paidAt: new Date(),
-        },
-      });
-
-      await tx.dailyMenu.update({
-        where: { id: order.dailyMenuId },
-        data: { currentOrders: { increment: order.quantity } },
-      });
-    });
   }
 
   return NextResponse.json({ status: "ok" });
+}
+
+// Handle instant-buy product orders
+async function handleInstantOrderPayment(reference: string, amount: number) {
+  const order = await prisma.instantOrder.findFirst({
+    where: { paymentRef: reference },
+  });
+
+  if (!order || order.paymentStatus === "SUCCESS") return;
+
+  if (amount !== order.totalAmount) {
+    await prisma.instantOrder.update({
+      where: { id: order.id },
+      data: { paymentStatus: "FAILED", status: "CANCELLED" },
+    });
+    return;
+  }
+
+  await prisma.instantOrder.update({
+    where: { id: order.id },
+    data: {
+      paymentStatus: "SUCCESS",
+      status: "CONFIRMED",
+      paidAt: new Date(),
+    },
+  });
+}
+
+// Handle legacy food orders (chopdrop_ prefix or no prefix)
+async function handleLegacyOrderPayment(reference: string, amount: number) {
+  const order = await prisma.order.findFirst({
+    where: { paymentRef: reference },
+  });
+
+  if (!order || order.paymentStatus === "SUCCESS") return;
+
+  if (amount !== order.totalAmount) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { paymentStatus: "FAILED", status: "CANCELLED" },
+    });
+    return;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: "SUCCESS",
+        status: "CONFIRMED",
+        paidAt: new Date(),
+      },
+    });
+
+    await tx.dailyMenu.update({
+      where: { id: order.dailyMenuId },
+      data: { currentOrders: { increment: order.quantity } },
+    });
+  });
 }
