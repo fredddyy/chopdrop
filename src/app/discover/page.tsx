@@ -241,7 +241,7 @@ export default function DiscoverPage() {
                   <span className="pool-dot" />
                   <h3 className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>Pool &amp; save</h3>
                 </div>
-                <Link href="/pools" className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>How it works</Link>
+                <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Order together, pay less</span>
               </div>
               <div className="flex gap-2.5 overflow-x-auto hide-scrollbar pl-5 pr-3">
                 {poolProducts.map((p, idx) => {
