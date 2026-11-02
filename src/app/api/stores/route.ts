@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
 
   const where: Record<string, unknown> = { isActive: true, products: { some: { isActive: true } } };
 
-  // Filter stores that sell products in this category
   if (category && category !== "All") {
     where.products = { some: { isActive: true, category } };
   }
@@ -23,7 +22,15 @@ export async function GET(request: NextRequest) {
       sortOrder: true,
       products: {
         where: { isActive: true },
-        select: { category: true, retailPrice: true, groupPrice: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+          category: true,
+          retailPrice: true,
+          groupPrice: true,
+        },
       },
     },
     orderBy: { sortOrder: "asc" },
@@ -35,6 +42,11 @@ export async function GET(request: NextRequest) {
       const pct = p.retailPrice > 0 ? Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100) : 0;
       return pct > max ? pct : max;
     }, 0);
+    const lowestPrice = Math.min(...s.products.map((p) => p.retailPrice));
+    const previews = s.products
+      .filter((p) => p.imageUrl)
+      .slice(0, 4)
+      .map((p) => ({ id: p.id, name: p.name, imageUrl: p.imageUrl }));
 
     return {
       id: s.id,
@@ -45,10 +57,11 @@ export async function GET(request: NextRequest) {
       productCount: s.products.length,
       categories,
       bestSaving,
+      lowestPrice,
+      previews,
     };
   });
 
-  // All product categories for the filter bar
   const allCategories = await prisma.product.findMany({
     where: { isActive: true },
     select: { category: true },
