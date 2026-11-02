@@ -142,12 +142,19 @@ export default function DiscoverPage() {
       ) : (
         <div className="pb-4">
 
+          {/* ═══ VALUE PROP — one line, first-time context ═══ */}
+          <div className="px-5 mt-4 mb-1 flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <p className="text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+              Buy at full price, or <span style={{ color: "var(--emerald)" }}>pool with others to save up to 35%</span>
+            </p>
+          </div>
+
           {/* ═══ HERO — image on top, text below (food breathes) ═══ */}
           {featured && (() => {
             const sav = pct(featured.retailPrice, featured.groupPrice);
             return (
-              <Link href={`/product/${featured.id}`} className="block mx-5 mt-4 rounded-[20px] overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                {/* Image — no scrim, let the food breathe */}
+              <Link href={`/product/${featured.id}`} className="block mx-5 mt-3 rounded-[20px] overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <div className="relative h-[200px]" style={{ background: "var(--sand)" }}>
                   {featured.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -157,13 +164,12 @@ export default function DiscoverPage() {
                       <span className="text-[48px] font-extrabold text-white/20">{featured.name.charAt(0)}</span>
                     </div>
                   )}
-                  {sav >= 15 && (
+                  {sav >= 10 && (
                     <div className="absolute top-3 left-3 px-2.5 py-1 rounded-[6px] text-[11px] font-bold text-white" style={{ background: "var(--emerald)" }}>
                       Save {sav}%
                     </div>
                   )}
                 </div>
-                {/* Text below image — clean, readable */}
                 <div className="p-4">
                   <div className="flex items-center gap-2">
                     <h2 className="text-[18px] font-extrabold leading-tight flex-1" style={{ color: "var(--text)" }}>{featured.name}</h2>
@@ -172,11 +178,14 @@ export default function DiscoverPage() {
                   <div className="flex items-baseline gap-3 mt-2">
                     <span className="text-[13px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(featured.retailPrice)}</span>
                     <span className="text-[26px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(featured.groupPrice)}</span>
-                    <span className="text-[12px] font-semibold" style={{ color: "var(--text-muted)" }}>with {featured.minPoolSize}+ people</span>
+                    {featured.category !== "Food" && (
+                      <span className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>with {featured.minPoolSize}+ people</span>
+                    )}
                   </div>
                   <div className="flex gap-2.5 mt-3">
-                    <div className="flex-1 h-12 rounded-[12px] flex items-center justify-center text-[14px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                      Start a Pool
+                    <div className="flex-1 h-12 rounded-[12px] flex items-center justify-center gap-1.5 text-[14px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+                      Pool &amp; Save
                     </div>
                     <div className="h-12 px-5 rounded-[12px] flex items-center justify-center text-[14px] font-bold" style={{ background: "var(--sand)", color: "var(--text)" }}>
                       Buy {fmt(featured.retailPrice)}
