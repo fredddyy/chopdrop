@@ -87,6 +87,44 @@ html { scroll-behavior: smooth; }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Entrance stagger system ── */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-enter {
+  animation: cardIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+.card-enter-1 { animation-delay: 0ms; }
+.card-enter-2 { animation-delay: 70ms; }
+.card-enter-3 { animation-delay: 140ms; }
+.card-enter-4 { animation-delay: 210ms; }
+.card-enter-5 { animation-delay: 280ms; }
+.card-enter-6 { animation-delay: 350ms; }
+.card-enter-7 { animation-delay: 420ms; }
+.card-enter-8 { animation-delay: 490ms; }
+
+/* Section heading entrance */
+@keyframes headIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.head-enter {
+  animation: headIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Pool pulse — live indicator dot */
+@keyframes poolPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.5); }
+}
+.pool-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--emerald);
+  animation: poolPulse 2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

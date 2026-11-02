@@ -225,7 +225,7 @@ export default function DiscoverPage() {
         <div className="px-5 pt-4 flex flex-col gap-3.5">
 
           {/* Value prop */}
-          <div className="flex items-center gap-2 px-1">
+          <div className="flex items-center gap-2 px-1 head-enter">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
@@ -245,7 +245,7 @@ export default function DiscoverPage() {
               <Link
                 key={store.id}
                 href={`/store/${store.id}`}
-                className="block rounded-[16px] overflow-hidden active:scale-[0.985] transition-transform"
+                className={`block rounded-[16px] overflow-hidden active:scale-[0.985] transition-transform card-enter card-enter-${(idx % 8) + 1}`}
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
               >
                 {/* ── Photo ── */}
@@ -277,22 +277,28 @@ export default function DiscoverPage() {
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h2 className="text-[17px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
+                      <h2 className="text-[18px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
                         {store.name}
                       </h2>
-                      <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
                         {store.productCount} {store.productCount === 1 ? "item" : "items"} · {store.categories.join(", ")}
                       </p>
                     </div>
-                    {store.bestSaving >= 10 && !hasPromo && (
-                      <span
-                        className="text-[11px] font-extrabold px-2.5 py-1 rounded-[6px] shrink-0"
-                        style={{ background: "rgba(13,159,95,0.1)", color: "var(--emerald)" }}
-                      >
-                        -{store.bestSaving}%
-                      </span>
-                    )}
+                    {/* Arrow indicator — card is tappable */}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0">
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
                   </div>
+
+                  {/* Pool pulse — the ChopDrop signature */}
+                  {store.bestSaving >= 10 && (
+                    <div className="flex items-center gap-1.5 mt-2.5">
+                      <span className="pool-dot" />
+                      <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>
+                        Pools open · Save up to {store.bestSaving}%
+                      </span>
+                    </div>
+                  )}
 
                   {/* Preview row + price */}
                   <div className="flex items-center justify-between mt-3">
@@ -324,7 +330,7 @@ export default function DiscoverPage() {
 
                     <div className="text-right shrink-0">
                       <span className="text-[10px] font-semibold" style={{ color: "var(--text-muted)" }}>From </span>
-                      <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>
+                      <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>
                         {fmt(store.lowestPrice)}
                       </span>
                     </div>
