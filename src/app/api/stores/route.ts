@@ -48,17 +48,30 @@ export async function GET(request: NextRequest) {
       .slice(0, 4)
       .map((p) => ({ id: p.id, name: p.name, imageUrl: p.imageUrl }));
 
+    // Best available cover: product photos are reliable (Unsplash), banners may be null
+    const firstProductImg = s.products.find((p) => p.imageUrl)?.imageUrl ?? null;
+    const heroImage = firstProductImg || s.bannerUrl;
+
+    // Best deal name for promo overlay
+    const bestDeal = s.products.reduce<{ name: string; saving: number } | null>((best, p) => {
+      const sv = p.retailPrice > 0 ? Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100) : 0;
+      if (!best || sv > best.saving) return { name: p.name, saving: sv };
+      return best;
+    }, null);
+
     return {
       id: s.id,
       name: s.name,
       address: s.address,
       imageUrl: s.imageUrl,
       bannerUrl: s.bannerUrl,
+      heroImage,
       productCount: s.products.length,
       categories,
       bestSaving,
       lowestPrice,
       previews,
+      bestDealName: bestDeal?.name ?? null,
     };
   });
 
