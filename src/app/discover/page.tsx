@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
@@ -29,10 +29,49 @@ function fmt(kobo: number): string {
   return "\u20A6" + (kobo / 100).toLocaleString();
 }
 
+/* Bulletproof image — tries src, falls back to fallback, then warm placeholder */
+function CoverImage({ src, fallback, alt, height }: { src: string | null; fallback?: string | null; alt: string; height: number }) {
+  const [imgSrc, setImgSrc] = useState(src);
+  const [failed, setFailed] = useState(false);
+
+  const handleError = useCallback(() => {
+    if (fallback && imgSrc !== fallback) {
+      setImgSrc(fallback);
+    } else {
+      setFailed(true);
+    }
+  }, [fallback, imgSrc]);
+
+  if (failed || !imgSrc) {
+    // Warm placeholder — intentional, not broken
+    const initial = alt.charAt(0).toUpperCase();
+    const colors = ["#C4572A", "#D4A24E", "#1A7D4B", "#2D2A26", "#E8604C"];
+    const bg = colors[initial.charCodeAt(0) % colors.length];
+    return (
+      <div className="w-full flex items-center justify-center" style={{ height, background: bg }}>
+        <span className="text-[64px] font-extrabold" style={{ color: "rgba(255,255,255,0.12)" }}>{initial}</span>
+      </div>
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={imgSrc}
+      alt={alt}
+      className="w-full object-cover"
+      style={{ height }}
+      onError={handleError}
+    />
+  );
+}
+
 export default function DiscoverPage() {
   const [stores, setStores] = useState<Store[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const cart = useCart();
 
@@ -53,6 +92,11 @@ export default function DiscoverPage() {
     setLoading(false);
   }
 
+  // Client-side search filter
+  const filtered = searchQuery.trim().length >= 2
+    ? stores.filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.categories.some((c) => c.toLowerCase().includes(searchQuery.toLowerCase())))
+    : stores;
+
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
@@ -65,21 +109,65 @@ export default function DiscoverPage() {
           <span className="text-[20px] font-extrabold tracking-[-0.03em]" style={{ color: "var(--text)" }}>
             Chop<span style={{ color: "var(--coral)" }}>Drop</span>
           </span>
-          <Link
-            href="/cart"
-            className="relative w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: "var(--sand)" }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round">
-              <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
-            </svg>
-            {cart.totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
-                {cart.totalItems}
-              </span>
-            )}
-          </Link>
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
+              style={{ background: searchOpen ? "var(--dark)" : "var(--sand)" }}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={searchOpen ? "white" : "var(--text)"} strokeWidth="2.2" strokeLinecap="round">
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+            <Link
+              href="/cart"
+              className="relative w-9 h-9 rounded-full flex items-center justify-center"
+              style={{ background: "var(--sand)" }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round">
+                <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
+              </svg>
+              {cart.totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
+                  {cart.totalItems}
+                </span>
+              )}
+            </Link>
+          </div>
         </div>
+
+        {/* Search bar */}
+        {searchOpen && (
+          <div className="px-5 pb-3">
+            <div className="relative">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search stores..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+                className="w-full h-11 pl-10 pr-10 rounded-[12px] text-[14px] font-medium outline-none"
+                style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer"
+                  style={{ background: "var(--border)" }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Category tabs */}
         <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 pb-3">
@@ -119,20 +207,24 @@ export default function DiscoverPage() {
             </div>
           ))}
         </div>
-      ) : stores.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="py-20 text-center px-8">
           <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: "var(--sand)" }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
             </svg>
           </div>
-          <h2 className="text-[18px] font-extrabold mb-1" style={{ color: "var(--text)" }}>No stores in {activeCategory} yet</h2>
-          <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>New vendors join every week.</p>
+          <h2 className="text-[18px] font-extrabold mb-1" style={{ color: "var(--text)" }}>
+            {searchQuery ? `No stores for "${searchQuery}"` : `No stores in ${activeCategory} yet`}
+          </h2>
+          <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>
+            {searchQuery ? "Try a different search" : "New vendors join every week."}
+          </p>
         </div>
       ) : (
         <div className="px-5 pt-4 flex flex-col gap-3.5">
 
-          {/* Value prop — subtle, one line */}
+          {/* Value prop */}
           <div className="flex items-center gap-2 px-1">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -142,11 +234,12 @@ export default function DiscoverPage() {
             </p>
           </div>
 
-          {/* ═══ STORE CARDS — Chowdeck-style, photo-forward ═══ */}
-          {stores.map((store, idx) => {
-            // First card slightly taller for hero treatment
+          {/* ═══ STORE CARDS ═══ */}
+          {filtered.map((store, idx) => {
             const imgHeight = idx === 0 ? 200 : 170;
             const hasPromo = store.bestSaving >= 15 && store.bestDealName;
+            // Best fallback image from product previews
+            const fallbackImg = store.previews.find((p) => p.imageUrl)?.imageUrl ?? null;
 
             return (
               <Link
@@ -155,49 +248,40 @@ export default function DiscoverPage() {
                 className="block rounded-[16px] overflow-hidden active:scale-[0.985] transition-transform"
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
               >
-                {/* ── Full-width photo ── */}
-                <div className="relative" style={{ height: imgHeight, background: "var(--sand)" }}>
-                  {store.heroImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={store.heroImage}
-                      alt={store.name}
-                      className="w-full h-full object-cover"
-                      loading={idx < 2 ? "eager" : "lazy"}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--coral)" }}>
-                      <span className="text-[56px] font-extrabold text-white/10">{store.name.charAt(0)}</span>
-                    </div>
-                  )}
+                {/* ── Photo ── */}
+                <div className="relative overflow-hidden">
+                  <CoverImage
+                    src={store.heroImage}
+                    fallback={fallbackImg !== store.heroImage ? fallbackImg : null}
+                    alt={store.name}
+                    height={imgHeight}
+                  />
 
-                  {/* Promo overlay — like Chowdeck's "Huge Price Slash" */}
+                  {/* Promo overlay — warm tint, not dark */}
                   {hasPromo && (
-                    <div className="absolute bottom-0 left-0 right-0 px-4 py-2.5" style={{ background: "rgba(0,0,0,0.5)" }}>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
-                            <path d="M19 14l-7 7-7-7" /><path d="M12 3v18" />
-                          </svg>
-                        </div>
-                        <span className="text-[12px] font-bold text-white truncate">
-                          Save {store.bestSaving}% on {store.bestDealName}
-                        </span>
-                      </div>
+                    <div
+                      className="absolute bottom-0 left-0 right-0 px-3.5 py-2.5 flex items-center gap-2"
+                      style={{ background: "rgba(26,125,75,0.88)" }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" className="shrink-0">
+                        <path d="M20 12H4M4 12l6-6M4 12l6 6" />
+                      </svg>
+                      <span className="text-[12px] font-bold text-white truncate">
+                        Save {store.bestSaving}% on {store.bestDealName}
+                      </span>
                     </div>
                   )}
                 </div>
 
-                {/* ── Store info ── */}
+                {/* ── Info ── */}
                 <div className="p-4">
-                  {/* Name + meta row */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h2 className="text-[17px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
                         {store.name}
                       </h2>
                       <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-                        {store.productCount} items{store.categories.length > 0 && <> · {store.categories.join(", ")}</>}
+                        {store.productCount} {store.productCount === 1 ? "item" : "items"} · {store.categories.join(", ")}
                       </p>
                     </div>
                     {store.bestSaving >= 10 && !hasPromo && (
@@ -210,9 +294,8 @@ export default function DiscoverPage() {
                     )}
                   </div>
 
-                  {/* Product preview row + price */}
+                  {/* Preview row + price */}
                   <div className="flex items-center justify-between mt-3">
-                    {/* Thumbnail stack */}
                     {store.previews.length > 0 && (
                       <div className="flex items-center gap-1.5">
                         <div className="flex -space-x-2">
@@ -222,9 +305,11 @@ export default function DiscoverPage() {
                               className="w-9 h-9 rounded-full overflow-hidden shrink-0"
                               style={{ border: "2px solid var(--card)" }}
                             >
-                              {p.imageUrl && (
+                              {p.imageUrl ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full" style={{ background: "var(--sand)" }} />
                               )}
                             </div>
                           ))}
@@ -237,7 +322,6 @@ export default function DiscoverPage() {
                       </div>
                     )}
 
-                    {/* Price anchor */}
                     <div className="text-right shrink-0">
                       <span className="text-[10px] font-semibold" style={{ color: "var(--text-muted)" }}>From </span>
                       <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>
