@@ -12,8 +12,15 @@ interface Product {
   vendor: { id: string; name: string; imageUrl: string | null };
 }
 
-function formatPrice(kobo: number): string { return "₦" + (kobo / 100).toLocaleString(); }
-function savingsPct(r: number, g: number): number { return r > 0 && g < r ? Math.round(((r - g) / r) * 100) : 0; }
+function fmt(kobo: number): string { return "₦" + (kobo / 100).toLocaleString(); }
+function pct(r: number, g: number): number { return r > 0 && g < r ? Math.round(((r - g) / r) * 100) : 0; }
+
+function tagLabel(p: Product): { text: string; bg: string } | null {
+  if (p.tags?.includes("new")) return { text: "New", bg: "var(--dark)" };
+  if (p.tags?.includes("trending")) return { text: "Popular", bg: "var(--coral)" };
+  if (p.tags?.includes("healthy")) return { text: "Healthy", bg: "var(--emerald)" };
+  return null;
+}
 
 export default function DiscoverPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,13 +54,14 @@ export default function DiscoverPage() {
     else if (q.trim().length === 0) fetchProducts();
   }
 
-  // Pick the best featured product: prefer Food with image, then any with image
+  // Featured: best food product with image
   const featured = products.find(p => p.category === "Food" && p.imageUrl) || products.find(p => p.imageUrl) || products[0] || null;
   const featuredId = featured?.id;
-  // Trending excludes the featured product
+  // Trending: exclude featured, unique items
   const trending = products.filter(p => p.tags?.includes("trending") && p.id !== featuredId).slice(0, 6);
-  // Grid excludes featured
-  const grid = products.filter(p => p.id !== featuredId);
+  const trendingIds = new Set([featuredId, ...trending.map(p => p.id)]);
+  // Grid: exclude featured AND trending to avoid repetition
+  const grid = products.filter(p => !trendingIds.has(p.id));
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
@@ -72,7 +80,6 @@ export default function DiscoverPage() {
             </Link>
           </div>
         </div>
-
         {searchOpen && (
           <div className="px-5 pb-3">
             <div className="relative">
@@ -87,7 +94,6 @@ export default function DiscoverPage() {
             </div>
           </div>
         )}
-
         <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 pb-3">
           {(categories.length > 0 ? categories : ["All", "Food", "Electronics", "Fashion", "Groceries"]).map(cat => (
             <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
@@ -102,11 +108,17 @@ export default function DiscoverPage() {
       {/* ── Content ── */}
       {loading ? (
         <div className="px-5 pt-4">
-          <div className="h-[220px] rounded-[20px] mb-4" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div className="rounded-[20px] overflow-hidden mb-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="h-[200px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+            <div className="p-4 space-y-2">
+              <div className="h-5 rounded w-[60%]" style={{ background: "var(--sand)" }} />
+              <div className="h-7 rounded w-[40%]" style={{ background: "var(--sand)" }} />
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             {[0, 1, 2, 3].map(i => (
               <div key={i} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <div className="h-[140px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
+                <div className="h-[130px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
                 <div className="p-3 space-y-2">
                   <div className="h-3 rounded w-[75%]" style={{ background: "var(--sand)" }} />
                   <div className="h-5 rounded w-[50%]" style={{ background: "var(--sand)" }} />
@@ -124,18 +136,19 @@ export default function DiscoverPage() {
             {searchQuery ? `No results for "${searchQuery}"` : `Nothing in ${activeCategory} yet`}
           </h2>
           <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>
-            {searchQuery ? "Try a different search or browse categories" : "New products added weekly. Check back soon."}
+            {searchQuery ? "Try a different search or browse categories" : "New products added weekly."}
           </p>
         </div>
       ) : (
         <div className="pb-4">
 
-          {/* ═══ HERO — best product, dominant visual ═══ */}
+          {/* ═══ HERO — image on top, text below (food breathes) ═══ */}
           {featured && (() => {
-            const sav = savingsPct(featured.retailPrice, featured.groupPrice);
+            const sav = pct(featured.retailPrice, featured.groupPrice);
             return (
-              <Link href={`/product/${featured.id}`} className="block mx-5 mt-4 rounded-[20px] overflow-hidden relative active:scale-[0.98] transition-transform">
-                <div className="relative h-[220px]" style={{ background: "var(--dark)" }}>
+              <Link href={`/product/${featured.id}`} className="block mx-5 mt-4 rounded-[20px] overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                {/* Image — no scrim, let the food breathe */}
+                <div className="relative h-[200px]" style={{ background: "var(--sand)" }}>
                   {featured.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={featured.imageUrl} alt={featured.name} className="w-full h-full object-cover" />
@@ -144,22 +157,29 @@ export default function DiscoverPage() {
                       <span className="text-[48px] font-extrabold text-white/20">{featured.name.charAt(0)}</span>
                     </div>
                   )}
-                  {/* Bottom half scrim for text readability */}
-                  <div className="absolute bottom-0 left-0 right-0 h-[65%]" style={{ background: "rgba(0,0,0,0.55)" }} />
-                  {/* Content */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-5">
-                    <h2 className="text-[20px] font-extrabold text-white leading-tight">{featured.name}</h2>
-                    <p className="text-[12px] text-white/50 mt-1">{featured.vendor.name}</p>
-                    <div className="flex items-center gap-3 mt-2.5">
-                      <span className="text-[26px] font-extrabold text-white tabular-nums">{formatPrice(featured.retailPrice)}</span>
-                      {sav > 0 && (
-                        <span className="text-[12px] font-bold px-2 py-0.5 rounded-[6px] text-white" style={{ background: "var(--emerald)" }}>
-                          or {formatPrice(featured.groupPrice)} with pool
-                        </span>
-                      )}
+                  {sav >= 15 && (
+                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-[6px] text-[11px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                      Save {sav}%
                     </div>
-                    <div className="mt-3 h-12 rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                      Buy Now · {formatPrice(featured.retailPrice)}
+                  )}
+                </div>
+                {/* Text below image — clean, readable */}
+                <div className="p-4">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-[18px] font-extrabold leading-tight flex-1" style={{ color: "var(--text)" }}>{featured.name}</h2>
+                    <span className="text-[11px] font-bold shrink-0" style={{ color: "var(--text-muted)" }}>{featured.vendor.name}</span>
+                  </div>
+                  <div className="flex items-baseline gap-3 mt-2">
+                    <span className="text-[13px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(featured.retailPrice)}</span>
+                    <span className="text-[26px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(featured.groupPrice)}</span>
+                    <span className="text-[12px] font-semibold" style={{ color: "var(--text-muted)" }}>with {featured.minPoolSize}+ people</span>
+                  </div>
+                  <div className="flex gap-2.5 mt-3">
+                    <div className="flex-1 h-12 rounded-[12px] flex items-center justify-center text-[14px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                      Start a Pool
+                    </div>
+                    <div className="h-12 px-5 rounded-[12px] flex items-center justify-center text-[14px] font-bold" style={{ background: "var(--sand)", color: "var(--text)" }}>
+                      Buy {fmt(featured.retailPrice)}
                     </div>
                   </div>
                 </div>
@@ -167,7 +187,7 @@ export default function DiscoverPage() {
             );
           })()}
 
-          {/* ═══ TRENDING — horizontal scroll ═══ */}
+          {/* ═══ TRENDING — no duplicates from hero or grid ═══ */}
           {trending.length > 1 && activeCategory === "All" && (
             <section className="mt-8">
               <div className="px-5 mb-3">
@@ -175,7 +195,8 @@ export default function DiscoverPage() {
               </div>
               <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 pb-1">
                 {trending.map(p => {
-                  const sav = savingsPct(p.retailPrice, p.groupPrice);
+                  const sav = pct(p.retailPrice, p.groupPrice);
+                  const tag = tagLabel(p);
                   return (
                     <Link key={p.id} href={`/product/${p.id}`} className="shrink-0 w-[150px] rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                       <div className="relative h-[120px]" style={{ background: "var(--sand)" }}>
@@ -183,8 +204,8 @@ export default function DiscoverPage() {
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
-                            <span className="text-[24px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</span>
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-[24px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.12 }}>{p.name.charAt(0)}</span>
                           </div>
                         )}
                         {sav > 0 && (
@@ -193,7 +214,10 @@ export default function DiscoverPage() {
                       </div>
                       <div className="p-2.5">
                         <h4 className="text-[13px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                        <div className="text-[16px] font-extrabold tabular-nums mt-1" style={{ color: "var(--text)" }}>{formatPrice(p.retailPrice)}</div>
+                        <div className="flex items-baseline gap-1.5 mt-1">
+                          <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
+                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                        </div>
                       </div>
                     </Link>
                   );
@@ -202,48 +226,56 @@ export default function DiscoverPage() {
             </section>
           )}
 
-          {/* ═══ ALL PRODUCTS — clean grid, card is the tap target ═══ */}
-          <section className="mt-8 px-5">
-            <h3 className="text-[17px] font-extrabold mb-3" style={{ color: "var(--text)" }}>
-              {activeCategory === "All" ? "All products" : activeCategory}
-            </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {grid.map((p, idx) => {
-                const sav = savingsPct(p.retailPrice, p.groupPrice);
-                return (
-                  <Link key={p.id} href={`/product/${p.id}`}
-                    className="rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform"
-                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                    <div className="relative" style={{ height: idx % 3 === 0 ? 160 : 140, background: "var(--sand)" }}>
-                      {p.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.12 }}>{p.name.charAt(0)}</span>
-                        </div>
-                      )}
-                      {sav > 0 && (
-                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                          -{sav}%
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-3">
-                      <h3 className="text-[14px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.name}</h3>
-                      <p className="text-[10px] mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                      <div className="flex items-baseline gap-2 mt-2">
-                        <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(p.retailPrice)}</span>
-                        {sav > 0 && (
-                          <span className="text-[11px] font-bold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(p.groupPrice)}</span>
+          {/* ═══ ALL PRODUCTS — card is tap target, personality via tags ═══ */}
+          {grid.length > 0 && (
+            <section className="mt-8 px-5">
+              <h3 className="text-[17px] font-extrabold mb-3" style={{ color: "var(--text)" }}>
+                {activeCategory === "All" ? "All products" : activeCategory}
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {grid.map((p, idx) => {
+                  const sav = pct(p.retailPrice, p.groupPrice);
+                  const tag = tagLabel(p);
+                  return (
+                    <Link key={p.id} href={`/product/${p.id}`}
+                      className="rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform"
+                      style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                      <div className="relative" style={{ height: idx % 3 === 0 ? 155 : 135, background: "var(--sand)" }}>
+                        {p.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.1 }}>{p.name.charAt(0)}</span>
+                          </div>
+                        )}
+                        {/* Tag — top left */}
+                        {tag && (
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-[5px] text-[9px] font-bold text-white" style={{ background: tag.bg }}>
+                            {tag.text}
+                          </div>
+                        )}
+                        {/* Savings — top right */}
+                        {sav > 0 && !tag && (
+                          <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                            -{sav}%
+                          </div>
                         )}
                       </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
+                      <div className="p-3">
+                        <h3 className="text-[14px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.name}</h3>
+                        <p className="text-[10px] mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                        <div className="flex items-baseline gap-2 mt-2">
+                          <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
+                          <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          )}
         </div>
       )}
 
