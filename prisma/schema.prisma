@@ -19,8 +19,10 @@ model User {
   officeId     String?
   createdAt    DateTime @default(now())
 
+  areaName          String?            // "Ikeja", "Victoria Island" — for location-based discovery
   office            Office?            @relation(fields: [officeId], references: [id])
   orders            Order[]
+  instantOrders     InstantOrder[]
   walletId          String?
   wallet            CreditWallet?      @relation(fields: [walletId], references: [id])
   pushSubscriptions PushSubscription[]
@@ -71,6 +73,7 @@ model Restaurant {
 
   zone           Zone?          @relation(fields: [zoneId], references: [id])
   meals          Meal[]
+  products       Product[]
   menuCategories MenuCategory[]
 }
 
@@ -327,7 +330,55 @@ model Promo {
 }
 
 // ═══════════════════════════════════════
-// GROUP DEALS — Pinduoduo-style bulk buying
+// PRODUCT CATALOG — Social commerce items
+// ═══════════════════════════════════════
+
+model Product {
+  id            String   @id @default(cuid())
+  vendorId      String
+  name          String
+  description   String?
+  imageUrl      String?
+  category      String   @default("Food")       // Food, Electronics, Fashion, Groceries, Home
+  subcategory   String?                          // "Jollof Rice", "Laptops", "Dresses"
+  retailPrice   Int                              // kobo — full/instant-buy price
+  groupPrice    Int                              // kobo — price when pool fills
+  minPoolSize   Int      @default(10)            // minimum buyers for group price
+  poolTiers     Json?                            // [{min:5, price:X}, {min:10, price:Y}] progressive
+  maxQuantity   Int      @default(100)           // inventory limit per pool cycle
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  tags          String?                          // comma-separated: "trending,new,limited"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  vendor        Restaurant     @relation(fields: [vendorId], references: [id])
+  instantOrders InstantOrder[]
+}
+
+model InstantOrder {
+  id              String        @id @default(cuid())
+  orderCode       String        @unique
+  productId       String
+  userId          String
+  quantity        Int           @default(1)
+  unitPrice       Int                              // kobo — retail price at time of purchase
+  totalAmount     Int                              // kobo
+  deliveryAddress String?
+  deliveryFee     Int           @default(0)        // kobo
+  serviceFee      Int           @default(0)        // kobo
+  paymentRef      String?       @unique
+  paymentStatus   PaymentStatus @default(PENDING)
+  status          OrderStatus   @default(PENDING)
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+}
+
+// ═══════════════════════════════════════
+// GROUP DEALS — Pinduoduo-style bulk buying (legacy, to be replaced by Pools in Phase 2)
 // ═══════════════════════════════════════
 
 model Deal {
