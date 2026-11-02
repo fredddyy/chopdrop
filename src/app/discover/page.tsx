@@ -21,6 +21,7 @@ interface Store {
   categories: string[];
   bestSaving: number;
   lowestPrice: number;
+  lowestGroupPrice: number;
   previews: Preview[];
   bestDealName: string | null;
   topItems: string[];
@@ -45,13 +46,11 @@ function CoverImage({ src, fallback, alt, height }: { src: string | null; fallba
   }, [fallback, imgSrc]);
 
   if (failed || !imgSrc) {
-    // Warm placeholder — intentional, not broken
-    const initial = alt.charAt(0).toUpperCase();
-    const colors = ["#C4572A", "#D4A24E", "#1A7D4B", "#2D2A26", "#E8604C"];
-    const bg = colors[initial.charCodeAt(0) % colors.length];
     return (
-      <div className="w-full flex items-center justify-center" style={{ height, background: bg }}>
-        <span className="text-[64px] font-extrabold" style={{ color: "rgba(255,255,255,0.12)" }}>{initial}</span>
+      <div className="w-full flex items-end px-4 pb-3" style={{ height, background: "var(--sand)" }}>
+        <span className="text-[13px] font-bold" style={{ color: "var(--text-muted)" }}>
+          {alt}
+        </span>
       </div>
     );
   }
@@ -108,9 +107,12 @@ export default function DiscoverPage() {
         style={{ background: "rgba(250,250,248,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
       >
         <div className="px-5 h-14 flex items-center justify-between">
-          <span className="text-[20px] font-extrabold tracking-[-0.03em]" style={{ color: "var(--text)" }}>
-            Chop<span style={{ color: "var(--coral)" }}>Drop</span>
-          </span>
+          <div>
+            <span className="text-[20px] font-extrabold tracking-[-0.03em]" style={{ color: "var(--text)" }}>
+              Chop<span style={{ color: "var(--coral)" }}>Drop</span>
+            </span>
+            <p className="text-[10px] font-medium -mt-1" style={{ color: "var(--text-muted)" }}>Order lunch, save together</p>
+          </div>
           <div className="flex items-center gap-2.5">
             <button
               type="button"
@@ -223,16 +225,6 @@ export default function DiscoverPage() {
       ) : (
         <div className="px-5 pt-3 flex flex-col gap-3">
 
-          {/* Value prop */}
-          <div className="flex items-center gap-2 px-1 head-enter">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <p className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>
-              Pool with others to <span style={{ color: "var(--emerald)" }}>save up to 35%</span> on every order
-            </p>
-          </div>
-
           {/* ═══ STORE CARDS ═══ */}
           {filtered.map((store, idx) => {
             const imgHeight = idx === 0 ? 150 : 125;
@@ -280,24 +272,30 @@ export default function DiscoverPage() {
                       <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
                         {store.topItems.length > 0 ? store.topItems.join(", ") : `${store.productCount} items`}
                       </p>
-                      {/* Line 2: delivery + pool status */}
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>
-                        {store.bestSaving >= 10 && (
-                          <>
-                            <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
-                            <span className="pool-dot" />
-                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Save up to {store.bestSaving}%</span>
-                          </>
-                        )}
-                      </div>
+                      {/* Line 2: delivery time */}
+                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                        {store.deliveryEstimate}
+                      </p>
                     </div>
-                    {/* Price with context */}
+                    {/* Two-price display — instant value prop */}
                     <div className="text-right shrink-0 mt-0.5">
-                      <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>From</span>
-                      <div className="text-[17px] font-extrabold tabular-nums leading-tight" style={{ color: "var(--text)" }}>
-                        {fmt(store.lowestPrice)}
-                      </div>
+                      {store.lowestGroupPrice < store.lowestPrice ? (
+                        <>
+                          <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
+                            {fmt(store.lowestPrice)}
+                          </span>
+                          <div className="text-[17px] font-extrabold tabular-nums leading-tight" style={{ color: "var(--emerald)" }}>
+                            {fmt(store.lowestGroupPrice)}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>From</span>
+                          <div className="text-[17px] font-extrabold tabular-nums leading-tight" style={{ color: "var(--text)" }}>
+                            {fmt(store.lowestPrice)}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

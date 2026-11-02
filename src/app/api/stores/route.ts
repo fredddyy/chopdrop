@@ -47,9 +47,11 @@ export async function GET(request: NextRequest) {
       const pct = p.retailPrice > 0 ? Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100) : 0;
       return pct > max ? pct : max;
     }, 0);
-    const lowestPrice = relevant.length > 0
-      ? Math.min(...relevant.map((p) => p.retailPrice))
-      : Math.min(...s.products.map((p) => p.retailPrice));
+    // Cheapest product for two-price display
+    const cheapest = (relevant.length > 0 ? relevant : s.products)
+      .reduce((min, p) => (p.retailPrice < min.retailPrice ? p : min));
+    const lowestPrice = cheapest.retailPrice;
+    const lowestGroupPrice = cheapest.groupPrice;
 
     // Hero image: from the category-relevant products first
     const relevantImg = relevant.find((p) => p.imageUrl)?.imageUrl ?? null;
@@ -77,6 +79,7 @@ export async function GET(request: NextRequest) {
       categories,
       bestSaving,
       lowestPrice,
+      lowestGroupPrice,
       bestDealName: bestDeal?.name ?? null,
       topItems,
       // Vary delivery estimate by store sort order for realism
