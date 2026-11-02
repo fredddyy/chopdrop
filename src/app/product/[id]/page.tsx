@@ -103,8 +103,8 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Price card — overlaps hero */}
-      <div className="mx-5 -mt-4 rounded-[20px] p-5 relative z-10" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-        <h1 className="text-[22px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>{product.name}</h1>
+      <div className="card-enter card-enter-1 mx-5 -mt-4 rounded-[20px] p-5 relative z-10" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+        <h1 className="text-[26px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>{product.name}</h1>
 
         {/* Vendor */}
         <div className="flex items-center gap-2 mt-2">
@@ -121,13 +121,13 @@ export default function ProductDetailPage() {
 
         {/* Prices */}
         <div className="mt-4">
-          <div className="text-[28px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(product.retailPrice)}</div>
+          <div className="text-[32px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatPrice(product.retailPrice)}</div>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(product.groupPrice)}</span>
+            <span className="text-[26px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{formatPrice(product.groupPrice)}</span>
             <span className="text-[14px]" style={{ color: "var(--text-secondary)" }}>with {product.minPoolSize} people</span>
           </div>
           {savings > 0 && (
-            <div className="text-[14px] font-bold mt-1" style={{ color: "var(--emerald)" }}>
+            <div className="text-[13px] font-bold mt-1" style={{ color: "var(--emerald)" }}>
               You save {formatPrice(savedAmount)} ({savings}%)
             </div>
           )}
@@ -157,6 +157,32 @@ export default function ProductDetailPage() {
               <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{s.text}</span>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Pool tier tracker — THE ChopDrop signature */}
+      <div className="mx-5 mt-4 p-4 rounded-[16px]" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Pool progress</h3>
+          <div className="flex items-center gap-1.5">
+            <span className="pool-dot" />
+            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Open</span>
+          </div>
+        </div>
+        <div className="h-[6px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+          <div className="h-full rounded-full transition-all" style={{ width: "15%", background: "var(--emerald)" }} />
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>0 joined</span>
+          <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>{product.minPoolSize} needed</span>
+        </div>
+        <div className="mt-3 px-3 py-2 rounded-[8px] flex items-center gap-2" style={{ background: "rgba(13,159,95,0.08)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          <span className="text-[12px] font-semibold" style={{ color: "var(--emerald)" }}>
+            {product.minPoolSize} people unlock {formatPrice(product.retailPrice - product.groupPrice)} savings each
+          </span>
         </div>
       </div>
 
@@ -202,7 +228,7 @@ export default function ProductDetailPage() {
           <button type="button"
             className="flex-[55] h-[50px] rounded-[12px] flex items-center justify-between px-4 text-[14px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform"
             style={{ background: "var(--coral)" }}>
-            <span>Start Pool</span>
+            <span>Pool &amp; Save</span>
             <span className="tabular-nums">{formatPrice(product.groupPrice * quantity)}</span>
           </button>
         </div>

@@ -44,6 +44,7 @@ export default function StorePage() {
   const [store, setStore] = useState<StoreDetail | null>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [bannerFailed, setBannerFailed] = useState(false);
 
   useEffect(() => {
     fetch(`/api/stores/${id}`)
@@ -145,6 +146,11 @@ export default function StorePage() {
       ? store.products
       : store.products.filter((p) => p.category === activeCategory);
 
+  const bannerSrc =
+    (!bannerFailed && store.bannerUrl) ||
+    store.products.find((p) => p.imageUrl)?.imageUrl ||
+    null;
+
   return (
     <main
       className="flex-1 max-w-[480px] mx-auto w-full pb-24"
@@ -152,12 +158,13 @@ export default function StorePage() {
     >
       {/* ── Store Banner ── */}
       <div className="relative h-[220px]" style={{ background: "var(--sand)" }}>
-        {store.bannerUrl ? (
+        {bannerSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={store.bannerUrl}
+            src={bannerSrc}
             alt={store.name}
             className="w-full h-full object-cover"
+            onError={() => setBannerFailed(true)}
           />
         ) : (
           <div
@@ -193,7 +200,7 @@ export default function StorePage() {
         {/* Cart */}
         <Link
           href="/cart"
-          className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center relative"
+          className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center"
           style={{ background: "rgba(255,255,255,0.9)" }}
         >
           <svg
@@ -251,7 +258,7 @@ export default function StorePage() {
           </div>
           <div className="flex-1 min-w-0">
             <h1
-              className="text-[20px] font-extrabold leading-tight"
+              className="text-[24px] font-extrabold leading-tight"
               style={{ color: "var(--text)" }}
             >
               {store.name}
@@ -268,7 +275,7 @@ export default function StorePage() {
         {/* Stats */}
         <div className="flex items-center gap-4 mt-3">
           <span
-            className="text-[12px] font-bold"
+            className="text-[11px] font-bold"
             style={{ color: "var(--text-secondary)" }}
           >
             {store.products.length}{" "}
@@ -278,12 +285,15 @@ export default function StorePage() {
             className="w-[3px] h-[3px] rounded-full"
             style={{ background: "var(--border)" }}
           />
-          <span
-            className="text-[12px] font-bold"
-            style={{ color: "var(--emerald)" }}
-          >
-            Pool to save up to 35%
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="pool-dot" />
+            <span
+              className="text-[12px] font-bold"
+              style={{ color: "var(--emerald)" }}
+            >
+              Pools available · Save up to 35%
+            </span>
+          </div>
         </div>
       </div>
 
@@ -318,7 +328,7 @@ export default function StorePage() {
               <Link
                 key={p.id}
                 href={`/product/${p.id}`}
-                className="rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform"
+                className={`card-enter card-enter-${(idx % 8) + 1} rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform`}
                 style={{
                   background: "var(--card)",
                   border: "1px solid var(--border)",
@@ -363,7 +373,7 @@ export default function StorePage() {
                 </div>
                 <div className="p-3">
                   <h3
-                    className="text-[14px] font-bold leading-snug"
+                    className="text-[13px] font-bold leading-snug"
                     style={{
                       color: "var(--text)",
                       display: "-webkit-box",
@@ -384,7 +394,7 @@ export default function StorePage() {
                   )}
                   <div className="flex items-baseline gap-2 mt-2">
                     <span
-                      className="text-[17px] font-extrabold tabular-nums"
+                      className="text-[20px] font-extrabold tabular-nums"
                       style={{ color: "var(--text)" }}
                     >
                       {fmt(p.retailPrice)}
@@ -392,7 +402,7 @@ export default function StorePage() {
                   </div>
                   {sav > 0 && (
                     <p
-                      className="text-[11px] font-semibold mt-1"
+                      className="text-[12px] font-semibold mt-1"
                       style={{ color: "var(--emerald)" }}
                     >
                       Pool at {fmt(p.groupPrice)}
