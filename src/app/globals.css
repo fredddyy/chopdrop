@@ -2,19 +2,25 @@
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop v5 — clean white, not cream ── */
-  --bg: #FFFFFF;
+  /* ── ChopDrop v6 — accent-ladder (tasteskill direction) ── */
+  /* Coral at full strength ONLY on small marks: primary CTA, active nav icon, data highlights */
+  /* Pale tints for areas: active states, badges, progress tracks, selected items */
+  --bg: #F9FAFB;
   --card: #FFFFFF;
-  --border: #EBEBEB;
+  --border: #E5E7EB;
   --coral: #E8604C;
+  --coral-soft: #FEF2F0;
+  --coral-track: #FBDBD5;
+  --coral-ink: #8B2E1B;
   --coral-dark: #D14E3B;
   --emerald: #0D9F5F;
+  --emerald-soft: #ECFDF5;
   --gold: #D4A24E;
-  --dark: #111111;
-  --text: #111111;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --sand: #F5F5F4;
+  --dark: #111827;
+  --text: #111827;
+  --text-secondary: #5F6672;
+  --text-muted: #9CA3AF;
+  --sand: #F3F4F6;
 
   /* Legacy compat */
   --ink: var(--text);

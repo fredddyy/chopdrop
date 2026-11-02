@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+            className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer"
             style={{ background: "rgba(255,255,255,0.9)" }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
@@ -95,7 +95,7 @@ export default function ProductDetailPage() {
           <button
             type="button"
             onClick={() => { if (navigator.share) navigator.share({ title: product.name, url: window.location.href }); }}
-            className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+            className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer"
             style={{ background: "rgba(255,255,255,0.9)" }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" x2="12" y1="2" y2="15" /></svg>
@@ -132,11 +132,11 @@ export default function ProductDetailPage() {
           </div>
           {/* Quantity — compact, inline */}
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-8 h-8 rounded-[8px] flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
+            <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-11 h-11 rounded-[8px] flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
             </button>
             <span className="text-[16px] font-extrabold tabular-nums w-6 text-center" style={{ color: "var(--text)" }}>{quantity}</span>
-            <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-8 h-8 rounded-[8px] flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
+            <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-11 h-11 rounded-[8px] flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
             </button>
           </div>
@@ -154,16 +154,16 @@ export default function ProductDetailPage() {
       </div>
 
       {/* ── Sticky CTAs ── */}
-      <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-3" style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
+      <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-3" style={{ background: "rgba(249,250,251,0.92)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto flex gap-2.5">
           <button type="button" onClick={handleBuyNow}
-            className="flex-[45] h-[50px] rounded-[12px] flex items-center justify-between px-4 text-[14px] font-bold cursor-pointer active:scale-[0.97] transition-transform"
+            className="flex-[45] h-[50px] rounded-[8px] flex items-center justify-between px-4 text-[14px] font-bold cursor-pointer active:scale-[0.97] transition-transform"
             style={{ background: "var(--sand)", color: "var(--text)" }}>
             <span>Buy Now</span>
             <span className="tabular-nums">{fp(product.retailPrice * quantity)}</span>
           </button>
           <button type="button"
-            className="flex-[55] h-[50px] rounded-[12px] flex items-center justify-between px-4 text-[14px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform"
+            className="flex-[55] h-[50px] rounded-[8px] flex items-center justify-between px-4 text-[14px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform"
             style={{ background: "var(--coral)" }}>
             <span>Pool &amp; Save</span>
             <span className="tabular-nums">{fp(product.groupPrice * quantity)}</span>
@@ -174,7 +174,7 @@ export default function ProductDetailPage() {
       {/* Added to cart */}
       {toast && (
         <div className="fixed z-[100] left-0 right-0 bottom-[104px] px-5 celebrate">
-          <Link href="/cart" className="max-w-[480px] mx-auto flex items-center justify-between rounded-[12px] px-4 py-3" style={{ background: "var(--emerald)" }}>
+          <Link href="/cart" className="max-w-[480px] mx-auto flex items-center justify-between rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
             <div className="flex items-center gap-2">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
               <span className="text-[13px] font-bold text-white">Added! View cart</span>

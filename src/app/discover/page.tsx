@@ -105,7 +105,7 @@ export default function DiscoverPage() {
       {/* ── Header ── */}
       <header
         className="sticky top-0 z-40"
-        style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
+        style={{ background: "rgba(249,250,251,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
       >
         <div className="px-5 h-14 flex items-center justify-between">
           <div>
@@ -150,7 +150,7 @@ export default function DiscoverPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
-                className="w-full h-11 pl-10 pr-10 rounded-[12px] text-[14px] font-medium outline-none"
+                className="w-full h-11 pl-10 pr-10 rounded-[8px] text-[14px] font-medium outline-none"
                 style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
               />
               {searchQuery && (
@@ -190,7 +190,7 @@ export default function DiscoverPage() {
           </div>
           <div className="flex gap-3 overflow-hidden px-5 mb-5">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="w-[140px] shrink-0 rounded-[12px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div key={i} className="w-[140px] shrink-0 rounded-[8px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <div className="h-[100px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
                 <div className="p-2.5 space-y-1.5">
                   <div className="h-3 rounded w-[80%]" style={{ background: "var(--sand)" }} />
@@ -202,7 +202,7 @@ export default function DiscoverPage() {
           {/* Store skeleton */}
           <div className="px-5 flex flex-col gap-3">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="rounded-[14px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div key={i} className="rounded-[8px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <div className="h-[125px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }} />
                 <div className="px-3.5 py-3 space-y-2">
                   <div className="h-4 rounded w-[50%]" style={{ background: "var(--sand)" }} />
@@ -217,7 +217,7 @@ export default function DiscoverPage() {
 
           {/* Pool tip — first visit */}
           {!tipDismissed && (
-            <div className="mx-5 mb-3 flex items-start gap-3 p-3 rounded-[12px] card-enter card-enter-1" style={{ background: "var(--dark)" }}>
+            <div className="mx-5 mb-3 flex items-start gap-3 p-3 rounded-[8px] card-enter card-enter-1" style={{ background: "var(--dark)" }}>
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-bold text-white leading-snug">Order together, pay less</p>
                 <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -252,7 +252,7 @@ export default function DiscoverPage() {
                     <Link
                       key={p.id}
                       href={`/product/${p.id}`}
-                      className={`w-[140px] shrink-0 rounded-[12px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
+                      className={`w-[140px] shrink-0 rounded-[8px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
                       <div className="relative h-[100px]" style={{ background: "var(--sand)" }}>
@@ -291,7 +291,7 @@ export default function DiscoverPage() {
                   <Link
                     key={store.id}
                     href={`/store/${store.id}`}
-                    className={`block rounded-[14px] overflow-hidden active:scale-[0.985] transition-transform card-enter card-enter-${(idx % 8) + 1}`}
+                    className={`block rounded-[8px] overflow-hidden active:scale-[0.985] transition-transform card-enter card-enter-${(idx % 8) + 1}`}
                     style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                   >
                     <div className="relative overflow-hidden">

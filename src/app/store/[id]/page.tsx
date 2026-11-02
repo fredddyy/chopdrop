@@ -81,7 +81,7 @@ export default function StorePage() {
             {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="rounded-[16px] overflow-hidden"
+                className="rounded-[8px] overflow-hidden"
                 style={{
                   background: "var(--card)",
                   border: "1px solid var(--border)",
@@ -181,7 +181,7 @@ export default function StorePage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="absolute top-4 left-4 w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
+          className="absolute top-4 left-4 w-11 h-11 rounded-full flex items-center justify-center cursor-pointer"
           style={{ background: "rgba(255,255,255,0.9)" }}
         >
           <svg
@@ -200,7 +200,7 @@ export default function StorePage() {
         {/* Cart */}
         <Link
           href="/cart"
-          className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center"
+          className="absolute top-4 right-4 w-11 h-11 rounded-full flex items-center justify-center"
           style={{ background: "rgba(255,255,255,0.9)" }}
         >
           <svg
@@ -276,7 +276,7 @@ export default function StorePage() {
               <Link
                 key={p.id}
                 href={`/product/${p.id}`}
-                className={`card-enter card-enter-${(idx % 8) + 1} rounded-[16px] overflow-hidden active:scale-[0.98] transition-transform`}
+                className={`card-enter card-enter-${(idx % 8) + 1} rounded-[8px] overflow-hidden active:scale-[0.98] transition-transform`}
                 style={{
                   background: "var(--card)",
                   border: "1px solid var(--border)",

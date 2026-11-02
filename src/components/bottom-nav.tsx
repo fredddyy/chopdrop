@@ -18,7 +18,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl z-50 md:hidden" style={{ background: "rgba(250,247,242,0.95)", borderTop: "1px solid var(--border)" }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden" style={{ background: "rgba(249,250,251,0.95)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
       <div className="max-w-lg mx-auto grid grid-cols-4 py-2 px-4">
         {links.map((link) => {
           const active = link.match
@@ -28,23 +28,22 @@ export function BottomNav() {
             <Link
               key={link.href}
               href={link.href}
-              className={`relative flex flex-col items-center gap-1 py-1 transition-colors ${
-                active ? "text-[var(--coral)]" : "text-[var(--text-muted)]"
-              }`}
+              className="relative flex flex-col items-center gap-1 py-1 transition-colors"
+              style={{ color: active ? "var(--text)" : "var(--text-muted)" }}
             >
               {active && (
-                <span className="absolute -top-2 w-8 h-[3px] rounded-full" style={{ background: "var(--coral)" }} />
+                <span className="absolute -top-2 w-6 h-[2px] rounded-full" style={{ background: "var(--coral)" }} />
               )}
               <svg
                 width="22" height="22" viewBox="0 0 24 24"
-                fill={active ? "currentColor" : "none"}
-                stroke="currentColor"
+                fill={active ? "var(--coral)" : "none"}
+                stroke={active ? "var(--coral)" : "currentColor"}
                 strokeWidth={active ? "0" : "1.6"}
                 strokeLinecap="round" strokeLinejoin="round"
               >
                 <path d={link.icon} />
               </svg>
-              <span className={`text-[11px] transition-all ${active ? "font-bold" : "font-medium"}`}>
+              <span className={`text-[11px] ${active ? "font-bold" : "font-medium"}`}>
                 {link.label}
               </span>
               {link.count > 0 && (
