@@ -41,8 +41,7 @@ export default function ProductDetailPage() {
       restaurantName: product.vendor.name,
       price: product.retailPrice,
     });
-    setToast("Added to cart");
-    setTimeout(() => setToast(""), 2000);
+    setToast("added");
   }
 
   if (loading) {
@@ -238,13 +237,22 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Toast */}
+      {/* Added-to-cart confirmation — sticky, actionable */}
       {toast && (
-        <div className="fixed z-[100] left-1/2 bottom-32 -translate-x-1/2 rounded-[12px] pl-3 pr-4 py-2.5 flex items-center gap-2 text-[13px] font-semibold text-white" style={{ background: "var(--dark)", animation: "toastIn 0.3s ease" }}>
-          <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-          </div>
-          {toast}
+        <div className="fixed z-[100] left-0 right-0 bottom-[104px] px-5" style={{ animation: "cardIn 0.3s ease both" }}>
+          <Link
+            href="/cart"
+            className="max-w-[480px] mx-auto flex items-center justify-between rounded-[12px] px-4 py-3"
+            style={{ background: "var(--dark)" }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+              </div>
+              <span className="text-[13px] font-semibold text-white">Added to cart</span>
+            </div>
+            <span className="text-[13px] font-bold" style={{ color: "var(--coral)" }}>View Cart →</span>
+          </Link>
         </div>
       )}
 

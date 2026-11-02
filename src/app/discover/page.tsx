@@ -23,6 +23,8 @@ interface Store {
   lowestPrice: number;
   previews: Preview[];
   bestDealName: string | null;
+  topItems: string[];
+  deliveryEstimate: string;
 }
 
 function fmt(kobo: number): string {
@@ -69,7 +71,7 @@ function CoverImage({ src, fallback, alt, height }: { src: string | null; fallba
 export default function DiscoverPage() {
   const [stores, setStores] = useState<Store[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState("Food");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -274,14 +276,19 @@ export default function DiscoverPage() {
                       <h2 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
                         {store.name}
                       </h2>
-                      <div className="flex items-center gap-1.5 mt-1">
+                      <div className="flex items-center gap-1 mt-1 flex-wrap">
                         {store.bestSaving >= 10 && <span className="pool-dot" />}
                         <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                          {store.productCount} items · {store.categories.join(", ")}
-                          {store.bestSaving >= 10 && (
-                            <span style={{ color: "var(--emerald)" }}> · -{store.bestSaving}%</span>
-                          )}
+                          {store.topItems.length > 0 ? store.topItems.join(", ") : `${store.productCount} items`}
                         </span>
+                        <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
+                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>
+                        {store.bestSaving >= 10 && (
+                          <>
+                            <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
+                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>-{store.bestSaving}%</span>
+                          </>
+                        )}
                       </div>
                     </div>
                     <span className="text-[17px] font-extrabold tabular-nums shrink-0 mt-0.5" style={{ color: "var(--text)" }}>

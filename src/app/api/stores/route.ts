@@ -59,6 +59,9 @@ export async function GET(request: NextRequest) {
       return best;
     }, null);
 
+    // Top 3 product names for card preview: "Jollof, Egusi, Suya"
+    const topItems = s.products.slice(0, 3).map((p) => p.name.split(" ")[0]);
+
     return {
       id: s.id,
       name: s.name,
@@ -72,6 +75,8 @@ export async function GET(request: NextRequest) {
       lowestPrice,
       previews,
       bestDealName: bestDeal?.name ?? null,
+      topItems,
+      deliveryEstimate: "30–45 min",
     };
   });
 
