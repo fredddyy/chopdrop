@@ -233,11 +233,12 @@ export default function DiscoverPage() {
             </p>
           </div>
 
-          {/* ═══ STORE CARDS — compact, Glovo density ═══ */}
+          {/* ═══ STORE CARDS ═══ */}
           {filtered.map((store, idx) => {
             const imgHeight = idx === 0 ? 150 : 125;
-            const hasPromo = store.bestSaving >= 15 && store.bestDealName;
-            const fallbackImg = store.previews.find((p) => p.imageUrl)?.imageUrl ?? null;
+            // Promo overlay only on the top card — not every card
+            const showPromo = idx === 0 && store.bestSaving >= 15 && store.bestDealName;
+            const fallbackImg = store.previews?.find((p: Preview) => p.imageUrl)?.imageUrl ?? null;
 
             return (
               <Link
@@ -255,8 +256,8 @@ export default function DiscoverPage() {
                     height={imgHeight}
                   />
 
-                  {/* Promo overlay — compact */}
-                  {hasPromo && (
+                  {/* Promo overlay — only on featured card */}
+                  {showPromo && (
                     <div
                       className="absolute bottom-0 left-0 right-0 px-3 py-1.5 flex items-center gap-1.5"
                       style={{ background: "rgba(26,125,75,0.88)" }}
@@ -268,32 +269,36 @@ export default function DiscoverPage() {
                   )}
                 </div>
 
-                {/* ── Info — tight ── */}
-                <div className="px-3.5 py-3">
-                  {/* Name + pool dot + price — all one dense block */}
-                  <div className="flex items-start justify-between gap-2">
+                {/* ── Info ── */}
+                <div className="px-3.5 py-2.5">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h2 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
                         {store.name}
                       </h2>
-                      <div className="flex items-center gap-1 mt-1 flex-wrap">
-                        {store.bestSaving >= 10 && <span className="pool-dot" />}
-                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                          {store.topItems.length > 0 ? store.topItems.join(", ") : `${store.productCount} items`}
-                        </span>
-                        <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
+                      {/* Line 1: what they sell */}
+                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                        {store.topItems.length > 0 ? store.topItems.join(", ") : `${store.productCount} items`}
+                      </p>
+                      {/* Line 2: delivery + pool status */}
+                      <div className="flex items-center gap-1.5 mt-1">
                         <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>
                         {store.bestSaving >= 10 && (
                           <>
                             <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
-                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>-{store.bestSaving}%</span>
+                            <span className="pool-dot" />
+                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Save up to {store.bestSaving}%</span>
                           </>
                         )}
                       </div>
                     </div>
-                    <span className="text-[17px] font-extrabold tabular-nums shrink-0 mt-0.5" style={{ color: "var(--text)" }}>
-                      {fmt(store.lowestPrice)}
-                    </span>
+                    {/* Price with context */}
+                    <div className="text-right shrink-0 mt-0.5">
+                      <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>From</span>
+                      <div className="text-[17px] font-extrabold tabular-nums leading-tight" style={{ color: "var(--text)" }}>
+                        {fmt(store.lowestPrice)}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Link>
