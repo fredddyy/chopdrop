@@ -37,30 +37,34 @@ export async function GET(request: NextRequest) {
   });
 
   const data = stores.map((s) => {
+    // When category is filtered, compute card data from matching products only
+    const relevant = (category && category !== "All")
+      ? s.products.filter((p) => p.category === category)
+      : s.products;
+
     const categories = [...new Set(s.products.map((p) => p.category))];
-    const bestSaving = s.products.reduce((max, p) => {
+    const bestSaving = relevant.reduce((max, p) => {
       const pct = p.retailPrice > 0 ? Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100) : 0;
       return pct > max ? pct : max;
     }, 0);
-    const lowestPrice = Math.min(...s.products.map((p) => p.retailPrice));
-    const previews = s.products
-      .filter((p) => p.imageUrl)
-      .slice(0, 4)
-      .map((p) => ({ id: p.id, name: p.name, imageUrl: p.imageUrl }));
+    const lowestPrice = relevant.length > 0
+      ? Math.min(...relevant.map((p) => p.retailPrice))
+      : Math.min(...s.products.map((p) => p.retailPrice));
 
-    // Best available cover: product photos are reliable (Unsplash), banners may be null
-    const firstProductImg = s.products.find((p) => p.imageUrl)?.imageUrl ?? null;
-    const heroImage = firstProductImg || s.bannerUrl;
+    // Hero image: from the category-relevant products first
+    const relevantImg = relevant.find((p) => p.imageUrl)?.imageUrl ?? null;
+    const anyImg = s.products.find((p) => p.imageUrl)?.imageUrl ?? null;
+    const heroImage = relevantImg || anyImg || s.bannerUrl;
 
-    // Best deal name for promo overlay
-    const bestDeal = s.products.reduce<{ name: string; saving: number } | null>((best, p) => {
+    // Best deal from relevant products
+    const bestDeal = relevant.reduce<{ name: string; saving: number } | null>((best, p) => {
       const sv = p.retailPrice > 0 ? Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100) : 0;
       if (!best || sv > best.saving) return { name: p.name, saving: sv };
       return best;
     }, null);
 
-    // Top 3 product names for card preview: "Jollof, Egusi, Suya"
-    const topItems = s.products.slice(0, 3).map((p) => p.name.split(" ")[0]);
+    // Top product names from relevant products
+    const topItems = relevant.slice(0, 3).map((p) => p.name.split(" ")[0]);
 
     return {
       id: s.id,
@@ -69,14 +73,14 @@ export async function GET(request: NextRequest) {
       imageUrl: s.imageUrl,
       bannerUrl: s.bannerUrl,
       heroImage,
-      productCount: s.products.length,
+      productCount: relevant.length,
       categories,
       bestSaving,
       lowestPrice,
-      previews,
       bestDealName: bestDeal?.name ?? null,
       topItems,
-      deliveryEstimate: "30–45 min",
+      // Vary delivery estimate by store sort order for realism
+      deliveryEstimate: [null, "20–35 min", "25–40 min", "30–45 min", "35–50 min"][s.sortOrder % 5] || "30–45 min",
     };
   });
 
