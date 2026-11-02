@@ -74,7 +74,15 @@ export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [tipDismissed, setTipDismissed] = useState(false);
   const cart = useCart();
+
+  // Show pool tip only once per session
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("pool-tip-seen")) {
+      setTipDismissed(true);
+    }
+  }, []);
 
   useEffect(() => {
     fetchStores();
@@ -224,6 +232,36 @@ export default function DiscoverPage() {
         </div>
       ) : (
         <div className="px-5 pt-3 flex flex-col gap-3">
+
+          {/* Pool tip — first-visit nudge, dismissible */}
+          {!tipDismissed && (
+            <div
+              className="flex items-start gap-3 p-3 rounded-[12px] card-enter card-enter-1"
+              style={{ background: "var(--dark)" }}
+            >
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-bold text-white leading-snug">
+                  Order together, pay less
+                </p>
+                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+                  Tap any item and hit &quot;Pool &amp; Save&quot; — more people join, everyone&apos;s price drops.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setTipDismissed(true);
+                  sessionStorage.setItem("pool-tip-seen", "1");
+                }}
+                className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 cursor-pointer"
+                style={{ background: "rgba(255,255,255,0.15)" }}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* ═══ STORE CARDS ═══ */}
           {filtered.map((store, idx) => {
