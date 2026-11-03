@@ -99,6 +99,8 @@ export default function CartPage() {
 
   async function handlePay() {
     if (!customerName.trim() || !customerPhone.trim()) { setError("Name and phone required"); setEditContact(true); return; }
+    const phoneClean = customerPhone.trim().replace(/\s/g, "");
+    if (!/^(\+234|0)\d{10}$/.test(phoneClean)) { setError("Enter a valid Nigerian phone number (e.g. 08012345678)"); setEditContact(true); return; }
     if (cart.items.length === 0) return;
     if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your office code for free delivery"); return; }
     if (fulfillment === "delivery" && !deliveryAddress.trim()) { setError("Enter delivery address"); return; }
@@ -111,7 +113,7 @@ export default function CartPage() {
     try {
       const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyMenuId: realDailyMenuId, officeId: fulfillment === "office" ? officeId : undefined, customerName: customerName.trim(), customerPhone: customerPhone.trim(), customerEmail: "", fulfillmentType: fulfillment === "delivery" ? "DELIVERY" : "PICKUP", deliveryAddress: fulfillment === "delivery" ? deliveryAddress.trim() : undefined, quantity: totalQuantity, subtotal: cart.subtotal, captainTip: 0, serviceFee, creditsApplied: creditsToApply, items: allCustomItems.length > 0 ? allCustomItems : undefined }) });
       const data = await res.json();
-      if (!data.success) { if (data.error === "Menu item not found") { setError("Cart expired. Re-add from menu."); cart.clearCart(); } else { setError(data.error || "Something went wrong"); } setLoading(false); return; }
+      if (!data.success) { if (data.error === "Menu item not found") { setError("Some items are no longer available. Remove them and try again, or browse the menu to re-add."); } else { setError(data.error || "Something went wrong"); } setLoading(false); return; }
       const redirectUrl = data.data.authorizationUrl;
       if (redirectUrl) { window.location.href = redirectUrl; }
       else { setError("Payment failed. Try again."); setLoading(false); }
@@ -167,7 +169,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button type="button" onClick={() => cart.changeQuantity(item.dailyMenuId, -1)}
-                    className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
+                    className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
                     style={{ background: item.quantity === 1 ? "#FEF2F2" : "var(--sand)" }}>
                     {item.quantity === 1 ? (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14H6L5 6" /></svg>
@@ -177,7 +179,7 @@ export default function CartPage() {
                   </button>
                   <span className="text-[13px] font-bold tabular-nums w-5 text-center" style={{ color: "var(--text)" }}>{item.quantity}</span>
                   <button type="button" onClick={() => cart.addItem(item)}
-                    className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--sand)" }}>
+                    className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform" style={{ background: "var(--sand)" }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                   </button>
                 </div>
@@ -309,7 +311,7 @@ export default function CartPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Express Delivery</span>
-                        <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>Under 15 min to your address</p>
+                        <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>Delivered to your door · 30-60 min</p>
                       </div>
                       <span className="text-[15px] font-extrabold shrink-0" style={{ color: "var(--text)" }}>
                         {formatNaira(EXPRESS_FEE)}
@@ -449,13 +451,7 @@ export default function CartPage() {
             </div>
           </section>
 
-          {/* Error */}
-          {error && (
-            <div className="flex items-center gap-2 p-3 rounded-[14px]" style={{ background: "#FEF2F2", color: "var(--coral)" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" /></svg>
-              <span className="text-[13px] font-semibold">{error}</span>
-            </div>
-          )}
+          {/* Error shown only in sticky footer — no duplicate */}
         </div>
       )}
 
