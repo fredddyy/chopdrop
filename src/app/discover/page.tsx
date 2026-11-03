@@ -292,8 +292,13 @@ export default function DiscoverPage() {
                               ))}
                             </div>
                             <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>
-                              {store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}{pooling >= 5 ? " + free delivery" : ""}
+                              {store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}
                             </span>
+                            {pooling >= 5 && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "var(--emerald)", color: "white" }}>
+                                Free delivery
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
