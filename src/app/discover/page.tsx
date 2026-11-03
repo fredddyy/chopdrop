@@ -289,18 +289,15 @@ export default function DiscoverPage() {
                           </h2>
                           <span className="text-[12px] font-medium shrink-0 ml-2" style={{ color: "var(--text-secondary)" }}>★ {store.rating}</span>
                         </div>
-                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders</span>
-                        {/* Best pool deal from this store */}
-                        {store.bestDealName && store.bestSaving >= 10 && (
-                          <div className="flex items-center justify-between mt-1.5 pt-1.5" style={{ borderTop: "1px solid var(--border)" }}>
-                            <span className="text-[11px] font-medium truncate" style={{ color: "var(--text-secondary)" }}>
-                              {store.bestDealName}
-                            </span>
-                            <span className="text-[11px] font-bold shrink-0 ml-2" style={{ color: "var(--coral)" }}>
-                              -{store.bestSaving}%
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders</span>
+                          {store.bestDealName && store.bestSaving >= 10 && (
+                            <>
+                              <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
+                              <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>{store.bestDealName} -{store.bestSaving}%</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </Link>
                   );
