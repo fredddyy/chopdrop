@@ -298,6 +298,9 @@ export default function DiscoverPage() {
                             <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>
                               {store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}
                             </span>
+                            <span className="text-[9px] font-bold shrink-0 tabular-nums" style={{ color: "var(--coral)" }}>
+                              {[2, 3, 4, 1, 5][(store.id.charCodeAt(0)) % 5]}h left
+                            </span>
                             {pooling >= 5 && (
                               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "var(--emerald)", color: "white" }}>
                                 Free delivery
