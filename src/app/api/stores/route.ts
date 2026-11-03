@@ -5,10 +5,26 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: NextRequest) {
   const category = request.nextUrl.searchParams.get("category") || undefined;
 
-  const where: Record<string, unknown> = { isActive: true, products: { some: { isActive: true } } };
+  // Include stores that have products OR meals (old restaurants have meals only)
+  const where: Record<string, unknown> = {
+    isActive: true,
+    OR: [
+      { products: { some: { isActive: true } } },
+      { meals: { some: { isAvailable: true } } },
+    ],
+  };
 
   if (category && category !== "All") {
-    where.products = { some: { isActive: true, category } };
+    // For category filter, only filter by products (meals don't have categories)
+    // but still include meal-only restaurants under "Food"
+    if (category === "Food") {
+      where.OR = [
+        { products: { some: { isActive: true, category } } },
+        { meals: { some: { isAvailable: true } } },
+      ];
+    } else {
+      where.OR = [{ products: { some: { isActive: true, category } } }];
+    }
   }
 
   const stores = await prisma.restaurant.findMany({
@@ -32,30 +48,60 @@ export async function GET(request: NextRequest) {
           groupPrice: true,
         },
       },
+      meals: {
+        where: { isAvailable: true },
+        orderBy: { sortOrder: "asc" },
+        take: 5,
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+          price: true,
+          originalPrice: true,
+        },
+      },
     },
     orderBy: { sortOrder: "asc" },
   });
 
   const data = stores.map((s) => {
-    // When category is filtered, compute card data from matching products only
     const relevant = (category && category !== "All")
       ? s.products.filter((p) => p.category === category)
       : s.products;
 
     const categories = [...new Set(s.products.map((p) => p.category))];
-    const bestSaving = relevant.reduce((max, p) => {
-      const pct = p.retailPrice > 0 ? Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100) : 0;
-      return pct > max ? pct : max;
-    }, 0);
-    // Cheapest product for two-price display
-    const cheapest = (relevant.length > 0 ? relevant : s.products)
-      .reduce((min, p) => (p.retailPrice < min.retailPrice ? p : min));
-    const lowestPrice = cheapest.retailPrice;
-    const lowestGroupPrice = cheapest.groupPrice;
+    // Add "Food" for meal-only restaurants
+    if (s.meals.length > 0 && !categories.includes("Food")) categories.unshift("Food");
 
-    // Hero image: from the category-relevant products first
+    const bestSaving = relevant.length > 0
+      ? relevant.reduce((max, p) => {
+          const pct = p.retailPrice > 0 ? Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100) : 0;
+          return pct > max ? pct : max;
+        }, 0)
+      : s.meals.reduce((max, m) => {
+          const pct = m.originalPrice && m.originalPrice > m.price ? Math.round(((m.originalPrice - m.price) / m.originalPrice) * 100) : 0;
+          return pct > max ? pct : max;
+        }, 0);
+
+    // Cheapest item — from products or meals
+    const cheapestProduct = relevant.length > 0
+      ? relevant.reduce((min, p) => (p.retailPrice < min.retailPrice ? p : min))
+      : null;
+    const cheapestMeal = s.meals.length > 0
+      ? s.meals.reduce((min, m) => (m.price < min.price ? m : min))
+      : null;
+    const lowestPrice = Math.min(
+      cheapestProduct?.retailPrice ?? Infinity,
+      cheapestMeal?.price ?? Infinity,
+    );
+    const lowestGroupPrice = Math.min(
+      cheapestProduct?.groupPrice ?? Infinity,
+      cheapestMeal?.price ?? Infinity,
+    );
+
+    // Hero image: products first, then meals, then banner
     const relevantImg = relevant.find((p) => p.imageUrl)?.imageUrl ?? null;
-    const anyImg = s.products.find((p) => p.imageUrl)?.imageUrl ?? null;
+    const anyImg = s.products.find((p) => p.imageUrl)?.imageUrl ?? s.meals.find((m) => m.imageUrl)?.imageUrl ?? null;
     const heroImage = relevantImg || anyImg || s.bannerUrl;
 
     // Best deal from relevant products
@@ -65,8 +111,10 @@ export async function GET(request: NextRequest) {
       return best;
     }, null);
 
-    // Top product names from relevant products
-    const topItems = relevant.slice(0, 3).map((p) => p.name.split(" ")[0]);
+    // Top item names — from products or meals
+    const topItems = relevant.length > 0
+      ? relevant.slice(0, 3).map((p) => p.name.split(" ")[0])
+      : s.meals.slice(0, 3).map((m) => m.name.split(" ")[0]);
 
     // Social proof — simulated from product count until real order data exists
     const ratingBase = [0, 4.8, 4.5, 4.9, 4.3, 4.7][s.sortOrder % 6] || 4.5;
@@ -79,7 +127,7 @@ export async function GET(request: NextRequest) {
       imageUrl: s.imageUrl,
       bannerUrl: s.bannerUrl,
       heroImage,
-      productCount: relevant.length,
+      productCount: relevant.length + s.meals.length,
       categories,
       bestSaving,
       lowestPrice,
