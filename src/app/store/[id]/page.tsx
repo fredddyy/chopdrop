@@ -211,6 +211,14 @@ export default function StorePage() {
     setTimeout(() => setAddedId(null), 800);
   }
 
+  function getQty(itemId: string): number {
+    return cart.items.find((i) => i.dailyMenuId === itemId)?.quantity || 0;
+  }
+
+  function removeFromCart(itemId: string) {
+    cart.removeItem(itemId);
+  }
+
   // Filter products by active category (for pool deals grid)
   const filtered =
     activeCategory === "All"
@@ -382,21 +390,26 @@ export default function StorePage() {
                       <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] text-white shrink-0" style={{ background: "var(--emerald)" }}>Deal</span>
                     )}
                   </div>
-                  <div className="flex items-baseline gap-1.5 mt-0.5">
-                    <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(c.price)}</span>
-                    {hasDiscount && (
-                      <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(c.originalPrice!)}</span>
-                    )}
-                  </div>
+                  {c.description && <p className="text-[11px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{c.description}</p>}
+                  <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(c.price)}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => addToCart(`combo-${c.id}`, c.name, c.description || "", c.imageUrl, c.price)}
-                  className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0 ${addedId === `combo-${c.id}` ? "pop" : ""}`}
-                  style={{ background: addedId === `combo-${c.id}` ? "var(--emerald)" : "var(--coral)", color: "white", transition: "background 200ms" }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                </button>
+                {getQty(`combo-${c.id}`) > 0 ? (
+                  <div className="flex items-center gap-0 shrink-0 rounded-[8px] overflow-hidden" style={{ background: "var(--coral)" }}>
+                    <button type="button" onClick={() => removeFromCart(`combo-${c.id}`)} className="w-9 h-9 flex items-center justify-center cursor-pointer text-white">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                    </button>
+                    <span className="text-[13px] font-bold text-white tabular-nums w-6 text-center">{getQty(`combo-${c.id}`)}</span>
+                    <button type="button" onClick={() => addToCart(`combo-${c.id}`, c.name, c.description || "", c.imageUrl, c.price)} className="w-9 h-9 flex items-center justify-center cursor-pointer text-white">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => addToCart(`combo-${c.id}`, c.name, c.description || "", c.imageUrl, c.price)}
+                    className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0"
+                    style={{ background: "var(--coral)", color: "white" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                  </button>
+                )}
               </div>
             );
           })}
@@ -418,16 +431,26 @@ export default function StorePage() {
                 )}
                 <div className="flex-1 min-w-0">
                   <h4 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{item.name}</h4>
+                  {item.description && <p className="text-[11px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
                   <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(item.price)}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => addToCart(`menu-${item.id}`, item.name, item.description || "", item.imageUrl, item.price)}
-                  className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0 ${addedId === `menu-${item.id}` ? "pop" : ""}`}
-                  style={{ background: addedId === `menu-${item.id}` ? "var(--emerald)" : "var(--coral)", color: "white", transition: "background 200ms" }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                </button>
+                {getQty(`menu-${item.id}`) > 0 ? (
+                  <div className="flex items-center gap-0 shrink-0 rounded-[8px] overflow-hidden" style={{ background: "var(--coral)" }}>
+                    <button type="button" onClick={() => removeFromCart(`menu-${item.id}`)} className="w-9 h-9 flex items-center justify-center cursor-pointer text-white">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                    </button>
+                    <span className="text-[13px] font-bold text-white tabular-nums w-6 text-center">{getQty(`menu-${item.id}`)}</span>
+                    <button type="button" onClick={() => addToCart(`menu-${item.id}`, item.name, item.description || "", item.imageUrl, item.price)} className="w-9 h-9 flex items-center justify-center cursor-pointer text-white">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => addToCart(`menu-${item.id}`, item.name, item.description || "", item.imageUrl, item.price)}
+                    className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0"
+                    style={{ background: "var(--coral)", color: "white" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                  </button>
+                )}
               </div>
             )))}
         </div>
