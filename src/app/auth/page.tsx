@@ -16,9 +16,9 @@ export default function AuthPage() {
   const [error, setError] = useState("");
 
   function getReturnUrl(): string {
-    if (typeof window === "undefined") return "/menu";
+    if (typeof window === "undefined") return "/discover";
     const params = new URLSearchParams(window.location.search);
-    return params.get("returnTo") || "/menu";
+    return params.get("returnTo") || "/discover";
   }
 
   async function handleLoginPin(code: string) {
@@ -47,8 +47,7 @@ export default function AuthPage() {
       setFirstName(data.data.firstName);
       setOfficeName(data.data.office?.name || "");
       setStep("welcome");
-      // Captains go to their dashboard, everyone else to menu
-      const dest = data.data.captainUrl || getReturnUrl();
+      const dest = getReturnUrl();
       setTimeout(() => { window.location.href = dest; }, 2000);
     } catch { setError("Network error."); }
     setLoading(false);
