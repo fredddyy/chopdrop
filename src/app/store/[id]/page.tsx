@@ -348,6 +348,50 @@ export default function StorePage() {
         </div>
       )}
 
+      {/* ── Pool deals — FIRST, above the menu ── */}
+      {filtered.length > 0 && (
+        <section className="px-5 mt-4">
+          <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Pool deals</h3>
+          <div className="flex gap-3 overflow-x-auto hide-scrollbar">
+            {filtered.map((p, idx) => {
+              const sav = pct(p.retailPrice, p.groupPrice);
+              return (
+                <Link
+                  key={p.id}
+                  href={`/product/${p.id}`}
+                  className={`w-[160px] shrink-0 rounded-[8px] overflow-hidden press-feedback card-enter card-enter-${(idx % 8) + 1}`}
+                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                >
+                  <div className="relative h-[110px]" style={{ background: "var(--sand)" }}>
+                    {p.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-[22px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.1 }}>{p.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    {sav >= 10 && (
+                      <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-[4px] text-[10px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                        -{sav}%
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-2.5">
+                    <h4 className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
+                    <div className="flex items-baseline gap-1.5 mt-1">
+                      <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
+                      <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                    </div>
+                    <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.minPoolSize}+ people</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* ── Menu category pills — like old restaurant page ── */}
       {(() => {
         // Build unified category list from combos + menu categories
@@ -480,52 +524,6 @@ export default function StorePage() {
         </div>
       </section>
 
-      {/* ── Products (group-buy items) — separate section if store has both ── */}
-      {filtered.length > 0 && (
-        <section className="px-5 mt-4 pb-4">
-          {(store.combos.length > 0 || store.menuCategories.length > 0) && (
-            <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Pool deals</h3>
-          )}
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map((p, idx) => {
-              const sav = pct(p.retailPrice, p.groupPrice);
-              return (
-                <Link
-                  key={p.id}
-                  href={`/product/${p.id}`}
-                  className={`card-enter card-enter-${(idx % 8) + 1} rounded-[8px] overflow-hidden press-feedback`}
-                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-                >
-                  <div className="relative" style={{ height: idx % 3 === 0 ? 155 : 135, background: "var(--sand)" }}>
-                    {p.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.1 }}>{p.name.charAt(0)}</span>
-                      </div>
-                    )}
-                    {sav >= 10 && (
-                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                        -{sav}%
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-[13px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                      {p.name}
-                    </h3>
-                    <div className="flex items-baseline gap-2 mt-1.5">
-                      <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(p.retailPrice)}</span>
-                    </div>
-                    {sav > 0 && <p className="text-[11px] font-semibold mt-0.5" style={{ color: "var(--emerald)" }}>Pool at {fmt(p.groupPrice)} · {p.minPoolSize}+ people</p>}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
 
       {/* Spacer for sticky cart bar */}
       {cart.totalItems > 0 && <div className="h-16" />}
