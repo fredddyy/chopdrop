@@ -277,12 +277,6 @@ export default function DiscoverPage() {
                             {pooling} pooling
                           </div>
                         )}
-                        {/* Free delivery — bottom right */}
-                        {pooling >= 5 && (
-                          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold" style={{ background: "white", color: "var(--emerald)" }}>
-                            Free delivery
-                          </div>
-                        )}
                       </div>
                       <div className="px-3.5 py-2.5">
                         <div className="flex items-center justify-between">
@@ -304,7 +298,9 @@ export default function DiscoverPage() {
                                   </div>
                                 ))}
                               </div>
-                              <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>{store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}</span>
+                              <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>
+                                {store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}{pooling >= 5 ? " + free delivery" : ""}
+                              </span>
                             </>
                           )}
                         </div>
