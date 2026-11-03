@@ -168,61 +168,73 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* ═══ SOCIAL PROOF — people buying together ═══ */}
+      {/* ═══ SOCIAL PROOF — the page's peak moment ═══ */}
       {savings > 0 && (
-        <section className="px-5 mt-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[15px] font-extrabold" style={{ color: "var(--text)" }}>Join a group</h3>
-            <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>
-              {product.minPoolSize} needed · every kobo back if not filled
-            </span>
+        <section className="mt-5 mx-5 rounded-[12px] overflow-hidden" style={{ background: "var(--dark)" }}>
+          <div className="p-4 pb-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[16px] font-extrabold text-white">Join a group</h3>
+              <span className="text-[11px] font-bold" style={{ color: "rgba(255,255,255,0.45)" }}>
+                Every kobo back if not filled
+              </span>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-0">
             {Array.from({ length: poolCount }).map((_, i) => {
               const joined = Math.max(2, Math.round(product.minPoolSize * (0.6 + i * 0.15)));
               const spotsLeft = product.minPoolSize - joined;
+              const fillPct = Math.round((joined / product.minPoolSize) * 100);
               const avatarStart = (seed + i * 2) % POOL_AVATARS.length;
+              const isHot = spotsLeft <= 2;
               return (
                 <button
                   key={i}
                   type="button"
                   onClick={addGroup}
-                  className="w-full flex items-center gap-3 px-3.5 py-3 rounded-[8px] text-left cursor-pointer press-feedback"
-                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 text-left cursor-pointer press-feedback"
+                  style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.08)" : "none" }}
                 >
-                  {/* Avatar stack */}
-                  <div className="flex -space-x-1.5 shrink-0">
+                  {/* Avatar stack — bigger on dark bg */}
+                  <div className="flex -space-x-2 shrink-0">
                     {Array.from({ length: Math.min(joined, 3) }).map((_, j) => (
-                      <div key={j} className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                        style={{ background: POOL_COLORS[(avatarStart + j) % POOL_COLORS.length], border: "2px solid var(--card)" }}>
+                      <div key={j} className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+                        style={{ background: POOL_COLORS[(avatarStart + j) % POOL_COLORS.length], border: "2.5px solid var(--dark)" }}>
                         {POOL_AVATARS[(avatarStart + j) % POOL_AVATARS.length]}
                       </div>
                     ))}
                   </div>
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{POOL_NAMES[i]}</span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{joined}/{product.minPoolSize} joined</span>
-                      {spotsLeft <= 2 && <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>{spotsLeft} left!</span>}
+                    <span className="text-[13px] font-bold text-white">{POOL_NAMES[i]}</span>
+                    {/* Progress bar */}
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
+                        <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: isHot ? "var(--coral)" : "var(--emerald)" }} />
+                      </div>
+                      <span className="text-[10px] font-bold tabular-nums shrink-0" style={{ color: isHot ? "var(--coral)" : "rgba(255,255,255,0.5)" }}>
+                        {isHot ? `${spotsLeft} left!` : `${joined}/${product.minPoolSize}`}
+                      </span>
                     </div>
                   </div>
-                  {/* Price + join */}
-                  <div className="shrink-0 text-right">
-                    <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fp(product.groupPrice)}</span>
-                    <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>Join</p>
+                  {/* CTA */}
+                  <div className="shrink-0">
+                    <div className="h-[34px] px-3.5 rounded-[6px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                      Join · {fp(product.groupPrice)}
+                    </div>
                   </div>
                 </button>
               );
             })}
+          </div>
 
-            {/* Start new */}
+          {/* Start new — inside the dark block */}
+          <div className="px-4 pb-4 pt-1">
             <button type="button" onClick={addGroup}
-              className="w-full flex items-center justify-center gap-1.5 h-11 rounded-[8px] cursor-pointer press-feedback"
-              style={{ border: "1px dashed var(--border)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-              <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Start a new group</span>
+              className="w-full flex items-center justify-center gap-1.5 h-10 rounded-[8px] cursor-pointer press-feedback"
+              style={{ border: "1px dashed rgba(255,255,255,0.15)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+              <span className="text-[12px] font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>Start a new group</span>
             </button>
           </div>
         </section>
