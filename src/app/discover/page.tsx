@@ -191,11 +191,11 @@ export default function DiscoverPage() {
       ) : (
         <div>
 
-          {/* ═══ POOL DEALS — wide horizontal scroll like Bolt ═══ */}
+          {/* ═══ POOL HERO — the main event ═══ */}
           {poolProducts.length > 0 && (
             <section className="pt-4 pb-2">
               <div className="px-5 mb-3 flex items-center justify-between">
-                <h3 className="text-[16px] font-extrabold" style={{ color: "var(--text)" }}>Pooling happening near you</h3>
+                <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Pooling near you</h3>
                 <Link href="/pools" className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
               </div>
 
@@ -203,37 +203,45 @@ export default function DiscoverPage() {
                 {poolProducts.slice(0, 5).map((p, idx) => {
                   const social = poolSocial(p.id, idx, p.minPoolSize);
                   const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
+                  const saved = p.retailPrice - p.groupPrice;
                   return (
                     <Link
                       key={p.id}
                       href={`/product/${p.id}`}
-                      className={`w-[220px] shrink-0 rounded-[8px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
+                      className={`w-[270px] shrink-0 rounded-[10px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
-                      {/* Wide food photo */}
-                      <div className="relative h-[140px]" style={{ background: "var(--sand)" }}>
+                      {/* Hero food photo */}
+                      <div className="relative h-[165px]" style={{ background: "var(--sand)" }}>
                         {p.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                         )}
-                        {/* Savings badge — top left */}
-                        <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[4px] text-[11px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
+                        {/* Savings — top left */}
+                        <div className="absolute top-3 left-3 px-2.5 py-1 rounded-[6px] text-[12px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
                           -{sav}%
                         </div>
-                        {/* Pool fill — bottom right */}
-                        <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white" style={{ background: "rgba(0,0,0,0.55)" }}>
+                        {/* Joined — top right */}
+                        <div className="absolute top-3 right-3 px-2 py-1 rounded-[6px] text-[11px] font-bold text-white flex items-center gap-1.5" style={{ background: "rgba(0,0,0,0.55)" }}>
+                          <span className="pool-dot" />
                           {social.joined}/{p.minPoolSize} joined
                         </div>
                       </div>
                       {/* Info */}
-                      <div className="p-3">
-                        <h4 className="text-[14px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                        <div className="flex items-center justify-between mt-1.5">
-                          <div className="flex items-baseline gap-1.5">
+                      <div className="p-3.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>{p.name}</h4>
+                          <span className="text-[11px] font-medium shrink-0 mt-0.5" style={{ color: "var(--text-muted)" }}>★ {p.vendor.name.length % 2 === 0 ? "4.8" : "4.6"}</span>
+                        </div>
+                        <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-baseline gap-2">
                             <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                            <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                            <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
                           </div>
-                          <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>★ {p.vendor.name.length % 2 === 0 ? "4.8" : "4.6"}</span>
+                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-[4px]" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
+                            Save {fmt(saved)}
+                          </span>
                         </div>
                       </div>
                     </Link>
