@@ -27,6 +27,8 @@ model User {
   wallet            CreditWallet?      @relation(fields: [walletId], references: [id])
   pushSubscriptions PushSubscription[]
   dealParticipants  DealParticipant[]
+  poolsCreated      Pool[]           @relation("PoolCreator")
+  poolMemberships   PoolMember[]
 }
 
 model PushSubscription {
@@ -354,6 +356,7 @@ model Product {
 
   vendor        Restaurant     @relation(fields: [vendorId], references: [id])
   instantOrders InstantOrder[]
+  pools         Pool[]
 }
 
 model InstantOrder {
@@ -378,7 +381,53 @@ model InstantOrder {
 }
 
 // ═══════════════════════════════════════
-// GROUP DEALS — Pinduoduo-style bulk buying (legacy, to be replaced by Pools in Phase 2)
+// POOLS — Group buying on any product
+// ═══════════════════════════════════════
+
+model Pool {
+  id          String     @id @default(cuid())
+  productId   String
+  creatorId   String
+  name        String?    // "Ikeja Lunch Crew" — optional, auto-generated if null
+  status      PoolStatus @default(OPEN)
+  minSize     Int        // copied from product.minPoolSize at creation
+  deadline    DateTime   // when the pool expires
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  product     Product        @relation(fields: [productId], references: [id])
+  creator     User           @relation("PoolCreator", fields: [creatorId], references: [id])
+  members     PoolMember[]
+}
+
+model PoolMember {
+  id            String        @id @default(cuid())
+  poolId        String
+  userId        String
+  quantity      Int           @default(1)
+  unitPrice     Int           // kobo — group price at time of joining
+  totalAmount   Int           // kobo — unitPrice × quantity
+  paymentRef    String?       @unique
+  paymentStatus PaymentStatus @default(PENDING)
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+
+  pool Pool @relation(fields: [poolId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([poolId, userId])
+}
+
+enum PoolStatus {
+  OPEN       // accepting members
+  FILLED     // minSize reached — ready for checkout
+  COMPLETED  // all members paid, order placed
+  EXPIRED    // deadline passed without filling
+  CANCELLED  // creator or system cancelled
+}
+
+// ═══════════════════════════════════════
+// GROUP DEALS — Pinduoduo-style bulk buying (legacy, to be replaced by Pools above)
 // ═══════════════════════════════════════
 
 model Deal {
