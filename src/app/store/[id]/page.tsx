@@ -74,7 +74,7 @@ export default function StorePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [bannerFailed, setBannerFailed] = useState(false);
-
+  const [addedId, setAddedId] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
@@ -204,8 +204,6 @@ export default function StorePage() {
       </main>
     );
   }
-
-  const [addedId, setAddedId] = useState<string | null>(null);
 
   function addToCart(itemId: string, name: string, description: string, imageUrl: string | null, price: number) {
     cart.addItem({ dailyMenuId: itemId, name, description: description || "", imageUrl, restaurantName: store?.name || "", price });
