@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   if (mine === "true") {
     // Get authenticated user's pools
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const token = cookieStore.get("chopdrop-user-token")?.value;
     if (!token) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
     const user = verifyToken(token);
     if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 // POST /api/pools — create a new pool
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const token = cookieStore.get("chopdrop-user-token")?.value;
   if (!token) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
   const user = verifyToken(token);
   if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });

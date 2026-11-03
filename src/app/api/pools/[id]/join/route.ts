@@ -11,7 +11,7 @@ export async function POST(
   const { id } = await params;
 
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const token = cookieStore.get("chopdrop-user-token")?.value;
   if (!token) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
   const user = verifyToken(token);
   if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
