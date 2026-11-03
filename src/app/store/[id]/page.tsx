@@ -313,8 +313,8 @@ export default function StorePage() {
         </Link>
       </div>
 
-      {/* ── Store Info — editorial flow, no overlapping card ── */}
-      <div className="px-5 pt-4">
+      {/* ── Store Info ── */}
+      <div className="px-5 pt-4 card-enter card-enter-1">
         <h1 className="text-[22px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
           {store.name}
         </h1>
@@ -331,6 +331,22 @@ export default function StorePage() {
           </span>
         </div>
       </div>
+
+      {/* ── Onboard: first-visit hint for store page ── */}
+      {store.combos.length > 0 && store.products.length > 0 && typeof window !== "undefined" && !sessionStorage.getItem("store-onboard") && (
+        <div className="mx-5 mt-3 p-3 rounded-[8px] tooltip-enter" style={{ background: "var(--dark)" }}>
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-[12px] leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>
+              <span className="font-bold text-white">Order from the menu</span> or scroll down to <span className="font-bold text-white">Pool deals</span> to buy with others and save.
+            </p>
+            <button type="button" onClick={() => sessionStorage.setItem("store-onboard", "1")}
+              className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+              style={{ background: "rgba(255,255,255,0.15)" }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Menu category pills — like old restaurant page ── */}
       {(() => {
@@ -372,7 +388,7 @@ export default function StorePage() {
             return (
               <div
                 key={`combo-${c.id}`}
-                className="flex items-center gap-3 p-2.5 rounded-[8px]"
+                className="flex items-center gap-3 p-2.5 rounded-[8px] press-feedback"
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
               >
                 {c.imageUrl ? (
@@ -418,7 +434,7 @@ export default function StorePage() {
           {filteredMenuCats.map((cat) => cat.items.map((item) => (
               <div
                 key={`menu-${item.id}`}
-                className="flex items-center gap-3 p-2.5 rounded-[8px]"
+                className="flex items-center gap-3 p-2.5 rounded-[8px] press-feedback"
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
               >
                 {item.imageUrl ? (
@@ -514,12 +530,12 @@ export default function StorePage() {
       {/* Spacer for sticky cart bar */}
       {cart.totalItems > 0 && <div className="h-16" />}
 
-      {/* ── Sticky cart bar ── */}
+      {/* ── Sticky cart bar — the delight moment: slides up when first item added ── */}
       {cart.totalItems > 0 && (
-        <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-2">
+        <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-2 sheet-enter">
           <Link
             href="/cart"
-            className="max-w-[480px] mx-auto flex items-center justify-between h-[48px] px-4 rounded-[10px] text-white"
+            className="max-w-[480px] mx-auto flex items-center justify-between h-[48px] px-4 rounded-[10px] text-white press-feedback"
             style={{ background: "var(--coral)" }}
           >
             <div className="flex items-center gap-2">
