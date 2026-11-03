@@ -16,6 +16,8 @@ interface Store {
   bestDealName: string | null;
   rating: number;
   orderCount: number;
+  lowestPrice: number;
+  lowestGroupPrice: number;
 }
 
 interface PoolProduct {
@@ -302,7 +304,7 @@ export default function DiscoverPage() {
                                   </div>
                                 ))}
                               </div>
-                              <span className="text-[11px] font-bold truncate" style={{ color: "var(--coral)" }}>{store.bestDealName} -{store.bestSaving}%</span>
+                              <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>{store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}</span>
                             </>
                           )}
                         </div>
