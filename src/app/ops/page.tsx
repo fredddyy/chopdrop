@@ -26,7 +26,7 @@ interface RestaurantReadiness {
   percent: number;
 }
 
-type OpsTab = "overview" | "restaurants" | "offices" | "meals" | "menu" | "items" | "promos" | "deals";
+type OpsTab = "overview" | "restaurants" | "offices" | "meals" | "menu" | "items" | "promos" | "deals" | "products" | "pools";
 
 interface RestaurantData {
   id: string;
@@ -2444,6 +2444,14 @@ export default function OpsPage() {
           <DealsAdmin loadAll={loadAll} formatNaira={formatNaira} />
         )}
 
+        {tab === "products" && (
+          <ProductsPoolAdmin formatNaira={formatNaira} />
+        )}
+
+        {tab === "pools" && (
+          <PoolsAdmin formatNaira={formatNaira} />
+        )}
+
       </main>
     </div>
   );
@@ -2704,5 +2712,147 @@ function DealsAdmin({ loadAll, formatNaira }: { loadAll: () => void; formatNaira
         )}
       </div>
     </>
+  );
+}
+
+// ═══ PRODUCTS POOL ADMIN — manage pool settings per product ═══
+function ProductsPoolAdmin({ formatNaira }: { formatNaira: (n: number) => string }) {
+  const [products, setProducts] = useState<Array<{
+    id: string; name: string; category: string; retailPrice: number; groupPrice: number;
+    minPoolSize: number; isActive: boolean; vendor: { name: string };
+  }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [form, setForm] = useState({ groupPrice: 0, minPoolSize: 5 });
+
+  useEffect(() => {
+    fetch("/api/products?limit=100").then(r => r.json()).then(d => {
+      if (d.success) setProducts(d.data);
+      setLoading(false);
+    });
+  }, []);
+
+  async function saveProduct(id: string) {
+    await fetch(`/api/admin/products/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ groupPrice: form.groupPrice, minPoolSize: form.minPoolSize }),
+    });
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, groupPrice: form.groupPrice, minPoolSize: form.minPoolSize } : p));
+    setEditing(null);
+  }
+
+  if (loading) return <div className="text-center py-12 text-ink-soft text-sm">Loading products...</div>;
+
+  return (
+    <div className="space-y-2">
+      <h2 className="text-lg font-bold mb-4">Product Pool Settings</h2>
+      <p className="text-xs text-ink-soft mb-4">Set the group price and minimum pool size for each product. These control how pool deals work.</p>
+      {products.map(p => (
+        <div key={p.id} className="bg-paper border border-line rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold">{p.name}</h3>
+              <p className="text-xs text-ink-soft">{p.vendor.name} · {p.category}</p>
+            </div>
+            <button type="button" onClick={() => { setEditing(editing === p.id ? null : p.id); setForm({ groupPrice: p.groupPrice, minPoolSize: p.minPoolSize }); }}
+              className="text-xs font-bold px-3 py-1.5 rounded-full bg-sand text-ink cursor-pointer">
+              {editing === p.id ? "Cancel" : "Edit"}
+            </button>
+          </div>
+
+          <div className="flex gap-4 mt-2 text-xs">
+            <span>Retail: <strong>{formatNaira(p.retailPrice)}</strong></span>
+            <span>Group: <strong className="text-green">{formatNaira(p.groupPrice)}</strong></span>
+            <span>Min pool: <strong>{p.minPoolSize}</strong></span>
+            <span>Savings: <strong className="text-coral">{p.retailPrice > p.groupPrice ? Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100) : 0}%</strong></span>
+          </div>
+
+          {editing === p.id && (
+            <div className="mt-3 pt-3 border-t border-line flex flex-col gap-2">
+              <div className="flex gap-3">
+                <label className="flex-1">
+                  <span className="text-xs font-bold">Group price (kobo)</span>
+                  <input type="number" value={form.groupPrice} onChange={e => setForm({ ...form, groupPrice: Number(e.target.value) })}
+                    className="w-full mt-1 h-9 px-3 rounded-lg border border-line text-sm" />
+                  <span className="text-[10px] text-ink-soft">{formatNaira(form.groupPrice)}</span>
+                </label>
+                <label className="flex-1">
+                  <span className="text-xs font-bold">Min pool size</span>
+                  <input type="number" value={form.minPoolSize} onChange={e => setForm({ ...form, minPoolSize: Number(e.target.value) })}
+                    className="w-full mt-1 h-9 px-3 rounded-lg border border-line text-sm" />
+                </label>
+              </div>
+              <button type="button" onClick={() => saveProduct(p.id)}
+                className="h-9 rounded-lg bg-green text-white text-xs font-bold cursor-pointer">
+                Save changes
+              </button>
+            </div>
+          )}
+        </div>
+      ))}
+      {products.length === 0 && <div className="text-center py-12 text-ink-soft text-sm">No products. Seed products first.</div>}
+    </div>
+  );
+}
+
+// ═══ POOLS ADMIN — view and manage active pools ═══
+function PoolsAdmin({ formatNaira }: { formatNaira: (n: number) => string }) {
+  const [pools, setPools] = useState<Array<{
+    id: string; name: string | null; status: string; minSize: number; deadline: string;
+    createdAt: string; product: { name: string; groupPrice: number }; creatorName: string;
+    memberCount: number; spotsLeft: number;
+  }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch all pools via a simple admin endpoint
+    fetch("/api/admin/pools").then(r => r.ok ? r.json() : { data: [] }).then(d => {
+      setPools(d.data || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="text-center py-12 text-ink-soft text-sm">Loading pools...</div>;
+
+  return (
+    <div className="space-y-2">
+      <h2 className="text-lg font-bold mb-4">Active Pools</h2>
+      <p className="text-xs text-ink-soft mb-4">All pools across the platform. Manage deadlines and cancel problematic pools.</p>
+      {pools.map(pool => {
+        const hoursLeft = Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 3600000));
+        const fillPct = Math.round((pool.memberCount / pool.minSize) * 100);
+        return (
+          <div key={pool.id} className="bg-paper border border-line rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold">{pool.product.name}</h3>
+                <p className="text-xs text-ink-soft">{pool.name || `${pool.creatorName}'s group`} · {pool.status}</p>
+              </div>
+              <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                pool.status === "OPEN" ? "bg-green-soft text-green" :
+                pool.status === "FILLED" ? "bg-amber-soft text-amber" :
+                pool.status === "COMPLETED" ? "bg-green-soft text-green" :
+                "bg-sand text-ink-soft"
+              }`}>
+                {pool.status}
+              </span>
+            </div>
+            <div className="flex gap-4 mt-2 text-xs">
+              <span>Members: <strong>{pool.memberCount}/{pool.minSize}</strong></span>
+              <span>Fill: <strong>{fillPct}%</strong></span>
+              <span>Price: <strong className="text-green">{formatNaira(pool.product.groupPrice)}</strong></span>
+              {pool.status === "OPEN" && <span>Time: <strong className={hoursLeft <= 2 ? "text-coral" : ""}>{hoursLeft}h left</strong></span>}
+            </div>
+            {/* Progress bar */}
+            <div className="h-1.5 rounded-full mt-2 overflow-hidden" style={{ background: "#e5e7eb" }}>
+              <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: pool.status === "OPEN" ? "#0D9F5F" : "#9CA3AF" }} />
+            </div>
+            <p className="text-[10px] text-ink-soft mt-1">Created {new Date(pool.createdAt).toLocaleString()} · Deadline {new Date(pool.deadline).toLocaleString()}</p>
+          </div>
+        );
+      })}
+      {pools.length === 0 && <div className="text-center py-12 text-ink-soft text-sm">No pools yet. Users create them from product pages.</div>}
+    </div>
   );
 }
