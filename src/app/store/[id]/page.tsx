@@ -530,7 +530,7 @@ export default function StorePage() {
 
       {/* ── Sticky cart bar — the delight moment: slides up when first item added ── */}
       {cart.totalItems > 0 && (
-        <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-2 sheet-enter">
+        <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 py-2 sheet-enter">
           <Link
             href="/cart"
             className="max-w-[480px] mx-auto flex items-center justify-between h-[48px] px-4 rounded-[10px] text-white press-feedback"
