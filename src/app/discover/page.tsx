@@ -288,63 +288,60 @@ export default function DiscoverPage() {
             </div>
           )}
 
-          {/* ═══ GROUP DEALS ═══ */}
+          {/* ═══ GROUP DEALS — dark block, the visual peak ═══ */}
           {filteredPools.length > 0 && (
-            <section className="pt-3 pb-2">
-              <div className="px-5 mb-3 flex items-center justify-between">
-                <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Group deals near you</h3>
-                <Link href="/pools" className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
+            <section className="mx-5 mt-3 rounded-[12px] overflow-hidden" style={{ background: "var(--dark)" }}>
+              <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+                <h3 className="text-[16px] font-extrabold text-white">Group deals near you</h3>
+                <Link href="/pools" className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
               </div>
 
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 snap-x snap-mandatory" style={{ overscrollBehaviorX: "contain" }}>
+              <div className="flex gap-2.5 overflow-x-auto hide-scrollbar px-4 pb-4 snap-x snap-mandatory" style={{ overscrollBehaviorX: "contain" }}>
                 {filteredPools.slice(0, 5).map((p, idx) => {
                   const social = poolSocial(p.id, idx, p.minPoolSize);
                   const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
                   return (
                     <div
                       key={p.id}
-                      className={`w-[270px] shrink-0 rounded-[8px] overflow-hidden snap-start card-enter card-enter-${idx + 1}`}
-                      style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                      className={`w-[250px] shrink-0 rounded-[8px] overflow-hidden snap-start card-enter card-enter-${idx + 1}`}
+                      style={{ background: "rgba(255,255,255,0.08)" }}
                     >
-                      {/* Photo — tappable to product */}
-                      <Link href={`/product/${p.id}`} className="block relative h-[130px]" style={{ background: "var(--sand)" }}>
+                      {/* Photo */}
+                      <Link href={`/product/${p.id}`} className="block relative h-[120px]" style={{ background: "rgba(255,255,255,0.05)" }}>
                         {p.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading={idx < 2 ? "eager" : "lazy"} />
                         )}
-                        <div className="absolute top-3 left-3 px-2.5 py-1 rounded-[6px] text-[12px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
+                        <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[4px] text-[11px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
                           -{sav}%
                         </div>
-                        <div className="absolute top-3 right-3 px-2 py-1 rounded-[6px] text-[11px] font-bold text-white flex items-center gap-1.5" style={{ background: "rgba(0,0,0,0.55)" }}>
+                        <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white flex items-center gap-1" style={{ background: "rgba(0,0,0,0.4)" }}>
                           <span className="pool-dot" />
-                          {social.joined}/{p.minPoolSize} joined
+                          {social.joined}/{p.minPoolSize}
                         </div>
                       </Link>
                       {/* Info */}
                       <div className="p-3">
                         <Link href={`/product/${p.id}`} className="block">
-                          <h4 className="text-[14px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                          <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                          <h4 className="text-[13px] font-extrabold leading-tight truncate text-white">{p.name}</h4>
+                          <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>{p.vendor.name}</p>
                         </Link>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
-                            <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                            <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
+                            <span className="text-[10px] line-through tabular-nums" style={{ color: "rgba(255,255,255,0.3)" }}>{fmt(p.retailPrice)}</span>
                           </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <button
-                              type="button"
-                              onClick={(e) => { e.preventDefault(); setJoinConfirm(p); }}
-                              className="text-[11px] font-bold px-3 h-[44px] rounded-[6px] text-white cursor-pointer"
-                              style={{ background: "var(--emerald)" }}
-                            >
-                              Join
-                            </button>
-                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); setJoinConfirm(p); }}
+                            className="text-[11px] font-bold px-3 h-[36px] rounded-[6px] text-white cursor-pointer press-feedback"
+                            style={{ background: "var(--emerald)" }}
+                          >
+                            Join
+                          </button>
                         </div>
-                        {/* Urgency — promoted from 9px to visible */}
-                        <p className="text-[11px] font-bold mt-1.5 tabular-nums" style={{ color: "var(--coral)" }}>
-                          {social.spotsLeft <= 2 ? `${social.spotsLeft} spot${social.spotsLeft === 1 ? "" : "s"} left · ` : ""}{social.hours}h left to join
+                        <p className="text-[10px] font-bold mt-1.5 tabular-nums" style={{ color: social.spotsLeft <= 2 ? "var(--coral)" : "rgba(255,255,255,0.35)" }}>
+                          {social.spotsLeft <= 2 ? `${social.spotsLeft} spot${social.spotsLeft === 1 ? "" : "s"} left · ` : ""}{social.hours}h left
                         </p>
                       </div>
                     </div>
