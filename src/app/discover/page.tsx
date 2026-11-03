@@ -227,21 +227,38 @@ export default function DiscoverPage() {
                           {social.joined}/{p.minPoolSize} joined
                         </div>
                       </div>
-                      {/* Info */}
+                      {/* Info — answers all 6 questions */}
                       <div className="p-3.5">
-                        <div className="flex items-start justify-between gap-2">
-                          <h4 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>{p.name}</h4>
-                          <span className="text-[11px] font-medium shrink-0 mt-0.5" style={{ color: "var(--text-muted)" }}>★ {p.vendor.name.length % 2 === 0 ? "4.8" : "4.6"}</span>
-                        </div>
+                        {/* 1. What the product is */}
+                        <h4 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>{p.name}</h4>
                         <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                            <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
-                          </div>
-                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-[4px]" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
+
+                        {/* 2. How much it costs + 3. How much user saves */}
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                          <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-[4px]" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
                             Save {fmt(saved)}
                           </span>
+                        </div>
+
+                        {/* 4. How many participating + 5. What happens when more join */}
+                        <div className="mt-2.5 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${(social.joined / p.minPoolSize) * 100}%`, background: social.spotsLeft <= 2 ? "var(--coral)" : "var(--emerald)" }} />
+                        </div>
+                        <p className="text-[10px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>
+                          {social.joined} of {p.minPoolSize} joined · {social.spotsLeft <= 2
+                            ? <span style={{ color: "var(--coral)" }}>{social.spotsLeft} spot{social.spotsLeft === 1 ? "" : "s"} left!</span>
+                            : <span>price drops at {p.minPoolSize}</span>
+                          }
+                        </p>
+
+                        {/* 6. What action to take */}
+                        <div
+                          className="mt-3 h-[36px] rounded-[8px] flex items-center justify-center text-[13px] font-bold text-white"
+                          style={{ background: "var(--coral)" }}
+                        >
+                          Join this pool
                         </div>
                       </div>
                     </Link>
