@@ -54,7 +54,7 @@ const CATEGORIES = ["Food", "Electronics", "Fashion", "Groceries"];
 
 // ── Simulated social proof (seeded, deterministic per product) ──
 const NAMES = ["Tolu", "Ada", "Chidi", "Ngozi", "Emeka", "Bimpe", "Kola", "Yemi", "Funke", "Dayo"];
-const COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#7C3AED", "#EC4899"];
+const COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#0891B2", "#D946EF"];
 
 function poolSocial(id: string, idx: number, minSize: number) {
   const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1) + idx;
@@ -201,7 +201,7 @@ export default function DiscoverPage() {
                 <Link href="/pools" className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
               </div>
 
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3">
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 snap-x snap-mandatory" style={{ overscrollBehaviorX: "contain" }}>
                 {poolProducts.slice(0, 5).map((p, idx) => {
                   const social = poolSocial(p.id, idx, p.minPoolSize);
                   const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
@@ -210,7 +210,7 @@ export default function DiscoverPage() {
                     <Link
                       key={p.id}
                       href={`/product/${p.id}`}
-                      className={`w-[270px] shrink-0 rounded-[10px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
+                      className={`w-[270px] shrink-0 rounded-[10px] overflow-hidden active:scale-[0.97] transition-transform snap-start card-enter card-enter-${idx + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
                       {/* Hero food photo */}
@@ -287,7 +287,10 @@ export default function DiscoverPage() {
                           <h2 className="text-[15px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>
                             {store.name}
                           </h2>
-                          <span className="text-[12px] font-medium shrink-0 ml-2" style={{ color: "var(--text-secondary)" }}>★ {store.rating}</span>
+                          <span className="text-[12px] font-medium shrink-0 ml-2 flex items-center gap-0.5" style={{ color: "var(--text-secondary)" }}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--gold)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                            {store.rating}
+                          </span>
                         </div>
                         <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders · {store.deliveryEstimate}</span>
                         {store.bestDealName && store.bestSaving >= 10 && (
