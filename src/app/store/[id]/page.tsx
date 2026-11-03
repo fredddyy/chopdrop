@@ -405,8 +405,8 @@ export default function StorePage() {
                   </div>
                 ) : (
                   <button type="button" onClick={() => addToCart(`combo-${c.id}`, c.name, c.description || "", c.imageUrl, c.price)}
-                    className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0"
-                    style={{ background: "var(--coral)", color: "white" }}>
+                    className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0 ${addedId === `combo-${c.id}` ? "pop" : ""}`}
+                    style={{ background: addedId === `combo-${c.id}` ? "var(--emerald)" : "var(--coral)", color: "white", transition: "background 200ms" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                   </button>
                 )}
@@ -446,13 +446,21 @@ export default function StorePage() {
                   </div>
                 ) : (
                   <button type="button" onClick={() => addToCart(`menu-${item.id}`, item.name, item.description || "", item.imageUrl, item.price)}
-                    className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0"
-                    style={{ background: "var(--coral)", color: "white" }}>
+                    className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0 ${addedId === `menu-${item.id}` ? "pop" : ""}`}
+                    style={{ background: addedId === `menu-${item.id}` ? "var(--emerald)" : "var(--coral)", color: "white", transition: "background 200ms" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                   </button>
                 )}
               </div>
             )))}
+
+          {/* Empty filter state */}
+          {!showCombos && filteredMenuCats.length === 0 && activeCategory !== "All" && (
+            <div className="py-8 text-center">
+              <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>Nothing in {activeCategory} yet</p>
+              <button type="button" onClick={() => setActiveCategory("All")} className="text-[13px] font-bold mt-1 cursor-pointer" style={{ color: "var(--coral)" }}>Show all</button>
+            </div>
+          )}
         </div>
       </section>
 
