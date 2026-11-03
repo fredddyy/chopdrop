@@ -299,22 +299,28 @@ export default function DiscoverPage() {
                     >
                       <div className="relative overflow-hidden">
                         <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 140 : 110} />
+                        {/* Delivery badge on photo */}
+                        <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white" style={{ background: "rgba(0,0,0,0.6)" }}>
+                          {store.deliveryEstimate}
+                        </div>
+                        {/* Free delivery badge when 5+ pooling */}
+                        {pooling >= 5 && (
+                          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                            Free delivery
+                          </div>
+                        )}
                       </div>
                       <div className="px-3.5 py-2.5">
-                        <h2 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
-                          {store.name}
-                        </h2>
-                        {/* Social proof line */}
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <span className="text-[11px] font-medium" style={{ color: "var(--text-secondary)" }}>★ {store.rating}</span>
-                          <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
-                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders</span>
-                          <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
-                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-[15px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>
+                            {store.name}
+                          </h2>
+                          <span className="text-[12px] font-medium shrink-0 ml-2" style={{ color: "var(--text-secondary)" }}>★ {store.rating}</span>
                         </div>
+                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders</span>
                         {/* Live pool activity */}
                         {pooling > 0 && (
-                          <div className="flex items-center gap-1.5 mt-1.5">
+                          <div className="flex items-center gap-1.5 mt-1">
                             <span className="pool-dot" />
                             <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
                               {pooling} pooling
