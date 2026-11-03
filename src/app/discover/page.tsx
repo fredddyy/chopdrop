@@ -266,11 +266,26 @@ export default function DiscoverPage() {
       ) : (
         <div>
 
-          {/* ── Trust line — zero-risk guarantee ── */}
-          {filteredPools.length > 0 && (
-            <p className="px-5 pt-3 text-[11px]" style={{ color: "var(--text-muted)" }}>
-              Didn&apos;t fill? Every kobo back. Always.
-            </p>
+          {/* ── Onboard: first-visit explainer — teaches by showing, not telling ── */}
+          {filteredPools.length > 0 && typeof window !== "undefined" && !sessionStorage.getItem("chopdrop-onboard") && (
+            <div className="mx-5 mt-3 p-3 rounded-[8px] tooltip-enter" style={{ background: "var(--dark)" }}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[13px] font-bold text-white">See two prices? The lower one is real.</p>
+                  <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+                    Tap Join on any deal. More people join, everyone pays less. Didn&apos;t fill? Every kobo back.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => sessionStorage.setItem("chopdrop-onboard", "1")}
+                  className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+                  style={{ background: "rgba(255,255,255,0.15)" }}
+                >
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                </button>
+              </div>
+            </div>
           )}
 
           {/* ═══ GROUP DEALS ═══ */}
@@ -352,7 +367,7 @@ export default function DiscoverPage() {
                     <Link
                       key={store.id}
                       href={`/store/${store.id}`}
-                      className={`block rounded-[8px] overflow-hidden active:scale-[0.985] transition-transform card-enter card-enter-${(idx % 8) + 1}`}
+                      className={`block rounded-[8px] overflow-hidden press-feedback card-enter card-enter-${(idx % 8) + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
                       <div className="relative overflow-hidden">
@@ -428,43 +443,56 @@ export default function DiscoverPage() {
         </div>
       )}
 
-      {/* ── Join confirmation sheet ── */}
-      {joinConfirm && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center" role="dialog" aria-modal="true" aria-label="Join group deal" onClick={() => setJoinConfirm(null)}>
-          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
-          <div
-            className="relative w-full max-w-[480px] rounded-t-[16px] p-5 celebrate"
-            style={{ background: "var(--card)" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
-            <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Join this group deal?</h3>
-            <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>
-              You&apos;ll pay {fmt(joinConfirm.groupPrice)} for {joinConfirm.name}.
-              When {joinConfirm.minPoolSize} people join, everyone gets the group price.
-              If it doesn&apos;t fill, you get every kobo back.
-            </p>
-            <div className="flex gap-2.5 mt-4">
-              <button
-                type="button"
-                onClick={() => setJoinConfirm(null)}
-                className="flex-1 h-[50px] rounded-[8px] text-[14px] font-bold cursor-pointer"
-                style={{ background: "var(--sand)", color: "var(--text)" }}
-              >
-                Not now
-              </button>
-              <Link
-                href={`/product/${joinConfirm.id}`}
-                className="flex-1 h-[50px] rounded-[8px] text-[14px] font-bold text-white flex items-center justify-center"
-                style={{ background: "var(--emerald)" }}
-                onClick={() => setJoinConfirm(null)}
-              >
-                Join · {fmt(joinConfirm.groupPrice)}
-              </Link>
+      {/* ── Join confirmation sheet — the focal delight moment ── */}
+      {joinConfirm && (() => {
+        const saved = joinConfirm.retailPrice - joinConfirm.groupPrice;
+        return (
+          <div className="fixed inset-0 z-[60] flex items-end justify-center" role="dialog" aria-modal="true" aria-label="Join group deal" onClick={() => setJoinConfirm(null)}>
+            <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
+            <div
+              className="relative w-full max-w-[480px] rounded-t-[16px] p-5 sheet-enter"
+              style={{ background: "var(--card)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
+              <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Join this group deal?</h3>
+
+              {/* The delight: your savings, revealed with a counter animation */}
+              <div className="mt-3 p-3 rounded-[8px] flex items-center justify-between" style={{ background: "var(--emerald-soft)" }}>
+                <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>You save</span>
+                <span className="text-[22px] font-extrabold tabular-nums savings-reveal" style={{ color: "var(--emerald)" }}>
+                  {fmt(saved)}
+                </span>
+              </div>
+
+              <p className="text-[13px] mt-3 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                {fmt(joinConfirm.groupPrice)} for {joinConfirm.name}.
+                When {joinConfirm.minPoolSize} people join, everyone gets this price.
+                Didn&apos;t fill? Every kobo back.
+              </p>
+
+              <div className="flex gap-2.5 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setJoinConfirm(null)}
+                  className="flex-1 h-[50px] rounded-[8px] text-[14px] font-bold cursor-pointer press-feedback"
+                  style={{ background: "var(--sand)", color: "var(--text)" }}
+                >
+                  Not now
+                </button>
+                <Link
+                  href={`/product/${joinConfirm.id}`}
+                  className="flex-1 h-[50px] rounded-[8px] text-[14px] font-bold text-white flex items-center justify-center press-feedback"
+                  style={{ background: "var(--emerald)" }}
+                  onClick={() => setJoinConfirm(null)}
+                >
+                  Join · {fmt(joinConfirm.groupPrice)}
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       <BottomNav />
     </main>
