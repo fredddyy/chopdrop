@@ -56,9 +56,11 @@ const COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#7C3AED", "#EC4899"
 
 function poolSocial(id: string, idx: number, minSize: number) {
   const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1) + idx;
-  const joined = Math.max(1, (seed * 3 + 1) % Math.min(minSize, 5));
+  // Pools should look 60-90% full — that's what creates FOMO
+  const fillPct = 0.6 + ((seed % 4) * 0.1); // 60%, 70%, 80%, 90%
+  const joined = Math.max(2, Math.min(minSize - 1, Math.round(minSize * fillPct)));
   const starter = NAMES[seed % NAMES.length];
-  const hours = [2, 4, 6, 8, 12][seed % 5];
+  const hours = [1, 2, 3, 4, 6][seed % 5];
   const others = joined - 1;
   return { starter, starterColor: COLORS[seed % COLORS.length], joined, spotsLeft: minSize - joined, hours, others };
 }
@@ -213,11 +215,12 @@ export default function DiscoverPage() {
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                         )}
-                        {social.spotsLeft <= 3 && (
-                          <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                            {social.spotsLeft} left
-                          </div>
-                        )}
+                        <div
+                          className="absolute top-2 right-2 px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold text-white"
+                          style={{ background: social.spotsLeft <= 2 ? "var(--coral)" : "var(--emerald)" }}
+                        >
+                          {social.spotsLeft <= 2 ? `${social.spotsLeft} left!` : `${social.joined}/${p.minPoolSize}`}
+                        </div>
                       </div>
                       {/* Info below — name, social, price */}
                       <div className="p-2.5">
