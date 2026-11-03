@@ -309,87 +309,126 @@ export default function StorePage() {
         </div>
       </div>
 
-      {/* ── Category filter — scoped to products section ── */}
-      {store.categories.length > 1 && store.products.length > 0 && (
-        <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 mt-4">
-          {["All", ...store.categories].map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setActiveCategory(cat)}
-              className="h-[32px] px-3.5 rounded-[8px] text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
-              style={{
-                background:
-                  activeCategory === cat ? "var(--dark)" : "var(--sand)",
-                color:
-                  activeCategory === cat ? "white" : "var(--text-secondary)",
-              }}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* ── Menu category pills — like old restaurant page ── */}
+      {(() => {
+        // Build unified category list from combos + menu categories
+        const mealCatNames = store.menuCategories.map((c) => c.name);
+        if (store.combos.length > 0) mealCatNames.unshift("Combos");
+        const productCatNames = store.products.length > 0 ? store.categories : [];
+        const allCats = [...new Set([...mealCatNames, ...productCatNames])];
 
-      {/* ── Combo Meals (poolable) ── */}
-      {store.combos.length > 0 && (
-        <section className="px-5 mt-4">
-          <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Combo meals</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {store.combos.map((c, idx) => {
-              const hasDiscount = c.originalPrice && c.originalPrice > c.price;
-              const sav = hasDiscount ? Math.round(((c.originalPrice! - c.price) / c.originalPrice!) * 100) : 0;
-              return (
-                <Link
-                  key={c.id}
-                  href={`/restaurant/${store.id}#${c.id}`}
-                  className={`card-enter card-enter-${(idx % 8) + 1} rounded-[8px] overflow-hidden press-feedback`}
-                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-                >
-                  <div className="relative h-[130px]" style={{ background: "var(--sand)" }}>
-                    {c.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-[24px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.1 }}>{c.name.charAt(0)}</span>
-                      </div>
-                    )}
-                    {sav > 0 && (
-                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                        -{sav}%
-                      </div>
-                    )}
-                    {c.tag === "DEAL" && (
-                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                        Deal
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h4 className="text-[13px] font-bold leading-snug truncate" style={{ color: "var(--text)" }}>{c.name}</h4>
-                    <div className="flex items-baseline gap-2 mt-1.5">
-                      <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(c.price)}</span>
-                      {hasDiscount && (
-                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(c.originalPrice!)}</span>
-                      )}
-                    </div>
-                    {c.poolTiers != null && (
-                      <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--emerald)" }}>Pool available</p>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
+        if (allCats.length <= 1 && store.products.length === 0) return null;
+
+        return (
+          <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 mt-4">
+            {(allCats.length > 1 ? ["All", ...allCats] : allCats).map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCategory(cat)}
+                className="h-[34px] px-3.5 rounded-[8px] text-[12px] font-bold whitespace-nowrap cursor-pointer shrink-0"
+                style={{
+                  background: activeCategory === cat ? "var(--dark)" : "var(--sand)",
+                  color: activeCategory === cat ? "white" : "var(--text-secondary)",
+                  transition: "background 200ms, color 200ms",
+                }}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
-        </section>
-      )}
+        );
+      })()}
 
-      {/* ── Product Grid ── */}
+      {/* ── Unified meal list — combos + menu items filtered by category ── */}
+      <section className="px-5 mt-4 pb-2">
+        <div className="flex flex-col gap-2">
+          {/* Combos — shown when "All" or "Combos" selected */}
+          {store.combos.length > 0 && (activeCategory === "All" || activeCategory === "Combos") && store.combos.map((c) => {
+            const hasDiscount = c.originalPrice && c.originalPrice > c.price;
+            return (
+              <div
+                key={`combo-${c.id}`}
+                className="flex items-center gap-3 p-2.5 rounded-[8px]"
+                style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+              >
+                {c.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.imageUrl} alt={c.name} className="w-14 h-14 rounded-[8px] object-cover shrink-0" />
+                ) : (
+                  <div className="w-14 h-14 rounded-[8px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                    <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{c.name.charAt(0)}</span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{c.name}</h4>
+                    {c.tag === "DEAL" && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] text-white shrink-0" style={{ background: "var(--emerald)" }}>Deal</span>
+                    )}
+                  </div>
+                  <div className="flex items-baseline gap-1.5 mt-0.5">
+                    <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(c.price)}</span>
+                    {hasDiscount && (
+                      <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(c.originalPrice!)}</span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    cart.addItem({ dailyMenuId: `combo-${c.id}`, name: c.name, description: c.description || "", imageUrl: c.imageUrl, restaurantName: store.name, price: c.price });
+                  }}
+                  className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0"
+                  style={{ background: "var(--coral)", color: "white" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                </button>
+              </div>
+            );
+          })}
+
+          {/* Menu items — filtered by active category */}
+          {store.menuCategories
+            .filter((cat) => activeCategory === "All" || activeCategory === cat.name)
+            .map((cat) => cat.items.map((item) => (
+              <div
+                key={`menu-${item.id}`}
+                className="flex items-center gap-3 p-2.5 rounded-[8px]"
+                style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+              >
+                {item.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.imageUrl} alt={item.name} className="w-14 h-14 rounded-[8px] object-cover shrink-0" />
+                ) : (
+                  <div className="w-14 h-14 rounded-[8px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                    <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{item.name}</h4>
+                  <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(item.price)}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    cart.addItem({ dailyMenuId: `menu-${item.id}`, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantName: store.name, price: item.price });
+                  }}
+                  className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0"
+                  style={{ background: "var(--coral)", color: "white" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                </button>
+              </div>
+            )))}
+        </div>
+      </section>
+
+      {/* ── Products (group-buy items) — separate section if store has both ── */}
       {filtered.length > 0 && (
-        <section className="px-5 mt-6">
-          {store.combos.length > 0 && (
-            <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Products</h3>
+        <section className="px-5 mt-4 pb-4">
+          {(store.combos.length > 0 || store.menuCategories.length > 0) && (
+            <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Pool deals</h3>
           )}
           <div className="grid grid-cols-2 gap-3">
             {filtered.map((p, idx) => {
@@ -420,70 +459,15 @@ export default function StorePage() {
                     <h3 className="text-[13px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                       {p.name}
                     </h3>
-                    {p.subcategory && <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.subcategory}</p>}
-                    <div className="flex items-baseline gap-2 mt-2">
-                      <span className="text-[20px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(p.retailPrice)}</span>
+                    <div className="flex items-baseline gap-2 mt-1.5">
+                      <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(p.retailPrice)}</span>
                     </div>
-                    {sav > 0 && <p className="text-[12px] font-semibold mt-1" style={{ color: "var(--emerald)" }}>Pool at {fmt(p.groupPrice)}</p>}
+                    {sav > 0 && <p className="text-[11px] font-semibold mt-0.5" style={{ color: "var(--emerald)" }}>Pool at {fmt(p.groupPrice)}</p>}
                   </div>
                 </Link>
               );
             })}
           </div>
-        </section>
-      )}
-
-      {/* ── Menu Categories (individual items) ── */}
-      {store.menuCategories.length > 0 && (
-        <section className="px-5 mt-6 pb-4">
-          <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Menu</h3>
-          {store.menuCategories.map((cat) => (
-            <div key={cat.id} className="mb-4">
-              <h4 className="text-[13px] font-bold mb-2" style={{ color: "var(--text-secondary)" }}>{cat.name}</h4>
-              <div className="flex flex-col gap-2">
-                {cat.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-3 p-2.5 rounded-[8px]"
-                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-                  >
-                    {item.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-[6px] object-cover shrink-0" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-[6px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
-                        <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h5 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{item.name}</h5>
-                      {item.description && <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(item.price)}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          cart.addItem({
-                            dailyMenuId: `menu-${item.id}`,
-                            name: item.name,
-                            description: item.description || "",
-                            imageUrl: item.imageUrl,
-                            restaurantName: store.name,
-                            price: item.price,
-                          });
-                        }}
-                        className="w-8 h-8 rounded-[6px] flex items-center justify-center cursor-pointer shrink-0"
-                        style={{ background: "var(--sand)" }}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
         </section>
       )}
 
