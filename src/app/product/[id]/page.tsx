@@ -401,8 +401,8 @@ export default function ProductDetailPage() {
       )}
 
       {/* ── Share sheet — appears after creating a pool ── */}
-      {sharePrompt && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center" onClick={() => setSharePrompt(null)}>
+      {sharePrompt && product && (
+        <div className="fixed inset-0 z-[70] flex items-end justify-center" onClick={() => setSharePrompt(null)}>
           <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
           <div className="relative w-full max-w-[480px] rounded-t-[16px] p-5 sheet-enter" style={{ background: "var(--card)" }} onClick={(e) => e.stopPropagation()}>
             <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
