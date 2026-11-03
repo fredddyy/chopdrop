@@ -312,15 +312,31 @@ export default function DiscoverPage() {
                           <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
                           <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>
                         </div>
-                        {/* Live pool activity */}
-                        {pooling > 0 && (
-                          <div className="flex items-center gap-1.5 mt-1.5">
-                            <span className="pool-dot" />
-                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
-                              {pooling} pooling
-                            </span>
-                          </div>
-                        )}
+                        {/* Live pool activity with avatars */}
+                        {pooling > 0 && (() => {
+                          const topItem = store.topItems[0] || "items";
+                          const avatarNames = NAMES.slice((store.id.charCodeAt(0) % 5), (store.id.charCodeAt(0) % 5) + 3);
+                          const avatarColors = COLORS.slice(0, 3);
+                          return (
+                            <div className="flex items-center gap-2 mt-2 pt-2" style={{ borderTop: "1px solid var(--border)" }}>
+                              {/* Avatar stack */}
+                              <div className="flex -space-x-1.5 shrink-0">
+                                {avatarNames.map((n, i) => (
+                                  <div
+                                    key={i}
+                                    className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                                    style={{ background: avatarColors[i], border: "1.5px solid var(--card)" }}
+                                  >
+                                    {n.charAt(0)}
+                                  </div>
+                                ))}
+                              </div>
+                              <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                                +{pooling} others buying {topItem.toLowerCase()}
+                              </span>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </Link>
                   );
