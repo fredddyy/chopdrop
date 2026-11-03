@@ -165,7 +165,7 @@ export default function DiscoverPage() {
                 <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
               </svg>
               {cart.totalItems > 0 && (
-                <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[11px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
+                <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[11px] font-bold text-white px-1" style={{ background: "var(--coral-dark)" }}>
                   {cart.totalItems}
                 </span>
               )}
@@ -175,12 +175,22 @@ export default function DiscoverPage() {
 
         {searchOpen && (
           <div className="px-5 pb-3">
-            <input
-              type="text" placeholder="Search deals and stores..." value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)} autoFocus
-              className="w-full h-11 px-4 rounded-[8px] text-[14px] font-medium outline-none"
-              style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
-            />
+            <div className="relative">
+              <input
+                type="text" placeholder="Search deals and stores..." value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)} autoFocus
+                className="w-full h-11 px-4 pr-10 rounded-[8px] text-[14px] font-medium outline-none"
+                style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
+              />
+              {searchQuery && (
+                <button type="button" onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--border)" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                </button>
+              )}
+            </div>
+            {searchQuery.length === 1 && (
+              <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>Type one more letter to search</p>
+            )}
           </div>
         )}
 
@@ -307,10 +317,6 @@ export default function DiscoverPage() {
                             <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
-                            {social.joined >= 3 && (
-                              <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Free delivery</span>
-                            )}
-                            {/* Join button — opens confirmation sheet */}
                             <button
                               type="button"
                               onClick={(e) => { e.preventDefault(); setJoinConfirm(p); }}
@@ -424,7 +430,7 @@ export default function DiscoverPage() {
 
       {/* ── Join confirmation sheet ── */}
       {joinConfirm && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center" onClick={() => setJoinConfirm(null)}>
+        <div className="fixed inset-0 z-[60] flex items-end justify-center" role="dialog" aria-modal="true" aria-label="Join group deal" onClick={() => setJoinConfirm(null)}>
           <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
           <div
             className="relative w-full max-w-[480px] rounded-t-[16px] p-5 celebrate"
