@@ -197,7 +197,7 @@ export default function DiscoverPage() {
           {poolProducts.length > 0 && (
             <section className="pt-4 pb-2">
               <div className="px-5 mb-3 flex items-center justify-between">
-                <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Pooling near you</h3>
+                <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Group deals near you</h3>
                 <Link href="/pools" className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
               </div>
 
