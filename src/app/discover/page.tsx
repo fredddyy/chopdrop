@@ -266,10 +266,6 @@ export default function DiscoverPage() {
                     >
                       <div className="relative overflow-hidden">
                         <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 140 : 110} />
-                        {/* Delivery time — bottom left */}
-                        <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white" style={{ background: "rgba(0,0,0,0.6)" }}>
-                          {store.deliveryEstimate}
-                        </div>
                         {/* Pool count — top right */}
                         {pooling > 0 && (
                           <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white flex items-center gap-1" style={{ background: "var(--emerald)" }}>
@@ -285,25 +281,21 @@ export default function DiscoverPage() {
                           </h2>
                           <span className="text-[12px] font-medium shrink-0 ml-2" style={{ color: "var(--text-secondary)" }}>★ {store.rating}</span>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders</span>
-                          {store.bestDealName && store.bestSaving >= 10 && (
-                            <>
-                              <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
-                              {/* Overlapping avatars */}
-                              <div className="flex -space-x-1 shrink-0">
-                                {NAMES.slice((store.id.charCodeAt(0) % 5), (store.id.charCodeAt(0) % 5) + 3).map((n, i) => (
-                                  <div key={i} className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: COLORS[i], border: "1px solid var(--card)" }}>
-                                    {n.charAt(0)}
-                                  </div>
-                                ))}
-                              </div>
-                              <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>
-                                {store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}{pooling >= 5 ? " + free delivery" : ""}
-                              </span>
-                            </>
-                          )}
-                        </div>
+                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders · {store.deliveryEstimate}</span>
+                        {store.bestDealName && store.bestSaving >= 10 && (
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <div className="flex -space-x-1 shrink-0">
+                              {NAMES.slice((store.id.charCodeAt(0) % 5), (store.id.charCodeAt(0) % 5) + 3).map((n, i) => (
+                                <div key={i} className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: COLORS[i], border: "1px solid var(--card)" }}>
+                                  {n.charAt(0)}
+                                </div>
+                              ))}
+                            </div>
+                            <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>
+                              {store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}{pooling >= 5 ? " + free delivery" : ""}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </Link>
                   );
