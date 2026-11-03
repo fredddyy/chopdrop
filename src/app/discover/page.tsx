@@ -294,7 +294,15 @@ export default function DiscoverPage() {
                           {store.bestDealName && store.bestSaving >= 10 && (
                             <>
                               <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
-                              <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>{store.bestDealName} -{store.bestSaving}%</span>
+                              {/* Overlapping avatars */}
+                              <div className="flex -space-x-1 shrink-0">
+                                {NAMES.slice((store.id.charCodeAt(0) % 5), (store.id.charCodeAt(0) % 5) + 3).map((n, i) => (
+                                  <div key={i} className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: COLORS[i], border: "1px solid var(--card)" }}>
+                                    {n.charAt(0)}
+                                  </div>
+                                ))}
+                              </div>
+                              <span className="text-[11px] font-bold truncate" style={{ color: "var(--coral)" }}>{store.bestDealName} -{store.bestSaving}%</span>
                             </>
                           )}
                         </div>
