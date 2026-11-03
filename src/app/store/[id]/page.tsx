@@ -205,10 +205,27 @@ export default function StorePage() {
     );
   }
 
+  const [addedId, setAddedId] = useState<string | null>(null);
+
+  function addToCart(itemId: string, name: string, description: string, imageUrl: string | null, price: number) {
+    cart.addItem({ dailyMenuId: itemId, name, description: description || "", imageUrl, restaurantName: store?.name || "", price });
+    setAddedId(itemId);
+    setTimeout(() => setAddedId(null), 800);
+  }
+
+  // Filter products by active category (for pool deals grid)
   const filtered =
     activeCategory === "All"
       ? store.products
       : store.products.filter((p) => p.category === activeCategory);
+
+  // Filter combos: show when "All" or "Combos"
+  const showCombos = activeCategory === "All" || activeCategory === "Combos";
+
+  // Filter menu items by active category name
+  const filteredMenuCats = activeCategory === "All"
+    ? store.menuCategories
+    : store.menuCategories.filter((c) => c.name === activeCategory);
 
   const bannerSrc =
     (!bannerFailed && store.bannerUrl) ||
@@ -343,8 +360,8 @@ export default function StorePage() {
       {/* ── Unified meal list — combos + menu items filtered by category ── */}
       <section className="px-5 mt-4 pb-2">
         <div className="flex flex-col gap-2">
-          {/* Combos — shown when "All" or "Combos" selected */}
-          {store.combos.length > 0 && (activeCategory === "All" || activeCategory === "Combos") && store.combos.map((c) => {
+          {/* Combos — filtered by pill */}
+          {store.combos.length > 0 && showCombos && store.combos.map((c) => {
             const hasDiscount = c.originalPrice && c.originalPrice > c.price;
             return (
               <div
@@ -376,11 +393,9 @@ export default function StorePage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    cart.addItem({ dailyMenuId: `combo-${c.id}`, name: c.name, description: c.description || "", imageUrl: c.imageUrl, restaurantName: store.name, price: c.price });
-                  }}
-                  className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0"
-                  style={{ background: "var(--coral)", color: "white" }}
+                  onClick={() => addToCart(`combo-${c.id}`, c.name, c.description || "", c.imageUrl, c.price)}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0 ${addedId === `combo-${c.id}` ? "pop" : ""}`}
+                  style={{ background: addedId === `combo-${c.id}` ? "var(--emerald)" : "var(--coral)", color: "white", transition: "background 200ms" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                 </button>
@@ -388,10 +403,8 @@ export default function StorePage() {
             );
           })}
 
-          {/* Menu items — filtered by active category */}
-          {store.menuCategories
-            .filter((cat) => activeCategory === "All" || activeCategory === cat.name)
-            .map((cat) => cat.items.map((item) => (
+          {/* Menu items — filtered by active category pill */}
+          {filteredMenuCats.map((cat) => cat.items.map((item) => (
               <div
                 key={`menu-${item.id}`}
                 className="flex items-center gap-3 p-2.5 rounded-[8px]"
@@ -411,11 +424,9 @@ export default function StorePage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    cart.addItem({ dailyMenuId: `menu-${item.id}`, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantName: store.name, price: item.price });
-                  }}
-                  className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0"
-                  style={{ background: "var(--coral)", color: "white" }}
+                  onClick={() => addToCart(`menu-${item.id}`, item.name, item.description || "", item.imageUrl, item.price)}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0 ${addedId === `menu-${item.id}` ? "pop" : ""}`}
+                  style={{ background: addedId === `menu-${item.id}` ? "var(--emerald)" : "var(--coral)", color: "white", transition: "background 200ms" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                 </button>
@@ -462,7 +473,7 @@ export default function StorePage() {
                     <div className="flex items-baseline gap-2 mt-1.5">
                       <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(p.retailPrice)}</span>
                     </div>
-                    {sav > 0 && <p className="text-[11px] font-semibold mt-0.5" style={{ color: "var(--emerald)" }}>Pool at {fmt(p.groupPrice)}</p>}
+                    {sav > 0 && <p className="text-[11px] font-semibold mt-0.5" style={{ color: "var(--emerald)" }}>Pool at {fmt(p.groupPrice)} · {p.minPoolSize}+ people</p>}
                   </div>
                 </Link>
               );
