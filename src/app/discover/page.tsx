@@ -34,9 +34,7 @@ function fmt(kobo: number): string {
 
 function CoverImage({ src, alt, height }: { src: string | null; alt: string; height: number }) {
   const [failed, setFailed] = useState(false);
-
   const handleError = useCallback(() => setFailed(true), []);
-
   if (failed || !src) {
     return (
       <div className="w-full flex items-end px-4 pb-3" style={{ height, background: "var(--sand)" }}>
@@ -44,7 +42,6 @@ function CoverImage({ src, alt, height }: { src: string | null; alt: string; hei
       </div>
     );
   }
-
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={alt} className="w-full object-cover" style={{ height }} onError={handleError} />
@@ -53,6 +50,37 @@ function CoverImage({ src, alt, height }: { src: string | null; alt: string; hei
 
 const CATEGORIES = ["Food", "Electronics", "Fashion", "Groceries"];
 
+// ── Simulated social proof (seeded, deterministic per product) ──
+const NAMES = ["Tolu", "Ada", "Chidi", "Ngozi", "Emeka", "Bimpe", "Kola", "Yemi", "Funke", "Dayo"];
+const COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#7C3AED", "#EC4899"];
+
+function poolSocial(id: string, idx: number, minSize: number) {
+  const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1) + idx;
+  const joined = Math.max(1, (seed * 3 + 1) % Math.min(minSize, 5));
+  const starter = NAMES[seed % NAMES.length];
+  const hours = [2, 4, 6, 8, 12][seed % 5];
+  const others = joined - 1;
+  return { starter, starterColor: COLORS[seed % COLORS.length], joined, spotsLeft: minSize - joined, hours, others };
+}
+
+function storePooCount(id: string, orderCount: number): number {
+  // Simulated: stores with more orders have more poolers
+  const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1);
+  return orderCount > 100 ? (seed % 8) + 5 : orderCount > 50 ? (seed % 5) + 2 : 0;
+}
+
+/* Avatar initial circle */
+function Avatar({ name, color, size = 22 }: { name: string; color: string; size?: number }) {
+  return (
+    <div
+      className="rounded-full flex items-center justify-center shrink-0 font-bold text-white"
+      style={{ width: size, height: size, background: color, fontSize: size * 0.45 }}
+    >
+      {name.charAt(0)}
+    </div>
+  );
+}
+
 export default function DiscoverPage() {
   const [stores, setStores] = useState<Store[]>([]);
   const [poolProducts, setPoolProducts] = useState<PoolProduct[]>([]);
@@ -60,14 +88,7 @@ export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [tipDismissed, setTipDismissed] = useState(false);
   const cart = useCart();
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem("pool-tip-seen")) {
-      setTipDismissed(true);
-    }
-  }, []);
 
   useEffect(() => {
     fetchData();
@@ -75,18 +96,13 @@ export default function DiscoverPage() {
 
   async function fetchData() {
     setLoading(true);
-    const params = new URLSearchParams({ category: activeCategory, limit: "20" });
-
-    // Fetch stores and pool-able products in parallel
     const [storesRes, productsRes] = await Promise.all([
       fetch(`/api/stores?category=${activeCategory}`),
-      fetch(`/api/products?${params}`),
+      fetch(`/api/products?category=${activeCategory}&limit=20`),
     ]);
     const [storesData, productsData] = await Promise.all([storesRes.json(), productsRes.json()]);
-
     if (storesData.success) setStores(storesData.data);
     if (productsData.success) {
-      // Only show products with real pool savings
       const withSavings = (productsData.data as PoolProduct[]).filter(
         (p) => p.groupPrice < p.retailPrice && p.imageUrl,
       );
@@ -107,30 +123,27 @@ export default function DiscoverPage() {
         className="sticky top-0 z-40"
         style={{ background: "rgba(249,250,251,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
       >
-        <div className="px-5 h-14 flex items-center justify-between">
-          <div>
-            <span className="text-[20px] font-extrabold tracking-[-0.03em]" style={{ color: "var(--text)" }}>
-              Chop<span style={{ color: "var(--coral)" }}>Drop</span>
-            </span>
-            <p className="text-[10px] font-medium -mt-1" style={{ color: "var(--text-muted)" }}>Order lunch, save together</p>
-          </div>
-          <div className="flex items-center gap-2.5">
+        <div className="px-5 h-12 flex items-center justify-between">
+          <span className="text-[18px] font-extrabold tracking-[-0.03em]" style={{ color: "var(--text)" }}>
+            Chop<span style={{ color: "var(--coral)" }}>Drop</span>
+          </span>
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setSearchOpen(!searchOpen)}
-              className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ background: searchOpen ? "var(--dark)" : "var(--sand)" }}
+              className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer"
+              style={{ background: searchOpen ? "var(--dark)" : "transparent" }}
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={searchOpen ? "white" : "var(--text)"} strokeWidth="2.2" strokeLinecap="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={searchOpen ? "white" : "var(--text)"} strokeWidth="2" strokeLinecap="round">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
               </svg>
             </button>
-            <Link href="/cart" className="relative w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round">
+            <Link href="/cart" className="relative w-11 h-11 rounded-full flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round">
                 <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
               </svg>
               {cart.totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
+                <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
                   {cart.totalItems}
                 </span>
               )}
@@ -140,39 +153,24 @@ export default function DiscoverPage() {
 
         {searchOpen && (
           <div className="px-5 pb-3">
-            <div className="relative">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search stores..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-                className="w-full h-11 pl-10 pr-10 rounded-[8px] text-[14px] font-medium outline-none"
-                style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
-              />
-              {searchQuery && (
-                <button type="button" onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--border)" }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
-                </button>
-              )}
-            </div>
+            <input
+              type="text" placeholder="Search stores..." value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} autoFocus
+              className="w-full h-11 px-4 rounded-[8px] text-[14px] font-medium outline-none"
+              style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
+            />
           </div>
         )}
 
-        {/* Category tabs — no "All" */}
         <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 pb-3">
           {CATEGORIES.map((cat) => (
             <button
-              key={cat}
-              type="button"
-              onClick={() => setActiveCategory(cat)}
-              className="h-[34px] px-4 rounded-[8px] text-[12px] font-bold whitespace-nowrap transition-all cursor-pointer shrink-0"
+              key={cat} type="button" onClick={() => setActiveCategory(cat)}
+              className="h-[36px] px-4 rounded-[8px] text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0"
               style={{
                 background: activeCategory === cat ? "var(--dark)" : "var(--sand)",
                 color: activeCategory === cat ? "white" : "var(--text-secondary)",
+                transition: "background 200ms, color 200ms",
               }}
             >
               {cat}
@@ -183,138 +181,136 @@ export default function DiscoverPage() {
 
       {/* ── Content ── */}
       {loading ? (
-        <div className="pt-3">
-          {/* Pool section skeleton */}
-          <div className="px-5 mb-2">
-            <div className="h-4 rounded w-[40%]" style={{ background: "var(--sand)" }} />
-          </div>
-          <div className="flex gap-3 overflow-hidden px-5 mb-5">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="w-[140px] shrink-0 rounded-[8px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <div className="h-[100px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
-                <div className="p-2.5 space-y-1.5">
-                  <div className="h-3 rounded w-[80%]" style={{ background: "var(--sand)" }} />
-                  <div className="h-4 rounded w-[60%]" style={{ background: "var(--sand)" }} />
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Store skeleton */}
-          <div className="px-5 flex flex-col gap-3">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="rounded-[8px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <div className="h-[125px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }} />
-                <div className="px-3.5 py-3 space-y-2">
-                  <div className="h-4 rounded w-[50%]" style={{ background: "var(--sand)" }} />
-                  <div className="h-3 rounded w-[65%]" style={{ background: "var(--sand)" }} />
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="px-5 pt-4 flex flex-col gap-3">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-[72px] rounded-[8px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
+          ))}
         </div>
       ) : (
-        <div className="pt-3">
+        <div>
 
-          {/* Pool tip — first visit */}
-          {!tipDismissed && (
-            <div className="mx-5 mb-3 flex items-start gap-3 p-3 rounded-[8px] card-enter card-enter-1" style={{ background: "var(--dark)" }}>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-bold text-white leading-snug">Order together, pay less</p>
-                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-                  Tap any item below and hit &quot;Pool &amp; Save&quot; — more people join, everyone&apos;s price drops.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => { setTipDismissed(true); sessionStorage.setItem("pool-tip-seen", "1"); }}
-                className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 cursor-pointer"
-                style={{ background: "rgba(255,255,255,0.15)" }}
-              >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
-              </button>
-            </div>
-          )}
-
-          {/* ═══ POOL & SAVE — per-category products ═══ */}
+          {/* ═══ LIVE POOLS — social activity feed ═══ */}
           {poolProducts.length > 0 && (
-            <section className="mb-4">
-              <div className="px-5 mb-2.5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="pool-dot" />
-                  <h3 className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>Pool &amp; save</h3>
-                </div>
-                <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Order together, pay less</span>
+            <section className="pt-4 pb-2">
+              <div className="px-5 mb-3 flex items-center gap-2">
+                <span className="pool-dot" />
+                <h3 className="text-[13px] font-bold" style={{ color: "var(--text)" }}>People pooling right now</h3>
               </div>
-              <div className="flex gap-2.5 overflow-x-auto hide-scrollbar pl-5 pr-3">
-                {poolProducts.map((p, idx) => {
-                  const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
+
+              <div className="px-5 flex flex-col gap-2">
+                {poolProducts.slice(0, 3).map((p, idx) => {
+                  const social = poolSocial(p.id, idx, p.minPoolSize);
                   return (
                     <Link
                       key={p.id}
                       href={`/product/${p.id}`}
-                      className={`w-[140px] shrink-0 rounded-[8px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
+                      className={`flex gap-3 p-2.5 rounded-[8px] active:scale-[0.985] transition-transform card-enter card-enter-${idx + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
-                      <div className="relative h-[100px]" style={{ background: "var(--sand)" }}>
+                      {/* Product thumbnail */}
+                      <div className="w-[52px] h-[52px] rounded-[6px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
                         {p.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
                         )}
-                        <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                          -{sav}%
+                      </div>
+
+                      {/* Pool info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          {/* Avatar stack */}
+                          <Avatar name={social.starter} color={social.starterColor} size={18} />
+                          <span className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>
+                            {social.starter}{social.others > 0 && ` + ${social.others}`}
+                          </span>
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>pooling</span>
+                        </div>
+                        <p className="text-[12px] font-medium truncate mt-0.5" style={{ color: "var(--text-secondary)" }}>
+                          {p.name}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[13px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>
+                            {fmt(p.groupPrice)}
+                          </span>
+                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
+                            {fmt(p.retailPrice)}
+                          </span>
+                          <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>
+                            {social.spotsLeft} {social.spotsLeft === 1 ? "spot" : "spots"} left
+                          </span>
                         </div>
                       </div>
-                      <div className="p-2.5">
-                        <h4 className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                        <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                        <div className="flex items-baseline gap-1.5 mt-1.5">
-                          <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
-                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                        </div>
-                        <p className="text-[9px] mt-0.5" style={{ color: "var(--text-muted)" }}>with {p.minPoolSize}+ people</p>
+
+                      {/* Time */}
+                      <div className="flex flex-col items-end justify-center shrink-0">
+                        <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>
+                          {social.hours}h left
+                        </span>
                       </div>
                     </Link>
                   );
                 })}
               </div>
+
+              {/* See more pools */}
+              {poolProducts.length > 3 && (
+                <div className="px-5 mt-2">
+                  <Link
+                    href="/pools"
+                    className="text-[12px] font-bold"
+                    style={{ color: "var(--coral)" }}
+                  >
+                    See {poolProducts.length - 3} more pools →
+                  </Link>
+                </div>
+              )}
             </section>
           )}
 
           {/* ═══ STORES ═══ */}
           {filteredStores.length > 0 && (
-            <section>
-              <div className="px-5 mb-2.5">
-                <h3 className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>Stores</h3>
+            <section className="mt-3">
+              <div className="px-5 mb-2">
+                <h3 className="text-[13px] font-bold" style={{ color: "var(--text-secondary)" }}>Stores</h3>
               </div>
               <div className="px-5 flex flex-col gap-3">
-                {filteredStores.map((store, idx) => (
-                  <Link
-                    key={store.id}
-                    href={`/store/${store.id}`}
-                    className={`block rounded-[8px] overflow-hidden active:scale-[0.985] transition-transform card-enter card-enter-${(idx % 8) + 1}`}
-                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-                  >
-                    <div className="relative overflow-hidden">
-                      <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 140 : 115} />
-                    </div>
-                    <div className="px-3.5 py-2.5">
-                      <h2 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
-                        {store.name}
-                      </h2>
-                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                        <span className="text-[11px] font-medium" style={{ color: "var(--text-secondary)" }}>
-                          ★ {store.rating}
-                        </span>
-                        <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
-                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                          {store.orderCount}+ orders
-                        </span>
-                        <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
-                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>
+                {filteredStores.map((store, idx) => {
+                  const pooling = storePooCount(store.id, store.orderCount);
+                  return (
+                    <Link
+                      key={store.id}
+                      href={`/store/${store.id}`}
+                      className={`block rounded-[8px] overflow-hidden active:scale-[0.985] transition-transform card-enter card-enter-${(idx % 8) + 1}`}
+                      style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                    >
+                      <div className="relative overflow-hidden">
+                        <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 140 : 110} />
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                      <div className="px-3.5 py-2.5">
+                        <h2 className="text-[15px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>
+                          {store.name}
+                        </h2>
+                        {/* Social proof line */}
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className="text-[11px] font-medium" style={{ color: "var(--text-secondary)" }}>★ {store.rating}</span>
+                          <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders</span>
+                          <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>
+                        </div>
+                        {/* Live pool activity — only on stores with active poolers */}
+                        {pooling > 0 && (
+                          <div className="flex items-center gap-1.5 mt-1.5">
+                            <span className="pool-dot" />
+                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
+                              {pooling} people pooling right now
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </section>
           )}
