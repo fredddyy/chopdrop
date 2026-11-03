@@ -503,6 +503,29 @@ export default function StorePage() {
         </section>
       )}
 
+      {/* Spacer for sticky cart bar */}
+      {cart.totalItems > 0 && <div className="h-16" />}
+
+      {/* ── Sticky cart bar ── */}
+      {cart.totalItems > 0 && (
+        <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-2">
+          <Link
+            href="/cart"
+            className="max-w-[480px] mx-auto flex items-center justify-between h-[48px] px-4 rounded-[10px] text-white"
+            style={{ background: "var(--coral)" }}
+          >
+            <div className="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+              <span className="text-[13px] font-bold">{cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-extrabold tabular-nums">{fmt(cart.subtotal)}</span>
+              <span className="text-[12px] font-bold px-2.5 py-1 rounded-[6px]" style={{ background: "rgba(255,255,255,0.2)" }}>Go to cart</span>
+            </div>
+          </Link>
+        </div>
+      )}
+
       <BottomNav />
     </main>
   );
