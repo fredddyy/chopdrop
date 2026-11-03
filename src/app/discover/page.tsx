@@ -189,81 +189,56 @@ export default function DiscoverPage() {
       ) : (
         <div>
 
-          {/* ═══ LIVE POOLS — social activity feed ═══ */}
+          {/* ═══ LIVE POOLS — visual horizontal cards ═══ */}
           {poolProducts.length > 0 && (
-            <section className="pt-4 pb-2">
-              <div className="px-5 mb-3 flex items-center gap-2">
+            <section className="pt-4 pb-1">
+              <div className="px-5 mb-2.5 flex items-center gap-2">
                 <span className="pool-dot" />
-                <h3 className="text-[13px] font-bold" style={{ color: "var(--text)" }}>People pooling right now</h3>
+                <h3 className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Pools happening now</h3>
               </div>
 
-              <div className="px-5 flex flex-col gap-2">
-                {poolProducts.slice(0, 3).map((p, idx) => {
+              <div className="flex gap-2.5 overflow-x-auto hide-scrollbar pl-5 pr-3">
+                {poolProducts.slice(0, 5).map((p, idx) => {
                   const social = poolSocial(p.id, idx, p.minPoolSize);
                   return (
                     <Link
                       key={p.id}
                       href={`/product/${p.id}`}
-                      className={`flex gap-3 p-2.5 rounded-[8px] active:scale-[0.985] transition-transform card-enter card-enter-${idx + 1}`}
+                      className={`w-[155px] shrink-0 rounded-[8px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
-                      {/* Product thumbnail */}
-                      <div className="w-[52px] h-[52px] rounded-[6px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
+                      {/* Food photo — THE card */}
+                      <div className="relative h-[120px]" style={{ background: "var(--sand)" }}>
                         {p.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                         )}
-                      </div>
-
-                      {/* Pool info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          {/* Avatar stack */}
-                          <Avatar name={social.starter} color={social.starterColor} size={18} />
-                          <span className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>
-                            {social.starter}{social.others > 0 && ` + ${social.others}`}
-                          </span>
-                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>pooling</span>
+                        {/* Spots left badge */}
+                        <div
+                          className="absolute top-2 left-2 px-2 py-0.5 rounded-[4px] text-[9px] font-bold text-white"
+                          style={{ background: social.spotsLeft <= 2 ? "var(--coral)" : "var(--dark)" }}
+                        >
+                          {social.spotsLeft} {social.spotsLeft === 1 ? "spot" : "spots"} left
                         </div>
-                        <p className="text-[12px] font-medium truncate mt-0.5" style={{ color: "var(--text-secondary)" }}>
-                          {p.name}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[13px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>
-                            {fmt(p.groupPrice)}
-                          </span>
-                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
-                            {fmt(p.retailPrice)}
-                          </span>
-                          <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>
-                            {social.spotsLeft} {social.spotsLeft === 1 ? "spot" : "spots"} left
+                        {/* Social overlay at bottom */}
+                        <div className="absolute bottom-0 left-0 right-0 px-2.5 py-1.5" style={{ background: "rgba(0,0,0,0.55)" }}>
+                          <span className="text-[10px] font-bold text-white">
+                            {social.starter}{social.others > 0 ? ` + ${social.others} joined` : " started this"}
                           </span>
                         </div>
                       </div>
-
-                      {/* Time */}
-                      <div className="flex flex-col items-end justify-center shrink-0">
-                        <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>
-                          {social.hours}h left
-                        </span>
+                      {/* Info */}
+                      <div className="p-2.5">
+                        <h4 className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
+                        <div className="flex items-baseline gap-1.5 mt-1">
+                          <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
+                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                        </div>
                       </div>
                     </Link>
                   );
                 })}
               </div>
-
-              {/* See more pools */}
-              {poolProducts.length > 3 && (
-                <div className="px-5 mt-2">
-                  <Link
-                    href="/pools"
-                    className="text-[12px] font-bold"
-                    style={{ color: "var(--coral)" }}
-                  >
-                    See {poolProducts.length - 3} more pools →
-                  </Link>
-                </div>
-              )}
             </section>
           )}
 
@@ -298,12 +273,12 @@ export default function DiscoverPage() {
                           <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
                           <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}</span>
                         </div>
-                        {/* Live pool activity — only on stores with active poolers */}
+                        {/* Live pool activity */}
                         {pooling > 0 && (
                           <div className="flex items-center gap-1.5 mt-1.5">
                             <span className="pool-dot" />
                             <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
-                              {pooling} people pooling right now
+                              {pooling} pooling
                             </span>
                           </div>
                         )}
