@@ -15,31 +15,55 @@ interface ProductData {
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
-// Simulated pool data — deterministic per product
-const POOL_NAMES = ["Ikeja Lunch Crew", "Weekend Foodies", "Office Gang"];
-const POOL_AVATARS = ["T", "A", "C", "N", "E"];
-const POOL_COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#0891B2"];
+// Avatar colors for pool member initials
+const AVATAR_COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#0891B2"];
+
+interface PoolData {
+  id: string;
+  name: string | null;
+  memberCount: number;
+  spotsLeft: number;
+  deadline: string;
+  creatorName: string;
+  groupPrice: number;
+  minSize: number;
+}
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
   const [product, setProduct] = useState<ProductData | null>(null);
+  const [pools, setPools] = useState<PoolData[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [toast, setToast] = useState("");
   const [error, setError] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
+  const [joining, setJoining] = useState(false);
   const cart = useCart();
 
   useEffect(() => {
     const ctrl = new AbortController();
     setLoading(true);
     setError(false);
-    fetch(`/api/products/${id}`, { signal: ctrl.signal })
-      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
-      .then(d => { if (d.success) setProduct(d.data); setLoading(false); })
-      .catch(e => { if ((e as Error).name !== "AbortError") { setError(true); setLoading(false); } });
+
+    // Fetch product + active pools in parallel
+    Promise.allSettled([
+      fetch(`/api/products/${id}`, { signal: ctrl.signal }).then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); }),
+      fetch(`/api/pools?productId=${id}`, { signal: ctrl.signal }).then(r => r.ok ? r.json() : null),
+    ]).then(([productResult, poolsResult]) => {
+      if (productResult.status === "fulfilled" && productResult.value.success) {
+        setProduct(productResult.value.data);
+      } else if (productResult.status === "rejected" && (productResult.reason as Error).name !== "AbortError") {
+        setError(true);
+      }
+      if (poolsResult.status === "fulfilled" && poolsResult.value?.success) {
+        setPools(poolsResult.value.data);
+      }
+      if (!ctrl.signal.aborted) setLoading(false);
+    });
+
     return () => ctrl.abort();
   }, [id, retryKey]);
 
@@ -49,10 +73,54 @@ export default function ProductDetailPage() {
     showToast("added");
   }
 
-  function addGroup() {
+  async function joinPool(poolId: string) {
     if (!product) return;
-    cart.addItem({ dailyMenuId: `pool-${product.id}`, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantName: product.vendor.name, price: product.groupPrice });
-    showToast("added");
+    setJoining(true);
+    try {
+      const res = await fetch(`/api/pools/${poolId}/join`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("joined");
+        // Refresh pools
+        const poolsRes = await fetch(`/api/pools?productId=${id}`);
+        const poolsData = await poolsRes.json();
+        if (poolsData.success) setPools(poolsData.data);
+      } else {
+        showToast(data.error || "Couldn't join");
+      }
+    } catch {
+      showToast("Network error");
+    }
+    setJoining(false);
+  }
+
+  async function createPool() {
+    if (!product) return;
+    setJoining(true);
+    try {
+      const res = await fetch("/api/pools", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product.id, quantity }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("created");
+        // Refresh pools
+        const poolsRes = await fetch(`/api/pools?productId=${id}`);
+        const poolsData = await poolsRes.json();
+        if (poolsData.success) setPools(poolsData.data);
+      } else {
+        showToast(data.error === "Not authenticated" ? "Log in to start a group" : (data.error || "Couldn't create"));
+      }
+    } catch {
+      showToast("Network error");
+    }
+    setJoining(false);
   }
 
   function showToast(type: string) {
@@ -105,8 +173,6 @@ export default function ProductDetailPage() {
 
   const savings = product.retailPrice > product.groupPrice ? Math.round(((product.retailPrice - product.groupPrice) / product.retailPrice) * 100) : 0;
   const savedAmount = product.retailPrice - product.groupPrice;
-  const seed = product.id.charCodeAt(0);
-  const poolCount = 1 + (seed % 2);
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-32" style={{ background: "var(--bg)" }}>
@@ -168,73 +234,92 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* ═══ SOCIAL PROOF — the page's peak moment ═══ */}
+      {/* ═══ POOL SECTION — real data from API ═══ */}
       {savings > 0 && (
         <section className="mt-5 mx-5 rounded-[12px] overflow-hidden" style={{ background: "var(--dark)" }}>
           <div className="p-4 pb-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-[16px] font-extrabold text-white">Join a group</h3>
+              <h3 className="text-[16px] font-extrabold text-white">
+                {pools.length > 0 ? "Join a group" : "Start a group"}
+              </h3>
               <span className="text-[11px] font-bold" style={{ color: "rgba(255,255,255,0.45)" }}>
                 Every kobo back if not filled
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col gap-0">
-            {Array.from({ length: poolCount }).map((_, i) => {
-              const joined = Math.max(2, Math.round(product.minPoolSize * (0.6 + i * 0.15)));
-              const spotsLeft = product.minPoolSize - joined;
-              const fillPct = Math.round((joined / product.minPoolSize) * 100);
-              const avatarStart = (seed + i * 2) % POOL_AVATARS.length;
-              const isHot = spotsLeft <= 2;
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={addGroup}
-                  className="w-full flex items-center gap-3 px-4 py-3.5 text-left cursor-pointer press-feedback"
-                  style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.08)" : "none" }}
-                >
-                  {/* Avatar stack — bigger on dark bg */}
-                  <div className="flex -space-x-2 shrink-0">
-                    {Array.from({ length: Math.min(joined, 3) }).map((_, j) => (
-                      <div key={j} className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
-                        style={{ background: POOL_COLORS[(avatarStart + j) % POOL_COLORS.length], border: "2.5px solid var(--dark)" }}>
-                        {POOL_AVATARS[(avatarStart + j) % POOL_AVATARS.length]}
-                      </div>
-                    ))}
-                  </div>
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[13px] font-bold text-white">{POOL_NAMES[i]}</span>
-                    {/* Progress bar */}
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
-                        <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: isHot ? "var(--coral)" : "var(--emerald)" }} />
-                      </div>
-                      <span className="text-[10px] font-bold tabular-nums shrink-0" style={{ color: isHot ? "var(--coral)" : "rgba(255,255,255,0.5)" }}>
-                        {isHot ? `${spotsLeft} left!` : `${joined}/${product.minPoolSize}`}
+          {/* Active pools from API */}
+          {pools.length > 0 && (
+            <div className="flex flex-col gap-0">
+              {pools.map((pool, i) => {
+                const fillPct = Math.round((pool.memberCount / pool.minSize) * 100);
+                const isHot = pool.spotsLeft <= 2;
+                const hoursLeft = Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 3600000));
+                return (
+                  <button
+                    key={pool.id}
+                    type="button"
+                    onClick={() => joinPool(pool.id)}
+                    disabled={joining}
+                    className="w-full flex items-center gap-3 px-4 py-3.5 text-left cursor-pointer press-feedback disabled:opacity-50"
+                    style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.08)" : "none" }}
+                  >
+                    {/* Avatar stack */}
+                    <div className="flex -space-x-2 shrink-0">
+                      {Array.from({ length: Math.min(pool.memberCount, 3) }).map((_, j) => (
+                        <div key={j} className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+                          style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2.5px solid var(--dark)" }}>
+                          {j === 0 ? pool.creatorName.charAt(0) : String.fromCharCode(65 + j)}
+                        </div>
+                      ))}
+                    </div>
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[13px] font-bold text-white">
+                        {pool.name || `${pool.creatorName}'s group`}
                       </span>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: isHot ? "var(--coral)" : "var(--emerald)" }} />
+                        </div>
+                        <span className="text-[10px] font-bold tabular-nums shrink-0" style={{ color: isHot ? "var(--coral)" : "rgba(255,255,255,0.5)" }}>
+                          {isHot ? `${pool.spotsLeft} left!` : `${pool.memberCount}/${pool.minSize}`}
+                        </span>
+                      </div>
+                      {hoursLeft > 0 && (
+                        <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>{hoursLeft}h left</p>
+                      )}
                     </div>
-                  </div>
-                  {/* CTA */}
-                  <div className="shrink-0">
-                    <div className="h-[34px] px-3.5 rounded-[6px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                      Join · {fp(product.groupPrice)}
+                    {/* CTA */}
+                    <div className="shrink-0">
+                      <div className="h-[34px] px-3.5 rounded-[6px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                        Join · {fp(pool.groupPrice)}
+                      </div>
                     </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          {/* Start new — inside the dark block */}
+          {/* No active pools — explain the value */}
+          {pools.length === 0 && (
+            <div className="px-4 pb-2">
+              <p className="text-[12px] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
+                Be the first to start a group. Share the link — when {product.minPoolSize} people join, everyone pays {fp(product.groupPrice)} instead of {fp(product.retailPrice)}.
+              </p>
+            </div>
+          )}
+
+          {/* Start new group */}
           <div className="px-4 pb-4 pt-1">
-            <button type="button" onClick={addGroup}
-              className="w-full flex items-center justify-center gap-1.5 h-10 rounded-[8px] cursor-pointer press-feedback"
-              style={{ border: "1px dashed rgba(255,255,255,0.15)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-              <span className="text-[12px] font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>Start a new group</span>
+            <button type="button" onClick={createPool} disabled={joining}
+              className="w-full flex items-center justify-center gap-1.5 h-11 rounded-[8px] cursor-pointer press-feedback disabled:opacity-50"
+              style={{ background: pools.length === 0 ? "var(--emerald)" : "transparent", border: pools.length === 0 ? "none" : "1px dashed rgba(255,255,255,0.15)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={pools.length === 0 ? "white" : "rgba(255,255,255,0.4)"} strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+              <span className="text-[12px] font-bold" style={{ color: pools.length === 0 ? "white" : "rgba(255,255,255,0.4)" }}>
+                {pools.length === 0 ? "Start a group · " + fp(product.groupPrice) : "Start a new group"}
+              </span>
             </button>
           </div>
         </section>
@@ -269,16 +354,16 @@ export default function ProductDetailPage() {
             style={{ background: "var(--sand)", color: "var(--text)" }}>
             Buy · {fp(product.retailPrice * quantity)}
           </button>
-          <button type="button" onClick={addGroup}
-            className="flex-[65] h-[50px] rounded-[8px] flex items-center justify-center gap-2 text-[14px] font-bold text-white cursor-pointer press-feedback"
+          <button type="button" onClick={() => pools.length > 0 ? joinPool(pools[0].id) : createPool()} disabled={joining}
+            className="flex-[65] h-[50px] rounded-[8px] flex items-center justify-center gap-2 text-[14px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
             style={{ background: "var(--emerald)" }}>
-            <span>Join group</span>
+            <span>{pools.length > 0 ? "Join group" : "Start group"}</span>
             <span className="tabular-nums">{fp(product.groupPrice * quantity)}</span>
           </button>
         </div>
       </div>
 
-      {/* Toast */}
+      {/* Toast — handles all states */}
       {toast && (
         <div className="fixed z-[100] left-0 right-0 bottom-[104px] px-5 celebrate">
           {toast === "link" ? (
@@ -286,7 +371,17 @@ export default function ProductDetailPage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
               <span className="text-[13px] font-bold text-white">Link copied!</span>
             </div>
-          ) : (
+          ) : toast === "joined" ? (
+            <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+              <span className="text-[13px] font-bold text-white">Joined the group!</span>
+            </div>
+          ) : toast === "created" ? (
+            <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+              <span className="text-[13px] font-bold text-white">Group started! Share the link</span>
+            </div>
+          ) : toast === "added" ? (
             <Link href="/cart" className="max-w-[480px] mx-auto flex items-center justify-between rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
               <div className="flex items-center gap-2">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
@@ -294,6 +389,11 @@ export default function ProductDetailPage() {
               </div>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
             </Link>
+          ) : (
+            /* Error or custom message */
+            <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: "var(--coral)" }}>
+              <span className="text-[13px] font-bold text-white">{toast}</span>
+            </div>
           )}
         </div>
       )}
