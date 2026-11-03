@@ -20,6 +20,8 @@ model User {
   createdAt    DateTime @default(now())
 
   areaName          String?            // "Ikeja", "Victoria Island" — for location-based discovery
+  latitude          Float?             // GPS lat for delivery distance calc
+  longitude         Float?             // GPS lng for delivery distance calc
   office            Office?            @relation(fields: [officeId], references: [id])
   orders            Order[]
   instantOrders     InstantOrder[]
@@ -66,6 +68,8 @@ model Restaurant {
   name      String
   address   String
   phone     String
+  latitude  Float?   // store GPS lat
+  longitude Float?   // store GPS lng
   imageUrl  String?
   bannerUrl String?
   sortOrder Int      @default(0)
@@ -332,6 +336,16 @@ model Promo {
 }
 
 // ═══════════════════════════════════════
+// SETTINGS — Ops-managed key-value config
+// ═══════════════════════════════════════
+
+model Setting {
+  key       String   @id              // "delivery-fee-tiers", "pool-defaults", etc.
+  value     Json                      // arbitrary JSON value
+  updatedAt DateTime @updatedAt
+}
+
+// ═══════════════════════════════════════
 // PRODUCT CATALOG — Social commerce items
 // ═══════════════════════════════════════
 
@@ -389,6 +403,7 @@ model Pool {
   productId   String
   creatorId   String
   name        String?    // "Ikeja Lunch Crew" — optional, auto-generated if null
+  areaName    String?    // "Victoria Island", "Ikeja" — delivery area for this pool
   status      PoolStatus @default(OPEN)
   minSize     Int        // copied from product.minPoolSize at creation
   deadline    DateTime   // when the pool expires
@@ -401,16 +416,20 @@ model Pool {
 }
 
 model PoolMember {
-  id            String        @id @default(cuid())
-  poolId        String
-  userId        String
-  quantity      Int           @default(1)
-  unitPrice     Int           // kobo — group price at time of joining
-  totalAmount   Int           // kobo — unitPrice × quantity
-  paymentRef    String?       @unique
-  paymentStatus PaymentStatus @default(PENDING)
-  paidAt        DateTime?
-  createdAt     DateTime      @default(now())
+  id              String        @id @default(cuid())
+  poolId          String
+  userId          String
+  quantity        Int           @default(1)
+  unitPrice       Int           // kobo — group price at time of joining
+  totalAmount     Int           // kobo — unitPrice × quantity
+  deliveryAddress String?       // member's delivery address for this pool
+  deliveryLat     Float?        // member's GPS lat
+  deliveryLng     Float?        // member's GPS lng
+  deliveryFee     Int           @default(0) // kobo — calculated from store-to-user distance
+  paymentRef      String?       @unique
+  paymentStatus   PaymentStatus @default(PENDING)
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
 
   pool Pool @relation(fields: [poolId], references: [id])
   user User @relation(fields: [userId], references: [id])

@@ -2449,7 +2449,11 @@ export default function OpsPage() {
         )}
 
         {tab === "pools" && (
-          <PoolsAdmin formatNaira={formatNaira} />
+          <>
+            <DeliveryFeeTiers />
+            <div className="mt-8" />
+            <PoolsAdmin formatNaira={formatNaira} />
+          </>
         )}
 
       </main>
@@ -2853,6 +2857,108 @@ function PoolsAdmin({ formatNaira }: { formatNaira: (n: number) => string }) {
         );
       })}
       {pools.length === 0 && <div className="text-center py-12 text-ink-soft text-sm">No pools yet. Users create them from product pages.</div>}
+    </div>
+  );
+}
+
+function DeliveryFeeTiers() {
+  const [tiers, setTiers] = useState<{ maxKm: number; fee: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/settings?key=delivery-fee-tiers")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.data && Array.isArray(d.data) && d.data.length > 0) {
+          setTiers(d.data);
+        } else {
+          // Load defaults
+          setTiers([
+            { maxKm: 3, fee: 50000 },
+            { maxKm: 7, fee: 100000 },
+            { maxKm: 15, fee: 150000 },
+            { maxKm: 25, fee: 200000 },
+            { maxKm: 999999, fee: 250000 },
+          ]);
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  function updateTier(i: number, field: "maxKm" | "fee", value: string) {
+    const v = parseFloat(value) || 0;
+    setTiers((prev) => prev.map((t, idx) => idx === i ? { ...t, [field]: field === "fee" ? Math.round(v * 100) : v } : t));
+    setSaved(false);
+  }
+
+  function addTier() {
+    const lastMax = tiers.length > 0 ? tiers[tiers.length - 1].maxKm : 0;
+    setTiers((prev) => [...prev, { maxKm: lastMax + 10, fee: 0 }]);
+    setSaved(false);
+  }
+
+  function removeTier(i: number) {
+    setTiers((prev) => prev.filter((_, idx) => idx !== i));
+    setSaved(false);
+  }
+
+  async function save() {
+    setSaving(true);
+    const sorted = [...tiers].sort((a, b) => a.maxKm - b.maxKm);
+    await fetch("/api/admin/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "delivery-fee-tiers", value: sorted }),
+    });
+    setTiers(sorted);
+    setSaving(false);
+    setSaved(true);
+  }
+
+  if (loading) return <div className="text-center py-6 text-ink-soft text-sm">Loading delivery config...</div>;
+
+  return (
+    <div className="bg-paper border border-line rounded-xl p-4">
+      <h2 className="text-lg font-bold mb-1">Delivery Fee Tiers</h2>
+      <p className="text-xs text-ink-soft mb-4">Set delivery fees based on distance from store to customer. Non-food pools use these rates. Food pools use batch delivery (free).</p>
+
+      <div className="space-y-2">
+        {tiers.map((tier, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="text-xs text-ink-soft w-8 shrink-0">Up to</span>
+            <input
+              type="number" value={tier.maxKm >= 999999 ? "" : tier.maxKm}
+              placeholder="∞"
+              onChange={(e) => updateTier(i, "maxKm", e.target.value || "999999")}
+              className="w-16 h-9 px-2 rounded-lg text-sm text-center bg-sand border border-line focus:outline-none focus:border-coral"
+            />
+            <span className="text-xs text-ink-soft">km →</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-bold">₦</span>
+              <input
+                type="number" value={tier.fee / 100}
+                onChange={(e) => updateTier(i, "fee", e.target.value)}
+                className="w-20 h-9 px-2 rounded-lg text-sm text-center bg-sand border border-line focus:outline-none focus:border-coral"
+              />
+            </div>
+            <button type="button" onClick={() => removeTier(i)} className="w-8 h-8 rounded-full flex items-center justify-center text-ink-soft hover:text-coral cursor-pointer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2 mt-4">
+        <button type="button" onClick={addTier} className="h-9 px-4 rounded-lg text-xs font-bold bg-sand text-ink cursor-pointer hover:bg-line">
+          + Add tier
+        </button>
+        <button type="button" onClick={save} disabled={saving} className="h-9 px-6 rounded-lg text-xs font-bold text-white cursor-pointer disabled:opacity-50" style={{ background: saved ? "var(--emerald)" : "var(--coral)" }}>
+          {saving ? "Saving..." : saved ? "Saved" : "Save tiers"}
+        </button>
+      </div>
     </div>
   );
 }

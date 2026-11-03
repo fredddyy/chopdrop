@@ -20,12 +20,12 @@ export default async function JoinPage({ params }: { params: Promise<{ slug: str
     return (
       <main className="min-h-screen bg-[#fafaf8] flex flex-col items-center justify-center px-6">
         <Logo size={36} />
-        <h1 className="font-display font-bold text-[20px] text-[#1a1a1a] mt-6 mb-2">Office not found</h1>
+        <h1 className="font-display font-bold text-[20px] text-[#1a1a1a] mt-6 mb-2">Group not found</h1>
         <p className="text-[14px] text-[#9ca3af] text-center max-w-[280px]">
-          This link may have expired or the office hasn&apos;t been set up yet.
+          This link may have expired or the group hasn&apos;t been set up yet.
         </p>
-        <a href="/menu" className="mt-6 bg-[#f05f4b] text-white font-bold text-[14px] px-6 py-3 rounded-xl">
-          Go to menu
+        <a href="/discover" className="mt-6 bg-[#f05f4b] text-white font-bold text-[14px] px-6 py-3 rounded-xl">
+          Browse deals
         </a>
       </main>
     );

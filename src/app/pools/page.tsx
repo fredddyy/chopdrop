@@ -10,6 +10,7 @@ interface PoolItem {
   id: string;
   product: { id: string; name: string; imageUrl: string | null; groupPrice: number; retailPrice: number };
   name: string | null;
+  areaName: string | null;
   status: string;
   minSize: number;
   memberCount: number;
@@ -131,7 +132,7 @@ export default function PoolsPage() {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{pool.product.name}</h3>
                   <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-                    {pool.name || `${pool.creatorName}'s group`} · {pool.myQuantity} {pool.myQuantity === 1 ? "item" : "items"}
+                    {pool.name || `${pool.creatorName}'s group`}{pool.areaName ? ` · ${pool.areaName}` : ""} · {pool.myQuantity} {pool.myQuantity === 1 ? "item" : "items"}
                   </p>
 
                   <div className="flex items-center gap-2 mt-1.5">

@@ -102,7 +102,7 @@ export default function CartPage() {
     const phoneClean = customerPhone.trim().replace(/\s/g, "");
     if (!/^(\+234|0)\d{10}$/.test(phoneClean)) { setError("Enter a valid Nigerian phone number (e.g. 08012345678)"); setEditContact(true); return; }
     if (cart.items.length === 0) return;
-    if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your office code for free delivery"); return; }
+    if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your group code for free delivery"); return; }
     if (fulfillment === "delivery" && !deliveryAddress.trim()) { setError("Enter delivery address"); return; }
     setError(null); setLoading(true);
     saveCustomerProfile({ name: customerName.trim(), phone: customerPhone.trim(), email: "", deliveryAddress: deliveryAddress.trim(), preferredFulfillment: "DELIVERY", officeId, officeName, collectionPoint });
@@ -276,7 +276,7 @@ export default function CartPage() {
                   </div>
                   <input type="text" value={deliveryAddress} onChange={(e) => { setDeliveryAddress(e.target.value); setFulfillment("delivery"); }} placeholder="Enter your address — building, street, area" className="w-full px-4 h-12 rounded-[12px] text-[14px] focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
                   <p className="text-[12px] mt-3" style={{ color: "var(--text-muted)" }}>
-                    Have an office code? <button type="button" onClick={() => setIsFirstOrder(false)} className="font-bold underline cursor-pointer" style={{ color: "var(--text-secondary)" }}>Enter it for free delivery every time</button>
+                    Have a group code? <button type="button" onClick={() => setIsFirstOrder(false)} className="font-bold underline cursor-pointer" style={{ color: "var(--text-secondary)" }}>Enter it for free delivery every time</button>
                   </p>
                 </div>
               ) : (
@@ -291,7 +291,7 @@ export default function CartPage() {
                     </button>
                     {fulfillment === "office" && (
                       <div>
-                        <p className="text-[13px] mb-3" style={{ color: "var(--text-secondary)" }}>Enter your office code for free delivery</p>
+                        <p className="text-[13px] mb-3" style={{ color: "var(--text-secondary)" }}>Enter your group code for free delivery</p>
                         <div className="flex gap-2">
                           <input type="text" value={codeInput} onChange={(e) => setCodeInput(e.target.value)} placeholder="e.g. STERL-001" className="flex-1 min-w-0 px-3 h-11 rounded-[10px] text-[14px] focus:outline-none uppercase" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
                           <button type="button" onClick={handleConnectOffice} disabled={codeLoading} className="h-11 px-4 rounded-[10px] text-[14px] font-bold text-white disabled:opacity-50 cursor-pointer shrink-0" style={{ background: "var(--dark)" }}>{codeLoading ? "..." : "Join"}</button>
@@ -423,14 +423,14 @@ export default function CartPage() {
                   return (
                     <p className="text-[13px] text-white/70 leading-relaxed">
                       {moreNeeded > 0
-                        ? <>If <span className="font-bold text-white">{moreNeeded} more</span> from your office order, you get <span className="font-bold" style={{ color: "var(--emerald)" }}>{formatNaira(potentialCredit)} credit</span> back on this order.</>
+                        ? <>If <span className="font-bold text-white">{moreNeeded} more</span> people join your group, you get <span className="font-bold" style={{ color: "var(--emerald)" }}>{formatNaira(potentialCredit)} credit</span> back on this order.</>
                         : <>Credits will be calculated when the pool closes today.</>
                       }
                     </p>
                   );
                 })() : (
                   <p className="text-[13px] text-white/70 leading-relaxed">
-                    Order at today&apos;s rate. As more colleagues join, your rate improves — <span className="font-bold" style={{ color: "var(--emerald)" }}>bonus credit added to your wallet</span>.
+                    Order at today&apos;s rate. As more people join, your rate improves — <span className="font-bold" style={{ color: "var(--emerald)" }}>bonus credit added to your wallet</span>.
                   </p>
                 )}
               </div>
@@ -481,7 +481,7 @@ export default function CartPage() {
                   onClick={() => {
                     if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; }
                     if (fulfillment === "office" && !officeId && !isFirstOrder) {
-                      setError("Choose a delivery method — enter your office code for free delivery, or switch to Express");
+                      setError("Choose a delivery method — enter your group code for free delivery, or switch to Express");
                       document.querySelector('[data-delivery-section]')?.scrollIntoView({ behavior: "smooth", block: "center" });
                       return;
                     }

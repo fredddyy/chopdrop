@@ -138,7 +138,7 @@ export function EmptyMenu() {
         <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-ink-soft mb-4">How ChopDrop works</p>
         <div className="space-y-3">
           {[
-            { n: "01", title: "Connect your office", body: "Enter your office code to unlock free delivery on every drop." },
+            { n: "01", title: "Join a group deal", body: "Browse deals near you and join a group to unlock lower prices." },
             { n: "02", title: "Order before 10:30 AM", body: "Browse today's menu, build your box, and pay securely via Paystack." },
             { n: "03", title: "Collect by 12:00 PM", body: "Your food arrives on or before 12. Your box has a unique code." },
           ].map((item) => (

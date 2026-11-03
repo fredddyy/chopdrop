@@ -123,9 +123,9 @@ function AssistantContent() {
           <div className="mb-8">
             <Logo size={28} />
           </div>
-          <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.13em]">Office assistant</div>
-          <h1 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-2">Enter your office code</h1>
-          <p className="text-ink-soft text-[13px] mt-2 mb-6">Your office code links you to today&apos;s orders for your building.</p>
+          <div className="text-coral text-[9px] font-extrabold uppercase tracking-[0.13em]">Delivery assistant</div>
+          <h1 className="font-display font-bold text-[28px] tracking-[-0.04em] mt-2">Enter your group code</h1>
+          <p className="text-ink-soft text-[13px] mt-2 mb-6">Your group code links you to today&apos;s orders for your area.</p>
 
           <div className="flex items-center gap-2.5 bg-green-soft rounded-[11px] p-4 mb-5">
             <div className="w-10 h-10 bg-white rounded-[10px] flex items-center justify-center text-green flex-shrink-0">
@@ -135,7 +135,7 @@ function AssistantContent() {
             </div>
             <div>
               <strong className="text-[12px] block">Got your code from ChopDrop?</strong>
-              <span className="text-ink-soft text-[10px]">It was shared when your office was onboarded.</span>
+              <span className="text-ink-soft text-[10px]">It was shared when your group was set up.</span>
             </div>
           </div>
 

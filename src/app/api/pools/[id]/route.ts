@@ -36,6 +36,7 @@ export async function GET(
     data: {
       id: pool.id,
       name: pool.name,
+      areaName: pool.areaName,
       status: pool.status,
       minSize: pool.minSize,
       deadline: pool.deadline,

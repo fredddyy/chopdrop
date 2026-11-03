@@ -115,7 +115,7 @@ function ConfirmationContent() {
 
   function handleShare() {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    const text = `I just ordered lunch with ChopDrop — fresh food at the office, ₦0 delivery. Try it: ${origin}`;
+    const text = `I just saved on my order with ChopDrop — pool together with people nearby and pay less. Try it: ${origin}`;
     if (navigator.share) { navigator.share({ title: "ChopDrop", text }).catch(() => {}); }
     else { navigator.clipboard.writeText(text).then(() => { setShareCopied(true); setTimeout(() => setShareCopied(false), 2500); }).catch(() => {}); }
   }
@@ -231,13 +231,13 @@ function ConfirmationContent() {
             <div>
               <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>What happens next</p>
               <p className="text-[13px] mt-1 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                Stay at your desk. Your food arrives at {isOffice ? order.office!.collectionPoint : "the pickup point"} by 12:00 PM. Show your code <span className="font-bold" style={{ color: "var(--text)" }}>{order.orderCode}</span> to collect.
+                Your order arrives at {isOffice ? order.office!.collectionPoint : "the pickup point"} by 12:00 PM. Show your code <span className="font-bold" style={{ color: "var(--text)" }}>{order.orderCode}</span> to collect.
               </p>
             </div>
           </div>
         )}
 
-        {/* WhatsApp save — send order details to yourself or captain */}
+        {/* WhatsApp save — send order details to yourself */}
         {isConfirmed && (() => {
           const mealName = order.meal.name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, "");
           const waText = encodeURIComponent(
@@ -424,7 +424,7 @@ function ConfirmationContent() {
         {!officeConnected && isConfirmed && (
           <div className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <h3 className="text-[15px] font-bold mb-1" style={{ color: "var(--text)" }}>Want free delivery next time?</h3>
-            <p className="text-[13px] mb-3" style={{ color: "var(--text-secondary)" }}>Connect your office code</p>
+            <p className="text-[13px] mb-3" style={{ color: "var(--text-secondary)" }}>Connect your group code</p>
             {officeConnectError && <p className="text-[12px] mb-2" style={{ color: "var(--coral)" }}>{officeConnectError}</p>}
             <div className="flex gap-2">
               <input type="text" value={officeCodeInput} onChange={(e) => setOfficeCodeInput(e.target.value)} placeholder="e.g. STERL-001" className="flex-1 px-4 h-11 rounded-[10px] text-[14px] uppercase focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
@@ -436,7 +436,7 @@ function ConfirmationContent() {
         {officeConnected && (
           <div className="rounded-[14px] p-3 flex items-center gap-2" style={{ background: "rgba(13,159,95,0.08)" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-            <span className="text-[13px] font-semibold" style={{ color: "var(--emerald)" }}>Office connected — free delivery next time</span>
+            <span className="text-[13px] font-semibold" style={{ color: "var(--emerald)" }}>Group connected — free delivery next time</span>
           </div>
         )}
 
@@ -460,8 +460,8 @@ function ConfirmationContent() {
             )}
           </div>
           <div>
-            <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{shareCopied ? "Link copied!" : "Share with colleagues"}</p>
-            <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>{shareCopied ? "Paste it anywhere" : "₦0 delivery for your office"}</p>
+            <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{shareCopied ? "Link copied!" : "Share with friends"}</p>
+            <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>{shareCopied ? "Paste it anywhere" : "More people = lower prices"}</p>
           </div>
         </button>
       </div>

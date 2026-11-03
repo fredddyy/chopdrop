@@ -113,7 +113,7 @@ export default function AuthPage() {
         </button>
 
         <div className="text-center mt-8 space-y-2">
-          <p className="text-[14px]" style={{ color: "var(--text-secondary)" }}>Don&apos;t have an account? <a href="/start" className="font-bold" style={{ color: "var(--coral)" }}>Set up your office</a></p>
+          <p className="text-[14px]" style={{ color: "var(--text-secondary)" }}>Don&apos;t have an account? <a href="/start" className="font-bold" style={{ color: "var(--coral)" }}>Get started</a></p>
           <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>Changed your number? <a href="https://wa.me/2349120532827" className="underline" style={{ color: "var(--text-muted)" }}>WhatsApp us</a></p>
         </div>
 

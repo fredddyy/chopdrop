@@ -3,21 +3,21 @@ import { CartProvider } from "@/lib/cart";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ChopDrop — Your Office Eats Better Together",
+  title: "ChopDrop — Pool Together, Pay Less",
   description:
-    "Order lunch together as an office. ₦0 delivery, everyone picks & pays individually, pool benefits unlock as more people join. Set up in 2 minutes.",
+    "Join group buys with people nearby and save 15-35%. More people join, everyone pays less. Food, electronics, fashion, groceries — all cheaper together.",
   manifest: "/manifest.json",
   openGraph: {
-    title: "ChopDrop — Your Office Eats Better Together",
-    description: "Order lunch together as an office. Pool benefits, ₦0 delivery. Set up in 2 min.",
+    title: "ChopDrop — Pool Together, Pay Less",
+    description: "Pool orders with people nearby. More people = lower prices for everyone.",
     url: "https://chopdrop-app.vercel.app",
     siteName: "ChopDrop",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ChopDrop — Your Office Eats Better Together",
-    description: "Order lunch together as an office. Pool benefits, ₦0 delivery. Set up in 2 min.",
+    title: "ChopDrop — Pool Together, Pay Less",
+    description: "Pool orders with people nearby. More people = lower prices for everyone.",
   },
   appleWebApp: {
     capable: true,

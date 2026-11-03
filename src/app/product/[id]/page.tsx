@@ -5,12 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
+import { calculateDeliveryFee } from "@/lib/delivery-fee";
 
 interface ProductData {
   id: string; name: string; description: string | null; imageUrl: string | null;
   category: string; subcategory: string | null; retailPrice: number; groupPrice: number;
   minPoolSize: number; poolTiers: unknown; maxQuantity: number; tags: string | null;
-  vendor: { id: string; name: string; imageUrl: string | null; address: string };
+  vendor: { id: string; name: string; imageUrl: string | null; address: string; latitude: number | null; longitude: number | null };
 }
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
@@ -42,7 +43,19 @@ export default function ProductDetailPage() {
   const [retryKey, setRetryKey] = useState(0);
   const [joining, setJoining] = useState(false);
   const [sharePrompt, setSharePrompt] = useState<{ url: string; name: string } | null>(null);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number; address?: string } | null>(null);
   const cart = useCart();
+
+  // Read user coordinates from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("chopdrop-customer");
+      if (stored) {
+        const p = JSON.parse(stored);
+        if (p.latitude && p.longitude) setUserCoords({ lat: p.latitude, lng: p.longitude, address: p.deliveryAddress });
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -81,7 +94,10 @@ export default function ProductDetailPage() {
       const res = await fetch(`/api/pools/${poolId}/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity }),
+        body: JSON.stringify({
+          quantity,
+          ...(userCoords ? { lat: userCoords.lat, lng: userCoords.lng, deliveryAddress: userCoords.address } : {}),
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -106,7 +122,11 @@ export default function ProductDetailPage() {
       const res = await fetch("/api/pools", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id, quantity }),
+        body: JSON.stringify({
+          productId: product.id,
+          quantity,
+          ...(userCoords ? { areaName: undefined } : {}),
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -292,11 +312,20 @@ export default function ProductDetailPage() {
                         <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>{hoursLeft}h left</p>
                       )}
                     </div>
-                    {/* CTA */}
-                    <div className="shrink-0">
+                    {/* CTA + delivery estimate */}
+                    <div className="shrink-0 text-right">
                       <div className="h-[34px] px-3.5 rounded-[6px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--emerald)" }}>
                         Join · {fp(pool.groupPrice)}
                       </div>
+                      {product && (() => {
+                        const isFood = product.category === "Food";
+                        if (isFood) return <p className="text-[9px] mt-1 font-bold" style={{ color: "var(--emerald)" }}>Free delivery</p>;
+                        if (userCoords && product.vendor.latitude && product.vendor.longitude) {
+                          const est = calculateDeliveryFee(product.vendor.latitude, product.vendor.longitude, userCoords.lat, userCoords.lng);
+                          return <p className="text-[9px] mt-1 tabular-nums" style={{ color: "rgba(255,255,255,0.45)" }}>+ {fp(est.fee)} delivery</p>;
+                        }
+                        return null;
+                      })()}
                     </div>
                   </button>
                 );
@@ -363,6 +392,16 @@ export default function ProductDetailPage() {
             <span className="tabular-nums">{fp(product.groupPrice * quantity)}</span>
           </button>
         </div>
+        {product.category !== "Food" && userCoords && product.vendor.latitude && product.vendor.longitude && (
+          <p className="text-[11px] text-center mt-1.5 tabular-nums" style={{ color: "var(--text-muted)" }}>
+            + {fp(calculateDeliveryFee(product.vendor.latitude, product.vendor.longitude, userCoords.lat, userCoords.lng).fee)} delivery · {calculateDeliveryFee(product.vendor.latitude, product.vendor.longitude, userCoords.lat, userCoords.lng).distanceKm} km away
+          </p>
+        )}
+        {product.category === "Food" && (
+          <p className="text-[11px] text-center mt-1.5 font-bold" style={{ color: "var(--emerald)" }}>
+            Free batch delivery
+          </p>
+        )}
       </div>
 
       {/* Toast — handles all states */}

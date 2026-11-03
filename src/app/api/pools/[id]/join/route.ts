@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
+import { calculateDeliveryFee, DEFAULT_TIERS } from "@/lib/delivery-fee";
+import type { DeliveryTier } from "@/lib/delivery-fee";
 
 // POST /api/pools/:id/join — join an existing pool
 export async function POST(
@@ -17,13 +19,15 @@ export async function POST(
   if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
 
   const body = await request.json();
-  const { quantity = 1 } = body;
+  const { quantity = 1, deliveryAddress, lat, lng } = body;
 
   const pool = await prisma.pool.findUnique({
     where: { id },
     include: {
       members: true,
-      product: { select: { groupPrice: true, minPoolSize: true, name: true } },
+      product: {
+        select: { groupPrice: true, minPoolSize: true, name: true, category: true, vendor: { select: { latitude: true, longitude: true } } },
+      },
     },
   });
 
@@ -40,6 +44,21 @@ export async function POST(
     return NextResponse.json({ success: false, error: "Pool is already full" }, { status: 400 });
   }
 
+  // Calculate delivery fee for non-food pools (food uses batch delivery)
+  let deliveryFee = 0;
+  const isFood = pool.product.category === "Food";
+  const storeLat = pool.product.vendor.latitude;
+  const storeLng = pool.product.vendor.longitude;
+
+  if (!isFood && lat && lng && storeLat && storeLng) {
+    let tiers: DeliveryTier[] = DEFAULT_TIERS;
+    try {
+      const setting = await prisma.setting.findUnique({ where: { key: "delivery-fee-tiers" } });
+      if (setting?.value && Array.isArray(setting.value)) tiers = setting.value as unknown as DeliveryTier[];
+    } catch { /* use defaults */ }
+    deliveryFee = calculateDeliveryFee(storeLat, storeLng, lat, lng, tiers).fee;
+  }
+
   // Add member + check if pool is now filled
   const result = await prisma.$transaction(async (tx) => {
     const member = await tx.poolMember.create({
@@ -49,6 +68,10 @@ export async function POST(
         quantity,
         unitPrice: pool.product.groupPrice,
         totalAmount: pool.product.groupPrice * quantity,
+        deliveryAddress: deliveryAddress || null,
+        deliveryLat: lat || null,
+        deliveryLng: lng || null,
+        deliveryFee,
       },
     });
 
@@ -73,6 +96,8 @@ export async function POST(
       filled: result.filled,
       unitPrice: pool.product.groupPrice,
       totalAmount: pool.product.groupPrice * quantity,
+      deliveryFee,
+      deliveryFeeFormatted: deliveryFee > 0 ? `₦${(deliveryFee / 100).toLocaleString()}` : "Free (batch delivery)",
       message: result.filled
         ? `Pool filled! All ${pool.minSize} people pay ${pool.product.groupPrice} for ${pool.product.name}`
         : `Joined! ${result.memberCount}/${pool.minSize} — ${pool.minSize - result.memberCount} more needed`,

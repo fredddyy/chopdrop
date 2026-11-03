@@ -223,8 +223,8 @@ const steps = [
   {
     icon: "truck" as IconName,
     number: "03",
-    title: "₦0 Delivery to Your Office",
-    copy: "Your meal reaches your desk in one smooth drop — free delivery, no hassle.",
+    title: "₦0 Delivery for Groups",
+    copy: "When your group orders together, delivery is free — one trip, no hassle.",
   },
   {
     icon: "copy" as IconName,

@@ -16,6 +16,7 @@ export async function GET() {
   const data = pools.map((p) => ({
     id: p.id,
     name: p.name,
+    areaName: p.areaName,
     status: p.status,
     minSize: p.minSize,
     deadline: p.deadline,

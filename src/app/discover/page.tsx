@@ -51,6 +51,7 @@ function CoverImage({ src, alt, height }: { src: string | null; alt: string; hei
 }
 
 const CATEGORIES = ["Food", "Electronics", "Fashion", "Groceries"];
+const AREA_SUGGESTIONS = ["Victoria Island", "Lekki", "Ikeja", "Yaba", "Marina", "Surulere", "Ikoyi", "Ajah", "Gbagada", "Maryland", "Magodo", "Festac", "Apapa"];
 
 // Simulated social proof — deterministic per product, uses multiple seed chars to avoid collisions
 const NAMES = ["Tolu", "Ada", "Chidi", "Ngozi", "Emeka", "Bimpe", "Kola", "Yemi", "Funke", "Dayo"];
@@ -81,7 +82,65 @@ export default function DiscoverPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [joinConfirm, setJoinConfirm] = useState<PoolProduct | null>(null);
+  const [userArea, setUserArea] = useState("");
+  const [userAddress, setUserAddress] = useState("");
+  const [areaOpen, setAreaOpen] = useState(false);
+  const [areaInput, setAreaInput] = useState("");
+  const [locating, setLocating] = useState(false);
   const cart = useCart();
+
+  // Read area + address from profile on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("chopdrop-customer");
+      if (stored) {
+        const p = JSON.parse(stored);
+        if (p.areaName) setUserArea(p.areaName);
+        if (p.deliveryAddress) setUserAddress(p.deliveryAddress);
+      }
+    } catch {}
+  }, []);
+
+  function saveLocation(area: string, address?: string, lat?: number, lng?: number) {
+    setUserArea(area);
+    if (address) setUserAddress(address);
+    setAreaOpen(false);
+    setAreaInput("");
+    try {
+      const stored = localStorage.getItem("chopdrop-customer");
+      const profile = stored ? JSON.parse(stored) : {};
+      localStorage.setItem("chopdrop-customer", JSON.stringify({
+        ...profile, areaName: area,
+        ...(address ? { deliveryAddress: address } : {}),
+        ...(lat != null ? { latitude: lat, longitude: lng } : {}),
+      }));
+    } catch {}
+  }
+
+  function useMyLocation() {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=16`);
+          const data = await res.json();
+          const addr = data.address || {};
+          const area = addr.suburb || addr.neighbourhood || addr.city_district || addr.town || addr.city || "";
+          const display = data.display_name?.split(",").slice(0, 3).join(",").trim() || "";
+          saveLocation(area, display, latitude, longitude);
+        } catch { setLocating(false); }
+        setLocating(false);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  }
+
+  const areaSuggestions = areaInput.length >= 1
+    ? AREA_SUGGESTIONS.filter((a) => a.toLowerCase().includes(areaInput.toLowerCase()))
+    : AREA_SUGGESTIONS;
 
   // Close join sheet on Escape key or Android back button
   useEffect(() => {
@@ -146,9 +205,21 @@ export default function DiscoverPage() {
         style={{ background: "var(--bg)", borderBottom: "1px solid var(--border)" }}
       >
         <div className="px-5 h-12 flex items-center justify-between">
-          <span className="text-[18px] font-extrabold tracking-[-0.03em]" style={{ color: "var(--text)" }}>
-            Chop<span style={{ color: "var(--coral)" }}>Drop</span>
-          </span>
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-[18px] font-extrabold tracking-[-0.03em] shrink-0" style={{ color: "var(--text)" }}>
+              Chop<span style={{ color: "var(--coral)" }}>Drop</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setAreaOpen(!areaOpen)}
+              className="flex items-center gap-1 h-7 px-2.5 rounded-[6px] text-[12px] font-bold truncate max-w-[140px] cursor-pointer"
+              style={{ background: "var(--sand)", color: userArea ? "var(--text)" : "var(--text-muted)" }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              <span className="truncate">{userArea || "Set location"}</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="shrink-0"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+          </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -210,6 +281,64 @@ export default function DiscoverPage() {
           ))}
         </div>
       </header>
+
+      {/* ── Location panel ── */}
+      {areaOpen && (
+        <div className="fixed inset-0 z-[60]" onClick={() => { setAreaOpen(false); setAreaInput(""); }}>
+          <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.3)" }} />
+          <div className="absolute top-[52px] left-5 right-5 max-w-[480px] mx-auto rounded-[12px] p-4 sheet-enter" style={{ background: "var(--card)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
+            <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Where should we deliver?</p>
+
+            {/* Use my location */}
+            <button
+              type="button" onClick={useMyLocation} disabled={locating}
+              className="w-full h-11 rounded-[8px] text-[13px] font-bold flex items-center justify-center gap-2 cursor-pointer mb-3 disabled:opacity-50"
+              style={{ background: "var(--emerald)", color: "white" }}
+            >
+              {locating ? (
+                "Finding you..."
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" /></svg>
+                  Use my location
+                </>
+              )}
+            </button>
+
+            {/* Manual input */}
+            <input
+              type="text" placeholder="Or type your area, e.g. Lekki Phase 1" value={areaInput}
+              onChange={(e) => setAreaInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && areaInput.trim()) { saveLocation(areaInput.trim()); } }}
+              className="w-full h-11 px-4 rounded-[8px] text-[13px] font-medium outline-none mb-2"
+              style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
+              autoFocus
+            />
+
+            {/* Suggestions */}
+            <div className="flex flex-wrap gap-1.5">
+              {areaSuggestions.slice(0, 8).map((a) => (
+                <button
+                  key={a} type="button" onClick={() => saveLocation(a)}
+                  className="h-8 px-3 rounded-[6px] text-[12px] font-bold cursor-pointer"
+                  style={{
+                    background: userArea === a ? "var(--dark)" : "var(--sand)",
+                    color: userArea === a ? "white" : "var(--text-secondary)",
+                  }}
+                >
+                  {a}
+                </button>
+              ))}
+            </div>
+
+            {userAddress && (
+              <p className="text-[11px] mt-3" style={{ color: "var(--text-muted)" }}>
+                Current: {userAddress}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Content ── */}
       {loading ? (
@@ -291,9 +420,14 @@ export default function DiscoverPage() {
           {/* ═══ GROUP DEALS — dark block, the visual peak ═══ */}
           {filteredPools.length > 0 && (
             <section className="mx-5 mt-3 rounded-[12px] overflow-hidden" style={{ background: "var(--dark)" }}>
-              <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-                <h3 className="text-[16px] font-extrabold text-white">Group deals near you</h3>
-                <Link href="/pools" className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
+              <div className="px-4 pt-5 pb-3">
+                <h3 className="text-[20px] font-extrabold tracking-[-0.02em] text-white">Group deals{userArea ? ` in ${userArea}` : " near you"}</h3>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-[11px] font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    {filteredPools.length} deal{filteredPools.length !== 1 ? "s" : ""} ending soon
+                  </p>
+                  <Link href="/pools" className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
+                </div>
               </div>
 
               <div className="flex gap-2.5 overflow-x-auto hide-scrollbar pb-4 snap-x snap-mandatory" style={{ overscrollBehaviorX: "contain" }}>
@@ -344,6 +478,13 @@ export default function DiscoverPage() {
                         <p className="text-[10px] font-bold mt-1.5 tabular-nums" style={{ color: social.spotsLeft <= 2 ? "var(--coral)" : "rgba(255,255,255,0.35)" }}>
                           {social.spotsLeft <= 2 ? `${social.spotsLeft} spot${social.spotsLeft === 1 ? "" : "s"} left · ` : ""}{social.hours}h left
                         </p>
+                        {/* Progress fill — pool momentum at a glance */}
+                        <div className="mt-2 h-[3px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+                          <div className="h-full rounded-full" style={{
+                            width: `${Math.round((social.joined / p.minPoolSize) * 100)}%`,
+                            background: social.spotsLeft <= 2 ? "var(--coral)" : "var(--emerald)",
+                          }} />
+                        </div>
                       </div>
                     </div>
                   );
@@ -370,7 +511,7 @@ export default function DiscoverPage() {
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
                       <div className="relative overflow-hidden">
-                        <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 140 : 110} />
+                        <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 160 : 110} />
                         {pooling > 0 && (
                           <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white flex items-center gap-1" style={{ background: "var(--emerald)" }}>
                             <span className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -393,13 +534,16 @@ export default function DiscoverPage() {
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <div className="flex -space-x-1 shrink-0">
                               {NAMES.slice((store.id.charCodeAt(0) % 5), (store.id.charCodeAt(0) % 5) + 3).map((n, i) => (
-                                <div key={i} className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white" style={{ background: COLORS[i], border: "1px solid var(--card)" }}>
+                                <div key={i} className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: COLORS[i], border: "1.5px solid var(--card)" }}>
                                   {n.charAt(0)}
                                 </div>
                               ))}
                             </div>
-                            <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>
-                              {store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}
+                            <span className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>
+                              {store.bestDealName}
+                            </span>
+                            <span className="text-[12px] font-extrabold shrink-0 tabular-nums" style={{ color: "var(--emerald)" }}>
+                              save {fmt(store.lowestPrice - store.lowestGroupPrice)}
                             </span>
                             <span className="text-[11px] font-bold shrink-0 tabular-nums" style={{ color: "var(--coral)" }}>
                               {[2, 3, 4, 1, 5][(store.id.charCodeAt(0)) % 5]}h left

@@ -156,11 +156,11 @@ export function JoinClient({ office, menuPreview, poolTimer, restaurantCount }: 
             <div className="grid grid-cols-3 divide-x divide-black/[0.06] py-3.5">
               <div className="text-center px-2">
                 <div className="font-display font-bold text-[18px] text-[var(--text)]">{office.memberCount}</div>
-                <div className="text-[9px] text-[var(--text-muted)] font-medium">colleagues</div>
+                <div className="text-[9px] text-[var(--text-muted)] font-medium">members</div>
               </div>
               <div className="text-center px-2">
                 <div className="font-display font-bold text-[18px] text-[var(--text)]">{office.totalOrders > 0 ? office.totalOrders.toLocaleString() : "—"}</div>
-                <div className="text-[9px] text-[var(--text-muted)] font-medium">lunches ordered</div>
+                <div className="text-[9px] text-[var(--text-muted)] font-medium">orders placed</div>
               </div>
               <div className="text-center px-2">
                 <div className="font-display font-bold text-[18px] text-[var(--coral)]">₦0</div>

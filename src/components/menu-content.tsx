@@ -310,7 +310,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
             <div className="text-[14px] font-bold text-white truncate">
               {activeOrder.status === "PENDING" && "Order placed — preparing soon"}
               {activeOrder.status === "CONFIRMED" && `${activeOrder.restaurantName} is preparing your food`}
-              {activeOrder.status === "READY" && "Food is on the way to your office"}
+              {activeOrder.status === "READY" && "Your order is on the way"}
             </div>
             <div className="text-[12px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>
               {activeOrder.mealName} · Arrives by 12:00 PM
@@ -335,7 +335,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
           <div className="space-y-2 mb-3">
             {[
               { t: "Pick your meal, pay on your phone", d: "Browse vendors and build your plate" },
-              { t: "Fresh food delivered to your office", d: "₦0 delivery when you order together" },
+              { t: "Fresh food delivered to you", d: "₦0 delivery when your group orders together" },
               { t: "Collect with your code", d: "No cash, no wrong orders" },
             ].map((s, i) => (
               <div key={i} className="flex gap-3 items-start">
@@ -429,7 +429,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
         return null;
       })()}
 
-      {/* ── Trust signals — guarantee + captain ── */}
+      {/* ── Trust signals — guarantee + social proof ── */}
       {slot && !slot.expired && !allExpired && (
         <div className="mx-5 mt-4 flex items-center gap-3">
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
@@ -441,7 +441,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
               <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: "var(--gold)" }}>
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
               </div>
-              <span className="text-[12px] font-semibold" style={{ color: "var(--text-muted)" }}>{captainName.split(" ")[0]} is ordering</span>
+              <span className="text-[12px] font-semibold" style={{ color: "var(--text-muted)" }}>{captainName.split(" ")[0]} is in this group</span>
             </div>
           )}
         </div>
@@ -738,7 +738,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                         <div className="flex items-center gap-1">
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                           <span className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>
-                            {sig.officeOrderCount} from your office
+                            {sig.officeOrderCount} in your group
                           </span>
                         </div>
                       )}
@@ -881,7 +881,7 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                       <div className="flex items-center gap-1.5">
                         <div className="rounded-full animate-pulse" style={{ width: 5, height: 5, background: orders > 0 ? "var(--emerald)" : "var(--text-muted)" }} />
                         <span className="text-[12px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
-                          {orders === 0 ? "Pool open — be first" : `${orders} from ${officeName || "your office"}`}
+                          {orders === 0 ? "Pool open — be first" : `${orders} in ${officeName || "your group"}`}
                         </span>
                       </div>
                     </div>
@@ -894,11 +894,11 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
 
                   <p className="text-[14px] leading-[1.55]" style={{ color: "rgba(255,255,255,0.6)" }}>
                     {orders === 0 ? (
-                      <>Order at today&apos;s rate. As more colleagues join, your rate improves — <span className="font-bold text-white">bonus credit earned</span> automatically.</>
+                      <>Order at today&apos;s rate. As more people join, your rate improves — <span className="font-bold text-white">bonus credit earned</span> automatically.</>
                     ) : orders < 15 ? (
-                      <>Your rate is locked. More people order, rates improve — <span className="font-bold text-white">credit added to your wallet</span> automatically.</>
+                      <>Your rate is locked. More people join, rates improve — <span className="font-bold text-white">credit added to your wallet</span> automatically.</>
                     ) : (
-                      <><span className="font-bold" style={{ color: "var(--emerald)" }}>Best tier unlocked.</span> Maximum benefits for everyone in your pool.</>
+                      <><span className="font-bold" style={{ color: "var(--emerald)" }}>Best tier unlocked.</span> Maximum savings for everyone in your group.</>
                     )}
                   </p>
 
@@ -1048,13 +1048,13 @@ export function MenuContent({ slots, defaultSlotId }: MenuContentProps) {
                   </div>
                 </div>
                 <a
-                  href={`https://wa.me/?text=${encodeURIComponent(`Hey! We're ${moreForNextTier} people away from unlocking ${nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% back on lunch at ${officeName}. Join us on ChopDrop before the pool closes!\n\n${typeof window !== "undefined" ? window.location.origin : ""}/menu`)}`}
+                  href={`https://wa.me/?text=${encodeURIComponent(`Hey! We're ${moreForNextTier} people away from unlocking ${nextDiscount >= 5 ? 8 : nextDiscount >= 3 ? 5 : 3}% off on ChopDrop. Join the group before the deal closes!\n\n${typeof window !== "undefined" ? window.location.origin : ""}/discover`)}`}
                   target="_blank" rel="noopener noreferrer"
                   className="mt-3 w-full h-11 rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white active:scale-[0.97] transition-transform cursor-pointer"
                   style={{ background: "#25d366" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                  Nudge a colleague on WhatsApp
+                  Invite friends on WhatsApp
                 </a>
               </div>
               {/* Decorative */}
