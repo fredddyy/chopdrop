@@ -204,33 +204,28 @@ export default function DiscoverPage() {
                     <Link
                       key={p.id}
                       href={`/product/${p.id}`}
-                      className={`w-[155px] shrink-0 rounded-[8px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
+                      className={`w-[150px] shrink-0 rounded-[8px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
-                      {/* Food photo — THE card */}
-                      <div className="relative h-[120px]" style={{ background: "var(--sand)" }}>
+                      {/* Clean food photo — no overlays blocking the food */}
+                      <div className="relative h-[115px]" style={{ background: "var(--sand)" }}>
                         {p.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                         )}
-                        {/* Spots left badge */}
-                        <div
-                          className="absolute top-2 left-2 px-2 py-0.5 rounded-[4px] text-[9px] font-bold text-white"
-                          style={{ background: social.spotsLeft <= 2 ? "var(--coral)" : "var(--dark)" }}
-                        >
-                          {social.spotsLeft} {social.spotsLeft === 1 ? "spot" : "spots"} left
-                        </div>
-                        {/* Social overlay at bottom */}
-                        <div className="absolute bottom-0 left-0 right-0 px-2.5 py-1.5" style={{ background: "rgba(0,0,0,0.55)" }}>
-                          <span className="text-[10px] font-bold text-white">
-                            {social.starter}{social.others > 0 ? ` + ${social.others} joined` : " started this"}
-                          </span>
-                        </div>
+                        {social.spotsLeft <= 3 && (
+                          <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                            {social.spotsLeft} left
+                          </div>
+                        )}
                       </div>
-                      {/* Info */}
+                      {/* Info below — name, social, price */}
                       <div className="p-2.5">
                         <h4 className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                        <div className="flex items-baseline gap-1.5 mt-1">
+                        <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                          {social.starter}{social.others > 0 ? ` + ${social.others}` : ""} · {social.joined}/{p.minPoolSize} joined
+                        </p>
+                        <div className="flex items-baseline gap-1.5 mt-1.5">
                           <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
                           <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                         </div>
