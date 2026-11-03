@@ -299,13 +299,20 @@ export default function DiscoverPage() {
                     >
                       <div className="relative overflow-hidden">
                         <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 140 : 110} />
-                        {/* Delivery badge on photo */}
+                        {/* Delivery time — bottom left */}
                         <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white" style={{ background: "rgba(0,0,0,0.6)" }}>
                           {store.deliveryEstimate}
                         </div>
-                        {/* Free delivery badge when 5+ pooling */}
+                        {/* Pool count — top right */}
+                        {pooling > 0 && (
+                          <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white flex items-center gap-1" style={{ background: "var(--emerald)" }}>
+                            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                            {pooling} pooling
+                          </div>
+                        )}
+                        {/* Free delivery — bottom right */}
                         {pooling >= 5 && (
-                          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold" style={{ background: "white", color: "var(--emerald)" }}>
                             Free delivery
                           </div>
                         )}
@@ -318,12 +325,14 @@ export default function DiscoverPage() {
                           <span className="text-[12px] font-medium shrink-0 ml-2" style={{ color: "var(--text-secondary)" }}>★ {store.rating}</span>
                         </div>
                         <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.orderCount}+ orders</span>
-                        {/* Live pool activity */}
-                        {pooling > 0 && (
-                          <div className="flex items-center gap-1.5 mt-1">
-                            <span className="pool-dot" />
-                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
-                              {pooling} pooling
+                        {/* Best pool deal from this store */}
+                        {store.bestDealName && store.bestSaving >= 10 && (
+                          <div className="flex items-center justify-between mt-1.5 pt-1.5" style={{ borderTop: "1px solid var(--border)" }}>
+                            <span className="text-[11px] font-medium truncate" style={{ color: "var(--text-secondary)" }}>
+                              {store.bestDealName}
+                            </span>
+                            <span className="text-[11px] font-bold shrink-0 ml-2" style={{ color: "var(--coral)" }}>
+                              -{store.bestSaving}%
                             </span>
                           </div>
                         )}
