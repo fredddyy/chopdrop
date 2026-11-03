@@ -191,44 +191,49 @@ export default function DiscoverPage() {
       ) : (
         <div>
 
-          {/* ═══ POOL DEALS — 2-column grid like Bolt/Wolt ═══ */}
+          {/* ═══ POOL DEALS — wide horizontal scroll like Bolt ═══ */}
           {poolProducts.length > 0 && (
-            <section className="px-5 pt-4 pb-2">
-              <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Pool deals for you</h3>
+            <section className="pt-4 pb-2">
+              <div className="px-5 mb-3 flex items-center justify-between">
+                <h3 className="text-[16px] font-extrabold" style={{ color: "var(--text)" }}>Pool deals</h3>
+                <Link href="/pools" className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
+              </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                {poolProducts.slice(0, 4).map((p, idx) => {
+              <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3">
+                {poolProducts.slice(0, 5).map((p, idx) => {
                   const social = poolSocial(p.id, idx, p.minPoolSize);
                   const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
                   return (
                     <Link
                       key={p.id}
                       href={`/product/${p.id}`}
-                      className={`rounded-[8px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
+                      className={`w-[220px] shrink-0 rounded-[8px] overflow-hidden active:scale-[0.97] transition-transform card-enter card-enter-${idx + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
-                      {/* Big food photo with badges */}
-                      <div className="relative h-[130px]" style={{ background: "var(--sand)" }}>
+                      {/* Wide food photo */}
+                      <div className="relative h-[140px]" style={{ background: "var(--sand)" }}>
                         {p.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                         )}
-                        {/* Savings badge — top left, bold red like Bolt */}
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-[4px] text-[10px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
+                        {/* Savings badge — top left */}
+                        <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-[4px] text-[11px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
                           -{sav}%
                         </div>
-                        {/* Pool fill — top right */}
-                        <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold text-white" style={{ background: "rgba(0,0,0,0.6)" }}>
+                        {/* Pool fill — bottom right */}
+                        <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white" style={{ background: "rgba(0,0,0,0.55)" }}>
                           {social.joined}/{p.minPoolSize} joined
                         </div>
                       </div>
                       {/* Info */}
-                      <div className="p-2.5">
-                        <h4 className="text-[13px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                        <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                        <div className="flex items-center gap-2 mt-1.5">
-                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                          <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                      <div className="p-3">
+                        <h4 className="text-[14px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
+                        <div className="flex items-center justify-between mt-1.5">
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                            <span className="text-[16px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                          </div>
+                          <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>★ {p.vendor.name.length % 2 === 0 ? "4.8" : "4.6"}</span>
                         </div>
                       </div>
                     </Link>
