@@ -296,7 +296,7 @@ export default function DiscoverPage() {
                 <Link href="/pools" className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
               </div>
 
-              <div className="flex gap-2.5 overflow-x-auto hide-scrollbar px-4 pb-4 snap-x snap-mandatory" style={{ overscrollBehaviorX: "contain" }}>
+              <div className="flex gap-2.5 overflow-x-auto hide-scrollbar pl-4 pb-4 snap-x snap-mandatory" style={{ overscrollBehaviorX: "contain" }}>
                 {filteredPools.slice(0, 5).map((p, idx) => {
                   const social = poolSocial(p.id, idx, p.minPoolSize);
                   const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
@@ -347,6 +347,7 @@ export default function DiscoverPage() {
                     </div>
                   );
                 })}
+                <div className="w-4 shrink-0" />
               </div>
             </section>
           )}
