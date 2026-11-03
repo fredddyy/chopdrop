@@ -212,7 +212,7 @@ export default function DiscoverPage() {
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
                       {/* Hero food photo */}
-                      <div className="relative h-[165px]" style={{ background: "var(--sand)" }}>
+                      <div className="relative h-[130px]" style={{ background: "var(--sand)" }}>
                         {p.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
