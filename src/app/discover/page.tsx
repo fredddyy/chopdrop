@@ -52,14 +52,14 @@ function CoverImage({ src, alt, height }: { src: string | null; alt: string; hei
 
 const CATEGORIES = ["Food", "Electronics", "Fashion", "Groceries"];
 
-// ── Simulated social proof (seeded, deterministic per product) ──
+// Simulated social proof — deterministic per product, uses multiple seed chars to avoid collisions
 const NAMES = ["Tolu", "Ada", "Chidi", "Ngozi", "Emeka", "Bimpe", "Kola", "Yemi", "Funke", "Dayo"];
 const COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#0891B2", "#D946EF"];
 
 function poolSocial(id: string, idx: number, minSize: number) {
-  const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1) + idx;
-  // Pools should look 60-90% full — that's what creates FOMO
-  const fillPct = 0.6 + ((seed % 4) * 0.1); // 60%, 70%, 80%, 90%
+  // Use 3 chars + idx to avoid collisions between products with same first+last char
+  const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1) + (id.charCodeAt(Math.floor(id.length / 2)) || 0) + idx * 7;
+  const fillPct = 0.6 + ((seed % 4) * 0.1);
   const joined = Math.max(2, Math.min(minSize - 1, Math.round(minSize * fillPct)));
   const starter = NAMES[seed % NAMES.length];
   const hours = [1, 2, 3, 4, 6][seed % 5];
@@ -68,21 +68,8 @@ function poolSocial(id: string, idx: number, minSize: number) {
 }
 
 function storePooCount(id: string, orderCount: number): number {
-  // Simulated: stores with more orders have more poolers
   const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1);
   return orderCount > 100 ? (seed % 8) + 5 : orderCount > 50 ? (seed % 5) + 2 : 0;
-}
-
-/* Avatar initial circle */
-function Avatar({ name, color, size = 22 }: { name: string; color: string; size?: number }) {
-  return (
-    <div
-      className="rounded-full flex items-center justify-center shrink-0 font-bold text-white"
-      style={{ width: size, height: size, background: color, fontSize: size * 0.45 }}
-    >
-      {name.charAt(0)}
-    </div>
-  );
 }
 
 export default function DiscoverPage() {
@@ -92,6 +79,8 @@ export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [joinConfirm, setJoinConfirm] = useState<PoolProduct | null>(null);
   const cart = useCart();
 
   useEffect(() => {
@@ -100,32 +89,42 @@ export default function DiscoverPage() {
 
   async function fetchData() {
     setLoading(true);
-    const [storesRes, productsRes] = await Promise.all([
-      fetch(`/api/stores?category=${activeCategory}`),
-      fetch(`/api/products?category=${activeCategory}&limit=20`),
-    ]);
-    const [storesData, productsData] = await Promise.all([storesRes.json(), productsRes.json()]);
-    if (storesData.success) setStores(storesData.data);
-    if (productsData.success) {
-      const withSavings = (productsData.data as PoolProduct[]).filter(
-        (p) => p.groupPrice < p.retailPrice && p.imageUrl,
-      );
-      setPoolProducts(withSavings.slice(0, 6));
+    setError(false);
+    try {
+      const [storesRes, productsRes] = await Promise.all([
+        fetch(`/api/stores?category=${activeCategory}`),
+        fetch(`/api/products?category=${activeCategory}&limit=20`),
+      ]);
+      const [storesData, productsData] = await Promise.all([storesRes.json(), productsRes.json()]);
+      if (storesData.success) setStores(storesData.data);
+      if (productsData.success) {
+        const withSavings = (productsData.data as PoolProduct[]).filter(
+          (p) => p.groupPrice < p.retailPrice && p.imageUrl,
+        );
+        setPoolProducts(withSavings.slice(0, 6));
+      }
+    } catch {
+      setError(true);
     }
     setLoading(false);
   }
 
-  const filteredStores = searchQuery.trim().length >= 2
-    ? stores.filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  // Search filters BOTH pools and stores
+  const q = searchQuery.trim().toLowerCase();
+  const filteredStores = q.length >= 2
+    ? stores.filter((s) => s.name.toLowerCase().includes(q))
     : stores;
+  const filteredPools = q.length >= 2
+    ? poolProducts.filter((p) => p.name.toLowerCase().includes(q) || p.vendor.name.toLowerCase().includes(q))
+    : poolProducts;
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* ── Header ── */}
+      {/* ── Header — solid background, no glassmorphism ── */}
       <header
         className="sticky top-0 z-40"
-        style={{ background: "rgba(249,250,251,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}
+        style={{ background: "var(--bg)", borderBottom: "1px solid var(--border)" }}
       >
         <div className="px-5 h-12 flex items-center justify-between">
           <span className="text-[18px] font-extrabold tracking-[-0.03em]" style={{ color: "var(--text)" }}>
@@ -158,7 +157,7 @@ export default function DiscoverPage() {
         {searchOpen && (
           <div className="px-5 pb-3">
             <input
-              type="text" placeholder="Search stores..." value={searchQuery}
+              type="text" placeholder="Search deals and stores..." value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)} autoFocus
               className="w-full h-11 px-4 rounded-[8px] text-[14px] font-medium outline-none"
               style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
@@ -185,57 +184,104 @@ export default function DiscoverPage() {
 
       {/* ── Content ── */}
       {loading ? (
-        <div className="px-5 pt-4 flex flex-col gap-3" aria-busy="true">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-[72px] rounded-[8px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
-          ))}
+        <div className="pt-4" aria-busy="true">
+          {/* Pool skeleton — matches horizontal scroll shape */}
+          <div className="px-5 mb-2"><div className="h-5 rounded w-[45%]" style={{ background: "var(--sand)" }} /></div>
+          <div className="flex gap-3 overflow-hidden pl-5 pr-3 mb-6">
+            {[0, 1].map((i) => (
+              <div key={i} className="w-[270px] shrink-0 rounded-[8px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="h-[130px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 150}ms` }} />
+                <div className="p-3 space-y-2">
+                  <div className="h-4 rounded w-[60%]" style={{ background: "var(--sand)" }} />
+                  <div className="h-5 rounded w-[40%]" style={{ background: "var(--sand)" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Store skeleton */}
+          <div className="px-5 flex flex-col gap-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="rounded-[8px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="h-[110px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }} />
+                <div className="p-3 space-y-2">
+                  <div className="h-4 rounded w-[50%]" style={{ background: "var(--sand)" }} />
+                  <div className="h-3 rounded w-[65%]" style={{ background: "var(--sand)" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : error ? (
+        /* ── Error state — retry CTA for Lagos 3G ── */
+        <div className="py-20 text-center px-8">
+          <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
+            </svg>
+          </div>
+          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>
+            Couldn&apos;t load deals
+          </h2>
+          <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>
+            Check your connection and try again.
+          </p>
+          <button
+            type="button"
+            onClick={() => fetchData()}
+            className="h-11 px-6 rounded-[8px] text-[13px] font-bold text-white cursor-pointer"
+            style={{ background: "var(--coral)" }}
+          >
+            Try again
+          </button>
         </div>
       ) : (
         <div>
 
-          {/* ═══ POOL HERO — the main event ═══ */}
-          {poolProducts.length > 0 && (
-            <section className="pt-4 pb-2">
+          {/* ── Trust line — zero-risk guarantee ── */}
+          {filteredPools.length > 0 && (
+            <p className="px-5 pt-3 text-[11px]" style={{ color: "var(--text-muted)" }}>
+              Didn&apos;t fill? Every kobo back. Always.
+            </p>
+          )}
+
+          {/* ═══ GROUP DEALS ═══ */}
+          {filteredPools.length > 0 && (
+            <section className="pt-3 pb-2">
               <div className="px-5 mb-3 flex items-center justify-between">
                 <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Group deals near you</h3>
                 <Link href="/pools" className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>View all</Link>
               </div>
 
               <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3 snap-x snap-mandatory" style={{ overscrollBehaviorX: "contain" }}>
-                {poolProducts.slice(0, 5).map((p, idx) => {
+                {filteredPools.slice(0, 5).map((p, idx) => {
                   const social = poolSocial(p.id, idx, p.minPoolSize);
                   const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
-                  const saved = p.retailPrice - p.groupPrice;
                   return (
-                    <Link
+                    <div
                       key={p.id}
-                      href={`/product/${p.id}`}
-                      className={`w-[270px] shrink-0 rounded-[10px] overflow-hidden active:scale-[0.97] transition-transform snap-start card-enter card-enter-${idx + 1}`}
+                      className={`w-[270px] shrink-0 rounded-[8px] overflow-hidden snap-start card-enter card-enter-${idx + 1}`}
                       style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
-                      {/* Hero food photo */}
-                      <div className="relative h-[130px]" style={{ background: "var(--sand)" }}>
+                      {/* Photo — tappable to product */}
+                      <Link href={`/product/${p.id}`} className="block relative h-[130px]" style={{ background: "var(--sand)" }}>
                         {p.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading={idx < 2 ? "eager" : "lazy"} />
                         )}
-                        {/* Savings — top left */}
                         <div className="absolute top-3 left-3 px-2.5 py-1 rounded-[6px] text-[12px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
                           -{sav}%
                         </div>
-                        {/* Joined — top right */}
                         <div className="absolute top-3 right-3 px-2 py-1 rounded-[6px] text-[11px] font-bold text-white flex items-center gap-1.5" style={{ background: "rgba(0,0,0,0.55)" }}>
                           <span className="pool-dot" />
                           {social.joined}/{p.minPoolSize} joined
                         </div>
-                      </div>
+                      </Link>
                       {/* Info */}
                       <div className="p-3">
-                        <div className="flex items-center justify-between">
+                        <Link href={`/product/${p.id}`} className="block">
                           <h4 className="text-[14px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                          <span className="text-[9px] font-bold tabular-nums shrink-0 ml-1" style={{ color: "var(--coral)" }}>{social.hours}h left</span>
-                        </div>
-                        <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                        </Link>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center gap-1.5">
                             <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
@@ -245,11 +291,23 @@ export default function DiscoverPage() {
                             {social.joined >= 3 && (
                               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Free delivery</span>
                             )}
-                            <span className="text-[10px] font-bold px-2.5 py-1 rounded-[6px] text-white" style={{ background: "var(--emerald)" }}>Join</span>
+                            {/* Join button — opens confirmation sheet */}
+                            <button
+                              type="button"
+                              onClick={(e) => { e.preventDefault(); setJoinConfirm(p); }}
+                              className="text-[10px] font-bold px-2.5 py-1 rounded-[6px] text-white cursor-pointer"
+                              style={{ background: "var(--emerald)" }}
+                            >
+                              Join
+                            </button>
                           </div>
                         </div>
+                        {/* Urgency — promoted from 9px to visible */}
+                        <p className="text-[11px] font-bold mt-1.5 tabular-nums" style={{ color: "var(--coral)" }}>
+                          {social.spotsLeft <= 2 ? `${social.spotsLeft} spot${social.spotsLeft === 1 ? "" : "s"} left · ` : ""}{social.hours}h left to join
+                        </p>
                       </div>
-                    </Link>
+                    </div>
                   );
                 })}
               </div>
@@ -274,7 +332,6 @@ export default function DiscoverPage() {
                     >
                       <div className="relative overflow-hidden">
                         <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 140 : 110} />
-                        {/* Pool count — top right */}
                         {pooling > 0 && (
                           <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white flex items-center gap-1" style={{ background: "var(--emerald)" }}>
                             <span className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -305,7 +362,7 @@ export default function DiscoverPage() {
                             <span className="text-[11px] font-bold truncate" style={{ color: "var(--emerald)" }}>
                               {store.bestDealName} save {fmt(store.lowestPrice - store.lowestGroupPrice)}
                             </span>
-                            <span className="text-[9px] font-bold shrink-0 tabular-nums" style={{ color: "var(--coral)" }}>
+                            <span className="text-[11px] font-bold shrink-0 tabular-nums" style={{ color: "var(--coral)" }}>
                               {[2, 3, 4, 1, 5][(store.id.charCodeAt(0)) % 5]}h left
                             </span>
                             {pooling >= 5 && (
@@ -323,16 +380,64 @@ export default function DiscoverPage() {
             </section>
           )}
 
-          {filteredStores.length === 0 && poolProducts.length === 0 && (
+          {filteredStores.length === 0 && filteredPools.length === 0 && (
             <div className="py-16 text-center px-8">
-              <h2 className="text-[18px] font-extrabold mb-1" style={{ color: "var(--text)" }}>
+              <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>
                 {searchQuery ? `No results for "${searchQuery}"` : `Nothing in ${activeCategory} yet`}
               </h2>
-              <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>
-                {searchQuery ? "Try a different search" : "New vendors join every week."}
+              <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>
+                {searchQuery ? "Try a different search or browse a category." : "New vendors join every week."}
               </p>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="text-[13px] font-bold cursor-pointer"
+                  style={{ color: "var(--coral)" }}
+                >
+                  Clear search
+                </button>
+              )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Join confirmation sheet ── */}
+      {joinConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center" onClick={() => setJoinConfirm(null)}>
+          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
+          <div
+            className="relative w-full max-w-[480px] rounded-t-[16px] p-5 celebrate"
+            style={{ background: "var(--card)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
+            <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Join this group deal?</h3>
+            <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>
+              You&apos;ll pay {fmt(joinConfirm.groupPrice)} for {joinConfirm.name}.
+              When {joinConfirm.minPoolSize} people join, everyone gets the group price.
+              If it doesn&apos;t fill, you get every kobo back.
+            </p>
+            <div className="flex gap-2.5 mt-4">
+              <button
+                type="button"
+                onClick={() => setJoinConfirm(null)}
+                className="flex-1 h-[50px] rounded-[8px] text-[14px] font-bold cursor-pointer"
+                style={{ background: "var(--sand)", color: "var(--text)" }}
+              >
+                Not now
+              </button>
+              <Link
+                href={`/product/${joinConfirm.id}`}
+                className="flex-1 h-[50px] rounded-[8px] text-[14px] font-bold text-white flex items-center justify-center"
+                style={{ background: "var(--emerald)" }}
+                onClick={() => setJoinConfirm(null)}
+              >
+                Join · {fmt(joinConfirm.groupPrice)}
+              </Link>
+            </div>
+          </div>
         </div>
       )}
 
