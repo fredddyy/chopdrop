@@ -413,10 +413,18 @@ export default function ProductDetailPage() {
               <span className="text-[13px] font-bold text-white">Link copied!</span>
             </div>
           ) : toast === "joined" ? (
-            <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-              <span className="text-[13px] font-bold text-white">Joined the group!</span>
-            </div>
+            <Link href="/pools" className="max-w-[480px] mx-auto flex items-center justify-between rounded-[8px] px-4 py-3.5" style={{ background: "var(--emerald)" }}>
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                </div>
+                <div>
+                  <span className="text-[14px] font-bold text-white block">You&apos;re in!</span>
+                  <span className="text-[11px] text-white/70">Tap to track your pool</span>
+                </div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+            </Link>
           ) : toast === "created" ? (
             <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
