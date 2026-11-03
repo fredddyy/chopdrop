@@ -229,17 +229,21 @@ export default function DiscoverPage() {
                           {social.joined}/{p.minPoolSize} joined
                         </div>
                       </div>
-                      {/* Info — glanceable, not a page */}
+                      {/* Info */}
                       <div className="p-3">
                         <h4 className="text-[14px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
                         <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
-                          <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-[4px]" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
-                            Save {fmt(saved)}
-                          </span>
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                            <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                          </div>
+                          {/* Quick add button */}
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral)" }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                          </div>
                         </div>
+                        <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>Save {fmt(saved)}</span>
                       </div>
                     </Link>
                   );
