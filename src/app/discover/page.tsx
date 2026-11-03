@@ -243,11 +243,46 @@ export default function DiscoverPage() {
             </section>
           )}
 
+          {/* ═══ POPULAR — circular Instagram-story style ═══ */}
+          {filteredStores.length > 1 && (
+            <section className="mt-4 pb-1">
+              <div className="px-5 mb-3">
+                <h3 className="text-[16px] font-extrabold" style={{ color: "var(--text)" }}>Popular near you</h3>
+              </div>
+              <div className="flex gap-4 overflow-x-auto hide-scrollbar pl-5 pr-3">
+                {filteredStores.slice(0, 6).map((store, idx) => (
+                  <Link
+                    key={store.id}
+                    href={`/store/${store.id}`}
+                    className={`flex flex-col items-center shrink-0 w-[68px] card-enter card-enter-${idx + 1}`}
+                  >
+                    <div
+                      className="w-[64px] h-[64px] rounded-full overflow-hidden"
+                      style={{ border: "2px solid var(--coral)" }}
+                    >
+                      {store.heroImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={store.heroImage} alt={store.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[18px] font-bold" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>
+                          {store.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-[11px] font-medium mt-1.5 text-center leading-tight truncate w-full" style={{ color: "var(--text)" }}>
+                      {store.name.split(" ")[0]}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* ═══ STORES ═══ */}
           {filteredStores.length > 0 && (
-            <section className="mt-3">
-              <div className="px-5 mb-2">
-                <h3 className="text-[13px] font-bold" style={{ color: "var(--text-secondary)" }}>Stores</h3>
+            <section className="mt-4">
+              <div className="px-5 mb-2 flex items-center justify-between">
+                <h3 className="text-[16px] font-extrabold" style={{ color: "var(--text)" }}>Stores near you</h3>
               </div>
               <div className="px-5 flex flex-col gap-3">
                 {filteredStores.map((store, idx) => {
