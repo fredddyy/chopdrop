@@ -24,14 +24,20 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [buyMode, setBuyMode] = useState<"solo" | "pool">("pool");
   const [toast, setToast] = useState("");
+  const [error, setError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
   const cart = useCart();
 
   useEffect(() => {
-    fetch(`/api/products/${id}`).then(r => r.json()).then(d => {
-      if (d.success) setProduct(d.data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [id]);
+    const ctrl = new AbortController();
+    setLoading(true);
+    setError(false);
+    fetch(`/api/products/${id}`, { signal: ctrl.signal })
+      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+      .then(d => { if (d.success) setProduct(d.data); setLoading(false); })
+      .catch(e => { if ((e as Error).name !== "AbortError") { setError(true); setLoading(false); } });
+    return () => ctrl.abort();
+  }, [id, retryKey]);
 
   function handleBuyNow() {
     if (!product) return;
@@ -44,6 +50,31 @@ export default function ProductDetailPage() {
       price: product.retailPrice,
     });
     setToast("added");
+    setTimeout(() => setToast(""), 3000);
+  }
+
+  function handleJoinGroup() {
+    if (!product) return;
+    cart.addItem({
+      dailyMenuId: `pool-${product.id}`,
+      name: product.name,
+      description: product.description || "",
+      imageUrl: product.imageUrl,
+      restaurantName: product.vendor.name,
+      price: product.groupPrice,
+    });
+    setToast("added");
+    setTimeout(() => setToast(""), 3000);
+  }
+
+  function handleShare() {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const text = product ? `${product.name} for ${fp(product.groupPrice)} on ChopDrop — join the group deal!` : "Check this out on ChopDrop!";
+    if (navigator.share) {
+      navigator.share({ title: product?.name || "ChopDrop", text, url });
+    } else {
+      navigator.clipboard.writeText(url).then(() => { setToast("link"); setTimeout(() => setToast(""), 2000); });
+    }
   }
 
   if (loading) {
@@ -54,6 +85,24 @@ export default function ProductDetailPage() {
           <div className="h-7 rounded w-[65%]" style={{ background: "var(--sand)" }} />
           <div className="h-4 rounded w-[35%]" style={{ background: "var(--sand)" }} />
           <div className="h-10 rounded w-[45%]" style={{ background: "var(--sand)" }} />
+        </div>
+        <BottomNav />
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        <div className="py-20 text-center px-8">
+          <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
+            </svg>
+          </div>
+          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Couldn&apos;t load product</h2>
+          <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
+          <button type="button" onClick={() => setRetryKey(k => k + 1)} className="h-11 px-6 rounded-[8px] text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>Try again</button>
         </div>
         <BottomNav />
       </main>
@@ -87,7 +136,7 @@ export default function ProductDetailPage() {
           <button type="button" onClick={() => router.back()} className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "rgba(255,255,255,0.9)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
           </button>
-          <button type="button" onClick={() => { if (navigator.share) navigator.share({ title: product.name, url: window.location.href }); }} className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "rgba(255,255,255,0.9)" }}>
+          <button type="button" onClick={handleShare} className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "rgba(255,255,255,0.9)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" x2="12" y1="2" y2="15" /></svg>
           </button>
         </div>
@@ -220,14 +269,14 @@ export default function ProductDetailPage() {
       <div className="h-8" />
 
       {/* ── Sticky CTA ── */}
-      <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-3" style={{ background: "rgba(249,250,251,0.92)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
+      <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto flex gap-2.5">
           <button type="button" onClick={handleBuyNow}
             className="flex-[40] h-[50px] rounded-[8px] flex items-center justify-center text-[14px] font-bold cursor-pointer active:scale-[0.97] transition-transform"
             style={{ background: "var(--sand)", color: "var(--text)" }}>
             Buy · {fp(product.retailPrice * quantity)}
           </button>
-          <button type="button"
+          <button type="button" onClick={handleJoinGroup}
             className="flex-[60] h-[50px] rounded-[8px] flex items-center justify-center gap-1.5 text-[14px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform"
             style={{ background: "var(--emerald)" }}>
             <span>Join group</span>
@@ -236,16 +285,23 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Added to cart */}
+      {/* Toast — cart add or link copied */}
       {toast && (
         <div className="fixed z-[100] left-0 right-0 bottom-[104px] px-5 celebrate">
-          <Link href="/cart" className="max-w-[480px] mx-auto flex items-center justify-between rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
-            <div className="flex items-center gap-2">
+          {toast === "link" ? (
+            <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: "var(--dark)" }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-              <span className="text-[13px] font-bold text-white">Added! View cart</span>
+              <span className="text-[13px] font-bold text-white">Link copied!</span>
             </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-          </Link>
+          ) : (
+            <Link href="/cart" className="max-w-[480px] mx-auto flex items-center justify-between rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
+              <div className="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                <span className="text-[13px] font-bold text-white">Added! View cart</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+            </Link>
+          )}
         </div>
       )}
 
