@@ -65,6 +65,17 @@ function pct(r: number, g: number): number {
   return r > 0 && g < r ? Math.round(((r - g) / r) * 100) : 0;
 }
 
+// Simulated live pool activity per product
+const POOL_NAMES = ["Tolu", "Ada", "Chidi", "Ngozi", "Emeka", "Bimpe", "Kola", "Yemi"];
+function poolSocial(id: string, idx: number, minSize: number) {
+  const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1) + idx * 7;
+  const fillPct = 0.6 + ((seed % 4) * 0.1);
+  const joined = Math.max(2, Math.min(minSize - 1, Math.round(minSize * fillPct)));
+  const starter = POOL_NAMES[seed % POOL_NAMES.length];
+  const hours = [1, 2, 3, 4, 6][seed % 5];
+  return { starter, joined, spotsLeft: minSize - joined, hours };
+}
+
 export default function StorePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -358,6 +369,7 @@ export default function StorePage() {
           <div className="flex gap-2.5 overflow-x-auto hide-scrollbar px-4 pb-4">
             {filtered.map((p, idx) => {
               const sav = pct(p.retailPrice, p.groupPrice);
+              const social = poolSocial(p.id, idx, p.minPoolSize);
               return (
                 <Link
                   key={p.id}
@@ -379,14 +391,24 @@ export default function StorePage() {
                         -{sav}%
                       </div>
                     )}
+                    {/* Pool fill badge on photo */}
+                    <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold text-white" style={{ background: "rgba(0,0,0,0.45)" }}>
+                      {social.joined}/{p.minPoolSize}
+                    </div>
                   </div>
                   <div className="p-2.5">
                     <h4 className="text-[12px] font-bold leading-tight truncate text-white">{p.name}</h4>
-                    <div className="flex items-baseline gap-1.5 mt-1">
+                    {/* Who started this pool */}
+                    <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>
+                      {social.starter} + {social.joined - 1} · {social.hours}h left
+                    </p>
+                    <div className="flex items-baseline gap-1.5 mt-1.5">
                       <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
-                      <span className="text-[10px] line-through tabular-nums" style={{ color: "rgba(255,255,255,0.35)" }}>{fmt(p.retailPrice)}</span>
+                      <span className="text-[10px] line-through tabular-nums" style={{ color: "rgba(255,255,255,0.3)" }}>{fmt(p.retailPrice)}</span>
                     </div>
-                    <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>{p.minPoolSize}+ people</p>
+                    {social.spotsLeft <= 2 && (
+                      <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--coral)" }}>{social.spotsLeft} spot{social.spotsLeft === 1 ? "" : "s"} left!</p>
+                    )}
                   </div>
                 </Link>
               );
