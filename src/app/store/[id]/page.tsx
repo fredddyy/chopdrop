@@ -72,15 +72,26 @@ export default function StorePage() {
   const [store, setStore] = useState<StoreDetail | null>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [bannerFailed, setBannerFailed] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/stores/${id}`)
+    const ctrl = new AbortController();
+    setLoading(true);
+    setError(false);
+    fetch(`/api/stores/${id}`, { signal: ctrl.signal })
       .then((r) => r.json())
       .then((data) => {
         if (data.success) setStore(data.data);
         setLoading(false);
+      })
+      .catch((e) => {
+        if ((e as Error).name !== "AbortError") {
+          setError(true);
+          setLoading(false);
+        }
       });
+    return () => ctrl.abort();
   }, [id]);
 
   if (loading) {
@@ -136,6 +147,26 @@ export default function StorePage() {
               </div>
             ))}
           </div>
+        </div>
+        <BottomNav />
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        <div className="py-20 text-center px-8">
+          <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
+            </svg>
+          </div>
+          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Couldn&apos;t load store</h2>
+          <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
+          <button type="button" onClick={() => window.location.reload()} className="h-11 px-6 rounded-[8px] text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>
+            Try again
+          </button>
         </div>
         <BottomNav />
       </main>
@@ -264,7 +295,7 @@ export default function StorePage() {
         </p>
         <div className="flex items-center gap-1.5 mt-2">
           <span className="text-[11px] font-medium" style={{ color: "var(--text-secondary)" }}>
-            {store.products.length} {store.products.length === 1 ? "item" : "items"}
+            {store.products.length + store.combos.length + store.menuCategories.reduce((a, c) => a + c.items.length, 0)} items
           </span>
           <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
           <span className="text-[11px]" style={{ color: "var(--emerald)" }}>
@@ -273,8 +304,8 @@ export default function StorePage() {
         </div>
       </div>
 
-      {/* ── Category filter (if store has multiple) ── */}
-      {store.categories.length > 1 && (
+      {/* ── Category filter — scoped to products section ── */}
+      {store.categories.length > 1 && store.products.length > 0 && (
         <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 mt-4">
           {["All", ...store.categories].map((cat) => (
             <button
@@ -306,7 +337,7 @@ export default function StorePage() {
               return (
                 <Link
                   key={c.id}
-                  href={`/restaurant/${store.id}`}
+                  href={`/restaurant/${store.id}#${c.id}`}
                   className={`card-enter card-enter-${(idx % 8) + 1} rounded-[8px] overflow-hidden press-feedback`}
                   style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                 >
@@ -423,7 +454,26 @@ export default function StorePage() {
                       <h5 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{item.name}</h5>
                       {item.description && <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
                     </div>
-                    <span className="text-[14px] font-extrabold tabular-nums shrink-0" style={{ color: "var(--text)" }}>{fmt(item.price)}</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(item.price)}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          cart.addItem({
+                            dailyMenuId: `menu-${item.id}`,
+                            name: item.name,
+                            description: item.description || "",
+                            imageUrl: item.imageUrl,
+                            restaurantName: store.name,
+                            price: item.price,
+                          });
+                        }}
+                        className="w-8 h-8 rounded-[6px] flex items-center justify-center cursor-pointer shrink-0"
+                        style={{ background: "var(--sand)" }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
