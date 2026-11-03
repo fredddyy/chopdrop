@@ -33,20 +33,87 @@ export async function GET(
           tags: true,
         },
       },
+      meals: {
+        where: { isAvailable: true },
+        orderBy: [{ sortOrder: "asc" }],
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          imageUrl: true,
+          price: true,
+          originalPrice: true,
+          tag: true,
+          type: true,
+          poolTiers: true,
+        },
+      },
+      menuCategories: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          items: {
+            orderBy: { sortOrder: "asc" },
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              imageUrl: true,
+              price: true,
+            },
+          },
+        },
+      },
     },
   });
 
-  if (!store || !store.products.length) {
+  if (!store) {
     return NextResponse.json(
       { success: false, error: "Store not found" },
       { status: 404 },
     );
   }
 
-  const categories = [...new Set(store.products.map((p) => p.category))];
+  // Don't 404 if store has meals but no products — old restaurants have meals only
+  if (!store.products.length && !store.meals.length) {
+    return NextResponse.json(
+      { success: false, error: "Store not found" },
+      { status: 404 },
+    );
+  }
+
+  const productCategories = [...new Set(store.products.map((p) => p.category))];
+
+  // Separate combo meals (poolable) from regular meals
+  const combos = store.meals
+    .filter((m) => m.type === "FIXED")
+    .map((m) => ({
+      id: m.id,
+      name: m.name,
+      description: m.description,
+      imageUrl: m.imageUrl,
+      price: m.price,
+      originalPrice: m.originalPrice,
+      tag: m.tag,
+      poolTiers: m.poolTiers,
+      type: "combo" as const,
+    }));
+
+  // Menu categories with items (for individual ordering)
+  const menuCategories = store.menuCategories
+    .filter((c) => c.items.length > 0)
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      items: c.items,
+    }));
 
   return NextResponse.json({
     success: true,
-    data: { ...store, categories },
+    data: {
+      ...store,
+      categories: productCategories,
+      combos,
+      menuCategories,
+    },
   });
 }

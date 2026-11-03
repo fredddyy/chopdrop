@@ -19,6 +19,32 @@ interface Product {
   tags: string | null;
 }
 
+interface Combo {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: number;
+  originalPrice: number | null;
+  tag: string;
+  poolTiers: unknown;
+  type: "combo";
+}
+
+interface MenuItem {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: number;
+}
+
+interface MenuCategory {
+  id: string;
+  name: string;
+  items: MenuItem[];
+}
+
 interface StoreDetail {
   id: string;
   name: string;
@@ -28,6 +54,8 @@ interface StoreDetail {
   bannerUrl: string | null;
   categories: string[];
   products: Product[];
+  combos: Combo[];
+  menuCategories: MenuCategory[];
 }
 
 function fmt(kobo: number): string {
@@ -267,101 +295,142 @@ export default function StorePage() {
         </div>
       )}
 
-      {/* ── Product Grid ── */}
-      <section className="px-5 mt-4">
-        <div className="grid grid-cols-2 gap-3">
-          {filtered.map((p, idx) => {
-            const sav = pct(p.retailPrice, p.groupPrice);
-            return (
-              <Link
-                key={p.id}
-                href={`/product/${p.id}`}
-                className={`card-enter card-enter-${(idx % 8) + 1} rounded-[8px] overflow-hidden active:scale-[0.98] transition-transform`}
-                style={{
-                  background: "var(--card)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                <div
-                  className="relative"
-                  style={{
-                    height: idx % 3 === 0 ? 155 : 135,
-                    background: "var(--sand)",
-                  }}
+      {/* ── Combo Meals (poolable) ── */}
+      {store.combos.length > 0 && (
+        <section className="px-5 mt-4">
+          <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Combo meals</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {store.combos.map((c, idx) => {
+              const hasDiscount = c.originalPrice && c.originalPrice > c.price;
+              const sav = hasDiscount ? Math.round(((c.originalPrice! - c.price) / c.originalPrice!) * 100) : 0;
+              return (
+                <Link
+                  key={c.id}
+                  href={`/restaurant/${store.id}`}
+                  className={`card-enter card-enter-${(idx % 8) + 1} rounded-[8px] overflow-hidden press-feedback`}
+                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                 >
-                  {p.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={p.imageUrl}
-                      alt={p.name}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span
-                        className="text-[28px] font-extrabold"
-                        style={{
-                          color: "var(--text-muted)",
-                          opacity: 0.1,
-                        }}
-                      >
-                        {p.name.charAt(0)}
-                      </span>
-                    </div>
-                  )}
-                  {sav >= 10 && (
-                    <div
-                      className="absolute top-2 right-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white"
-                      style={{ background: "var(--emerald)" }}
-                    >
-                      -{sav}%
-                    </div>
-                  )}
-                </div>
-                <div className="p-3">
-                  <h3
-                    className="text-[13px] font-bold leading-snug"
-                    style={{
-                      color: "var(--text)",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {p.name}
-                  </h3>
-                  {p.subcategory && (
-                    <p
-                      className="text-[10px] mt-0.5"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {p.subcategory}
-                    </p>
-                  )}
-                  <div className="flex items-baseline gap-2 mt-2">
-                    <span
-                      className="text-[20px] font-extrabold tabular-nums"
-                      style={{ color: "var(--text)" }}
-                    >
-                      {fmt(p.retailPrice)}
-                    </span>
+                  <div className="relative h-[130px]" style={{ background: "var(--sand)" }}>
+                    {c.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-[24px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.1 }}>{c.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    {sav > 0 && (
+                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                        -{sav}%
+                      </div>
+                    )}
+                    {c.tag === "DEAL" && (
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                        Deal
+                      </div>
+                    )}
                   </div>
-                  {sav > 0 && (
-                    <p
-                      className="text-[12px] font-semibold mt-1"
-                      style={{ color: "var(--emerald)" }}
-                    >
-                      Pool at {fmt(p.groupPrice)}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+                  <div className="p-3">
+                    <h4 className="text-[13px] font-bold leading-snug truncate" style={{ color: "var(--text)" }}>{c.name}</h4>
+                    <div className="flex items-baseline gap-2 mt-1.5">
+                      <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(c.price)}</span>
+                      {hasDiscount && (
+                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(c.originalPrice!)}</span>
+                      )}
+                    </div>
+                    {c.poolTiers != null && (
+                      <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--emerald)" }}>Pool available</p>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* ── Product Grid ── */}
+      {filtered.length > 0 && (
+        <section className="px-5 mt-6">
+          {store.combos.length > 0 && (
+            <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Products</h3>
+          )}
+          <div className="grid grid-cols-2 gap-3">
+            {filtered.map((p, idx) => {
+              const sav = pct(p.retailPrice, p.groupPrice);
+              return (
+                <Link
+                  key={p.id}
+                  href={`/product/${p.id}`}
+                  className={`card-enter card-enter-${(idx % 8) + 1} rounded-[8px] overflow-hidden press-feedback`}
+                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                >
+                  <div className="relative" style={{ height: idx % 3 === 0 ? 155 : 135, background: "var(--sand)" }}>
+                    {p.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.1 }}>{p.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    {sav >= 10 && (
+                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[6px] text-[10px] font-bold text-white" style={{ background: "var(--emerald)" }}>
+                        -{sav}%
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="text-[13px] font-bold leading-snug" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                      {p.name}
+                    </h3>
+                    {p.subcategory && <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.subcategory}</p>}
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <span className="text-[20px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fmt(p.retailPrice)}</span>
+                    </div>
+                    {sav > 0 && <p className="text-[12px] font-semibold mt-1" style={{ color: "var(--emerald)" }}>Pool at {fmt(p.groupPrice)}</p>}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* ── Menu Categories (individual items) ── */}
+      {store.menuCategories.length > 0 && (
+        <section className="px-5 mt-6 pb-4">
+          <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Menu</h3>
+          {store.menuCategories.map((cat) => (
+            <div key={cat.id} className="mb-4">
+              <h4 className="text-[13px] font-bold mb-2" style={{ color: "var(--text-secondary)" }}>{cat.name}</h4>
+              <div className="flex flex-col gap-2">
+                {cat.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-3 p-2.5 rounded-[8px]"
+                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                  >
+                    {item.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-[6px] object-cover shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-[6px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                        <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h5 className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{item.name}</h5>
+                      {item.description && <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
+                    </div>
+                    <span className="text-[14px] font-extrabold tabular-nums shrink-0" style={{ color: "var(--text)" }}>{fmt(item.price)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
 
       <BottomNav />
     </main>
