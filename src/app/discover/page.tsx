@@ -67,7 +67,7 @@ function poolSocial(id: string, idx: number, minSize: number) {
   return { starter, starterColor: COLORS[seed % COLORS.length], joined, spotsLeft: minSize - joined, hours, others };
 }
 
-function storePooCount(id: string, orderCount: number): number {
+function storePoolCount(id: string, orderCount: number): number {
   const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1);
   return orderCount > 100 ? (seed % 8) + 5 : orderCount > 50 ? (seed % 5) + 2 : 0;
 }
@@ -83,28 +83,46 @@ export default function DiscoverPage() {
   const [joinConfirm, setJoinConfirm] = useState<PoolProduct | null>(null);
   const cart = useCart();
 
+  // Close join sheet on Escape key or Android back button
   useEffect(() => {
-    fetchData();
+    if (!joinConfirm) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setJoinConfirm(null); };
+    const onPop = () => setJoinConfirm(null);
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("popstate", onPop);
+    return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("popstate", onPop); };
+  }, [joinConfirm]);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetchData(ctrl.signal);
+    return () => ctrl.abort();
   }, [activeCategory]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function fetchData() {
+  async function fetchData(signal?: AbortSignal) {
     setLoading(true);
     setError(false);
     try {
-      const [storesRes, productsRes] = await Promise.all([
-        fetch(`/api/stores?category=${activeCategory}`),
-        fetch(`/api/products?category=${activeCategory}&limit=20`),
+      const [storesResult, productsResult] = await Promise.allSettled([
+        fetch(`/api/stores?category=${activeCategory}`, { signal }).then((r) => r.json()),
+        fetch(`/api/products?category=${activeCategory}&limit=20`, { signal }).then((r) => r.json()),
       ]);
-      const [storesData, productsData] = await Promise.all([storesRes.json(), productsRes.json()]);
-      if (storesData.success) setStores(storesData.data);
-      if (productsData.success) {
-        const withSavings = (productsData.data as PoolProduct[]).filter(
+      if (storesResult.status === "fulfilled" && storesResult.value.success) {
+        setStores(storesResult.value.data);
+      }
+      if (productsResult.status === "fulfilled" && productsResult.value.success) {
+        const withSavings = (productsResult.value.data as PoolProduct[]).filter(
           (p) => p.groupPrice < p.retailPrice && p.imageUrl,
         );
         setPoolProducts(withSavings.slice(0, 6));
       }
-    } catch {
-      setError(true);
+      // Only show error if BOTH failed
+      if (storesResult.status === "rejected" && productsResult.status === "rejected") {
+        setError(true);
+      }
+    } catch (e) {
+      if ((e as Error).name !== "AbortError") setError(true);
     }
     setLoading(false);
   }
@@ -146,7 +164,7 @@ export default function DiscoverPage() {
                 <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
               </svg>
               {cart.totalItems > 0 && (
-                <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
+                <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[11px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
                   {cart.totalItems}
                 </span>
               )}
@@ -289,13 +307,13 @@ export default function DiscoverPage() {
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
                             {social.joined >= 3 && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Free delivery</span>
+                              <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Free delivery</span>
                             )}
                             {/* Join button — opens confirmation sheet */}
                             <button
                               type="button"
                               onClick={(e) => { e.preventDefault(); setJoinConfirm(p); }}
-                              className="text-[10px] font-bold px-2.5 py-1 rounded-[6px] text-white cursor-pointer"
+                              className="text-[11px] font-bold px-3 h-[34px] rounded-[6px] text-white cursor-pointer"
                               style={{ background: "var(--emerald)" }}
                             >
                               Join
@@ -322,7 +340,7 @@ export default function DiscoverPage() {
               </div>
               <div className="px-5 flex flex-col gap-3">
                 {filteredStores.map((store, idx) => {
-                  const pooling = storePooCount(store.id, store.orderCount);
+                  const pooling = storePoolCount(store.id, store.orderCount);
                   return (
                     <Link
                       key={store.id}
@@ -366,7 +384,7 @@ export default function DiscoverPage() {
                               {[2, 3, 4, 1, 5][(store.id.charCodeAt(0)) % 5]}h left
                             </span>
                             {pooling >= 5 && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "var(--emerald)", color: "white" }}>
+                              <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "var(--emerald)", color: "white" }}>
                                 Free delivery
                               </span>
                             )}
