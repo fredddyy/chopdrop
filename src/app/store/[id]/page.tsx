@@ -348,27 +348,30 @@ export default function StorePage() {
         </div>
       )}
 
-      {/* ── Pool deals — FIRST, above the menu ── */}
+      {/* ── Pool deals — FIRST, above the menu, bold dark block ── */}
       {filtered.length > 0 && (
-        <section className="px-5 mt-4">
-          <h3 className="text-[15px] font-extrabold mb-3" style={{ color: "var(--text)" }}>Pool deals</h3>
-          <div className="flex gap-3 overflow-x-auto hide-scrollbar">
+        <section className="mx-5 mt-4 rounded-[12px] overflow-hidden" style={{ background: "var(--dark)" }}>
+          <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+            <h3 className="text-[15px] font-extrabold text-white">Pool deals</h3>
+            <span className="text-[11px] font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>Buy with others, pay less</span>
+          </div>
+          <div className="flex gap-2.5 overflow-x-auto hide-scrollbar px-4 pb-4">
             {filtered.map((p, idx) => {
               const sav = pct(p.retailPrice, p.groupPrice);
               return (
                 <Link
                   key={p.id}
                   href={`/product/${p.id}`}
-                  className={`w-[160px] shrink-0 rounded-[8px] overflow-hidden press-feedback card-enter card-enter-${(idx % 8) + 1}`}
-                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                  className={`w-[150px] shrink-0 rounded-[8px] overflow-hidden press-feedback card-enter card-enter-${(idx % 8) + 1}`}
+                  style={{ background: "rgba(255,255,255,0.08)" }}
                 >
-                  <div className="relative h-[110px]" style={{ background: "var(--sand)" }}>
+                  <div className="relative h-[100px]" style={{ background: "rgba(255,255,255,0.05)" }}>
                     {p.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-[22px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.1 }}>{p.name.charAt(0)}</span>
+                        <span className="text-[20px] font-extrabold" style={{ color: "rgba(255,255,255,0.1)" }}>{p.name.charAt(0)}</span>
                       </div>
                     )}
                     {sav >= 10 && (
@@ -378,12 +381,12 @@ export default function StorePage() {
                     )}
                   </div>
                   <div className="p-2.5">
-                    <h4 className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
+                    <h4 className="text-[12px] font-bold leading-tight truncate text-white">{p.name}</h4>
                     <div className="flex items-baseline gap-1.5 mt-1">
                       <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fmt(p.groupPrice)}</span>
-                      <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                      <span className="text-[10px] line-through tabular-nums" style={{ color: "rgba(255,255,255,0.35)" }}>{fmt(p.retailPrice)}</span>
                     </div>
-                    <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.minPoolSize}+ people</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>{p.minPoolSize}+ people</p>
                   </div>
                 </Link>
               );
