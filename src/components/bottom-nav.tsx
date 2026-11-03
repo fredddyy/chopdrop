@@ -47,7 +47,7 @@ export function BottomNav() {
                 {link.label}
               </span>
               {link.count > 0 && (
-                <span className="absolute -top-0.5 right-1/2 translate-x-4 min-w-[18px] h-[18px] text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1" style={{ background: "var(--coral)" }}>
+                <span className="absolute -top-0.5 right-1/2 translate-x-4 min-w-[18px] h-[18px] text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1" style={{ background: "var(--coral)" }}>
                   {link.count}
                 </span>
               )}

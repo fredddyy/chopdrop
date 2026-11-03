@@ -19,7 +19,7 @@
   --dark: #111827;
   --text: #111827;
   --text-secondary: #5F6672;
-  --text-muted: #6B7280;
+  --text-muted: #5C6370;
   --sand: #F3F4F6;
 
   /* Legacy compat */
@@ -82,6 +82,11 @@ html { scroll-behavior: smooth; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 .tabular-nums { font-variant-numeric: tabular-nums; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
 
 @keyframes slideDown {
   from { transform: translateY(-100%); }

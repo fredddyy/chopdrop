@@ -124,6 +124,7 @@ export default function DiscoverPage() {
     } catch (e) {
       if ((e as Error).name !== "AbortError") setError(true);
     }
+    if (signal?.aborted) return;
     setLoading(false);
   }
 
@@ -313,7 +314,7 @@ export default function DiscoverPage() {
                             <button
                               type="button"
                               onClick={(e) => { e.preventDefault(); setJoinConfirm(p); }}
-                              className="text-[11px] font-bold px-3 h-[34px] rounded-[6px] text-white cursor-pointer"
+                              className="text-[11px] font-bold px-3 h-[44px] rounded-[6px] text-white cursor-pointer"
                               style={{ background: "var(--emerald)" }}
                             >
                               Join
@@ -372,7 +373,7 @@ export default function DiscoverPage() {
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <div className="flex -space-x-1 shrink-0">
                               {NAMES.slice((store.id.charCodeAt(0) % 5), (store.id.charCodeAt(0) % 5) + 3).map((n, i) => (
-                                <div key={i} className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: COLORS[i], border: "1px solid var(--card)" }}>
+                                <div key={i} className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white" style={{ background: COLORS[i], border: "1px solid var(--card)" }}>
                                   {n.charAt(0)}
                                 </div>
                               ))}
