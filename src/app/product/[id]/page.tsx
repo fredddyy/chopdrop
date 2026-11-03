@@ -103,34 +103,31 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* ── Content — no card overlap, just clean flow ── */}
+      {/* ── Content ── */}
       <div className="px-5 pt-5">
 
-        {/* Name + vendor — one line */}
+        {/* Name + vendor */}
         <h1 className="text-[24px] font-extrabold leading-tight" style={{ color: "var(--text)" }}>{product.name}</h1>
         <Link href={`/store/${product.vendor.id}`} className="text-[12px] font-medium mt-1 inline-block" style={{ color: "var(--text-muted)" }}>
           {product.vendor.name} · {product.vendor.address}
         </Link>
 
-        {/* Description — inline, not in a card */}
         {product.description && (
           <p className="text-[14px] leading-relaxed mt-3" style={{ color: "var(--text-secondary)" }}>
             {product.description}
           </p>
         )}
 
-        {/* ── Price block — the core decision ── */}
+        {/* ── THE PRICE ── */}
         <div className="mt-5 flex items-end justify-between">
           <div>
-            <span className="text-[13px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)}</span>
-            <div className="text-[36px] font-extrabold tabular-nums leading-none mt-0.5" style={{ color: "var(--text)" }}>
-              {fp(product.groupPrice)}
+            <div className="text-[32px] font-extrabold tabular-nums leading-none" style={{ color: "var(--text)" }}>
+              {fp(product.retailPrice)}
             </div>
             <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>
-              with {product.minPoolSize}+ people · You keep {fp(product.retailPrice - product.groupPrice)}
+              Buy now, get it delivered
             </p>
           </div>
-          {/* Quantity — compact, inline */}
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-11 h-11 rounded-[8px] flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
@@ -142,15 +139,28 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* ── Pool CTA — smart: no sad empty bar, just a clear invitation ── */}
-        <div className="mt-5 pt-5" style={{ borderTop: "1px solid var(--border)" }}>
-          <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>
-            Share with {product.minPoolSize - 1} friends, everyone saves {fp(product.retailPrice - product.groupPrice)}
-          </p>
-          <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>
-            Didn&apos;t fill? Every kobo back.
-          </p>
-        </div>
+        {/* ── THE POOL DEAL — visual offer block ── */}
+        {savings > 0 && (
+          <div className="mt-5 p-4 rounded-[10px]" style={{ background: "var(--dark)" }}>
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] font-bold text-white">Want this for less?</span>
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-[4px]" style={{ background: "var(--emerald)", color: "white" }}>
+                Save {fp(product.retailPrice - product.groupPrice)}
+              </span>
+            </div>
+
+            <div className="flex items-baseline gap-2 mt-2">
+              <span className="text-[28px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fp(product.groupPrice)}</span>
+              <span className="text-[13px] line-through tabular-nums" style={{ color: "rgba(255,255,255,0.4)" }}>{fp(product.retailPrice)}</span>
+            </div>
+
+            <p className="text-[12px] mt-2 leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+              Tap &quot;Pool &amp; Save&quot; below. Share the link.
+              When {product.minPoolSize} people join, everyone pays {fp(product.groupPrice)} instead of {fp(product.retailPrice)}.
+              {" "}If it doesn&apos;t fill, you get every kobo back.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ── Sticky CTAs ── */}
