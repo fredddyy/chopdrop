@@ -75,12 +75,17 @@ export default function StorePage() {
   const [error, setError] = useState(false);
   const [bannerFailed, setBannerFailed] = useState(false);
 
+  const [retryKey, setRetryKey] = useState(0);
+
   useEffect(() => {
     const ctrl = new AbortController();
     setLoading(true);
     setError(false);
     fetch(`/api/stores/${id}`, { signal: ctrl.signal })
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`${r.status}`);
+        return r.json();
+      })
       .then((data) => {
         if (data.success) setStore(data.data);
         setLoading(false);
@@ -92,7 +97,7 @@ export default function StorePage() {
         }
       });
     return () => ctrl.abort();
-  }, [id]);
+  }, [id, retryKey]);
 
   if (loading) {
     return (
@@ -164,7 +169,7 @@ export default function StorePage() {
           </div>
           <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Couldn&apos;t load store</h2>
           <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
-          <button type="button" onClick={() => window.location.reload()} className="h-11 px-6 rounded-[8px] text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>
+          <button type="button" onClick={() => setRetryKey((k) => k + 1)} className="h-11 px-6 rounded-[8px] text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>
             Try again
           </button>
         </div>
