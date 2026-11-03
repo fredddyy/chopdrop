@@ -239,9 +239,7 @@ export default function DiscoverPage() {
                             <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                             <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>Save {fmt(saved)}</span>
                           </div>
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral)" }}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                          </div>
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-[6px] shrink-0 text-white" style={{ background: "var(--emerald)" }}>Join</span>
                         </div>
                       </div>
                     </Link>
