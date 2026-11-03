@@ -185,7 +185,7 @@ export default function DiscoverPage() {
 
       {/* ── Content ── */}
       {loading ? (
-        <div className="px-5 pt-4 flex flex-col gap-3">
+        <div className="px-5 pt-4 flex flex-col gap-3" aria-busy="true">
           {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} className="h-[72px] rounded-[8px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
           ))}
@@ -258,7 +258,7 @@ export default function DiscoverPage() {
 
           {/* ═══ STORES ═══ */}
           {filteredStores.length > 0 && (
-            <section className="mt-4">
+            <section className="mt-8">
               <div className="px-5 mb-2 flex items-center justify-between">
                 <h3 className="text-[16px] font-extrabold" style={{ color: "var(--text)" }}>Stores near you</h3>
               </div>
