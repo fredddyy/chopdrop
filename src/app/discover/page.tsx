@@ -274,7 +274,7 @@ export default function DiscoverPage() {
                         {pooling > 0 && (
                           <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-bold text-white flex items-center gap-1" style={{ background: "var(--emerald)" }}>
                             <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                            {pooling} pooling
+                            {pooling} {pooling === 1 ? "group" : "groups"} active
                           </div>
                         )}
                       </div>
