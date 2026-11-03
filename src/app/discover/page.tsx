@@ -231,15 +231,23 @@ export default function DiscoverPage() {
                       </div>
                       {/* Info */}
                       <div className="p-3">
-                        <h4 className="text-[14px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[14px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
+                          <span className="text-[9px] font-bold tabular-nums shrink-0 ml-1" style={{ color: "var(--coral)" }}>{social.hours}h left</span>
+                        </div>
                         <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center gap-2">
                             <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
                             <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                            <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>Save {fmt(saved)}</span>
                           </div>
                           <span className="text-[10px] font-bold px-2.5 py-1 rounded-[6px] shrink-0 text-white" style={{ background: "var(--emerald)" }}>Join</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>Save {fmt(saved)}</span>
+                          {social.joined >= 3 && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Free delivery</span>
+                          )}
                         </div>
                       </div>
                     </Link>
