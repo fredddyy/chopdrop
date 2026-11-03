@@ -22,6 +22,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [buyMode, setBuyMode] = useState<"solo" | "pool">("pool");
   const [toast, setToast] = useState("");
   const cart = useCart();
 
@@ -139,44 +140,68 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* ── THE POOL DEAL — visual offer block ── */}
+        {/* ── PRICE PICKER — choose how you want to buy ── */}
         {savings > 0 && (
-          <div className="mt-5 p-4 rounded-[10px]" style={{ background: "var(--dark)" }}>
-            <div className="flex items-center justify-between">
-              <span className="text-[13px] font-bold text-white">Want this for less?</span>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-[4px]" style={{ background: "var(--emerald)", color: "white" }}>
-                Save {fp(product.retailPrice - product.groupPrice)}
-              </span>
-            </div>
+          <div className="mt-5 flex flex-col gap-2">
+            {/* Solo option */}
+            <button
+              type="button"
+              onClick={() => setBuyMode("solo")}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-[8px] text-left cursor-pointer transition-all"
+              style={{
+                background: buyMode === "solo" ? "var(--card)" : "var(--card)",
+                border: buyMode === "solo" ? "2px solid var(--text)" : "1px solid var(--border)",
+              }}
+            >
+              <div>
+                <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Buy alone</span>
+                <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Get it delivered now</p>
+              </div>
+              <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fp(product.retailPrice)}</span>
+            </button>
 
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-[28px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fp(product.groupPrice)}</span>
-              <span className="text-[13px] line-through tabular-nums" style={{ color: "rgba(255,255,255,0.4)" }}>{fp(product.retailPrice)}</span>
-            </div>
-
-            <p className="text-[12px] mt-2 leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
-              Tap &quot;Pool &amp; Save&quot; below. Share the link.
-              When {product.minPoolSize} people join, everyone pays {fp(product.groupPrice)} instead of {fp(product.retailPrice)}.
-              {" "}If it doesn&apos;t fill, you get every kobo back.
-            </p>
+            {/* Pool option */}
+            <button
+              type="button"
+              onClick={() => setBuyMode("pool")}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-[8px] text-left cursor-pointer transition-all"
+              style={{
+                background: buyMode === "pool" ? "var(--emerald-soft)" : "var(--card)",
+                border: buyMode === "pool" ? "2px solid var(--emerald)" : "1px solid var(--border)",
+              }}
+            >
+              <div>
+                <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Buy with others</span>
+                <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                  {product.minPoolSize} people needed · you save {fp(product.retailPrice - product.groupPrice)}
+                </p>
+              </div>
+              <span className="text-[18px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fp(product.groupPrice)}</span>
+            </button>
           </div>
+        )}
+
+        {/* Pool explainer — only when pool is selected */}
+        {savings > 0 && buyMode === "pool" && (
+          <p className="text-[11px] mt-2 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            Share the link with friends. When {product.minPoolSize} people join, everyone pays the lower price. If not enough join, you get every kobo back.
+          </p>
         )}
       </div>
 
-      {/* ── Sticky CTAs ── */}
+      {/* ── Sticky CTA — single button ── */}
       <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-3" style={{ background: "rgba(249,250,251,0.92)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
-        <div className="max-w-[480px] mx-auto flex gap-2.5">
-          <button type="button" onClick={handleBuyNow}
-            className="flex-[45] h-[50px] rounded-[8px] flex items-center justify-between px-4 text-[14px] font-bold cursor-pointer active:scale-[0.97] transition-transform"
-            style={{ background: "var(--sand)", color: "var(--text)" }}>
-            <span>Buy Now</span>
-            <span className="tabular-nums">{fp(product.retailPrice * quantity)}</span>
-          </button>
-          <button type="button"
-            className="flex-[55] h-[50px] rounded-[8px] flex items-center justify-between px-4 text-[14px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform"
-            style={{ background: "var(--coral)" }}>
-            <span>Pool &amp; Save</span>
-            <span className="tabular-nums">{fp(product.groupPrice * quantity)}</span>
+        <div className="max-w-[480px] mx-auto">
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            className="w-full h-[50px] rounded-[8px] flex items-center justify-center gap-2 text-[15px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform"
+            style={{ background: buyMode === "pool" ? "var(--emerald)" : "var(--coral)" }}
+          >
+            <span>{buyMode === "pool" ? "Buy with others" : "Add to cart"}</span>
+            <span className="tabular-nums">
+              {fp((buyMode === "pool" ? product.groupPrice : product.retailPrice) * quantity)}
+            </span>
           </button>
         </div>
       </div>
