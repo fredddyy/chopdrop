@@ -15,6 +15,7 @@ interface PoolItem {
   memberCount: number;
   deadline: string;
   creatorName: string;
+  isCreator: boolean;
   myQuantity: number;
   myPaymentStatus: string;
 }
@@ -35,6 +36,14 @@ export default function PoolsPage() {
       .then((d) => { if (d.success) setPools(d.data); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
   }, []);
+
+  async function cancelPool(poolId: string) {
+    const res = await fetch(`/api/pools/${poolId}/cancel`, { method: "POST" });
+    const data = await res.json();
+    if (data.success) {
+      setPools(prev => prev.map(p => p.id === poolId ? { ...p, status: "CANCELLED" } : p));
+    }
+  }
 
   const activePools = pools.filter((p) => p.status === "OPEN" || p.status === "FILLED");
   const pastPools = pools.filter((p) => p.status === "COMPLETED" || p.status === "EXPIRED" || p.status === "CANCELLED");
@@ -140,6 +149,16 @@ export default function PoolsPage() {
                   {isCancelled && <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>Cancelled</span>}
                   {pool.status === "OPEN" && hoursLeft > 0 && (
                     <span className="text-[10px] font-bold" style={{ color: isHot ? "var(--coral)" : "var(--text-muted)" }}>{hoursLeft}h left</span>
+                  )}
+                  {pool.status === "OPEN" && pool.isCreator && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); cancelPool(pool.id); }}
+                      className="text-[10px] font-bold cursor-pointer mt-1"
+                      style={{ color: "var(--coral)" }}
+                    >
+                      Cancel
+                    </button>
                   )}
                 </div>
               </Link>

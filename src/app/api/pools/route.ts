@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
       memberCount: m.pool.members.length,
       deadline: m.pool.deadline,
       creatorName: m.pool.creator.firstName,
+      isCreator: m.pool.creatorId === user.id,
       myQuantity: m.quantity,
       myPaymentStatus: m.paymentStatus,
     }));
