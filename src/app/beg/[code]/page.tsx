@@ -126,7 +126,7 @@ export default function BegDashboardPage() {
 
         {/* ── Product info — centered ── */}
         <div className="mt-5 flex flex-col items-center text-center">
-          <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full text-white mb-3" style={{ background: "var(--coral)" }}>Beg Price</span>
+          <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3" style={{ background: "var(--lime)", color: "#17271F" }}>Beg Price</span>
           <div className="flex items-center gap-3">
             {data.product.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -139,26 +139,26 @@ export default function BegDashboardPage() {
           </div>
         </div>
 
-        {/* ── Price card ── */}
-        <div className="mt-5 p-5 rounded-[22px]" style={{ background: "var(--sand)" }}>
+        {/* ── Price card — dark forest ── */}
+        <div className="mt-5 p-5 rounded-[22px]" style={{ background: "#17271F" }}>
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2" style={{ color: "var(--coral)" }}>Your price right now</p>
-          <p className="text-[44px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>
+          <p className="text-[44px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>
             {fp(currentPrice)}
           </p>
-          <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
+          <p className="text-[12px] mt-2" style={{ color: "var(--subdued)" }}>
             {fp(data.product.retailPrice)} individual · {fp(data.product.groupPrice)} pool price
           </p>
           <div className="flex items-center justify-between mt-3">
-            <span className="text-[12px] font-extrabold" style={{ color: "#17271F" }}>{fp(data.totalCredit)} knocked off</span>
-            <span className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>{fp(floorPrice)} floor</span>
+            <span className="text-[12px] font-extrabold text-white">{fp(data.totalCredit)} knocked off</span>
+            <span className="text-[12px] font-bold" style={{ color: "var(--lime)" }}>{fp(floorPrice)} floor</span>
           </div>
-          {/* Click dots */}
+          {/* Progress bar + dots */}
           <div className="flex items-center gap-1.5 mt-3">
             {Array.from({ length: Math.min(data.maxClicks, 15) }).map((_, i) => (
-              <div key={i} className="w-[6px] h-[6px] rounded-full" style={{ background: i < data.clicks ? "var(--emerald)" : "var(--border)" }} />
+              <div key={i} className="w-[6px] h-[6px] rounded-full" style={{ background: i < data.clicks ? "var(--lime)" : "rgba(255,255,255,0.15)" }} />
             ))}
           </div>
-          <p className="text-[10px] mt-1.5" style={{ color: "var(--text-muted)" }}>
+          <p className="text-[10px] mt-1.5" style={{ color: "var(--subdued)" }}>
             The price can&apos;t go below the vendor&apos;s {fp(floorPrice)} floor.
           </p>
         </div>
@@ -190,14 +190,14 @@ export default function BegDashboardPage() {
         {/* ── Share buttons — bordered, not filled ── */}
         <div className="mt-5 space-y-2.5">
           <button type="button" onClick={shareWhatsApp}
-            className="w-full h-[50px] rounded-[12px] text-[14px] font-bold flex items-center justify-between px-5 cursor-pointer press-feedback"
+            className="w-full h-[50px] rounded-full text-[14px] font-bold flex items-center justify-between px-5 cursor-pointer press-feedback"
             style={{ background: "var(--card)", border: "1px solid var(--border)", color: "#17271F" }}
           >
             WhatsApp Message
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
           </button>
           <button type="button" onClick={shareWhatsAppStatus}
-            className="w-full h-[50px] rounded-[12px] text-[14px] font-bold flex items-center justify-between px-5 cursor-pointer press-feedback"
+            className="w-full h-[50px] rounded-full text-[14px] font-bold flex items-center justify-between px-5 cursor-pointer press-feedback"
             style={{ background: "var(--card)", border: "1px solid var(--border)", color: "#17271F" }}
           >
             Share to WhatsApp Status
