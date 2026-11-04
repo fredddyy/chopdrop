@@ -171,8 +171,8 @@ export default function BegDashboardPage() {
           </p>
         </div>
 
-        {/* ── Share link display ── */}
-        <div className="mt-5 flex items-center gap-3">
+        {/* ── Share link display — white card ── */}
+        <div className="mt-5 flex items-center gap-3 p-4 rounded-[16px]" style={{ background: "var(--card)" }}>
           <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
           </div>
