@@ -83,27 +83,29 @@ export default function RewardsPage() {
         </p>
       </div>
 
-      {/* ── How you earned it ── */}
+      {/* ── How you earned it — white card ── */}
       <div className="px-5 mt-6">
-        <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>How you earned it</h3>
-        <div className="space-y-3">
-          {[
-            { label: "Orders", detail: "6 \u00d7 20 points", points: "+120" },
-            { label: "Reviews", detail: "2 \u00d7 30 points", points: "+60" },
-            { label: "Referrals", detail: "2 \u00d7 50 points", points: "+100" },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center justify-between">
-              <div>
-                <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>{item.label}</p>
-                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{item.detail}</p>
+        <div className="p-5 rounded-[22px]" style={{ background: "var(--card)" }}>
+          <h3 className="text-[17px] font-extrabold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>How you earned it</h3>
+          <div className="space-y-3">
+            {[
+              { label: "Orders", detail: "6 \u00d7 20 points", points: "+120" },
+              { label: "Reviews", detail: "2 \u00d7 30 points", points: "+60" },
+              { label: "Referrals", detail: "2 \u00d7 50 points", points: "+100" },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center justify-between">
+                <div>
+                  <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>{item.label}</p>
+                  <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{item.detail}</p>
+                </div>
+                <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--coral)" }}>{item.points}</span>
               </div>
-              <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{item.points}</span>
-            </div>
-          ))}
+            ))}
+          </div>
+          <button className="mt-4 text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>
+            Invite a friend · Earn 50 points →
+          </button>
         </div>
-        <button className="mt-4 text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>
-          Invite a friend · Earn 50 points →
-        </button>
       </div>
 
       {/* ── Footer note ── */}
