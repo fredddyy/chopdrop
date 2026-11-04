@@ -405,14 +405,15 @@ export default function DiscoverPage() {
 
           {/* ═══ REMAINING POOLS — compact cards with full info ═══ */}
           {sortedPools.length > 1 && (
-            <div className="px-5 mt-4 flex flex-col divide-y" style={{ "--tw-divide-opacity": 1, borderColor: "var(--border)" } as React.CSSProperties}>
+            <div className="px-5 mt-4 flex flex-col gap-4">
               {sortedPools.slice(1).map((p, idx) => {
                 const isHot = p.fill.spotsLeft <= 2;
                 return (
                   <Link
                     key={p.id}
                     href={`/product/${p.id}`}
-                    className={`flex gap-3 py-4 press-feedback card-enter card-enter-${(idx % 7) + 2}`}
+                    className={`flex gap-3 p-4 rounded-[22px] press-feedback card-enter card-enter-${(idx % 7) + 2}`}
+                    style={{ background: "var(--card)" }}
                   >
                     <div className="w-[82px] h-[86px] rounded-[16px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
                       {p.imageUrl && (
