@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
 import { calculateDeliveryFee, DEFAULT_TIERS } from "@/lib/delivery-fee";
 import type { DeliveryTier } from "@/lib/delivery-fee";
+
+function generateBegCode(): string {
+  return crypto.randomBytes(4).toString("hex"); // 8 hex chars
+}
 
 // POST /api/pools/:id/join — join an existing pool
 export async function POST(
@@ -72,6 +77,7 @@ export async function POST(
         deliveryLat: lat || null,
         deliveryLng: lng || null,
         deliveryFee,
+        begCode: generateBegCode(),
       },
     });
 
@@ -92,6 +98,7 @@ export async function POST(
     success: true,
     data: {
       poolId: id,
+      begCode: result.member.begCode,
       memberCount: result.memberCount,
       filled: result.filled,
       unitPrice: pool.product.groupPrice,

@@ -2451,6 +2451,8 @@ export default function OpsPage() {
         {tab === "pools" && (
           <>
             <DeliveryFeeTiers />
+            <div className="mt-6" />
+            <BegPriceConfig />
             <div className="mt-8" />
             <PoolsAdmin formatNaira={formatNaira} />
           </>
@@ -2957,6 +2959,103 @@ function DeliveryFeeTiers() {
         </button>
         <button type="button" onClick={save} disabled={saving} className="h-9 px-6 rounded-lg text-xs font-bold text-white cursor-pointer disabled:opacity-50" style={{ background: saved ? "var(--emerald)" : "var(--coral)" }}>
           {saving ? "Saving..." : saved ? "Saved" : "Save tiers"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function BegPriceConfig() {
+  const [config, setConfig] = useState({ discounts: [10000, 8000, 6000, 5000, 4000, 3000, 2000, 1000], floorPct: 40, maxClicks: 15, enabled: true });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/settings?key=beg-price-config")
+      .then((r) => r.json())
+      .then((d) => { if (d.data) setConfig(d.data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  function updateDiscount(i: number, value: string) {
+    const v = Math.round((parseFloat(value) || 0) * 100);
+    setConfig((prev) => ({ ...prev, discounts: prev.discounts.map((d, idx) => idx === i ? v : d) }));
+    setSaved(false);
+  }
+
+  function addDiscount() {
+    const last = config.discounts[config.discounts.length - 1] || 1000;
+    setConfig((prev) => ({ ...prev, discounts: [...prev.discounts, last] }));
+    setSaved(false);
+  }
+
+  function removeDiscount(i: number) {
+    setConfig((prev) => ({ ...prev, discounts: prev.discounts.filter((_, idx) => idx !== i) }));
+    setSaved(false);
+  }
+
+  async function save() {
+    setSaving(true);
+    await fetch("/api/admin/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "beg-price-config", value: config }),
+    });
+    setSaving(false);
+    setSaved(true);
+  }
+
+  if (loading) return <div className="text-center py-6 text-ink-soft text-sm">Loading beg config...</div>;
+
+  return (
+    <div className="bg-paper border border-line rounded-xl p-4">
+      <h2 className="text-lg font-bold mb-1">Beg Price Config</h2>
+      <p className="text-xs text-ink-soft mb-4">Set credit amounts per click (diminishing returns). Users share their link, each signed-up clicker earns the sharer wallet credit.</p>
+
+      <div className="flex gap-4 mb-4">
+        <div>
+          <label className="block text-xs font-bold mb-1">Floor %</label>
+          <input type="number" value={config.floorPct} onChange={(e) => { setConfig((p) => ({ ...p, floorPct: parseInt(e.target.value) || 0 })); setSaved(false); }}
+            className="w-20 h-9 px-2 rounded-lg text-sm text-center bg-sand border border-line focus:outline-none focus:border-coral" />
+          <p className="text-[10px] text-ink-soft mt-1">Max credit = (100-floor)% of group price</p>
+        </div>
+        <div>
+          <label className="block text-xs font-bold mb-1">Max clicks</label>
+          <input type="number" value={config.maxClicks} onChange={(e) => { setConfig((p) => ({ ...p, maxClicks: parseInt(e.target.value) || 1 })); setSaved(false); }}
+            className="w-20 h-9 px-2 rounded-lg text-sm text-center bg-sand border border-line focus:outline-none focus:border-coral" />
+        </div>
+        <div>
+          <label className="block text-xs font-bold mb-1">Enabled</label>
+          <button type="button" onClick={() => { setConfig((p) => ({ ...p, enabled: !p.enabled })); setSaved(false); }}
+            className="h-9 px-4 rounded-lg text-xs font-bold cursor-pointer"
+            style={{ background: config.enabled ? "var(--emerald)" : "var(--sand)", color: config.enabled ? "white" : "var(--ink)" }}>
+            {config.enabled ? "On" : "Off"}
+          </button>
+        </div>
+      </div>
+
+      <label className="block text-xs font-bold mb-2">Credit per click (₦)</label>
+      <div className="space-y-1.5">
+        {config.discounts.map((d, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="text-xs text-ink-soft w-16 shrink-0">Click {i + 1}</span>
+            <span className="text-xs font-bold">₦</span>
+            <input type="number" value={d / 100} onChange={(e) => updateDiscount(i, e.target.value)}
+              className="w-20 h-8 px-2 rounded-lg text-sm text-center bg-sand border border-line focus:outline-none focus:border-coral" />
+            <button type="button" onClick={() => removeDiscount(i)} className="w-7 h-7 rounded-full flex items-center justify-center text-ink-soft hover:text-coral cursor-pointer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2 mt-4">
+        <button type="button" onClick={addDiscount} className="h-9 px-4 rounded-lg text-xs font-bold bg-sand text-ink cursor-pointer hover:bg-line">
+          + Add click
+        </button>
+        <button type="button" onClick={save} disabled={saving} className="h-9 px-6 rounded-lg text-xs font-bold text-white cursor-pointer disabled:opacity-50" style={{ background: saved ? "var(--emerald)" : "var(--coral)" }}>
+          {saving ? "Saving..." : saved ? "Saved" : "Save config"}
         </button>
       </div>
     </div>

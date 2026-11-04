@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
+
+function generateBegCode(): string {
+  return crypto.randomBytes(4).toString("hex");
+}
 
 // GET /api/pools?productId=xxx&area=xxx — list active pools for a product/area, or user pools
 export async function GET(request: NextRequest) {
@@ -44,6 +49,8 @@ export async function GET(request: NextRequest) {
       isCreator: m.pool.creatorId === user.id,
       myQuantity: m.quantity,
       myPaymentStatus: m.paymentStatus,
+      begCode: m.begCode,
+      begDiscount: m.begDiscount,
     }));
 
     return NextResponse.json({ success: true, data: pools });
@@ -153,17 +160,18 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    await tx.poolMember.create({
+    const member = await tx.poolMember.create({
       data: {
         poolId: newPool.id,
         userId: user.id,
         quantity,
         unitPrice: product.groupPrice,
         totalAmount: product.groupPrice * quantity,
+        begCode: generateBegCode(),
       },
     });
 
-    return newPool;
+    return { ...newPool, begCode: member.begCode };
   });
 
   return NextResponse.json({
@@ -175,6 +183,7 @@ export async function POST(request: NextRequest) {
       areaName: pool.areaName,
       minSize: pool.minSize,
       deadline: pool.deadline,
+      begCode: pool.begCode,
       shareUrl: `/product/${productId}?pool=${pool.id}`,
     },
   });

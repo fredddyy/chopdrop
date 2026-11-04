@@ -19,6 +19,8 @@ interface PoolItem {
   isCreator: boolean;
   myQuantity: number;
   myPaymentStatus: string;
+  begCode: string | null;
+  begDiscount: number;
 }
 
 type Tab = "active" | "history";
@@ -182,6 +184,19 @@ export default function PoolsPage() {
                     </button>
                   )}
                 </div>
+
+                {/* Beg Price — earn credit badge */}
+                {isPaid && pool.begCode && (
+                  <a
+                    href={`/beg/${pool.begCode}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-2 h-8 px-3 rounded-full text-[11px] font-bold flex items-center gap-1.5 self-start press-feedback"
+                    style={{ background: pool.begDiscount > 0 ? "rgba(13,159,95,0.12)" : "rgba(13,159,95,0.08)", color: "var(--emerald)" }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+                    {pool.begDiscount > 0 ? `${fp(pool.begDiscount)} earned` : "Earn credit \u2014 share your link"}
+                  </a>
+                )}
               </Link>
             );
           })}

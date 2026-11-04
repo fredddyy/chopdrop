@@ -31,6 +31,7 @@ model User {
   dealParticipants  DealParticipant[]
   poolsCreated      Pool[]           @relation("PoolCreator")
   poolMemberships   PoolMember[]
+  begClicks         BegClick[]       @relation("BegClicks")
 }
 
 model PushSubscription {
@@ -426,15 +427,31 @@ model PoolMember {
   deliveryLat     Float?        // member's GPS lat
   deliveryLng     Float?        // member's GPS lng
   deliveryFee     Int           @default(0) // kobo — calculated from store-to-user distance
+  begCode         String?       @unique // 8-char share code for Beg Price
+  begDiscount     Int           @default(0) // kobo — total credit earned from beg clicks
   paymentRef      String?       @unique
   paymentStatus   PaymentStatus @default(PENDING)
   paidAt          DateTime?
   createdAt       DateTime      @default(now())
 
-  pool Pool @relation(fields: [poolId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  pool      Pool       @relation(fields: [poolId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
+  begClicks BegClick[]
 
   @@unique([poolId, userId])
+}
+
+model BegClick {
+  id             String   @id @default(cuid())
+  poolMemberId   String
+  clickerUserId  String
+  creditAmount   Int      // kobo — credit earned by the sharer for this click
+  createdAt      DateTime @default(now())
+
+  poolMember PoolMember @relation(fields: [poolMemberId], references: [id])
+  clicker    User       @relation("BegClicks", fields: [clickerUserId], references: [id])
+
+  @@unique([poolMemberId, clickerUserId])
 }
 
 enum PoolStatus {
