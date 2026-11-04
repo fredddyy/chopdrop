@@ -272,13 +272,11 @@ export default function ProductDetailPage() {
       </div>
 
       {/* ── Price ── */}
-      <div className="px-5 mt-4">
-        <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="text-[52px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-[14px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)} solo</span>
-            {savedAmount > 0 && <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)" }}>Keep {fp(savedAmount)} for yourself.</span>}
-          </div>
+      <div className="px-5 mt-4 flex items-end gap-3">
+        <span className="text-[52px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
+        <div className="pb-1.5">
+          <span className="text-[14px] line-through tabular-nums block" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)} solo</span>
+          {savedAmount > 0 && <span className="text-[14px] font-bold block" style={{ color: "var(--text-muted)" }}>Keep {fp(savedAmount)} for yourself.</span>}
         </div>
       </div>
 
