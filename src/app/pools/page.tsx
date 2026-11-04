@@ -145,7 +145,7 @@ export default function PoolsPage() {
                         className="block p-4 rounded-[22px] press-feedback"
                         style={{ background: "var(--card)" }}
                       >
-                        {/* Product row */}
+                        {/* Product row — image left, info + price right */}
                         <div className="flex items-start gap-3">
                           <div className="w-[70px] h-[70px] rounded-[16px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
                             {pool.product.imageUrl && (
@@ -155,16 +155,15 @@ export default function PoolsPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             {isPaid && (
-                              <span className="text-[10px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full inline-block mb-1" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>Paid</span>
+                              <span className="text-[10px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full inline-block mb-1" style={{ background: "var(--lime)", color: "#17271F" }}>{pool.memberCount} members in</span>
                             )}
                             <h4 className="text-[17px] font-extrabold leading-[145%] truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{pool.product.name}</h4>
-                            <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{pool.creatorName}{pool.areaName ? ` · ${pool.areaName}` : ""}</p>
+                            <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{pool.creatorName} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--text-muted)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
+                            <p className="mt-1">
+                              <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fp(pool.product.groupPrice)}</span>
+                              <span className="text-[14px] font-extrabold tabular-nums ml-1" style={{ color: "var(--coral)", textDecoration: "line-through" }}> was {fp(pool.product.retailPrice)}</span>
+                            </p>
                           </div>
-                        </div>
-                        {/* Price */}
-                        <div className="mt-2">
-                          <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fp(pool.product.groupPrice)}</span>
-                          <span className="text-[12px] line-through tabular-nums ml-2" style={{ color: "var(--text-muted)" }}>{fp(pool.product.retailPrice)}</span>
                         </div>
                         {/* Progress — full width */}
                         <div className="mt-3">
