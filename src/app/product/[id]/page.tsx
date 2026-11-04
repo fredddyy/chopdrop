@@ -263,9 +263,9 @@ export default function ProductDetailPage() {
       <div className="px-5 mt-5">
         <h1 className="text-[28px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#17271F" }}>{product.name}</h1>
         <div className="flex items-center justify-between mt-1.5">
-          <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{product.vendor.name}</p>
-          <span className="text-[12px] flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+          <p className="text-[14px] font-semibold" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{product.vendor.name}</p>
+          <span className="text-[14px] font-bold flex items-center gap-1" style={{ color: "#17271F" }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="#17271F" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
             4.9 (128)
           </span>
         </div>
@@ -273,12 +273,12 @@ export default function ProductDetailPage() {
 
       {/* ── Price ── */}
       <div className="px-5 mt-4">
-        <div className="flex items-baseline gap-3">
-          <span className="text-[52px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>{fp(product.groupPrice)}</span>
-        </div>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-[13px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)} solo</span>
-          {savedAmount > 0 && <span className="text-[13px] font-bold" style={{ color: "var(--text-muted)" }}>Keep {fp(savedAmount)} for yourself.</span>}
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <span className="text-[52px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-[14px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)} solo</span>
+            {savedAmount > 0 && <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)" }}>Keep {fp(savedAmount)} for yourself.</span>}
+          </div>
         </div>
       </div>
 
