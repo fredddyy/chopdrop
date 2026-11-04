@@ -293,17 +293,26 @@ export default function ProductDetailPage() {
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
               <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
             </div>
-            {/* Avatar social proof */}
+            {/* Avatar social proof + join feed */}
             {pool && pool.memberCount >= 1 && (
-              <div className="flex items-center gap-2.5 mt-3">
-                <div className="flex -space-x-2">
-                  {Array.from({ length: Math.min(pool.memberCount, 3) }).map((_, j) => (
-                    <div key={j} className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2.5px solid #17271F" }}>
-                      {j === 0 ? pool.creatorName.charAt(0) : String.fromCharCode(65 + j)}
-                    </div>
-                  ))}
+              <div className="mt-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex -space-x-2">
+                    {Array.from({ length: Math.min(pool.memberCount, 3) }).map((_, j) => (
+                      <div key={j} className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2.5px solid #17271F" }}>
+                        {j === 0 ? pool.creatorName.charAt(0) : String.fromCharCode(65 + j)}
+                      </div>
+                    ))}
+                  </div>
+                  <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>{pool.memberCount} {pool.memberCount === 1 ? "person is" : "people are"} in</span>
                 </div>
-                <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>{pool.memberCount} people are in</span>
+                {/* Live join feed */}
+                <div className="flex items-center gap-2 mt-2.5">
+                  <div className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[9px] font-bold" style={{ background: "var(--lime)", color: "#17271F" }}>
+                    {pool.creatorName.charAt(0)}
+                  </div>
+                  <span className="text-[11px]" style={{ color: "var(--subdued)" }}>{pool.creatorName} {pool.memberCount > 1 ? `+${pool.memberCount - 1} friend${pool.memberCount > 2 ? "s" : ""} joined` : "joined"} 1 min ago</span>
+                </div>
               </div>
             )}
           </div>
