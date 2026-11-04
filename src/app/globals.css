@@ -1,26 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop v6 — accent-ladder (tasteskill direction) ── */
-  /* Coral at full strength ONLY on small marks: primary CTA, active nav icon, data highlights */
-  /* Pale tints for areas: active states, badges, progress tracks, selected items */
-  --bg: #FAF9F7;
+  /* ── ChopDrop v9 — ChopChop design system ── */
+  /* Dark forest + orange + warm cream. Lime for progress. No shadows. */
+  --bg: #FFF9F1;
   --card: #FFFFFF;
-  --border: #E5E7EB;
-  --coral: #E8604C;
-  --coral-soft: #FEF2F0;
-  --coral-track: #FBDBD5;
+  --border: #E6E4D9;
+  --coral: #EF502B;
+  --coral-soft: #FFE9DD;
+  --coral-track: #FFE9DD;
   --coral-ink: #8B2E1B;
-  --coral-dark: #D14E3B;
-  --emerald: #0D9F5F;
-  --emerald-soft: #ECFDF5;
-  --gold: #D4A24E;
-  --dark: #111827;
-  --text: #111827;
-  --text-secondary: #5F6672;
-  --text-muted: #5C6370;
-  --sand: #F3F4F6;
+  --coral-dark: #D94420;
+  --emerald: #246347;
+  --emerald-soft: #E8F1E7;
+  --lime: #E6F58A;
+  --gold: #F8CB57;
+  --dark: #17271F;
+  --text: #17271F;
+  --text-secondary: #6D766D;
+  --text-muted: #6D766D;
+  --sand: #F1EBDD;
+  --subdued: #B9C7B8;
 
   /* Legacy compat */
   --ink: var(--text);
@@ -29,7 +30,7 @@
   --paper: var(--card);
   --line: var(--border);
   --green: var(--emerald);
-  --green-soft: #e4f1e9;
+  --green-soft: #E8F1E7;
   --lime: #dff24d;
   --amber: var(--gold);
   --amber-soft: #fff1c9;
@@ -57,7 +58,8 @@
   --color-amber-soft: var(--amber-soft);
   --color-red-soft: var(--red-soft);
   --color-sand: var(--sand);
-  --font-sans: "Outfit", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -66,7 +68,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Outfit", system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.6;
   min-height: 100vh;
@@ -76,7 +78,7 @@ body {
 
 html { scroll-behavior: smooth; }
 
-.font-display { font-family: "Bricolage Grotesque", "Outfit", system-ui, sans-serif; }
+.font-display { font-family: "Bricolage Grotesque", "Inter", system-ui, sans-serif; }
 
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
