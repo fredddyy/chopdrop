@@ -5,8 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
-const AVATAR_COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#0891B2", "#D946EF"];
-
 interface BegData {
   sharerName: string;
   product: { id: string; name: string; imageUrl: string | null; groupPrice: number; retailPrice: number; vendor: { name: string } };
@@ -31,6 +29,7 @@ export default function BegDashboardPage() {
   const [data, setData] = useState<BegData | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [paying, setPaying] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -42,8 +41,6 @@ export default function BegDashboardPage() {
   }, [code]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
-
-  // Refresh on tab focus
   useEffect(() => {
     const onFocus = () => fetchData();
     window.addEventListener("focus", onFocus);
@@ -52,10 +49,17 @@ export default function BegDashboardPage() {
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const shareUrl = `${origin}/b/${code}`;
+  const shortUrl = `chopdrop.app/b/${code}`;
 
   function shareWhatsApp() {
     if (!data) return;
     const text = `I just joined a group deal for ${data.product.name} on ChopDrop. Tap my link and I save even more:\n\n${shareUrl}\n\nYou can join the deal too — ${fp(data.product.groupPrice)} instead of ${fp(data.product.retailPrice)}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
+
+  function shareWhatsAppStatus() {
+    if (!data) return;
+    const text = `Saving on ${data.product.name} with ChopDrop 🔥 Tap to help me save more: ${shareUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 
@@ -66,10 +70,24 @@ export default function BegDashboardPage() {
     });
   }
 
+  async function payNow() {
+    if (!data) return;
+    setPaying(true);
+    try {
+      const res = await fetch(`/api/pools/${data.poolId}/checkout`, { method: "POST" });
+      const d = await res.json();
+      if (d.success && d.data.authorizationUrl) {
+        window.location.href = d.data.authorizationUrl;
+        return;
+      }
+    } catch { /* ignore */ }
+    setPaying(false);
+  }
+
   if (loading) {
     return (
-      <main className="min-h-svh flex items-center justify-center" style={{ background: "var(--dark)" }}>
-        <div className="w-10 h-10 rounded-full" style={{ border: "3px solid rgba(255,255,255,0.1)", borderTopColor: "var(--emerald)", animation: "spin 0.8s linear infinite" }} />
+      <main className="min-h-svh flex items-center justify-center" style={{ background: "var(--bg)" }}>
+        <div className="w-10 h-10 rounded-full" style={{ border: "3px solid var(--border)", borderTopColor: "var(--coral)", animation: "spin 0.8s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </main>
     );
@@ -77,126 +95,141 @@ export default function BegDashboardPage() {
 
   if (!data) {
     return (
-      <main className="min-h-svh flex flex-col items-center justify-center px-6" style={{ background: "var(--dark)" }}>
-        <p className="text-[14px] text-white/50 mb-4">Link not found</p>
-        <button type="button" onClick={() => router.back()} className="text-[14px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>Go back</button>
+      <main className="min-h-svh flex flex-col items-center justify-center px-6" style={{ background: "var(--bg)" }}>
+        <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>Link not found</p>
+        <button type="button" onClick={() => router.back()} className="text-[14px] font-bold mt-3 cursor-pointer" style={{ color: "var(--coral)" }}>Go back</button>
       </main>
     );
   }
 
+  const currentPrice = data.product.groupPrice - data.totalCredit;
+  const floorPrice = Math.round(data.product.groupPrice * 0.4);
+  const firstClickValue = data.clicks === 0 ? 100 : null;
+
   return (
-    <main className="min-h-svh flex flex-col" style={{ background: "var(--dark)" }}>
-      <div className="flex-1 max-w-[480px] mx-auto w-full px-6 py-8">
+    <main className="min-h-svh" style={{ background: "var(--bg)" }}>
+      <div className="max-w-[480px] mx-auto w-full px-5 pb-8">
 
-        {/* Back */}
-        <button type="button" onClick={() => router.back()} className="w-10 h-10 rounded-full flex items-center justify-center mb-6 cursor-pointer press-feedback" style={{ background: "rgba(255,255,255,0.08)" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-        </button>
-
-        {/* Product */}
-        <div className="flex flex-col items-center mb-8">
-          {data.product.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={data.product.imageUrl} alt={data.product.name} className="w-20 h-20 rounded-[16px] object-cover mb-3" />
-          )}
-          <h2 className="text-[15px] font-bold text-white text-center">{data.product.name}</h2>
-          <p className="text-[12px] mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>{data.product.vendor.name}</p>
+        {/* ── Header ── */}
+        <div className="pt-4 flex items-center justify-between">
+          <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+          <div className="text-center">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Beg Price</p>
+            <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Small beg. Big savings.</p>
+          </div>
+          <div className="w-9" />
         </div>
 
-        {/* Credit counter — the hero */}
-        <div className="rounded-[20px] p-6 mb-6" style={{ background: "rgba(255,255,255,0.06)" }}>
-          <div className="text-center">
-            <p className="text-[40px] font-extrabold tabular-nums savings-reveal" style={{ color: "var(--emerald)" }}>
-              {fp(data.totalCredit)}
-            </p>
-            <p className="text-[12px] font-bold mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
-              credit earned
-            </p>
+        {/* ── Product info ── */}
+        <div className="mt-5 flex items-center gap-3">
+          <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full text-white" style={{ background: "var(--coral)" }}>Beg Price</span>
+        </div>
+        <div className="mt-3 flex items-center gap-3">
+          {data.product.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={data.product.imageUrl} alt={data.product.name} className="w-[70px] h-[70px] rounded-[16px] object-cover shrink-0" />
+          )}
+          <div>
+            <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{data.product.name}</h2>
+            <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{data.product.vendor.name}</p>
           </div>
+        </div>
 
+        {/* ── Price card ── */}
+        <div className="mt-5 p-5 rounded-[22px]" style={{ background: "var(--sand)" }}>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2" style={{ color: "var(--coral)" }}>Your price right now</p>
+          <p className="text-[44px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>
+            {fp(currentPrice)}
+          </p>
+          <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
+            {fp(data.product.retailPrice)} individual · {fp(data.product.groupPrice)} pool price
+          </p>
+          <div className="flex items-center justify-between mt-3">
+            <span className="text-[12px] font-extrabold" style={{ color: "#17271F" }}>{fp(data.totalCredit)} knocked off</span>
+            <span className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>{fp(floorPrice)} floor</span>
+          </div>
           {/* Click dots */}
-          <div className="flex items-center justify-center gap-1.5 mt-5">
+          <div className="flex items-center gap-1.5 mt-3">
             {Array.from({ length: Math.min(data.maxClicks, 15) }).map((_, i) => (
-              <div
-                key={i}
-                className={`w-2 h-2 rounded-full ${i < data.clicks ? "pop" : ""}`}
-                style={{
-                  background: i < data.clicks ? "var(--emerald)" : "rgba(255,255,255,0.12)",
-                  animationDelay: i < data.clicks ? `${i * 50}ms` : undefined,
-                }}
-              />
+              <div key={i} className="w-[6px] h-[6px] rounded-full" style={{ background: i < data.clicks ? "var(--emerald)" : "var(--border)" }} />
             ))}
           </div>
-          <p className="text-[11px] text-center mt-2" style={{ color: "rgba(255,255,255,0.35)" }}>
-            {data.atMax ? "Max credit reached" : `${data.clicks} of ${data.maxClicks} clicks`}
+          <p className="text-[10px] mt-1.5" style={{ color: "var(--text-muted)" }}>
+            The price can&apos;t go below the vendor&apos;s {fp(floorPrice)} floor.
           </p>
         </div>
 
-        {/* Clickers — social proof */}
-        {data.clickers.length > 0 && (
-          <div className="mb-6">
-            <p className="text-[13px] font-bold text-white mb-3">People who helped you</p>
-            <div className="flex flex-wrap gap-2">
-              {data.clickers.map((c, i) => (
-                <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-[10px]" style={{ background: "rgba(255,255,255,0.06)" }}>
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
-                    {c.name.charAt(0)}
-                  </div>
-                  <div>
-                    <span className="text-[12px] font-bold text-white">{c.name}</span>
-                    <span className="text-[11px] ml-1.5 tabular-nums" style={{ color: "var(--emerald)" }}>+{fp(c.amount)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* ── Explanation ── */}
+        <div className="mt-6">
+          <h3 className="text-[21px] font-extrabold leading-[130%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>
+            Your friends click.<br />Your price drops.
+          </h3>
+          <p className="text-[14px] mt-2 leading-[145%]" style={{ color: "var(--text-muted)" }}>
+            Send your personal link. Friends only need to click and engage — they don&apos;t have to buy.
+          </p>
+        </div>
 
-        {/* Share buttons */}
-        {!data.atMax && (
-          <div className="space-y-2.5 mb-6">
-            <button
-              type="button" onClick={shareWhatsApp}
-              className="w-full h-[56px] rounded-[14px] text-[16px] font-bold text-white flex items-center justify-center gap-3 cursor-pointer press-feedback"
-              style={{ background: "#25d366" }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-              Share to WhatsApp
-            </button>
-            <button
-              type="button" onClick={copyLink}
-              className="w-full h-[44px] rounded-[12px] text-[14px] font-bold flex items-center justify-center gap-2 cursor-pointer press-feedback"
-              style={{ background: "rgba(255,255,255,0.08)", color: copied ? "var(--emerald)" : "rgba(255,255,255,0.6)" }}
-            >
-              {copied ? "Copied!" : "Copy link"}
-            </button>
+        {/* ── Share link display ── */}
+        <div className="mt-5 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
           </div>
-        )}
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-bold truncate" style={{ color: "#17271F" }}>{shortUrl}</p>
+            <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Your tracked link · {data.clicks} friend engagement{data.clicks !== 1 ? "s" : ""}</p>
+          </div>
+          <button type="button" onClick={copyLink} className="w-9 h-9 rounded-[8px] flex items-center justify-center cursor-pointer shrink-0" style={{ background: "var(--sand)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={copied ? "var(--emerald)" : "var(--text-muted)"} strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+          </button>
+        </div>
 
-        {/* Pay Now CTA */}
-        <div className="mt-6 mb-4">
+        {/* ── Share buttons — bordered, not filled ── */}
+        <div className="mt-5 space-y-2.5">
+          <button type="button" onClick={shareWhatsApp}
+            className="w-full h-[50px] rounded-[12px] text-[14px] font-bold flex items-center justify-between px-5 cursor-pointer press-feedback"
+            style={{ background: "var(--card)", border: "1px solid var(--border)", color: "#17271F" }}
+          >
+            WhatsApp Message
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+          </button>
+          <button type="button" onClick={shareWhatsAppStatus}
+            className="w-full h-[50px] rounded-[12px] text-[14px] font-bold flex items-center justify-between px-5 cursor-pointer press-feedback"
+            style={{ background: "var(--card)", border: "1px solid var(--border)", color: "#17271F" }}
+          >
+            Share to WhatsApp Status
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M8 12l2 2 4-4" /></svg>
+          </button>
+        </div>
+
+        {/* ── Info note ── */}
+        <div className="mt-5 flex items-start gap-2.5 p-4 rounded-[12px]" style={{ background: "var(--emerald-soft)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="m5 12 4 4L19 6" /></svg>
+          <p className="text-[12px] leading-[155%]" style={{ color: "var(--emerald)" }}>
+            {firstClickValue ? `First engagement: −₦${firstClickValue}. The next reductions get smaller. ` : ""}You can pay your current price at any time.
+          </p>
+        </div>
+
+        {/* ── Pool info ── */}
+        <p className="text-[11px] text-center mt-4" style={{ color: "var(--text-muted)" }}>
+          Pool {data.memberCount}/{data.minSize} · Pickup at {data.product.vendor.name}
+        </p>
+
+        {/* ── Pay Now CTA ── */}
+        <div className="mt-4">
           <button
-            type="button"
-            onClick={async () => {
-              const res = await fetch(`/api/pools/${data.poolId}/checkout`, { method: "POST" });
-              const d = await res.json();
-              if (d.success && d.data.authorizationUrl) { window.location.href = d.data.authorizationUrl; }
-            }}
-            className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
+            type="button" onClick={payNow} disabled={paying}
+            className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
             style={{ background: "var(--coral)" }}
           >
-            <span>Pay {fp(data.product.groupPrice - data.totalCredit)} Now</span>
+            <span>Pay {fp(currentPrice)} Now</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
           </button>
-          <p className="text-[11px] text-center mt-2" style={{ color: "rgba(255,255,255,0.35)" }}>
+          <p className="text-[11px] text-center mt-2" style={{ color: "var(--text-muted)" }}>
             or keep sharing to reduce your price
           </p>
         </div>
-
-        {/* Pool info */}
-        <p className="text-[10px] text-center" style={{ color: "rgba(255,255,255,0.25)" }}>
-          Pool {data.memberCount}/{data.minSize} · Pickup at {data.product.vendor.name}
-        </p>
 
       </div>
     </main>
