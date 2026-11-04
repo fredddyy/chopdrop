@@ -204,10 +204,10 @@ export default function DiscoverPage() {
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* ── Header — Neo-Brutalist ── */}
+      {/* ── Header — Soft Electric ── */}
       <header
         className="sticky top-0 z-40"
-        style={{ background: "var(--bg)", borderBottom: "2px solid var(--border)" }}
+        style={{ background: "var(--bg)", borderBottom: "1px solid var(--border)" }}
       >
         <div className="px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -217,30 +217,30 @@ export default function DiscoverPage() {
             <button
               type="button"
               onClick={() => setAreaOpen(!areaOpen)}
-              className="flex items-center gap-1 h-7 px-2.5 rounded-[6px] text-[11px] font-extrabold truncate max-w-[130px] cursor-pointer brutal-pill"
-              style={{ background: "var(--yellow-soft)", color: "var(--text)", border: "2px solid var(--border)", boxShadow: "2px 2px 0 var(--border)" }}
+              className="flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-bold truncate max-w-[140px] cursor-pointer"
+              style={{ background: "var(--purple-soft)", color: "var(--purple)" }}
             >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
               <span className="truncate">{userArea || "Set area"}</span>
             </button>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => setSearchOpen(!searchOpen)}
-              className="w-10 h-10 rounded-[8px] flex items-center justify-center cursor-pointer"
-              style={{ background: searchOpen ? "var(--dark)" : "transparent", border: searchOpen ? "2px solid var(--border)" : "none" }}
+              className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+              style={{ background: searchOpen ? "var(--dark)" : "transparent" }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={searchOpen ? "white" : "var(--text)"} strokeWidth="2.5" strokeLinecap="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={searchOpen ? "white" : "var(--text)"} strokeWidth="2" strokeLinecap="round">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
               </svg>
             </button>
-            <Link href="/cart" className="relative w-10 h-10 rounded-[8px] flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round">
+            <Link href="/cart" className="relative w-10 h-10 rounded-full flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round">
                 <path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" />
               </svg>
               {cart.totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-[20px] rounded-[6px] flex items-center justify-center text-[11px] font-extrabold text-white px-1" style={{ background: "var(--coral)", border: "2px solid var(--bg)" }}>
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
                   {cart.totalItems}
                 </span>
               )}
@@ -254,12 +254,12 @@ export default function DiscoverPage() {
               <input
                 type="text" placeholder="Search deals and stores..." value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)} autoFocus
-                className="w-full h-11 px-4 pr-10 rounded-[8px] text-[14px] font-bold outline-none"
-                style={{ background: "var(--bg)", color: "var(--text)", border: "2px solid var(--border)" }}
+                className="w-full h-11 px-4 pr-10 rounded-full text-[14px] font-medium outline-none"
+                style={{ background: "var(--sand)", color: "var(--text)" }}
               />
               {searchQuery && (
-                <button type="button" onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-[4px] flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                <button type="button" onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--border)" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
                 </button>
               )}
             </div>
@@ -270,12 +270,10 @@ export default function DiscoverPage() {
           {CATEGORIES.map((cat) => (
             <button
               key={cat} type="button" onClick={() => setActiveCategory(cat)}
-              className="h-[34px] px-4 rounded-[8px] text-[13px] font-extrabold whitespace-nowrap cursor-pointer shrink-0 transition-all duration-150"
+              className="h-[34px] px-5 rounded-full text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0 transition-all duration-200"
               style={{
-                background: activeCategory === cat ? "var(--coral)" : "var(--bg)",
-                color: activeCategory === cat ? "white" : "var(--text)",
-                border: "2px solid var(--border)",
-                boxShadow: activeCategory === cat ? "2px 2px 0 var(--border)" : "none",
+                background: activeCategory === cat ? "var(--dark)" : "var(--sand)",
+                color: activeCategory === cat ? "white" : "var(--text-secondary)",
               }}
             >
               {cat}
@@ -345,27 +343,27 @@ export default function DiscoverPage() {
       {/* ── Content ── */}
       {loading ? (
         <div className="pt-4" aria-busy="true">
-          {/* Pool skeleton — brutalist */}
-          <div className="px-5 mb-2"><div className="h-5 rounded-[4px] w-[45%]" style={{ background: "var(--sand)", border: "2px solid var(--border-light)" }} /></div>
+          {/* Pool skeleton */}
+          <div className="px-5 mb-2"><div className="h-5 rounded-full w-[45%]" style={{ background: "var(--sand)" }} /></div>
           <div className="flex gap-3 overflow-hidden pl-5 pr-3 mb-6">
             {[0, 1].map((i) => (
-              <div key={i} className="w-[240px] shrink-0 rounded-[10px] overflow-hidden brutal-card">
+              <div key={i} className="w-[240px] shrink-0 rounded-[16px] overflow-hidden" style={{ background: "var(--card)", boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}>
                 <div className="h-[120px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 150}ms` }} />
                 <div className="p-3 space-y-2">
-                  <div className="h-4 rounded-[4px] w-[60%]" style={{ background: "var(--sand)" }} />
-                  <div className="h-5 rounded-[4px] w-[40%]" style={{ background: "var(--sand)" }} />
+                  <div className="h-4 rounded-full w-[60%]" style={{ background: "var(--sand)" }} />
+                  <div className="h-5 rounded-full w-[40%]" style={{ background: "var(--sand)" }} />
                 </div>
               </div>
             ))}
           </div>
-          {/* Store skeleton — brutalist */}
+          {/* Store skeleton */}
           <div className="px-5 flex flex-col gap-5">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="rounded-[12px] overflow-hidden brutal-card">
+              <div key={i} className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <div className="h-[140px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }} />
-                <div className="px-3.5 py-3 space-y-2">
-                  <div className="h-5 rounded-[4px] w-[50%]" style={{ background: "var(--sand)" }} />
-                  <div className="h-3 rounded-[4px] w-[65%]" style={{ background: "var(--sand)" }} />
+                <div className="px-4 py-3.5 space-y-2">
+                  <div className="h-5 rounded-full w-[50%]" style={{ background: "var(--sand)" }} />
+                  <div className="h-3 rounded-full w-[65%]" style={{ background: "var(--sand)" }} />
                 </div>
               </div>
             ))}
@@ -431,16 +429,16 @@ export default function DiscoverPage() {
             </div>
           )}
 
-          {/* ═══ GROUP DEALS — Neo-Brutalist purple accent block ═══ */}
+          {/* ═══ GROUP DEALS — Soft Electric purple surface ═══ */}
           {filteredPools.length > 0 && (
-            <section className="mx-5 mt-3 rounded-[12px] overflow-hidden" style={{ background: "var(--purple)", border: "2px solid var(--border)", boxShadow: "4px 4px 0 var(--border)" }}>
-              <div className="px-4 pt-4 pb-3">
+            <section className="mx-5 mt-4 rounded-[20px] overflow-hidden" style={{ background: "var(--purple)" }}>
+              <div className="px-4 pt-5 pb-3">
                 <h3 className="text-[20px] font-extrabold tracking-[-0.02em] text-white">Group deals{userArea ? ` in ${userArea}` : ""}</h3>
                 <div className="flex items-center justify-between mt-1">
-                  <p className="text-[11px] font-extrabold" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  <p className="text-[11px] font-bold" style={{ color: "rgba(255,255,255,0.55)" }}>
                     {filteredPools.length} deal{filteredPools.length !== 1 ? "s" : ""} ending soon
                   </p>
-                  <Link href="/pools" className="text-[11px] font-extrabold px-2 py-0.5 rounded-[4px]" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}>View all</Link>
+                  <Link href="/pools" className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)", color: "white" }}>View all</Link>
                 </div>
               </div>
 
@@ -452,8 +450,8 @@ export default function DiscoverPage() {
                   return (
                     <div
                       key={p.id}
-                      className={`w-[240px] shrink-0 rounded-[10px] overflow-hidden snap-start card-enter card-enter-${idx + 1}`}
-                      style={{ background: "var(--card)", border: "2px solid var(--border)", boxShadow: "3px 3px 0 rgba(0,0,0,0.3)" }}
+                      className={`w-[240px] shrink-0 rounded-[16px] overflow-hidden snap-start card-enter card-enter-${idx + 1}`}
+                      style={{ background: "var(--card)", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
                     >
                       {/* Photo */}
                       <Link href={`/product/${p.id}`} className="block relative h-[120px]" style={{ background: "var(--sand)" }}>
@@ -461,10 +459,10 @@ export default function DiscoverPage() {
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading={idx < 2 ? "eager" : "lazy"} />
                         )}
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-[4px] text-[11px] font-extrabold text-white" style={{ background: "var(--coral)", border: "2px solid var(--border)" }}>
+                        <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-white" style={{ background: "var(--coral)" }}>
                           -{sav}%
                         </div>
-                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-[4px] text-[10px] font-extrabold flex items-center gap-1" style={{ background: "var(--yellow)", color: "var(--text)", border: "2px solid var(--border)" }}>
+                        <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1" style={{ background: "rgba(0,0,0,0.5)", color: "white" }}>
                           {social.joined}/{p.minPoolSize}
                         </div>
                       </Link>
@@ -482,16 +480,16 @@ export default function DiscoverPage() {
                           <button
                             type="button"
                             onClick={(e) => { e.preventDefault(); setJoinConfirm(p); }}
-                            className="text-[11px] font-extrabold px-3 h-[34px] rounded-[6px] text-white cursor-pointer press-feedback"
-                            style={{ background: "var(--emerald)", border: "2px solid var(--border)", boxShadow: "2px 2px 0 var(--border)" }}
+                            className="text-[12px] font-bold px-4 h-[34px] rounded-full text-white cursor-pointer press-feedback"
+                            style={{ background: "var(--emerald)" }}
                           >
                             Join
                           </button>
                         </div>
-                        {/* Progress — chunky brutalist bar */}
-                        <div className="mt-2 flex items-center gap-2">
-                          <div className="flex-1 h-[8px] rounded-[4px] overflow-hidden" style={{ background: "var(--sand)", border: "1.5px solid var(--border)" }}>
-                            <div className="h-full rounded-[2px]" style={{
+                        {/* Progress — soft rounded bar */}
+                        <div className="mt-2.5 flex items-center gap-2">
+                          <div className="flex-1 h-[6px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                            <div className="h-full rounded-full" style={{
                               width: `${Math.round((social.joined / p.minPoolSize) * 100)}%`,
                               background: social.spotsLeft <= 2 ? "var(--coral)" : "var(--emerald)",
                             }} />
@@ -522,40 +520,40 @@ export default function DiscoverPage() {
                     <Link
                       key={store.id}
                       href={`/store/${store.id}`}
-                      className={`block rounded-[12px] overflow-hidden brutal-card card-enter card-enter-${(idx % 8) + 1}`}
-                      style={{ background: "var(--card)" }}
+                      className={`block rounded-[20px] overflow-hidden press-feedback card-enter card-enter-${(idx % 8) + 1}`}
+                      style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
                     >
-                      {/* Image inside the brutal card */}
+                      {/* Image */}
                       <div className="relative overflow-hidden">
                         <CoverImage src={store.heroImage} alt={store.name} height={idx === 0 ? 170 : 140} />
                         {pooling > 0 && (
-                          <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-[6px] text-[11px] font-extrabold flex items-center gap-1.5" style={{ background: "var(--yellow)", color: "var(--text)", border: "2px solid var(--border)" }}>
-                            <span className="w-2 h-2 rounded-full" style={{ background: "var(--emerald)" }} />
+                          <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5" style={{ background: "rgba(0,0,0,0.5)", color: "white" }}>
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--emerald)" }} />
                             {pooling} active
                           </div>
                         )}
                       </div>
 
-                      {/* Info — inside the card */}
-                      <div className="px-3.5 py-3">
+                      {/* Info */}
+                      <div className="px-4 py-3.5">
                         <div className="flex items-center justify-between">
                           <h2 className="text-[17px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>
                             {store.name}
                           </h2>
-                          <span className="text-[13px] font-extrabold shrink-0 ml-2 flex items-center gap-1 px-2 py-0.5 rounded-[4px]" style={{ background: "var(--yellow-soft)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--gold)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                          <span className="text-[12px] font-bold shrink-0 ml-2 flex items-center gap-1" style={{ color: "var(--text-secondary)" }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--yellow)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                             {store.rating}
                           </span>
                         </div>
-                        <p className="text-[12px] font-bold mt-1" style={{ color: "var(--text-muted)" }}>
+                        <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
                           {store.orderCount}+ orders · {store.deliveryEstimate}
                         </p>
                         {store.bestDealName && store.bestSaving >= 10 && (
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="text-[12px] font-extrabold px-2.5 py-1 rounded-[6px]" style={{ background: "var(--emerald-soft)", color: "var(--emerald)", border: "1.5px solid var(--emerald)" }}>
+                          <div className="flex items-center gap-2 mt-2.5">
+                            <span className="text-[12px] font-bold px-3 py-1 rounded-full" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
                               save {fmt(store.lowestPrice - store.lowestGroupPrice)}
                             </span>
-                            <span className="text-[11px] font-extrabold px-2 py-1 rounded-[6px]" style={{ background: "var(--coral-soft)", color: "var(--coral)", border: "1.5px solid var(--coral)" }}>
+                            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>
                               {[2, 3, 4, 1, 5][(store.id.charCodeAt(0)) % 5]}h left
                             </span>
                           </div>
@@ -598,22 +596,22 @@ export default function DiscoverPage() {
           <div className="fixed inset-0 z-[60] flex items-end justify-center" role="dialog" aria-modal="true" aria-label="Join group deal" onClick={() => setJoinConfirm(null)}>
             <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
             <div
-              className="relative w-full max-w-[480px] rounded-t-[16px] p-5 sheet-enter"
-              style={{ background: "var(--card)", borderTop: "2px solid var(--border)", borderLeft: "2px solid var(--border)", borderRight: "2px solid var(--border)" }}
+              className="relative w-full max-w-[480px] rounded-t-[24px] p-5 sheet-enter"
+              style={{ background: "var(--card)" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-10 h-1.5 rounded-[3px] mx-auto mb-5" style={{ background: "var(--text)", opacity: 0.2 }} />
+              <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: "var(--border)" }} />
               <h3 className="text-[20px] font-extrabold" style={{ color: "var(--text)" }}>Join this group deal?</h3>
 
-              {/* The delight: your savings — brutalist emerald box */}
-              <div className="mt-3 p-3.5 rounded-[10px] flex items-center justify-between" style={{ background: "var(--emerald-soft)", border: "2px solid var(--emerald)" }}>
-                <span className="text-[14px] font-extrabold" style={{ color: "var(--emerald)" }}>You save</span>
+              {/* Savings — soft emerald surface */}
+              <div className="mt-4 p-4 rounded-[16px] flex items-center justify-between" style={{ background: "var(--emerald-soft)" }}>
+                <span className="text-[14px] font-bold" style={{ color: "var(--emerald)" }}>You save</span>
                 <span className="text-[24px] font-extrabold tabular-nums savings-reveal" style={{ color: "var(--emerald)" }}>
                   {fmt(saved)}
                 </span>
               </div>
 
-              <p className="text-[13px] mt-3 leading-relaxed font-medium" style={{ color: "var(--text-muted)" }}>
+              <p className="text-[13px] mt-3 leading-relaxed" style={{ color: "var(--text-muted)" }}>
                 {fmt(joinConfirm.groupPrice)} for {joinConfirm.name}.
                 When {joinConfirm.minPoolSize} people join, everyone gets this price.
                 Didn&apos;t fill? Every kobo back.
@@ -623,15 +621,15 @@ export default function DiscoverPage() {
                 <button
                   type="button"
                   onClick={() => setJoinConfirm(null)}
-                  className="flex-1 h-[50px] rounded-[10px] text-[14px] font-extrabold cursor-pointer press-feedback"
-                  style={{ background: "var(--bg)", color: "var(--text)", border: "2px solid var(--border)" }}
+                  className="flex-1 h-[52px] rounded-[14px] text-[14px] font-bold cursor-pointer press-feedback"
+                  style={{ background: "var(--sand)", color: "var(--text)" }}
                 >
                   Not now
                 </button>
                 <Link
                   href={`/product/${joinConfirm.id}`}
-                  className="flex-1 h-[50px] rounded-[10px] text-[14px] font-extrabold text-white flex items-center justify-center press-feedback"
-                  style={{ background: "var(--emerald)", border: "2px solid var(--border)", boxShadow: "3px 3px 0 var(--border)" }}
+                  className="flex-1 h-[52px] rounded-[14px] text-[14px] font-bold text-white flex items-center justify-center press-feedback"
+                  style={{ background: "var(--emerald)" }}
                   onClick={() => setJoinConfirm(null)}
                 >
                   Join · {fmt(joinConfirm.groupPrice)}

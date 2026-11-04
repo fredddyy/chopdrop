@@ -2,12 +2,12 @@
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop v7 — Neo-Brutalist Gen Z ── */
-  /* Thick borders, offset shadows, vibrant color blocks, white base */
+  /* ── ChopDrop v8 — Soft Electric ── */
+  /* Vibrant accents, soft surfaces, rounded forms, white base */
   --bg: #FFFFFF;
   --card: #FFFFFF;
-  --border: #1a1a1a;
-  --border-light: #E5E7EB;
+  --border: #E8E8E8;
+  --border-light: #F0F0F0;
   --coral: #E8604C;
   --coral-soft: #FEF2F0;
   --coral-track: #FBDBD5;
@@ -87,24 +87,21 @@ html { scroll-behavior: smooth; }
 
 .tabular-nums { font-variant-numeric: tabular-nums; }
 
-/* ── Neo-Brutalist system ── */
-.brutal-border { border: 2px solid var(--border); }
-.brutal-shadow { box-shadow: 3px 3px 0 var(--border); }
-.brutal-shadow-coral { box-shadow: 3px 3px 0 var(--coral); }
-.brutal-shadow-purple { box-shadow: 3px 3px 0 var(--purple); }
-.brutal-shadow-emerald { box-shadow: 3px 3px 0 var(--emerald); }
-.brutal-shadow-yellow { box-shadow: 3px 3px 0 var(--yellow); }
-.brutal-card {
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 3px 3px 0 var(--border);
+/* ── Soft Electric system ── */
+.soft-card {
+  background: var(--card);
+  border-radius: 20px;
+  border: 1px solid var(--border);
 }
-.brutal-card:active { box-shadow: 1px 1px 0 var(--border); transform: translate(2px, 2px); }
-.brutal-pill {
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 2px 2px 0 var(--border);
+.soft-shadow { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.soft-pill {
+  border-radius: 100px;
+  border: 1px solid var(--border);
 }
+/* Brutal compat (used in other pages) */
+.brutal-card { border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.brutal-card:active { transform: scale(0.98); }
+.brutal-pill { border-radius: 100px; border: 1px solid var(--border); }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
