@@ -435,7 +435,7 @@ export default function DiscoverPage() {
                     </div>
                     {/* Full-width: Progress, Pickup, Social */}
                     <div className="mt-3">
-                      <div className="flex items-center justify-between text-[11px] font-bold" style={{ color: "var(--text)" }}>
+                      <div className="flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
                         <span>{p.fill.joined}/{p.minPoolSize} plates claimed</span>
                         <span style={{ color: "var(--coral)" }}>{p.fill.hours}h {(p.fill.hours * 20) % 60}m</span>
                       </div>
