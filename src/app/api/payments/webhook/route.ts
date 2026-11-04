@@ -16,7 +16,9 @@ export async function POST(request: NextRequest) {
     const { reference, amount } = event.data;
 
     // Route by payment reference prefix
-    if (reference.startsWith("instant_")) {
+    if (reference.startsWith("pool_")) {
+      await handlePoolPayment(reference, amount);
+    } else if (reference.startsWith("instant_")) {
       await handleInstantOrderPayment(reference, amount);
     } else {
       await handleLegacyOrderPayment(reference, amount);
@@ -24,6 +26,42 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ status: "ok" });
+}
+
+// Handle pool member payments
+async function handlePoolPayment(reference: string, amount: number) {
+  const member = await prisma.poolMember.findFirst({
+    where: { paymentRef: reference },
+    include: { pool: { include: { members: true } } },
+  });
+
+  if (!member || member.paymentStatus === "SUCCESS") return;
+
+  const expectedAmount = member.totalAmount + member.deliveryFee;
+  if (amount !== expectedAmount) {
+    await prisma.poolMember.update({
+      where: { id: member.id },
+      data: { paymentStatus: "FAILED" },
+    });
+    return;
+  }
+
+  await prisma.poolMember.update({
+    where: { id: member.id },
+    data: { paymentStatus: "SUCCESS", paidAt: new Date() },
+  });
+
+  // Check if ALL members in the pool have now paid
+  const allMembers = member.pool.members;
+  const paidCount = allMembers.filter((m) => m.id === member.id ? true : m.paymentStatus === "SUCCESS").length;
+
+  if (paidCount >= allMembers.length && member.pool.status === "FILLED") {
+    // All members paid → pool is complete, ready for dispatch
+    await prisma.pool.update({
+      where: { id: member.poolId },
+      data: { status: "COMPLETED" },
+    });
+  }
 }
 
 // Handle instant-buy product orders

@@ -68,6 +68,32 @@ export async function verifyTransaction(
   return res.json();
 }
 
+interface PaystackRefundResponse {
+  status: boolean;
+  data: {
+    transaction: { reference: string };
+    amount: number;
+    status: string;
+  };
+}
+
+export async function refundTransaction(reference: string): Promise<PaystackRefundResponse> {
+  const res = await fetch(`${PAYSTACK_BASE}/refund`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${PAYSTACK_SECRET}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ transaction: reference }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Paystack refund failed: ${res.statusText}`);
+  }
+
+  return res.json();
+}
+
 export function verifyWebhookSignature(
   body: string,
   signature: string
