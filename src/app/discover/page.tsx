@@ -316,9 +316,9 @@ export default function DiscoverPage() {
         </div>
       ) : (
         <div>
-          {/* ── Hero Greeting — Nigerian English personality ── */}
+          {/* ── Hero Greeting — Bricolage Grotesque, Figma specs ── */}
           <div className="px-5 pt-5 pb-2">
-            <h1 className="text-[28px] font-extrabold tracking-[-0.03em] leading-[1.1]" style={{ color: "var(--text)" }}>
+            <h1 className="font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: "34px", lineHeight: "108%", letterSpacing: "-0.8px", color: "#17271F" }}>
               {activeCategory === "Food" ? "Oya, what\u2019s for lunch?" : activeCategory === "Electronics" ? "Oya, what\u2019s the gadget?" : activeCategory === "Fashion" ? "Oya, what\u2019s the drip?" : "Oya, what do you need?"}
             </h1>
             <p className="text-[13px] mt-1.5" style={{ color: "var(--text-muted)" }}>
@@ -329,7 +329,7 @@ export default function DiscoverPage() {
           {/* ── Section header with personality ── */}
           {sortedPools.length > 0 && (
             <div className="px-5 mt-4 mb-1 flex items-center justify-between">
-              <h3 className="text-[16px] font-extrabold" style={{ color: "var(--text)" }}>Almost full. Don&apos;t dull.</h3>
+              <h3 className="text-[16px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Almost full. Don&apos;t dull.</h3>
               <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length} live pool{sortedPools.length !== 1 ? "s" : ""}</span>
             </div>
           )}
@@ -370,7 +370,7 @@ export default function DiscoverPage() {
                   <h4 className="text-[17px] font-extrabold text-white leading-tight">{featured.name}</h4>
                   <p className="text-[12px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{featured.vendor.name}</p>
                   <div className="flex items-baseline gap-2.5 mt-2">
-                    <span className="text-[24px] font-extrabold tabular-nums text-white leading-none">{fmt(featured.groupPrice)}</span>
+                    <span className="text-[24px] font-extrabold tabular-nums text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px" }}>{fmt(featured.groupPrice)}</span>
                     <span className="text-[13px] line-through tabular-nums" style={{ color: "rgba(255,255,255,0.35)" }}>{fmt(featured.retailPrice)}</span>
                   </div>
                   {/* Progress */}
