@@ -17,7 +17,7 @@ interface ProductData {
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
 // Avatar colors for pool member initials
-const AVATAR_COLORS = ["#E8604C", "#0D9F5F", "#2563EB", "#D4A24E", "#0891B2"];
+const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 
 interface PoolData {
   id: string;
@@ -216,212 +216,150 @@ export default function ProductDetailPage() {
   const savings = product.retailPrice > product.groupPrice ? Math.round(((product.retailPrice - product.groupPrice) / product.retailPrice) * 100) : 0;
   const savedAmount = product.retailPrice - product.groupPrice;
 
+  const pool = pools.length > 0 ? pools[0] : null;
+  const fillPct = pool ? Math.round((pool.memberCount / pool.minSize) * 100) : 0;
+  const spotsText = pool ? (pool.spotsLeft <= 3 ? `${pool.spotsLeft} spot${pool.spotsLeft !== 1 ? "s" : ""}` : `${pool.memberCount}/${pool.minSize}`) : "";
+  const minutesLeft = pool ? Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 60000)) : 0;
+
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-32" style={{ background: "var(--bg)" }}>
 
-      {/* ═══ HERO — immersive, edge-to-edge ═══ */}
-      <div className="relative" style={{ height: "56vh", minHeight: 340, maxHeight: 420, background: "var(--sand)" }}>
-        {product.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full" style={{ background: "var(--sand)" }} />
-        )}
-
-        {/* Top bar — floats over image */}
-        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-5 pt-4">
-          <button type="button" onClick={() => router.back()} className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "rgba(255,255,255,0.92)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-          </button>
-          <button type="button" onClick={handleShare} className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "rgba(255,255,255,0.92)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" x2="12" y1="2" y2="15" /></svg>
-          </button>
+      {/* ── Header ── */}
+      <div className="px-5 pt-4 flex items-center justify-between">
+        <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+        </button>
+        <div className="text-center">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Pool</p>
+          <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+            {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} spot${pool.spotsLeft !== 1 ? "s" : ""}. One good lunch.` : "Join the pool. Save together."}
+          </p>
         </div>
+        <button type="button" onClick={handleShare} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
+        </button>
+      </div>
 
-        {/* Bottom info strip — overlaid on image, no card overlap */}
-        <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-16" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" /* taste-skill-ignore: neutral scrim over photo */ }}>
-          <h1 className="text-[24px] font-extrabold text-white leading-tight">{product.name}</h1>
-          <div className="flex items-center gap-2 mt-1">
-            <Link href={`/store/${product.vendor.id}`} className="text-[12px] font-medium text-white/70">{product.vendor.name}</Link>
-            <span className="text-[12px] text-white/40">·</span>
-            <span className="text-[12px] font-medium text-white/70">120+ orders</span>
-          </div>
+      {/* ── Hero food image ── */}
+      <div className="px-5 mt-4">
+        <div className="relative rounded-[28px] overflow-hidden" style={{ background: "var(--sand)" }}>
+          {product.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={product.imageUrl} alt={product.name} className="w-full h-[236px] object-cover" />
+          ) : (
+            <div className="w-full h-[236px]" />
+          )}
+          {savings > 0 && (
+            <div className="absolute top-3 left-3">
+              <span className="text-[10px] font-extrabold uppercase tracking-wide text-white rounded-full" style={{ background: "var(--emerald)", padding: "6px 12px" }}>
+                {savings}% less together
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* ═══ PRICE — the decision moment ═══ */}
-      <div className="px-5 pt-4">
-        <div className="flex items-end justify-between">
-          <div>
-            <div className="flex items-baseline gap-2.5">
-              <span className="text-[32px] font-extrabold tabular-nums leading-none" style={{ color: "var(--emerald)" }}>{fp(product.groupPrice)}</span>
-              {savings > 0 && <span className="text-[14px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)}</span>}
+      {/* ── Title + Vendor + Rating ── */}
+      <div className="px-5 mt-5">
+        <h1 className="text-[28px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#17271F" }}>{product.name}</h1>
+        <div className="flex items-center justify-between mt-1.5">
+          <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{product.vendor.name}</p>
+          <span className="text-[12px] flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+            4.9 (128)
+          </span>
+        </div>
+      </div>
+
+      {/* ── Price ── */}
+      <div className="px-5 mt-4">
+        <div className="flex items-baseline gap-3">
+          <span className="text-[52px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>{fp(product.groupPrice)}</span>
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-[13px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)} solo</span>
+          {savedAmount > 0 && <span className="text-[13px] font-bold" style={{ color: "var(--text-muted)" }}>Keep {fp(savedAmount)} for yourself.</span>}
+        </div>
+      </div>
+
+      {/* ── Pool progress card (dark forest) ── */}
+      <div className="px-5 mt-5">
+        <div className="rounded-[22px] overflow-hidden" style={{ background: "#17271F" }}>
+          <div className="p-4">
+            {/* Progress text */}
+            <div className="flex items-center justify-between text-[12px] font-extrabold">
+              <span className="text-white">{pool ? `${pool.memberCount}/${pool.minSize} plates claimed` : `0/${product.minPoolSize} plates claimed`}</span>
+              <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
             </div>
-            {savings > 0 && (
-              <p className="text-[12px] font-bold mt-1" style={{ color: "var(--emerald)" }}>
-                You save {fp(savedAmount)} with {product.minPoolSize}+ people
-              </p>
+            {/* Progress bar */}
+            <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+              <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
+            </div>
+            {/* Avatar social proof */}
+            {pool && pool.memberCount >= 1 && (
+              <div className="flex items-center gap-2.5 mt-3">
+                <div className="flex -space-x-2">
+                  {Array.from({ length: Math.min(pool.memberCount, 3) }).map((_, j) => (
+                    <div key={j} className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2.5px solid #17271F" }}>
+                      {j === 0 ? pool.creatorName.charAt(0) : String.fromCharCode(65 + j)}
+                    </div>
+                  ))}
+                </div>
+                <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>{pool.memberCount} people are in</span>
+              </div>
             )}
           </div>
-          {/* Quantity */}
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-11 h-11 rounded-[8px] flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
-            </button>
-            <span className="text-[16px] font-extrabold tabular-nums w-6 text-center" style={{ color: "var(--text)" }}>{quantity}</span>
-            <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-11 h-11 rounded-[8px] flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* ═══ POOL SECTION — real data from API ═══ */}
-      {savings > 0 && (
-        <section className="mt-5 mx-5 rounded-[12px] overflow-hidden" style={{ background: "var(--dark)" }}>
-          <div className="p-4 pb-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[16px] font-extrabold text-white">
-                {pools.length > 0 ? "Join a group" : "Start a group"}
-              </h3>
-              <span className="text-[11px] font-bold" style={{ color: "rgba(255,255,255,0.45)" }}>
-                Every kobo back if not filled
-              </span>
-            </div>
-          </div>
-
-          {/* Active pools from API */}
-          {pools.length > 0 && (
-            <div className="flex flex-col gap-0">
-              {pools.map((pool, i) => {
-                const fillPct = Math.round((pool.memberCount / pool.minSize) * 100);
-                const isHot = pool.spotsLeft <= 2;
-                const hoursLeft = Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 3600000));
-                return (
-                  <button
-                    key={pool.id}
-                    type="button"
-                    onClick={() => joinPool(pool.id)}
-                    disabled={joining}
-                    className="w-full flex items-center gap-3 px-4 py-3.5 text-left cursor-pointer press-feedback disabled:opacity-50"
-                    style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.08)" : "none" }}
-                  >
-                    {/* Avatar stack */}
-                    <div className="flex -space-x-2 shrink-0">
-                      {Array.from({ length: Math.min(pool.memberCount, 3) }).map((_, j) => (
-                        <div key={j} className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
-                          style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2.5px solid var(--dark)" }}>
-                          {j === 0 ? pool.creatorName.charAt(0) : String.fromCharCode(65 + j)}
-                        </div>
-                      ))}
-                    </div>
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <span className="text-[13px] font-bold text-white">
-                        {pool.name || `${pool.creatorName}'s group`}
-                      </span>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
-                          <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: isHot ? "var(--coral)" : "var(--emerald)" }} />
-                        </div>
-                        <span className="text-[10px] font-bold tabular-nums shrink-0" style={{ color: isHot ? "var(--coral)" : "rgba(255,255,255,0.5)" }}>
-                          {isHot ? `${pool.spotsLeft} left!` : `${pool.memberCount}/${pool.minSize}`}
-                        </span>
-                      </div>
-                      {hoursLeft > 0 && (
-                        <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>{hoursLeft}h left</p>
-                      )}
-                    </div>
-                    {/* CTA + delivery estimate */}
-                    <div className="shrink-0 text-right">
-                      <div className="h-[34px] px-3.5 rounded-[6px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--emerald)" }}>
-                        Join · {fp(pool.groupPrice)}
-                      </div>
-                      {product && (() => {
-                        const isFood = product.category === "Food";
-                        if (isFood) return <p className="text-[9px] mt-1 font-bold" style={{ color: "var(--emerald)" }}>Free delivery</p>;
-                        if (userCoords && product.vendor.latitude && product.vendor.longitude) {
-                          const est = calculateDeliveryFee(product.vendor.latitude, product.vendor.longitude, userCoords.lat, userCoords.lng);
-                          return <p className="text-[9px] mt-1 tabular-nums" style={{ color: "rgba(255,255,255,0.45)" }}>+ {fp(est.fee)} delivery</p>;
-                        }
-                        return null;
-                      })()}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* No active pools — explain the value */}
-          {pools.length === 0 && (
-            <div className="px-4 pb-2">
-              <p className="text-[12px] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
-                Be the first to start a group. Share the link — when {product.minPoolSize} people join, everyone pays {fp(product.groupPrice)} instead of {fp(product.retailPrice)}.
-              </p>
-            </div>
-          )}
-
-          {/* Start new group */}
-          <div className="px-4 pb-4 pt-1">
-            <button type="button" onClick={createPool} disabled={joining}
-              className="w-full flex items-center justify-center gap-1.5 h-11 rounded-[8px] cursor-pointer press-feedback disabled:opacity-50"
-              style={{ background: pools.length === 0 ? "var(--emerald)" : "transparent", border: pools.length === 0 ? "none" : "1px dashed rgba(255,255,255,0.15)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={pools.length === 0 ? "white" : "rgba(255,255,255,0.4)"} strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-              <span className="text-[12px] font-bold" style={{ color: pools.length === 0 ? "white" : "rgba(255,255,255,0.4)" }}>
-                {pools.length === 0 ? "Start a group · " + fp(product.groupPrice) : "Start a new group"}
-              </span>
-            </button>
-          </div>
-        </section>
-      )}
-
-      {/* ═══ DETAILS — clean, minimal ═══ */}
-      {product.description && (
-        <div className="px-5 mt-5">
-          <p className="text-[14px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>{product.description}</p>
-        </div>
-      )}
-
-      {/* Merchant */}
-      <Link href={`/store/${product.vendor.id}`} className="mx-5 mt-4 flex items-center gap-3 p-3 rounded-[8px] press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-        <div className="w-10 h-10 rounded-[8px] flex items-center justify-center shrink-0 text-[14px] font-bold text-white" style={{ background: "var(--coral)" }}>
-          {product.vendor.name.charAt(0)}
+      {/* ── Pickup location ── */}
+      <div className="px-5 mt-4 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
         </div>
         <div className="flex-1 min-w-0">
-          <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{product.vendor.name}</span>
-          <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{product.vendor.address}</p>
+          <p className="text-[15px] font-bold" style={{ color: "#17271F" }}>{userCoords?.address?.split(",")[0] || "Pickup location"}</p>
+          <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>Pickup, not delivery</p>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-      </Link>
+      </div>
 
-      <div className="h-4" />
-
-      {/* ═══ STICKY CTA ═══ */}
-      <div className="fixed bottom-[52px] left-0 right-0 z-40 px-5 py-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
-        <div className="max-w-[480px] mx-auto flex gap-2.5">
-          <button type="button" onClick={addSolo}
-            className="flex-[35] h-[50px] rounded-[8px] flex items-center justify-center text-[13px] font-bold cursor-pointer press-feedback"
-            style={{ background: "var(--sand)", color: "var(--text)" }}>
-            Buy · {fp(product.retailPrice * quantity)}
-          </button>
-          <button type="button" onClick={() => pools.length > 0 ? joinPool(pools[0].id) : createPool()} disabled={joining}
-            className="flex-[65] h-[50px] rounded-[8px] flex items-center justify-center gap-2 text-[14px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
-            style={{ background: "var(--emerald)" }}>
-            <span>{pools.length > 0 ? "Join group" : "Start group"}</span>
-            <span className="tabular-nums">{fp(product.groupPrice * quantity)}</span>
-          </button>
+      {/* ── Trust assurance ── */}
+      <div className="px-5 mt-4">
+        <div className="flex items-start gap-3 p-4 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+          <p className="text-[12px] leading-[160%]" style={{ color: "var(--emerald)" }}>
+            Payment stays held until the pool fills. If it expires unfilled, you&apos;re automatically refunded. Ready comes after cooking.
+          </p>
         </div>
-        {product.category !== "Food" && userCoords && product.vendor.latitude && product.vendor.longitude && (
-          <p className="text-[11px] text-center mt-1.5 tabular-nums" style={{ color: "var(--text-muted)" }}>
-            + {fp(calculateDeliveryFee(product.vendor.latitude, product.vendor.longitude, userCoords.lat, userCoords.lng).fee)} delivery · {calculateDeliveryFee(product.vendor.latitude, product.vendor.longitude, userCoords.lat, userCoords.lng).distanceKm} km away
+      </div>
+
+      {/* ── Description ── */}
+      {product.description && (
+        <div className="px-5 mt-5">
+          <p className="text-[14px] leading-[145%]" style={{ color: "var(--text-muted)" }}>{product.description}</p>
+        </div>
+      )}
+
+      <div className="h-8" />
+
+      {/* ═══ STICKY CTA — "Jump In — ₦650" ═══ */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pt-3 pb-6" style={{ background: "var(--bg)" }}>
+        <div className="max-w-[480px] mx-auto">
+          <button
+            type="button"
+            onClick={() => pool ? joinPool(pool.id) : createPool()}
+            disabled={joining}
+            className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
+            style={{ background: "var(--coral)" }}
+          >
+            <span>Jump In — {fp(product.groupPrice * quantity)}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+          </button>
+          <p className="text-[11px] text-center mt-2" style={{ color: "var(--text-muted)" }}>
+            No delivery fees. Pick up on campus.
           </p>
-        )}
-        {product.category === "Food" && (
-          <p className="text-[11px] text-center mt-1.5 font-bold" style={{ color: "var(--emerald)" }}>
-            Free batch delivery
-          </p>
-        )}
+        </div>
       </div>
 
       {/* Toast — handles all states */}
