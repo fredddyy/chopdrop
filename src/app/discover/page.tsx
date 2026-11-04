@@ -413,37 +413,40 @@ export default function DiscoverPage() {
                   <Link
                     key={p.id}
                     href={`/product/${p.id}`}
-                    className={`flex gap-3 p-4 rounded-[22px] press-feedback card-enter card-enter-${(idx % 7) + 2}`}
+                    className={`block p-4 rounded-[22px] press-feedback card-enter card-enter-${(idx % 7) + 2}`}
                     style={{ background: "var(--card)" }}
                   >
-                    <div className="w-[82px] h-[86px] rounded-[16px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
-                      {p.imageUrl && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-[17px] font-extrabold leading-[145%] truncate" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>{p.name}</h4>
-                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{p.vendor.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.8</p>
-                      <div className="flex items-baseline gap-1.5 mt-1">
-                        <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
-                        <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                    {/* Row 1: Image + Title/Vendor/Price */}
+                    <div className="flex gap-3">
+                      <div className="w-[82px] h-[86px] rounded-[16px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
+                        {p.imageUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                        )}
                       </div>
-                      {/* Progress */}
-                      <div className="flex items-center justify-between mt-2 text-[11px] font-bold" style={{ color: "var(--text-secondary)" }}>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[17px] font-extrabold leading-[145%] truncate" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>{p.name}</h4>
+                        <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{p.vendor.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.8</p>
+                        <div className="flex items-baseline gap-1.5 mt-1">
+                          <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                          <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Full-width: Progress, Pickup, Social */}
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between text-[11px] font-bold" style={{ color: "var(--text)" }}>
                         <span>{p.fill.joined}/{p.minPoolSize} plates claimed</span>
                         <span style={{ color: "var(--coral)" }}>{p.fill.hours}h {(p.fill.hours * 20) % 60}m</span>
                       </div>
-                      <div className="mt-1 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
-                        <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--coral)" }} />
+                      <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
+                        <div className="h-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--coral)", borderRadius: "9px" }} />
                       </div>
-                      {/* Pickup */}
-                      <div className="flex items-center gap-1 mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                      <div className="flex items-center gap-1 mt-2 text-[11px]" style={{ color: "var(--text-muted)" }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                         {userArea ? `${userArea} pickup` : "Pickup TBD"}
                       </div>
-                      {/* Social proof */}
-                      <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--text)", lineHeight: "145%" }}>{p.fill.joined} people are in</p>
+                      <p className="text-[11px] font-semibold mt-1.5" style={{ color: "var(--text)", lineHeight: "145%" }}>{p.fill.joined} people are in</p>
                     </div>
                   </Link>
                 );
