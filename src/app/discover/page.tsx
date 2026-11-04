@@ -241,13 +241,7 @@ export default function DiscoverPage() {
           </button>
         </div>
 
-        <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 pb-3">
-          {CATEGORIES.map((cat) => (
-            <button key={cat} type="button" onClick={() => setActiveCategory(cat)} className="h-[34px] px-4 rounded-[8px] text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0" style={{ background: activeCategory === cat ? "var(--dark)" : "var(--sand)", color: activeCategory === cat ? "white" : "var(--text-secondary)", transition: "background 200ms, color 200ms" }}>
-              {cat}
-            </button>
-          ))}
-        </div>
+        {/* Category tabs removed — single feed for now */}
       </header>
 
       {/* ── Location panel ── */}
