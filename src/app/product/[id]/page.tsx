@@ -355,7 +355,7 @@ export default function ProductDetailPage() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
           </button>
           <p className="text-[12px] text-center mt-2.5" style={{ color: "var(--text-muted)" }}>
-            or <Link href={`/beg/${pool?.id?.slice(0, 8) || "start"}`} className="font-bold" style={{ color: "var(--coral)" }}>beg price</Link> → pay as low as {fp(Math.round(product.groupPrice * 0.4))}
+            or <span className="font-bold" style={{ color: "var(--coral)" }}>beg price</span> → pay as low as {fp(Math.round(product.groupPrice * 0.4))}
           </p>
         </div>
       </div>
