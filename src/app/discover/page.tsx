@@ -67,6 +67,7 @@ function StoreImage({ src, alt, height }: { src: string | null; alt: string; hei
 }
 
 const CATEGORIES = ["Food", "Electronics", "Fashion", "Groceries"];
+const AVATAR_COLORS = ["#1a3a2a", "#E8604C", "#2563EB", "#D4A24E", "#0891B2"];
 const AREA_SUGGESTIONS = ["Victoria Island", "Lekki", "Ikeja", "Yaba", "Marina", "Surulere", "Ikoyi", "Ajah", "Gbagada", "Maryland", "Magodo", "Festac", "Apapa"];
 
 // Simulated pool fill data — anonymous counts only, no fake names
@@ -83,7 +84,7 @@ export default function DiscoverPage() {
   const [poolProducts, setPoolProducts] = useState<PoolProduct[]>([]);
   const [activeCategory, setActiveCategory] = useState("Food");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchOpen] = useState(true); // Always visible per design
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [userArea, setUserArea] = useState("");
@@ -202,35 +203,24 @@ export default function DiscoverPage() {
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* ── Header ── */}
-      <header
-        className="sticky top-0 z-40"
-        style={{ background: "var(--bg)", borderBottom: "1px solid var(--border)" }}
-      >
-        <div className="px-5 h-12 flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="text-[18px] font-extrabold tracking-[-0.03em] shrink-0" style={{ color: "var(--text)" }}>
-              Chop<span style={{ color: "var(--coral)" }}>Drop</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => setAreaOpen(!areaOpen)}
-              className="flex items-center gap-1 h-7 px-2.5 rounded-[6px] text-[12px] font-bold truncate max-w-[140px] cursor-pointer"
-              style={{ background: "var(--sand)", color: userArea ? "var(--text)" : "var(--text-muted)" }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-              <span className="truncate">{userArea || "Set location"}</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="shrink-0"><path d="m6 9 6 6 6-6" /></svg>
-            </button>
-          </div>
+      {/* ── Header — ChopChop style ── */}
+      <header className="sticky top-0 z-40" style={{ background: "var(--bg)" }}>
+        {/* Row 1: Label + Wordmark + Actions */}
+        <div className="px-5 pt-3 pb-1.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setSearchOpen(!searchOpen)} className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer" style={{ background: searchOpen ? "var(--dark)" : "transparent" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={searchOpen ? "white" : "var(--text)"} strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-            </button>
-            <Link href="/cart" className="relative w-11 h-11 rounded-full flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--coral)" }}>Discover</p>
+              <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                Chop<span style={{ color: "var(--coral)" }}>Drop</span>
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <Link href="/cart" className="relative w-10 h-10 rounded-full flex items-center justify-center">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
               {cart.totalItems > 0 && (
-                <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[11px] font-bold text-white px-1" style={{ background: "var(--coral-dark)" }}>
+                <span className="absolute top-0 right-0 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
                   {cart.totalItems}
                 </span>
               )}
@@ -238,28 +228,22 @@ export default function DiscoverPage() {
           </div>
         </div>
 
-        {searchOpen && (
-          <div className="px-5 pb-3">
-            <input
-              type="text" placeholder="Search deals and stores..." value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)} autoFocus
-              className="w-full h-11 px-4 rounded-[8px] text-[14px] font-medium outline-none"
-              style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
-            />
-          </div>
-        )}
+        {/* Row 2: Location pill */}
+        <div className="px-5 pb-2.5 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setAreaOpen(!areaOpen)}
+            className="flex items-center gap-1.5 h-[30px] px-3 rounded-full text-[12px] font-bold cursor-pointer"
+            style={{ background: "#1a3a2a", color: "white" }}
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+            {userArea || "Set location"}
+          </button>
+        </div>
 
         <div className="flex overflow-x-auto hide-scrollbar px-5 gap-2 pb-3">
           {CATEGORIES.map((cat) => (
-            <button
-              key={cat} type="button" onClick={() => setActiveCategory(cat)}
-              className="h-[36px] px-4 rounded-[8px] text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0"
-              style={{
-                background: activeCategory === cat ? "var(--dark)" : "var(--sand)",
-                color: activeCategory === cat ? "white" : "var(--text-secondary)",
-                transition: "background 200ms, color 200ms",
-              }}
-            >
+            <button key={cat} type="button" onClick={() => setActiveCategory(cat)} className="h-[34px] px-4 rounded-[8px] text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0" style={{ background: activeCategory === cat ? "var(--dark)" : "var(--sand)", color: activeCategory === cat ? "white" : "var(--text-secondary)", transition: "background 200ms, color 200ms" }}>
               {cat}
             </button>
           ))}
@@ -322,8 +306,22 @@ export default function DiscoverPage() {
               {activeCategory === "Food" ? "Oya, what\u2019s for lunch?" : activeCategory === "Electronics" ? "Oya, what\u2019s the gadget?" : activeCategory === "Fashion" ? "Oya, what\u2019s the drip?" : "Oya, what do you need?"}
             </h1>
             <p className="text-[13px] mt-1.5" style={{ color: "var(--text-muted)" }}>
-              Good things cost less together.
+              Good food costs less with your people.
             </p>
+          </div>
+
+          {/* ── Search — always visible ── */}
+          <div className="px-5 mt-3 mb-4">
+            <div className="relative">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute left-3.5 top-1/2 -translate-y-1/2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+              <input
+                type="text" placeholder="Find food, vendors, or a pool" value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-[44px] pl-10 pr-11 rounded-[10px] text-[14px] font-medium outline-none"
+                style={{ background: "var(--sand)", color: "var(--text)" }}
+              />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute right-3.5 top-1/2 -translate-y-1/2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" /></svg>
+            </div>
           </div>
 
           {/* ── Section header with personality ── */}
@@ -337,7 +335,7 @@ export default function DiscoverPage() {
             <p className="px-5 text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Highest fill rate first</p>
           )}
 
-          {/* ═══ FEATURED POOL CARD — first pool, dark hero treatment ═══ */}
+          {/* ═══ FEATURED POOL CARD — white card, ChopChop layout ═══ */}
           {sortedPools.length > 0 && (() => {
             const featured = sortedPools[0];
             const sav = Math.round(((featured.retailPrice - featured.groupPrice) / featured.retailPrice) * 100);
@@ -346,78 +344,114 @@ export default function DiscoverPage() {
               <Link
                 href={`/product/${featured.id}`}
                 className="mx-5 block rounded-[16px] overflow-hidden press-feedback card-enter card-enter-1"
-                style={{ background: "var(--dark)" }}
+                style={{ background: "var(--card)", border: "1px solid var(--border)" }}
               >
-                {/* Badges over image */}
-                <div className="relative">
-                  {featured.imageUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={featured.imageUrl} alt={featured.name} className="w-full h-[200px] object-cover" />
-                  )}
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    {isHot && (
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-[6px] text-white uppercase tracking-wide" style={{ background: "rgba(0,0,0,0.7)" }}>
-                        Only {featured.fill.spotsLeft} spot{featured.fill.spotsLeft !== 1 ? "s" : ""}
-                      </span>
-                    )}
-                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-[6px] uppercase tracking-wide" style={{ background: "var(--coral)", color: "white" }}>
-                      Save {sav}%
+                {/* Badges at top of card */}
+                <div className="px-4 pt-3 pb-2 flex gap-2">
+                  {isHot && (
+                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide" style={{ background: "var(--dark)", color: "white" }}>
+                      Only {featured.fill.spotsLeft} spot{featured.fill.spotsLeft !== 1 ? "s" : ""}
                     </span>
+                  )}
+                  <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide" style={{ background: "var(--coral)", color: "white" }}>
+                    Save {sav}%
+                  </span>
+                </div>
+                {/* Food image */}
+                <div className="px-4">
+                  <div className="rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                    {featured.imageUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={featured.imageUrl} alt={featured.name} className="w-full h-[180px] object-cover" />
+                    )}
                   </div>
                 </div>
-                {/* Info on dark */}
+                {/* Info on white */}
                 <div className="p-4">
-                  <h4 className="text-[17px] font-extrabold text-white leading-tight">{featured.name}</h4>
-                  <p className="text-[12px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{featured.vendor.name}</p>
-                  <div className="flex items-baseline gap-2.5 mt-2">
-                    <span className="text-[24px] font-extrabold tabular-nums text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px" }}>{fmt(featured.groupPrice)}</span>
-                    <span className="text-[13px] line-through tabular-nums" style={{ color: "rgba(255,255,255,0.35)" }}>{fmt(featured.retailPrice)}</span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h4 className="text-[17px] font-extrabold leading-tight" style={{ color: "#17271F" }}>{featured.name}</h4>
+                      <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{featured.vendor.name} · <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-[32px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#17271F" }}>{fmt(featured.groupPrice)}</span>
+                      <p className="text-[13px] line-through tabular-nums mt-0.5" style={{ color: "var(--text-muted)" }}>{fmt(featured.retailPrice)}</p>
+                    </div>
                   </div>
                   {/* Progress */}
-                  <div className="mt-3 flex items-center justify-between text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
-                    <span className="font-bold">{featured.fill.joined}/{featured.minPoolSize} plates claimed</span>
-                    <span>{featured.fill.hours}h left</span>
+                  <div className="mt-3 flex items-center justify-between text-[11px] font-bold" style={{ color: "var(--text-secondary)" }}>
+                    <span>{featured.fill.joined}/{featured.minPoolSize} plates claimed</span>
+                    <span style={{ color: "var(--emerald)" }}>{featured.fill.hours > 0 ? `${featured.fill.hours * 60}m left` : "Ending soon"}</span>
                   </div>
-                  <div className="mt-1.5 h-[5px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
+                  <div className="mt-1.5 h-[5px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
                     <div className="h-full rounded-full" style={{
                       width: `${featured.fill.fillPct}%`,
                       background: isHot ? "var(--coral)" : "var(--emerald)",
                       ...(isHot ? { animation: "pulse 1.5s ease-in-out infinite" } : {}),
                     }} />
                   </div>
+                  {/* Pickup location */}
+                  <div className="flex items-center gap-1.5 mt-2.5 text-[11px]" style={{ color: "var(--text-muted)" }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                    {userArea ? `${userArea} pickup` : "Pickup location TBD"}
+                  </div>
+                  {/* Social proof — avatar circles */}
+                  {featured.fill.joined >= 2 && (
+                    <div className="flex items-center gap-2 mt-3">
+                      <div className="flex -space-x-1.5">
+                        {Array.from({ length: Math.min(featured.fill.joined, 3) }).map((_, i) => (
+                          <div key={i} className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length], border: "2px solid var(--card)" }}>
+                            {String.fromCharCode(65 + ((featured.id.charCodeAt(i) + i) % 26))}
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{featured.fill.joined} people are in</span>
+                    </div>
+                  )}
                 </div>
               </Link>
             );
           })()}
 
-          {/* ═══ REMAINING POOLS — compact horizontal cards ═══ */}
+          {/* ═══ REMAINING POOLS — compact cards with full info ═══ */}
           {sortedPools.length > 1 && (
-            <div className="px-5 mt-4 flex flex-col gap-2">
+            <div className="px-5 mt-4 flex flex-col divide-y" style={{ "--tw-divide-opacity": 1, borderColor: "var(--border)" } as React.CSSProperties}>
               {sortedPools.slice(1).map((p, idx) => {
-                const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
                 const isHot = p.fill.spotsLeft <= 2;
                 return (
                   <Link
                     key={p.id}
                     href={`/product/${p.id}`}
-                    className={`flex gap-3 press-feedback card-enter card-enter-${(idx % 7) + 2}`}
+                    className={`flex gap-3 py-4 press-feedback card-enter card-enter-${(idx % 7) + 2}`}
                   >
-                    <div className="w-[70px] h-[70px] rounded-[12px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
+                    <div className="w-[80px] h-[80px] rounded-[12px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
                       {p.imageUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                       )}
                     </div>
-                    <div className="flex-1 min-w-0 py-0.5">
-                      <h4 className="text-[14px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                      <div className="flex items-baseline gap-2 mt-1">
-                        <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
-                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                        <span className="text-[10px] font-bold ml-auto tabular-nums" style={{ color: isHot ? "var(--coral)" : "var(--text-muted)" }}>
-                          {p.fill.joined}/{p.minPoolSize} · {p.fill.hours}h
-                        </span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-[14px] font-bold leading-tight truncate" style={{ color: "#17271F" }}>{p.name}</h4>
+                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.8</p>
+                      <div className="flex items-baseline gap-1.5 mt-1">
+                        <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                        <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                       </div>
+                      {/* Progress */}
+                      <div className="flex items-center justify-between mt-2 text-[11px] font-bold" style={{ color: "var(--text-secondary)" }}>
+                        <span>{p.fill.joined}/{p.minPoolSize} plates claimed</span>
+                        <span style={{ color: "var(--coral)" }}>{p.fill.hours}h {(p.fill.hours * 20) % 60}m</span>
+                      </div>
+                      <div className="mt-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                        <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--coral)" }} />
+                      </div>
+                      {/* Pickup */}
+                      <div className="flex items-center gap-1 mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                        {userArea ? `${userArea} pickup` : "Pickup TBD"}
+                      </div>
+                      {/* Social proof */}
+                      <p className="text-[10px] mt-1" style={{ color: "var(--text-muted)" }}>{p.fill.joined} people are in</p>
                     </div>
                   </Link>
                 );
