@@ -344,7 +344,7 @@ export default function ProductDetailPage() {
       <div className="h-8" />
 
       {/* ═══ STICKY CTA — "Jump In — ₦650" ═══ */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pt-3 pb-6" style={{ background: "var(--bg)" }}>
+      <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto">
           <button
             type="button"
