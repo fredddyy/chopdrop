@@ -454,6 +454,17 @@ export default function DiscoverPage() {
             </div>
           )}
 
+          {/* ── Demand signal ── */}
+          <div className="px-5 mt-5">
+            <div className="flex items-center gap-3 p-4 rounded-[16px]" style={{ background: "var(--lime)" }}>
+              <span className="text-[24px] shrink-0">🍜</span>
+              <div>
+                <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>Craving something else?</p>
+                <p className="text-[12px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>Vote for food near you →</p>
+              </div>
+            </div>
+          </div>
+
           {/* ═══ STORES — secondary, compact ═══ */}
           {filteredStores.length > 0 && (
             <section className="mt-8">
