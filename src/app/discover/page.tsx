@@ -348,11 +348,11 @@ export default function DiscoverPage() {
                   )}
                   <div className="absolute top-3 left-3 flex gap-2">
                     {isHot && (
-                      <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide text-white" style={{ background: "rgba(0,0,0,0.65)", padding: "6px 10px" }}>
+                      <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "var(--lime)", color: "#17271F", padding: "6px 10px" }}>
                         Only {featured.fill.spotsLeft} spot{featured.fill.spotsLeft !== 1 ? "s" : ""}
                       </span>
                     )}
-                    <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide text-white" style={{ background: "var(--coral)", padding: "6px 10px" }}>
+                    <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "#FFE9DD", color: "#17271F", padding: "6px 10px" }}>
                       Save {sav}%
                     </span>
                   </div>
