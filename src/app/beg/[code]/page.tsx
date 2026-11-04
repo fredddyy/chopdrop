@@ -139,7 +139,7 @@ export default function BegDashboardPage() {
 
         {/* ── Price card — dark forest ── */}
         <div className="mt-5 p-5 rounded-[22px]" style={{ background: "#17271F" }}>
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2" style={{ color: "var(--coral)" }}>Your price right now</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2" style={{ color: "var(--lime)" }}>Your price right now</p>
           <p className="text-[44px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>
             {fp(currentPrice)}
           </p>
@@ -150,11 +150,9 @@ export default function BegDashboardPage() {
             <span className="text-[12px] font-extrabold text-white">{fp(data.totalCredit)} knocked off</span>
             <span className="text-[12px] font-bold" style={{ color: "var(--lime)" }}>{fp(floorPrice)} floor</span>
           </div>
-          {/* Progress bar + dots */}
-          <div className="flex items-center gap-1.5 mt-3">
-            {Array.from({ length: Math.min(data.maxClicks, 15) }).map((_, i) => (
-              <div key={i} className="w-[6px] h-[6px] rounded-full" style={{ background: i < data.clicks ? "var(--lime)" : "rgba(255,255,255,0.15)" }} />
-            ))}
+          {/* Progress bar */}
+          <div className="mt-3 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+            <div className="h-full" style={{ width: `${Math.round((data.totalCredit / data.maxCredit) * 100)}%`, background: "var(--lime)", borderRadius: "9px", minWidth: data.clicks > 0 ? "8px" : "0" }} />
           </div>
           <p className="text-[10px] mt-1.5" style={{ color: "var(--subdued)" }}>
             The price can&apos;t go below the vendor&apos;s {fp(floorPrice)} floor.
@@ -173,14 +171,14 @@ export default function BegDashboardPage() {
 
         {/* ── Share link display — white card ── */}
         <div className="mt-5 flex items-center gap-3 p-4 rounded-[16px]" style={{ background: "var(--card)" }}>
-          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+          <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--bg)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[13px] font-bold truncate" style={{ color: "#17271F" }}>{shortUrl}</p>
             <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Your tracked link · {data.clicks} friend engagement{data.clicks !== 1 ? "s" : ""}</p>
           </div>
-          <button type="button" onClick={copyLink} className="w-9 h-9 rounded-[8px] flex items-center justify-center cursor-pointer shrink-0" style={{ background: "var(--sand)" }}>
+          <button type="button" onClick={copyLink} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer shrink-0" style={{ background: "var(--bg)" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={copied ? "var(--emerald)" : "var(--text-muted)"} strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
           </button>
         </div>
