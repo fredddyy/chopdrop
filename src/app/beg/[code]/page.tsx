@@ -119,21 +119,23 @@ export default function BegDashboardPage() {
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Beg Price</p>
             <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Small beg. Big savings.</p>
           </div>
-          <div className="w-9" />
+          <button type="button" className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
+          </button>
         </div>
 
-        {/* ── Product info ── */}
-        <div className="mt-5 flex items-center gap-3">
-          <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full text-white" style={{ background: "var(--coral)" }}>Beg Price</span>
-        </div>
-        <div className="mt-3 flex items-center gap-3">
-          {data.product.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={data.product.imageUrl} alt={data.product.name} className="w-[70px] h-[70px] rounded-[16px] object-cover shrink-0" />
-          )}
-          <div>
-            <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{data.product.name}</h2>
-            <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{data.product.vendor.name}</p>
+        {/* ── Product info — centered ── */}
+        <div className="mt-5 flex flex-col items-center text-center">
+          <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full text-white mb-3" style={{ background: "var(--coral)" }}>Beg Price</span>
+          <div className="flex items-center gap-3">
+            {data.product.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={data.product.imageUrl} alt={data.product.name} className="w-[70px] h-[70px] rounded-[16px] object-cover shrink-0" />
+            )}
+            <div className="text-left">
+              <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{data.product.name}</h2>
+              <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{data.product.vendor.name}</p>
+            </div>
           </div>
         </div>
 
