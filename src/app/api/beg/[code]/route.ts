@@ -115,7 +115,7 @@ export async function POST(
   // Calculate credit for this click
   const creditAmount = calculateBegCredit(member.begClicks.length, config);
 
-  // Transaction: create click + update member discount + add wallet credit
+  // Transaction: create click + update member discount (applied at checkout, not wallet)
   await prisma.$transaction(async (tx) => {
     await tx.begClick.create({
       data: {
@@ -128,28 +128,6 @@ export async function POST(
     await tx.poolMember.update({
       where: { id: member.id },
       data: { begDiscount: { increment: creditAmount } },
-    });
-
-    // Add credit to sharer's wallet
-    const wallet = await tx.creditWallet.upsert({
-      where: { userId: member.userId },
-      update: { balance: { increment: creditAmount } },
-      create: { userId: member.userId, balance: creditAmount },
-    });
-
-    // Link wallet to user if not linked
-    await tx.user.update({
-      where: { id: member.userId },
-      data: { walletId: wallet.id },
-    });
-
-    await tx.creditTransaction.create({
-      data: {
-        walletId: wallet.id,
-        amount: creditAmount,
-        type: "BEG_CREDIT",
-        description: `Beg Price click from ${clicker.id.slice(0, 6)}`,
-      },
     });
   });
 

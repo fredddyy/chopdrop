@@ -173,9 +173,29 @@ export default function BegDashboardPage() {
           </div>
         )}
 
-        {/* Reassurance */}
-        <p className="text-[12px] text-center leading-relaxed" style={{ color: "rgba(255,255,255,0.3)" }}>
-          Credit applies automatically on your next order
+        {/* Pay Now CTA */}
+        <div className="mt-6 mb-4">
+          <button
+            type="button"
+            onClick={async () => {
+              const res = await fetch(`/api/pools/${data.poolId}/checkout`, { method: "POST" });
+              const d = await res.json();
+              if (d.success && d.data.authorizationUrl) { window.location.href = d.data.authorizationUrl; }
+            }}
+            className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
+            style={{ background: "var(--coral)" }}
+          >
+            <span>Pay {fp(data.product.groupPrice - data.totalCredit)} Now</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+          </button>
+          <p className="text-[11px] text-center mt-2" style={{ color: "rgba(255,255,255,0.35)" }}>
+            or keep sharing to reduce your price
+          </p>
+        </div>
+
+        {/* Pool info */}
+        <p className="text-[10px] text-center" style={{ color: "rgba(255,255,255,0.25)" }}>
+          Pool {data.memberCount}/{data.minSize} · Pickup at {data.product.vendor.name}
         </p>
 
       </div>

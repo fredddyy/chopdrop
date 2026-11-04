@@ -165,6 +165,42 @@ export default function ProductDetailPage() {
     setJoining(false);
   }
 
+  async function joinForBeg() {
+    if (!product) return;
+    const poolId = pool?.id;
+    setJoining(true);
+    try {
+      let begCode: string | null = null;
+      if (poolId) {
+        // Join existing pool, skip checkout
+        const res = await fetch(`/api/pools/${poolId}/join`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quantity, ...(userCoords ? { lat: userCoords.lat, lng: userCoords.lng, deliveryAddress: userCoords.address } : {}) }),
+        });
+        const data = await res.json();
+        if (data.success) { begCode = data.data.begCode; }
+        else { showToast(data.error || "Couldn't join"); setJoining(false); return; }
+      } else {
+        // Create pool, skip checkout
+        const res = await fetch("/api/pools", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId: product.id, quantity }),
+        });
+        const data = await res.json();
+        if (data.success) { begCode = data.data.begCode; }
+        else { showToast(data.error === "Not authenticated" ? "Log in first" : (data.error || "Couldn't create")); setJoining(false); return; }
+      }
+      if (begCode) {
+        router.push(`/beg/${begCode}`);
+      } else {
+        showToast("joined");
+      }
+    } catch { showToast("Network error"); }
+    setJoining(false);
+  }
+
   function showToast(type: string) {
     setToast(type);
     setTimeout(() => setToast(""), 3000);
@@ -363,9 +399,15 @@ export default function ProductDetailPage() {
             <span>Jump In — {fp(product.groupPrice * quantity)}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
           </button>
-          <p className="text-[12px] text-center mt-2.5" style={{ color: "var(--text-muted)" }}>
+          <button
+            type="button"
+            onClick={joinForBeg}
+            disabled={joining}
+            className="text-[12px] text-center mt-2.5 w-full cursor-pointer disabled:opacity-50"
+            style={{ color: "var(--text-muted)" }}
+          >
             or <span className="font-bold" style={{ color: "var(--coral)" }}>beg price</span> → pay as low as {fp(Math.round(product.groupPrice * 0.4))}
-          </p>
+          </button>
         </div>
       </div>
 

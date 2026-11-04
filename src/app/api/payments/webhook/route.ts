@@ -37,7 +37,7 @@ async function handlePoolPayment(reference: string, amount: number) {
 
   if (!member || member.paymentStatus === "SUCCESS") return;
 
-  const expectedAmount = member.totalAmount + member.deliveryFee;
+  const expectedAmount = Math.max(0, member.totalAmount - member.begDiscount) + member.deliveryFee;
   if (amount !== expectedAmount) {
     await prisma.poolMember.update({
       where: { id: member.id },
