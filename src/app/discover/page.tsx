@@ -365,7 +365,7 @@ export default function DiscoverPage() {
                       <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{featured.vendor.name} · <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="text-[32px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px" }}>{fmt(featured.groupPrice)}</span>
+                      <span className="text-[32px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--lime)" }}>{fmt(featured.groupPrice)}</span>
                       <p className="text-[13px] line-through tabular-nums mt-0.5" style={{ color: "var(--subdued)" }}>{fmt(featured.retailPrice)}</p>
                     </div>
                   </div>
@@ -375,9 +375,10 @@ export default function DiscoverPage() {
                     <span style={{ color: "var(--emerald)" }}>{featured.fill.hours > 0 ? `${featured.fill.hours * 60}m left` : "Ending soon"}</span>
                   </div>
                   <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
-                    <div className="h-full rounded-full" style={{
+                    <div className="h-full" style={{
                       width: `${featured.fill.fillPct}%`,
-                      background: isHot ? "var(--coral)" : "var(--lime)",
+                      background: "var(--lime)",
+                      borderRadius: "9px",
                     }} />
                   </div>
                   {/* Pickup location */}
