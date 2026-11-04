@@ -2,21 +2,17 @@
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop v8 — Soft Electric ── */
-  /* Vibrant accents, soft surfaces, rounded forms, white base */
-  --bg: #FFFFFF;
+  /* ── ChopDrop v6 — accent-ladder (tasteskill direction) ── */
+  /* Coral at full strength ONLY on small marks: primary CTA, active nav icon, data highlights */
+  /* Pale tints for areas: active states, badges, progress tracks, selected items */
+  --bg: #FAF9F7;
   --card: #FFFFFF;
-  --border: #E8E8E8;
-  --border-light: #F0F0F0;
+  --border: #E5E7EB;
   --coral: #E8604C;
   --coral-soft: #FEF2F0;
   --coral-track: #FBDBD5;
   --coral-ink: #8B2E1B;
   --coral-dark: #D14E3B;
-  --purple: #7C3AED;
-  --purple-soft: #F3EEFF;
-  --yellow: #FACC15;
-  --yellow-soft: #FEF9C3;
   --emerald: #0D9F5F;
   --emerald-soft: #ECFDF5;
   --gold: #D4A24E;
@@ -24,7 +20,7 @@
   --text: #111827;
   --text-secondary: #5F6672;
   --text-muted: #5C6370;
-  --sand: #F5F5F4;
+  --sand: #F3F4F6;
 
   /* Legacy compat */
   --ink: var(--text);
@@ -86,22 +82,6 @@ html { scroll-behavior: smooth; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 .tabular-nums { font-variant-numeric: tabular-nums; }
-
-/* ── Soft Electric system ── */
-.soft-card {
-  background: var(--card);
-  border-radius: 20px;
-  border: 1px solid var(--border);
-}
-.soft-shadow { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-.soft-pill {
-  border-radius: 100px;
-  border: 1px solid var(--border);
-}
-/* Brutal compat (used in other pages) */
-.brutal-card { border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-.brutal-card:active { transform: scale(0.98); }
-.brutal-pill { border-radius: 100px; border: 1px solid var(--border); }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
