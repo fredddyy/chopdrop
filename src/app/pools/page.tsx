@@ -114,14 +114,14 @@ export default function PoolsPage() {
             <>
               {/* ── Stats card ── */}
               <div className="px-5 mt-4">
-                <div className="p-5 rounded-[22px] flex items-center justify-between" style={{ background: "var(--lime)" }}>
+                <div className="p-5 rounded-[22px] flex items-center justify-between" style={{ background: "#17271F" }}>
                   <div>
-                    <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px", color: "#17271F" }}>{fp(totalSaved)}</p>
-                    <p className="text-[11px] font-semibold mt-1" style={{ color: "#17271F", opacity: 0.6 }}>saved together</p>
+                    <p className="text-[28px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px" }}>{fp(totalSaved)}</p>
+                    <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--subdued)" }}>saved this month</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px", color: "#17271F" }}>{pools.length}</p>
-                    <p className="text-[11px] font-semibold mt-1" style={{ color: "#17271F", opacity: 0.6 }}>pools joined</p>
+                    <p className="text-[28px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px" }}>{pools.length}</p>
+                    <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--subdued)" }}>plates shared</p>
                   </div>
                 </div>
               </div>
