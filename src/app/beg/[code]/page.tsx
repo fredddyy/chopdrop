@@ -124,18 +124,16 @@ export default function BegDashboardPage() {
           </button>
         </div>
 
-        {/* ── Product info — centered ── */}
-        <div className="mt-5 flex flex-col items-center text-center">
-          <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3" style={{ background: "var(--lime)", color: "#17271F" }}>Beg Price</span>
-          <div className="flex items-center gap-3">
-            {data.product.imageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={data.product.imageUrl} alt={data.product.name} className="w-[70px] h-[70px] rounded-[16px] object-cover shrink-0" />
-            )}
-            <div className="text-left">
-              <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{data.product.name}</h2>
-              <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{data.product.vendor.name}</p>
-            </div>
+        {/* ── Product info ── */}
+        <div className="mt-5 flex items-start gap-3">
+          {data.product.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={data.product.imageUrl} alt={data.product.name} className="w-[70px] h-[70px] rounded-[16px] object-cover shrink-0" />
+          )}
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full inline-block mb-1.5" style={{ background: "var(--lime)", color: "#17271F" }}>Beg Price</span>
+            <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{data.product.name}</h2>
+            <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{data.product.vendor.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--text-muted)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.8</p>
           </div>
         </div>
 
