@@ -18,7 +18,6 @@ export async function GET(
       imageUrl: true,
       bannerUrl: true,
       products: {
-        where: { isActive: true },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
         select: {
           id: true,
