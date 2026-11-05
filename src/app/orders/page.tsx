@@ -98,7 +98,7 @@ export default function OrdersPage() {
               <div className="h-full" style={{ width: "97%", background: "var(--coral)", borderRadius: "9px" }} />
             </div>
             <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>You&apos;re paid in. One more person to fill the pool.</p>
-            <button className="mt-2 text-[12px] font-bold cursor-pointer" style={{ color: "var(--coral)" }} onClick={() => { if (navigator.share) navigator.share({ title: "ChopDrop pool", text: "One spot left! Join before it fills.", url: window.location.origin + "/discover" }); }}>Share the last spot →</button>
+            <button className="mt-2 w-full h-[38px] rounded-full flex items-center justify-center text-[12px] font-bold cursor-pointer press-feedback" style={{ background: "var(--coral)", color: "white" }} onClick={() => { if (navigator.share) navigator.share({ title: "ChopDrop pool", text: "One spot left! Join before it fills.", url: window.location.origin + "/discover" }); }}>Share to Fill</button>
           </div>
 
           {/* ── Beg Price · Active — same card style, beg pill + dual CTAs ── */}
