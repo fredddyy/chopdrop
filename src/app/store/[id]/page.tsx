@@ -73,13 +73,36 @@ export default function StorePage() {
     );
   }
 
+  // Merge all menu sources into a unified Product list
+  // 1. New-style products (have groupPrice)
+  // 2. Old-style combos (meals with type FIXED)
+  // 3. Old-style menuCategory items
+  const productsFromCombos: Product[] = store.combos.map((c) => ({
+    id: c.id, name: c.name, description: c.description, imageUrl: c.imageUrl,
+    category: "Combos", subcategory: null,
+    retailPrice: c.originalPrice || c.price, groupPrice: c.price, minPoolSize: 10,
+  }));
+  const productsFromMenu: Product[] = store.menuCategories.flatMap((cat) =>
+    cat.items.map((item) => ({
+      id: item.id, name: item.name, description: item.description, imageUrl: item.imageUrl,
+      category: cat.name, subcategory: null,
+      retailPrice: item.price, groupPrice: item.price, minPoolSize: 10,
+    })),
+  );
+  // Deduplicate by id — products take priority, then combos, then menu items
+  const seenIds = new Set<string>();
+  const allItems: Product[] = [];
+  for (const list of [store.products, productsFromCombos, productsFromMenu]) {
+    for (const p of list) {
+      if (!seenIds.has(p.id)) { seenIds.add(p.id); allItems.push(p); }
+    }
+  }
+
   // Featured pool product (first product with savings)
-  const featured = store.products.find((p) => p.groupPrice < p.retailPrice && p.imageUrl);
+  const featured = allItems.find((p) => p.groupPrice < p.retailPrice && p.imageUrl);
   const featuredFill = featured ? poolFill(featured.id, 0, featured.minPoolSize) : null;
   const featuredSav = featured ? Math.round(((featured.retailPrice - featured.groupPrice) / featured.retailPrice) * 100) : 0;
 
-  // All menu items (products shown as individual meals)
-  const allItems = store.products;
   const menuTabs = ["All meals", ...new Set(allItems.map((p) => p.subcategory || p.category))];
   const filteredItems = activeTab === "All meals" ? allItems : allItems.filter((p) => (p.subcategory || p.category) === activeTab);
 
