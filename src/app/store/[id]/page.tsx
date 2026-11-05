@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
 
 interface Product {
@@ -37,7 +38,15 @@ export default function StorePage() {
   const [store, setStore] = useState<StoreDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [activeTab, setActiveTab] = useState("All meals");
+  const [activeTab, setActiveTab] = useState("");
+  const [addedToast, setAddedToast] = useState("");
+  const cart = useCart();
+
+  function addToPlate(item: Product, storeName: string) {
+    cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantName: storeName, price: item.retailPrice });
+    setAddedToast(item.name);
+    setTimeout(() => setAddedToast(""), 2000);
+  }
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -255,8 +264,12 @@ export default function StorePage() {
               {items.map((item) => {
                 const hasPool = item.groupPrice < item.retailPrice;
                 const fill = hasPool ? poolFill(item.id, 0, item.minPoolSize) : null;
+                const isPoolable = item.poolable || hasPool;
+                const Wrapper = isPoolable
+                  ? ({ children }: { children: React.ReactNode }) => <Link href={`/product/${item.id}`} className="block p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>{children}</Link>
+                  : ({ children }: { children: React.ReactNode }) => <div className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>{children}</div>;
                 return (
-                  <Link key={item.id} href={`/product/${item.id}`} className="block p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
+                  <Wrapper key={item.id}>
                     <div className="flex items-start gap-3">
                       {item.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -279,7 +292,7 @@ export default function StorePage() {
                         )}
                       </div>
                     </div>
-                    {/* Pool progress — only for poolable items with active savings */}
+                    {/* Pool progress — poolable items with active savings */}
                     {hasPool && fill && (
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
@@ -291,7 +304,7 @@ export default function StorePage() {
                         </div>
                       </div>
                     )}
-                    {/* Request Pool — only for poolable combos without active savings */}
+                    {/* Request Pool — poolable combos without active savings */}
                     {!hasPool && item.poolable && (
                       <div className="mt-3">
                         <div className="h-[38px] rounded-full flex items-center justify-between px-4 text-[13px] font-bold text-white" style={{ background: "var(--coral)" }}>
@@ -300,7 +313,18 @@ export default function StorePage() {
                         </div>
                       </div>
                     )}
-                  </Link>
+                    {/* Add to plate — regular menu items */}
+                    {!item.poolable && !hasPool && (
+                      <div className="mt-3">
+                        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToPlate(item, store.name); }}
+                          className="w-full h-[38px] rounded-full flex items-center justify-center gap-2 text-[13px] font-bold cursor-pointer press-feedback"
+                          style={{ background: "var(--sand)", color: "#17271F" }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                          Add to plate · {fp(item.retailPrice)}
+                        </button>
+                      </div>
+                    )}
+                  </Wrapper>
                 );
               })}
             </div>
@@ -314,6 +338,28 @@ export default function StorePage() {
           Campus pickup only · Pickup instructions are on every order. Wait for the vendor&apos;s ready alert before you set off.
         </p>
       </div>
+
+      {/* ── Sticky cart bar ── */}
+      {cart.totalItems > 0 && (
+        <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
+          <div className="max-w-[480px] mx-auto">
+            <Link href="/cart" className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+              <span>View plate · {cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""}</span>
+              <span className="tabular-nums">{fp(cart.items.reduce((sum, i) => sum + i.price, 0))}</span>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* ── Added toast ── */}
+      {addedToast && (
+        <div className="fixed z-[100] left-0 right-0 bottom-[120px] px-5 celebrate">
+          <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+            <span className="text-[13px] font-bold text-white">{addedToast} added to plate</span>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </main>
