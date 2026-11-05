@@ -301,26 +301,45 @@ export default function DiscoverPage() {
               {activeCategory === "Food" ? "Oya, what\u2019s for lunch?" : activeCategory === "Electronics" ? "Oya, what\u2019s the gadget?" : activeCategory === "Fashion" ? "Oya, what\u2019s the drip?" : "Oya, what do you need?"}
             </h1>
             <p className="text-[13px] mt-1.5" style={{ color: "var(--text-muted)" }}>
-              Good food costs less with your people.
+              {activeCategory === "Food" ? "Good food costs less with your people." : activeCategory === "Fashion" ? "Better drip, better price — together." : "Pool together, pay less."}
             </p>
           </div>
 
+          {/* ── Category tabs ── */}
+          <div className="px-5 mt-2 flex gap-2 overflow-x-auto hide-scrollbar">
+            {[
+              { key: "Food", label: "🍛 Food" },
+              { key: "Fashion", label: "👗 Fashion" },
+              { key: "Electronics", label: "🎧 Gadgets" },
+              { key: "Groceries", label: "🛒 Groceries" },
+            ].map((cat) => (
+              <button
+                key={cat.key} type="button" onClick={() => setActiveCategory(cat.key)}
+                className="h-[34px] px-4 rounded-full text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0"
+                style={{ background: activeCategory === cat.key ? "#17271F" : "var(--sand)", color: activeCategory === cat.key ? "white" : "var(--text-secondary)", transition: "background 200ms, color 200ms" }}
+              >{cat.label}</button>
+            ))}
+          </div>
+
           {/* ── Search — always visible ── */}
-          <div className="px-5 mt-3 mb-4">
+          <div className="px-5 mt-3 mb-2">
             <div className="relative">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute left-3.5 top-1/2 -translate-y-1/2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
               <input
-                type="text" placeholder="Find food, vendors, or a pool" value={searchQuery}
+                type="text" placeholder={`Search ${activeCategory.toLowerCase()}, vendors, or pools...`} value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-[44px] pl-10 pr-11 rounded-full text-[14px] font-medium outline-none"
                 style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
               />
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute right-3.5 top-1/2 -translate-y-1/2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" /></svg>
             </div>
+            {searchQuery.length === 1 && (
+              <p className="text-[10px] mt-1 ml-4" style={{ color: "var(--coral)" }}>Type one more letter to search</p>
+            )}
           </div>
 
           {/* ── Feed filter pills ── */}
-          <div className="px-5 mt-4 flex gap-2">
+          <div className="px-5 mt-2 flex gap-2">
             {([["all", "All meals"], ["pools", "Pools"], ["stores", "Stores"]] as const).map(([key, label]) => (
               <button
                 key={key} type="button" onClick={() => setFeedFilter(key)}
@@ -468,13 +487,13 @@ export default function DiscoverPage() {
 
           {/* ── Demand signal ── */}
           <div className="px-5 mt-5">
-            <div className="flex items-center gap-3 p-4 rounded-[16px]" style={{ background: "var(--lime)" }}>
+            <Link href="/discover" className="flex items-center gap-3 p-4 rounded-[16px] min-h-[56px] press-feedback" style={{ background: "var(--lime)" }}>
               <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="#17271F" strokeWidth="1.4" strokeLinecap="round" className="shrink-0"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
               <div>
                 <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>Craving something else?</p>
-                <p className="text-[12px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>Vote for food near you →</p>
+                <p className="text-[12px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>Vote for {activeCategory.toLowerCase()} near you →</p>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* ═══ STORES — secondary, compact ═══ */}
