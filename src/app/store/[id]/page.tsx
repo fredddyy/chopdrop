@@ -225,34 +225,35 @@ export default function StorePage() {
             <div className="flex flex-col gap-4">
               {items.map((item) => (
                 <div key={item.id} className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
-                  {/* Image + Info row */}
-                  <div className="flex items-start gap-3">
-                    {item.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.imageUrl} alt={item.name} className="w-[82px] h-[86px] rounded-[16px] object-cover shrink-0" loading="lazy" />
-                    ) : (
-                      <div className="w-[82px] h-[86px] rounded-[16px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
-                        <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                  {/* Card body — tappable, links to solo meal detail */}
+                  <Link href={`/product/${item.id}`} className="block press-feedback">
+                    <div className="flex items-start gap-3">
+                      {item.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={item.imageUrl} alt={item.name} className="w-[82px] h-[86px] rounded-[16px] object-cover shrink-0" loading="lazy" />
+                      ) : (
+                        <div className="w-[82px] h-[86px] rounded-[16px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                          <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{item.name}</h4>
+                        {item.description && <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
+                        <p className="text-[15px] font-extrabold tabular-nums mt-1" style={{ color: "#17271F" }}>{fp(item.retailPrice)} individual</p>
                       </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{item.name}</h4>
-                      {item.description && <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
-                      <p className="text-[15px] font-extrabold tabular-nums mt-1" style={{ color: "#17271F" }}>{fp(item.retailPrice)} individual</p>
                     </div>
-                  </div>
-                  {/* Demand signal */}
-                  <p className="text-[11px] font-semibold mt-3" style={{ color: "var(--emerald)" }}>
-                    12 students want a pool · 8 more to notify {store.name.split(" ")[0]}
-                  </p>
-                  {/* Request Pool CTA — full width below */}
-                  <Link href={`/product/${item.id}`} className="mt-2 h-[44px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+                    <p className="text-[11px] font-semibold mt-3" style={{ color: "var(--emerald)" }}>
+                      12 students want a pool · 8 more to notify {store.name.split(" ")[0]}
+                    </p>
+                  </Link>
+                  {/* Request Pool CTA — separate action */}
+                  <Link href={`/product/${item.id}`} onClick={(e) => e.stopPropagation()} className="mt-2 h-[44px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
                     <span>Request Pool</span>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
                   </Link>
-                  <Link href={`/product/${item.id}`} className="text-[11px] mt-2 text-center block press-feedback" style={{ color: "var(--text-muted)" }}>
-                    Order {fp(item.retailPrice)} · one plate, no pool →
-                  </Link>
+                  <p className="text-[11px] mt-2 text-center" style={{ color: "var(--text-muted)" }}>
+                    Order {fp(item.retailPrice)} · one plate, no pool
+                  </p>
                 </div>
               ))}
             </div>
