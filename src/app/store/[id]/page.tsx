@@ -224,26 +224,33 @@ export default function StorePage() {
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-3" style={{ color: "var(--coral)" }}>{cat} · {items.length} meal{items.length !== 1 ? "s" : ""}</p>
             <div className="flex flex-col gap-4">
               {items.map((item) => (
-                <div key={item.id} className="flex items-start gap-3">
-                  {item.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.imageUrl} alt={item.name} className="w-[82px] h-[86px] rounded-[16px] object-cover shrink-0" loading="lazy" />
-                  ) : (
-                    <div className="w-[82px] h-[86px] rounded-[16px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
-                      <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                <div key={item.id} className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+                  {/* Image + Info row */}
+                  <div className="flex items-start gap-3">
+                    {item.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.imageUrl} alt={item.name} className="w-[82px] h-[86px] rounded-[16px] object-cover shrink-0" loading="lazy" />
+                    ) : (
+                      <div className="w-[82px] h-[86px] rounded-[16px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                        <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{item.name}</h4>
+                      {item.description && <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
+                      <p className="text-[15px] font-extrabold tabular-nums mt-1" style={{ color: "#17271F" }}>{fp(item.retailPrice)} individual</p>
                     </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{item.name}</h4>
-                    {item.description && <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
-                    <p className="text-[15px] font-extrabold tabular-nums mt-1" style={{ color: "#17271F" }}>{fp(item.retailPrice)} individual</p>
-                    {/* Request Pool CTA */}
-                    <Link href={`/product/${item.id}`} className="mt-2 h-[42px] rounded-full flex items-center justify-between px-4 text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
-                      <span>Request Pool</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-                    </Link>
-                    <p className="text-[10px] mt-1.5" style={{ color: "var(--text-muted)" }}>Order {fp(item.retailPrice)} · one plate, no pool</p>
                   </div>
+                  {/* Demand signal */}
+                  <p className="text-[11px] font-semibold mt-3" style={{ color: "var(--emerald)" }}>
+                    12 students want a pool · 8 more to notify {store.name.split(" ")[0]}
+                  </p>
+                  {/* Request Pool CTA — full width below */}
+                  <Link href={`/product/${item.id}`} className="mt-2 h-[44px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+                    <span>Request Pool</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                  </Link>
+                  <p className="text-[10px] mt-2 text-center" style={{ color: "var(--text-muted)" }}>Order {fp(item.retailPrice)} · one plate, no pool</p>
                 </div>
               ))}
             </div>
