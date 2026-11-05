@@ -422,7 +422,7 @@ export default function DiscoverPage() {
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Filling fast</h3>
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length - 1} more →</span>
               </div>
-              <div className="pl-5 flex gap-3 overflow-x-auto hide-scrollbar pr-3 pb-1" style={{ scrollSnapType: "x mandatory" }}>
+              <div className="pl-5 flex gap-3 overflow-x-auto hide-scrollbar pb-1" style={{ scrollSnapType: "x mandatory" }}>
                 {sortedPools.slice(1, 8).map((p, idx) => (
                   <Link
                     key={p.id}
@@ -462,6 +462,7 @@ export default function DiscoverPage() {
                     </div>
                   </Link>
                 ))}
+                <div className="shrink-0 w-5" aria-hidden="true" />
               </div>
             </div>
           )}
@@ -486,7 +487,7 @@ export default function DiscoverPage() {
                 </h3>
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{filteredStores.length} stores</span>
               </div>
-              <div className="pl-5 flex gap-3 overflow-x-auto hide-scrollbar pr-3 pb-1" style={{ scrollSnapType: "x mandatory" }}>
+              <div className="pl-5 flex gap-3 overflow-x-auto hide-scrollbar pb-1" style={{ scrollSnapType: "x mandatory" }}>
                 {filteredStores.map((store, idx) => (
                   <Link key={store.id} href={`/store/${store.id}`} className={`shrink-0 w-[160px] press-feedback card-enter card-enter-${(idx % 8) + 1}`} style={{ scrollSnapAlign: "start" }}>
                     <div className="w-[160px] h-[160px] rounded-[18px] overflow-hidden" style={{ background: "var(--sand)" }}>
@@ -506,6 +507,7 @@ export default function DiscoverPage() {
                     )}
                   </Link>
                 ))}
+                <div className="shrink-0 w-5" aria-hidden="true" />
               </div>
             </section>
           )}
