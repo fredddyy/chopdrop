@@ -372,17 +372,24 @@ export default function StorePage() {
         </p>
       </div>
 
-      {/* ── Sticky cart bar ── */}
-      {cart.totalItems > 0 && (
-        <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
-          <div className="max-w-[480px] mx-auto">
-            <Link href="/cart" className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
-              <span>View plate · {cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""}</span>
-              <span className="tabular-nums">{fp(cart.items.reduce((sum, i) => sum + i.price, 0))}</span>
-            </Link>
+      {/* ── Sticky cart bar — pay or beg ── */}
+      {cart.totalItems > 0 && (() => {
+        const total = cart.items.reduce((sum, i) => sum + i.price, 0);
+        const begFloor = Math.round(total * 0.4);
+        return (
+          <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
+            <div className="max-w-[480px] mx-auto">
+              <Link href="/cart" className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+                <span>Pay Now — {fp(total)}</span>
+                <span className="text-[12px]">{cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""}</span>
+              </Link>
+              <p className="text-[12px] text-center mt-2" style={{ color: "var(--text-muted)" }}>
+                or <span className="font-bold" style={{ color: "var(--coral)" }}>beg price</span> → pay as low as {fp(begFloor)}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ── Added toast ── */}
       {addedToast && (
