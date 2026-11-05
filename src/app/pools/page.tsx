@@ -39,6 +39,7 @@ export default function GangsPage() {
       {/* ── Start your crew — lime CTA card ── */}
       <div className="px-5 mt-5">
         <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
+          <svg width="28" height="25" viewBox="0 0 35 32" fill="none" stroke="#17271F" strokeWidth="1.4" strokeLinecap="round" className="mb-3"><path d="M24.035 30.7V27.366c0-1.768-.702-3.464-1.953-4.714a6.667 6.667 0 0 0-4.714-1.953H7.367a6.667 6.667 0 0 0-4.714 1.953A6.667 6.667 0 0 0 .7 27.366V30.7M24.035.912a6.667 6.667 0 0 1 3.6 2.374 6.667 6.667 0 0 1 0 8.16 6.667 6.667 0 0 1-3.6 2.373M34.036 30.699V27.366a6.667 6.667 0 0 0-1.398-4.08 6.667 6.667 0 0 0-3.602-2.387M19.035 7.366a6.667 6.667 0 1 1-13.335 0 6.667 6.667 0 0 1 13.335 0z" /></svg>
           <h3 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Start your crew.</h3>
           <p className="text-[13px] mt-1 leading-[155%]" style={{ color: "#17271F", opacity: 0.7 }}>
             Roommates, coursemates, late-night foodies — give your table a name and bring them together.
