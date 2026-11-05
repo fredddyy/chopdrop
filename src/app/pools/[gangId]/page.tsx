@@ -148,7 +148,7 @@ export default function GangDetailPage() {
               </div>
             ))}
           </div>
-          <button className="mt-4 text-[13px] font-bold cursor-pointer flex items-center gap-1.5" style={{ color: "var(--coral)" }}>
+          <button className="mt-4 text-[13px] font-bold cursor-pointer flex items-center gap-1.5" style={{ color: "var(--coral)" }} onClick={() => { if (navigator.share) navigator.share({ title: "Join Block C Foodies on ChopDrop", text: "Join our food gang!", url: window.location.href }); }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM20 8v6M23 11h-6" /></svg>
             Invite people
           </button>

@@ -70,7 +70,7 @@ export default function OrdersPage() {
               </div>
             </div>
             <p className="text-[12px] mt-3" style={{ color: "var(--text-muted)" }}>Vendor marked ready · Collect by 2:30 pm</p>
-            <button className="mt-2 h-[38px] rounded-full flex items-center justify-center px-5 text-[13px] font-bold cursor-pointer press-feedback" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
+            <button className="mt-2 h-[38px] rounded-full flex items-center justify-center px-5 text-[13px] font-bold cursor-pointer press-feedback" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }} onClick={() => alert("QR code feature coming soon")}>
               Show QR code
             </button>
           </div>
@@ -99,7 +99,7 @@ export default function OrdersPage() {
               <div className="h-full" style={{ width: "97%", background: "var(--coral)", borderRadius: "9px" }} />
             </div>
             <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>You&apos;re paid in. One more person to fill the pool.</p>
-            <button className="mt-2 text-[12px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>Share the last spot →</button>
+            <button className="mt-2 text-[12px] font-bold cursor-pointer" style={{ color: "var(--coral)" }} onClick={() => { if (navigator.share) navigator.share({ title: "ChopDrop pool", text: "One spot left! Join before it fills.", url: window.location.origin + "/discover" }); }}>Share the last spot →</button>
           </div>
 
           {/* ── Order 3: Filled · Cooking ── */}
@@ -145,9 +145,9 @@ export default function OrdersPage() {
                 )}
                 <div className="flex gap-2 mt-3">
                   {order.type !== "EXPIRED" && (
-                    <button className="h-[32px] px-4 rounded-full text-[11px] font-bold cursor-pointer press-feedback" style={{ background: "var(--coral)", color: "white" }}>Reorder</button>
+                    <Link href="/discover" className="h-[32px] px-4 rounded-full text-[11px] font-bold inline-flex items-center press-feedback" style={{ background: "var(--coral)", color: "white" }}>Reorder</Link>
                   )}
-                  <button className="h-[32px] px-4 rounded-full text-[11px] font-bold cursor-pointer press-feedback" style={{ background: "var(--sand)", color: "#17271F" }}>Receipt</button>
+                  <button className="h-[32px] px-4 rounded-full text-[11px] font-bold cursor-pointer press-feedback" style={{ background: "var(--sand)", color: "#17271F" }} onClick={() => alert("Receipt feature coming soon")}>Receipt</button>
                 </div>
               </div>
             ))}

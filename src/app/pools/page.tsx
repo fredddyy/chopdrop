@@ -72,10 +72,10 @@ export default function GangsPage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute right-3 top-1/2 -translate-y-1/2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
             </div>
           </div>
-          <button className="mt-3 text-[13px] font-bold cursor-pointer flex items-center gap-1.5" style={{ color: "#17271F" }}>
+          <Link href="/pools/sample-gang" className="mt-3 text-[13px] font-bold flex items-center gap-1.5" style={{ color: "#17271F" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
             Find &amp; join a gang
-          </button>
+          </Link>
         </div>
       </div>
 

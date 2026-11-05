@@ -123,9 +123,9 @@ export default function AccountPage() {
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
         </Link>
-        <button className="mt-2 text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>
+        <Link href="/rewards" className="mt-2 text-[13px] font-bold inline-block" style={{ color: "var(--coral)" }}>
           See how you earned it →
-        </button>
+        </Link>
       </div>
 
       {/* ── Quick Links ── */}
@@ -133,11 +133,11 @@ export default function AccountPage() {
         <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Quick Links</h3>
         <div className="rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
           {[
-            { label: "My orders", sub: "Track a plate or revisit a receipt", href: "/pools" },
-            { label: "Edit profile", sub: "Your name, phone and delivery area", href: "#" },
-            { label: "Bring your people", sub: "Referrals · Share your link", href: "#" },
+            { label: "My orders", sub: "Track a plate or revisit a receipt", href: "/orders" },
+            { label: "Edit profile", sub: "Your name, phone and delivery area", href: "/start" },
+            { label: "Bring your people", sub: "Referrals · Share your link", href: "/pools" },
             { label: "Fun rewards", sub: "Daily scratch, streak and points", href: "/rewards" },
-            { label: "Settings", sub: "Notifications, payments and help", href: "#" },
+            { label: "Settings", sub: "Notifications, payments and help", href: "/account" },
           ].map((item, i) => (
             <div key={item.label}>
               {i > 0 && <div className="mx-5 h-px" style={{ background: "#E6E4D9" }} />}

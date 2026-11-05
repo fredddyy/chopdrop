@@ -515,7 +515,7 @@ export default function DiscoverPage() {
               {searchQuery ? (
                 <button type="button" onClick={() => setSearchQuery("")} className="text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>Clear search</button>
               ) : (
-                <Link href="/pools" className="h-11 px-6 rounded-[8px] text-[13px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse stores</Link>
+                <Link href="/discover" className="h-11 px-6 rounded-full text-[13px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse deals</Link>
               )}
             </div>
           )}

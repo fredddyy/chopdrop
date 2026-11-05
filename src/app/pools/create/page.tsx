@@ -144,6 +144,7 @@ export default function CreateGangPage() {
         <button
           type="button"
           disabled={!gangName.trim()}
+          onClick={() => router.push("/pools/sample-gang")}
           className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50 mt-5"
           style={{ background: "var(--coral)" }}
         >
