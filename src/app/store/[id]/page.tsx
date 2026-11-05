@@ -314,16 +314,35 @@ export default function StorePage() {
                       </div>
                     )}
                     {/* Add to plate — regular menu items */}
-                    {!item.poolable && !hasPool && (
-                      <div className="mt-3">
-                        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToPlate(item, store.name); }}
-                          className="w-full h-[38px] rounded-full flex items-center justify-center gap-2 text-[13px] font-bold cursor-pointer press-feedback"
-                          style={{ background: "var(--sand)", color: "#17271F" }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                          Add to plate · {fp(item.retailPrice)}
-                        </button>
-                      </div>
-                    )}
+                    {!item.poolable && !hasPool && (() => {
+                      const inCart = cart.items.filter((c) => c.dailyMenuId === item.id).length;
+                      return inCart > 0 ? (
+                        <div className="mt-3 flex items-center justify-between">
+                          <div className="flex items-center gap-0.5">
+                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); cart.removeItem(item.id); }}
+                              className="w-[36px] h-[36px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                              style={{ background: "var(--sand)" }}>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                            </button>
+                            <span className="w-[36px] text-center text-[15px] font-extrabold tabular-nums" style={{ color: "#17271F" }}>{inCart}</span>
+                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToPlate(item, store.name); }}
+                              className="w-[36px] h-[36px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                              style={{ background: "var(--coral)" }}>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                            </button>
+                          </div>
+                          <span className="text-[13px] font-bold tabular-nums" style={{ color: "#17271F" }}>{fp(item.retailPrice * inCart)}</span>
+                        </div>
+                      ) : (
+                        <div className="mt-3 flex justify-end">
+                          <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToPlate(item, store.name); }}
+                            className="w-[36px] h-[36px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                            style={{ background: "var(--coral)" }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                          </button>
+                        </div>
+                      );
+                    })()}
                   </Wrapper>
                 );
               })}
