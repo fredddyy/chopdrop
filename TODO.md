@@ -60,6 +60,20 @@
 - [ ] Rewards system — scratch cards, streaks, points (page shell built)
 - [ ] Demand voting page ("Tell the kitchens" — Craving card leads here)
 
+### Gang Detail + Activity Page (ChopChop Figma — Image 122)
+- [ ] Gang detail page: header, emoji avatar, name, members count, motto
+- [ ] "Share invite link" + "WhatsApp invite" buttons
+- [ ] Tabs: Pools / Members / Activity
+- [ ] Lime stats card: "Good food travels fast. 3 pool joins and 1 share today"
+- [ ] "Around the table" activity feed with timeline entries:
+  - "Funke joined the Amala + Ewedu pool" with pool link
+  - "Dami shared the amala pool with the gang" 
+  - "Zainab joined Jollof Rice + Chicken"
+  - "Tomi gave Mama T's Kitchen 5 stars" with review quote
+  - "Chika joined Block C Foodies" welcome entry
+- [ ] "All caught up" end state
+- [ ] Needs: Gang model, GangMember model, GangActivity model in schema
+
 ### Phase 3 — Social
 - [ ] Crews/Gangs — persistent social groups with invite links
 - [ ] Gang pool views — "4 from Block C Foodies are in"
