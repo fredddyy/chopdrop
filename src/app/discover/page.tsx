@@ -410,48 +410,48 @@ export default function DiscoverPage() {
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Filling fast</h3>
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length - 1} more →</span>
               </div>
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-1" style={{ scrollSnapType: "x mandatory" }}>
-                <div className="shrink-0 w-5" aria-hidden="true" />
-                {sortedPools.slice(1, 8).map((p, idx) => (
-                  <Link
-                    key={p.id}
-                    href={`/product/${p.id}`}
-                    className={`shrink-0 w-[220px] rounded-[18px] overflow-hidden press-feedback card-enter card-enter-${(idx % 7) + 2}`}
-                    style={{ background: "var(--card)", scrollSnapAlign: "start" }}
-                  >
-                    <div className="relative h-[150px]" style={{ background: "var(--sand)" }}>
-                      {p.imageUrl && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                      )}
-                      <div className="absolute top-2.5 left-2.5">
-                        <span className="text-[9px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: p.fill.spotsLeft <= 2 ? "var(--coral)" : "var(--lime)", color: p.fill.spotsLeft <= 2 ? "white" : "#17271F" }}>
-                          {p.fill.spotsLeft <= 2 ? `${p.fill.spotsLeft} left!` : `${p.fill.fillPct}% full`}
-                        </span>
+              <div className="overflow-x-auto hide-scrollbar">
+                <div className="flex gap-3 px-5 pb-1 w-max" style={{ scrollSnapType: "x mandatory" }}>
+                  {sortedPools.slice(1, 8).map((p, idx) => (
+                    <Link
+                      key={p.id}
+                      href={`/product/${p.id}`}
+                      className={`shrink-0 w-[220px] rounded-[18px] overflow-hidden press-feedback card-enter card-enter-${(idx % 7) + 2}`}
+                      style={{ background: "var(--card)", scrollSnapAlign: "start" }}
+                    >
+                      <div className="relative h-[150px]" style={{ background: "var(--sand)" }}>
+                        {p.imageUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                        )}
+                        <div className="absolute top-2.5 left-2.5">
+                          <span className="text-[9px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: p.fill.spotsLeft <= 2 ? "var(--coral)" : "var(--lime)", color: p.fill.spotsLeft <= 2 ? "white" : "#17271F" }}>
+                            {p.fill.spotsLeft <= 2 ? `${p.fill.spotsLeft} left!` : `${p.fill.fillPct}% full`}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="p-3">
-                      <h4 className="text-[14px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
-                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                      <div className="flex items-baseline gap-1.5 mt-1.5">
-                        <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
-                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                      <div className="p-3">
+                        <h4 className="text-[14px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
+                        <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                        <div className="flex items-baseline gap-1.5 mt-1.5">
+                          <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                          <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] font-extrabold mt-2" style={{ color: "#17271F" }}>
+                          <span>{p.fill.joined}/{p.minPoolSize} {activeCategory === "Food" ? "plates claimed" : "spots filled"}</span>
+                          <span style={{ color: "var(--coral)" }}>{p.fill.hours}h {(p.fill.hours * 20) % 60}m</span>
+                        </div>
+                        <div className="mt-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--coral)" }} />
+                        </div>
+                        <div className="flex items-center gap-1 mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                          {userArea ? `${userArea} · ${5 + (idx * 3) % 15} min` : "Pickup TBD"}
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between text-[11px] font-extrabold mt-2" style={{ color: "#17271F" }}>
-                        <span>{p.fill.joined}/{p.minPoolSize} {activeCategory === "Food" ? "plates claimed" : "spots filled"}</span>
-                        <span style={{ color: "var(--coral)" }}>{p.fill.hours}h {(p.fill.hours * 20) % 60}m</span>
-                      </div>
-                      <div className="mt-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                        <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--coral)" }} />
-                      </div>
-                      <div className="flex items-center gap-1 mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                        {userArea ? `${userArea} · ${5 + (idx * 3) % 15} min` : "Pickup TBD"}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-                <div className="shrink-0 w-5" aria-hidden="true" />
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -476,28 +476,28 @@ export default function DiscoverPage() {
                 </h3>
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{filteredStores.length} stores</span>
               </div>
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-1" style={{ scrollSnapType: "x mandatory" }}>
-                <div className="shrink-0 w-5" aria-hidden="true" />
-                {filteredStores.map((store, idx) => (
-                  <Link key={store.id} href={`/store/${store.id}`} className={`shrink-0 w-[160px] press-feedback card-enter card-enter-${(idx % 8) + 1}`} style={{ scrollSnapAlign: "start" }}>
-                    <div className="w-[160px] h-[160px] rounded-[18px] overflow-hidden" style={{ background: "var(--sand)" }}>
-                      {store.heroImage ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={store.heroImage} alt={store.name} className="w-full h-full object-cover" loading="lazy" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
-                        </div>
+              <div className="overflow-x-auto hide-scrollbar">
+                <div className="flex gap-3 px-5 pb-1 w-max" style={{ scrollSnapType: "x mandatory" }}>
+                  {filteredStores.map((store, idx) => (
+                    <Link key={store.id} href={`/store/${store.id}`} className={`shrink-0 w-[160px] press-feedback card-enter card-enter-${(idx % 8) + 1}`} style={{ scrollSnapAlign: "start" }}>
+                      <div className="w-[160px] h-[160px] rounded-[18px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                        {store.heroImage ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={store.heroImage} alt={store.name} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="text-[13px] font-bold mt-2 truncate" style={{ color: "#17271F" }}>{store.name}</h4>
+                      <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate} · {store.orderCount}+ orders</p>
+                      {store.bestSaving > 0 && (
+                        <span className="text-[10px] font-bold inline-block mt-0.5" style={{ color: "var(--coral)" }}>Up to {store.bestSaving}% off</span>
                       )}
-                    </div>
-                    <h4 className="text-[13px] font-bold mt-2 truncate" style={{ color: "#17271F" }}>{store.name}</h4>
-                    <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate} · {store.orderCount}+ orders</p>
-                    {store.bestSaving > 0 && (
-                      <span className="text-[10px] font-bold inline-block mt-0.5" style={{ color: "var(--coral)" }}>Up to {store.bestSaving}% off</span>
-                    )}
-                  </Link>
-                ))}
-                <div className="shrink-0 w-5" aria-hidden="true" />
+                    </Link>
+                  ))}
+                </div>
               </div>
             </section>
           )}
