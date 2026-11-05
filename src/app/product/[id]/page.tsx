@@ -106,7 +106,7 @@ export default function ProductDetailPage() {
   function addSolo() {
     if (!product) return;
     cart.addItem({ dailyMenuId: `instant-${product.id}`, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantName: product.vendor.name, price: product.retailPrice });
-    showToast("added");
+    router.push("/cart");
   }
 
   async function joinPool(poolId: string) {
