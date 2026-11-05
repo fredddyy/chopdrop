@@ -38,7 +38,7 @@ export default function OrdersPage() {
         <button type="button" onClick={() => setTab("active")}
           className="h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
           style={{ background: tab === "active" ? "#17271F" : "var(--sand)", color: tab === "active" ? "white" : "var(--text-secondary)" }}>
-          Active · 0
+          Active · 3
         </button>
         <button type="button" onClick={() => setTab("past")}
           className="h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
@@ -52,21 +52,106 @@ export default function OrdersPage() {
       </p>
 
       {tab === "active" ? (
-        <div className="px-5 mt-8 flex flex-col items-center text-center">
-          <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
+        <div className="px-5 mt-4 flex flex-col gap-4">
+
+          {/* ── Order 1: Ready / Pick up now ── */}
+          <div className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+            <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full inline-block mb-3" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>
+              Ready / Pick up now
+            </span>
+            <div className="flex items-start gap-3">
+              <div className="w-[60px] h-[60px] rounded-[12px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+                <div className="w-full h-full flex items-center justify-center text-[20px]" style={{ color: "var(--text-muted)", opacity: 0.3 }}>E</div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Ewa Agoyin + Plantain</h4>
+                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Mama T&apos;s · Moremi Hall Gate</p>
+                <p className="text-[20px] font-extrabold tabular-nums mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#17271F" }}>{fp(60000)}</p>
+              </div>
+            </div>
+            <p className="text-[12px] mt-3" style={{ color: "var(--text-muted)" }}>Vendor marked ready · Collect by 2:30 pm</p>
+            <button className="mt-2 h-[38px] rounded-full flex items-center justify-center px-5 text-[13px] font-bold cursor-pointer press-feedback" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
+              Show QR code
+            </button>
           </div>
-          <h2 className="text-[17px] font-extrabold" style={{ color: "#17271F" }}>No active orders</h2>
-          <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Join a pool or order solo. Track everything here.</p>
-          <Link href="/discover" className="mt-4 h-[44px] px-6 rounded-full text-[13px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse deals</Link>
+
+          {/* ── Order 2: Pool · Filling ── */}
+          <div className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: "var(--lime)", color: "#17271F" }}>Pool · Filling</span>
+              <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Today, 0:00</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-[60px] h-[60px] rounded-[12px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+                <div className="w-full h-full flex items-center justify-center text-[20px]" style={{ color: "var(--text-muted)", opacity: 0.3 }}>A</div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Amala + Ewedu</h4>
+                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Mama T&apos;s Kitchen · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--text-muted)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.6</p>
+                <p className="text-[20px] font-extrabold tabular-nums mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#17271F" }}>{fp(65000)}</p>
+              </div>
+            </div>
+            <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
+              <span>Filling — 34/35</span>
+              <span style={{ color: "var(--coral)" }}>43m left</span>
+            </div>
+            <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>You&apos;re paid in. One more person to fill the pool.</p>
+            <button className="mt-2 text-[12px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>Share the last spot →</button>
+          </div>
+
+          {/* ── Order 3: Filled · Cooking ── */}
+          <div className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+            <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full inline-block mb-3" style={{ background: "var(--lime)", color: "#17271F" }}>
+              Filled · Cooking
+            </span>
+            <div className="flex items-start gap-3">
+              <div className="w-[60px] h-[60px] rounded-[12px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+                <div className="w-full h-full flex items-center justify-center text-[20px]" style={{ color: "var(--text-muted)", opacity: 0.3 }}>J</div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Jollof Rice + Chicken</h4>
+                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Sisi&apos;s Kitchen · Engineering Gate</p>
+                <p className="text-[20px] font-extrabold tabular-nums mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#17271F" }}>{fp(90000)}</p>
+              </div>
+            </div>
+            <p className="text-[12px] mt-3" style={{ color: "var(--text-muted)" }}>30/30 plates confirmed. Vendor has started cooking. We&apos;ll alert you when it&apos;s ready.</p>
+            <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>Earlier order · Today, 7:03</p>
+          </div>
         </div>
       ) : (
         <div className="px-5 mt-5">
           <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Past orders &amp; receipts</h3>
-          <div className="flex flex-col items-center text-center mt-8">
-            <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No past orders yet.</p>
-            <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>Reorder picks a cheaper live pool when available. Otherwise, order solo.</p>
+          <div className="flex flex-col gap-3">
+            {[
+              { name: "Chicken Shawarma", price: 80000, type: "POOL", detail: "Collected yesterday · Saved ₦400", hasSaved: true },
+              { name: "Moi Moi + Pap", price: 50000, type: "EXPIRED", detail: "Expired & refunded, 22 Oct", hasSaved: false },
+              { name: "Fried Rice", price: 180000, type: "SOLO", detail: "Collected Monday · Full menu price", hasSaved: false },
+            ].map((order) => (
+              <div key={order.name} className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+                <h4 className="text-[14px] font-bold" style={{ color: "#17271F" }}>{order.name} · {fp(order.price)}</h4>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                  {order.type} · {order.detail}
+                </p>
+                {order.type !== "EXPIRED" && (
+                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                    {order.type === "SOLO" ? "Collected Monday · Full menu price" : ""}
+                  </p>
+                )}
+                {order.type === "EXPIRED" && (
+                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Returned to original payment source</p>
+                )}
+                <div className="flex gap-2 mt-3">
+                  {order.type !== "EXPIRED" && (
+                    <button className="h-[32px] px-4 rounded-full text-[11px] font-bold cursor-pointer press-feedback" style={{ background: "var(--coral)", color: "white" }}>Reorder</button>
+                  )}
+                  <button className="h-[32px] px-4 rounded-full text-[11px] font-bold cursor-pointer press-feedback" style={{ background: "var(--sand)", color: "#17271F" }}>Receipt</button>
+                </div>
+              </div>
+            ))}
           </div>
+          <p className="text-[11px] mt-4" style={{ color: "var(--text-muted)" }}>
+            Reorder picks a cheaper live pool when available. Otherwise, order solo.
+          </p>
         </div>
       )}
 
