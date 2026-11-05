@@ -212,7 +212,7 @@ export default function StorePage() {
         <div className="flex overflow-x-auto hide-scrollbar gap-2 mt-4">
           {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab) => (
             <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-              className="h-[34px] px-4 rounded-full text-[12px] font-bold whitespace-nowrap cursor-pointer shrink-0"
+              className="h-[25px] px-3 rounded-full text-[11px] font-bold whitespace-nowrap cursor-pointer shrink-0"
               style={{ background: activeTab === tab ? "#17271F" : "var(--sand)", color: activeTab === tab ? "white" : "var(--text-secondary)" }}
             >{tab}</button>
           ))}

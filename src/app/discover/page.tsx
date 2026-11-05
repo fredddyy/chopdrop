@@ -324,7 +324,7 @@ export default function DiscoverPage() {
             {([["all", "All meals"], ["pools", "Pools"], ["stores", "Stores"]] as const).map(([key, label]) => (
               <button
                 key={key} type="button" onClick={() => setFeedFilter(key)}
-                className="h-[34px] px-4 rounded-full text-[13px] font-bold cursor-pointer"
+                className="h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
                 style={{ background: feedFilter === key ? "#17271F" : "var(--sand)", color: feedFilter === key ? "white" : "var(--text-secondary)" }}
               >{label}</button>
             ))}
