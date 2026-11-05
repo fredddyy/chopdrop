@@ -73,27 +73,29 @@ export default function AccountPage() {
         </button>
       </div>
 
-      {/* ── Profile ── */}
-      <div className="px-5 mt-5 flex flex-col items-center">
-        <div className="w-16 h-16 rounded-full flex items-center justify-center text-[24px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
+      {/* ── Profile — avatar left, details right ── */}
+      <div className="px-5 mt-5 flex items-center gap-4">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center text-[22px] font-extrabold text-white shrink-0" style={{ background: "var(--coral)" }}>
           {name ? name.charAt(0).toUpperCase() : "?"}
         </div>
-        <h2 className="text-[22px] font-extrabold mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{name || "Set up your profile"}</h2>
-        {phone && <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>{phone}</p>}
-        {area && (
-          <span className="mt-2 text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "white" }}>
-            {area}
-          </span>
-        )}
+        <div>
+          <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{name || "Set up your profile"}</h2>
+          {phone && <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>{phone}</p>}
+          {area && (
+            <span className="mt-1 text-[11px] font-bold px-3 py-1 rounded-full inline-block" style={{ background: "#17271F", color: "white" }}>
+              {area}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* ── Savings card (lime) ── */}
+      {/* ── Savings card (dark forest) ── */}
       <div className="px-5 mt-5">
-        <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Your earned value</p>
-          <p className="text-[36px] font-extrabold tabular-nums leading-none mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>{fp(totalSaved)} saved</p>
-          <p className="text-[14px] font-bold mt-2" style={{ color: "#17271F" }}>Same appetite. Smarter spending.</p>
-          <p className="text-[11px] mt-1" style={{ color: "#17271F", opacity: 0.6 }}>Food discounts compared with individual prices. Your wallet credit is separate.</p>
+        <div className="p-5 rounded-[22px]" style={{ background: "#17271F" }}>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>This semester · Your earned value</p>
+          <p className="text-[36px] font-extrabold tabular-nums leading-none mt-2 text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>{fp(totalSaved)} saved</p>
+          <p className="text-[14px] font-bold mt-2 text-white">Same appetite. Smarter spending.</p>
+          <p className="text-[11px] mt-1" style={{ color: "var(--subdued)" }}>Food discounts compared with individual prices. Your wallet credit is separate.</p>
         </div>
       </div>
 
@@ -104,17 +106,17 @@ export default function AccountPage() {
           <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px", color: "#17271F" }}>{poolCount}</p>
           <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--text-muted)" }}>pools joined</p>
         </div>
-        <div className="flex-1 p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" className="mb-2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+        <div className="flex-1 p-4 rounded-[22px]" style={{ background: "var(--lime)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2" strokeLinecap="round" className="mb-2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
           <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px", color: "#17271F" }}>{streak} days</p>
-          <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--text-muted)" }}>current streak</p>
+          <p className="text-[11px] font-semibold mt-1" style={{ color: "#17271F", opacity: 0.6 }}>current streak</p>
         </div>
       </div>
 
       {/* ── Wallet ── */}
       <div className="px-5 mt-4">
         <Link href="/rewards" className="flex items-center gap-3 p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /></svg>
           <div className="flex-1 min-w-0">
             <p className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{fp(walletBalance)}</p>
             <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Wallet · Store credit for your next chop</p>
@@ -137,18 +139,16 @@ export default function AccountPage() {
             { label: "Fun rewards", sub: "Daily scratch, streak and points", href: "/rewards" },
             { label: "Settings", sub: "Notifications, payments and help", href: "#" },
           ].map((item, i) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="flex items-center justify-between px-5 py-4 press-feedback"
-              style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
-            >
-              <div>
-                <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>{item.label}</p>
-                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{item.sub}</p>
-              </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-            </Link>
+            <div key={item.label}>
+              {i > 0 && <div className="mx-5 h-px" style={{ background: "#E6E4D9" }} />}
+              <Link href={item.href} className="flex items-center justify-between px-5 py-4 press-feedback">
+                <div>
+                  <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>{item.label}</p>
+                  <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{item.sub}</p>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+              </Link>
+            </div>
           ))}
         </div>
       </div>
