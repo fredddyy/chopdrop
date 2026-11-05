@@ -138,6 +138,11 @@ export default function ProductDetailPage() {
         const poolsData = await poolsRes.json();
         if (poolsData.success) setPools(poolsData.data);
       } else {
+        // If already joined, mark as joined and update CTA
+        const err = (data.error || "").toLowerCase();
+        if (err.includes("already") || err.includes("already joined")) {
+          markJoined(id, product.groupPrice);
+        }
         showToast(data.error || "Couldn't join");
       }
     } catch {
@@ -204,7 +209,10 @@ export default function ProductDetailPage() {
         });
         const data = await res.json();
         if (data.success) { begCode = data.data.begCode; }
-        else { showToast(data.error || "Couldn't join"); setJoining(false); return; }
+        else {
+          if ((data.error || "").toLowerCase().includes("already")) markJoined(id, product.groupPrice);
+          showToast(data.error || "Couldn't join"); setJoining(false); return;
+        }
       } else {
         // Create pool, skip checkout
         const res = await fetch("/api/pools", {
