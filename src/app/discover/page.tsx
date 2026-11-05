@@ -85,6 +85,7 @@ export default function DiscoverPage() {
   const [activeCategory, setActiveCategory] = useState("Food");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen] = useState(true); // Always visible per design
+  const [feedFilter, setFeedFilter] = useState<"all" | "pools" | "stores">("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [userArea, setUserArea] = useState("");
@@ -318,19 +319,30 @@ export default function DiscoverPage() {
             </div>
           </div>
 
+          {/* ── Feed filter pills ── */}
+          <div className="px-5 mt-4 flex gap-2">
+            {([["all", "All meals"], ["pools", "Pools"], ["stores", "Stores"]] as const).map(([key, label]) => (
+              <button
+                key={key} type="button" onClick={() => setFeedFilter(key)}
+                className="h-[34px] px-4 rounded-full text-[13px] font-bold cursor-pointer"
+                style={{ background: feedFilter === key ? "#17271F" : "var(--sand)", color: feedFilter === key ? "white" : "var(--text-secondary)" }}
+              >{label}</button>
+            ))}
+          </div>
+
           {/* ── Section header with personality ── */}
-          {sortedPools.length > 0 && (
+          {sortedPools.length > 0 && feedFilter !== "stores" && (
             <div className="px-5 mt-4 mb-1 flex items-center justify-between">
               <h3 className="text-[21px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Almost full. Don&apos;t dull.</h3>
               <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length} live pool{sortedPools.length !== 1 ? "s" : ""}</span>
             </div>
           )}
-          {sortedPools.length > 0 && (
+          {sortedPools.length > 0 && feedFilter !== "stores" && (
             <p className="px-5 text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Highest fill rate first</p>
           )}
 
           {/* ═══ FEATURED POOL CARD — dark hero, ChopChop style ═══ */}
-          {sortedPools.length > 0 && (() => {
+          {sortedPools.length > 0 && feedFilter !== "stores" && (() => {
             const featured = sortedPools[0];
             const sav = Math.round(((featured.retailPrice - featured.groupPrice) / featured.retailPrice) * 100);
             const isHot = featured.fill.spotsLeft <= 3;
@@ -405,7 +417,7 @@ export default function DiscoverPage() {
           })()}
 
           {/* ═══ REMAINING POOLS — compact cards with full info ═══ */}
-          {sortedPools.length > 1 && (
+          {sortedPools.length > 1 && feedFilter !== "stores" && (
             <div className="px-5 mt-4 flex flex-col gap-4">
               {sortedPools.slice(1).map((p, idx) => {
                 const isHot = p.fill.spotsLeft <= 2;
@@ -466,7 +478,7 @@ export default function DiscoverPage() {
           </div>
 
           {/* ═══ STORES — secondary, compact ═══ */}
-          {filteredStores.length > 0 && (
+          {filteredStores.length > 0 && feedFilter !== "pools" && (
             <section className="mt-8">
               <div className="px-5 mb-2">
                 <h3 className="text-[15px] font-extrabold" style={{ color: "var(--text)" }}>Stores{userArea ? ` in ${userArea}` : ""}</h3>
