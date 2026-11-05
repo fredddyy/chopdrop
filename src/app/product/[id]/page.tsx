@@ -47,6 +47,8 @@ export default function ProductDetailPage() {
   // Joined pool state: null = not joined, or status string
   const [joinedStatus, setJoinedStatus] = useState<"filling" | "preparing" | "ready" | "collected" | null>(null);
   const [joinedPrice, setJoinedPrice] = useState(0);
+  const [leaveOpen, setLeaveOpen] = useState(false);
+  const [leavingPool, setLeavingPool] = useState(false);
   const cart = useCart();
 
   // Read user coordinates + joined pool status from localStorage
@@ -244,6 +246,48 @@ export default function ProductDetailPage() {
     const text = product ? `${product.name} for ${fp(product.groupPrice)} on ChopDrop` : "ChopDrop";
     if (navigator.share) { navigator.share({ title: product?.name || "ChopDrop", text, url }); }
     else { navigator.clipboard.writeText(url).then(() => showToast("link")); }
+  }
+
+  async function leavePool() {
+    if (!product) return;
+    setLeavingPool(true);
+    try {
+      // Find the pool ID for this product
+      const poolsRes = await fetch(`/api/pools?productId=${id}`);
+      const poolsData = await poolsRes.json();
+      const activePool = poolsData.success && poolsData.data.length > 0 ? poolsData.data[0] : null;
+      if (!activePool) {
+        showToast("Pool not found");
+        setLeavingPool(false);
+        return;
+      }
+      const res = await fetch(`/api/pools/${activePool.id}/leave`, { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        // Clear joined status from localStorage
+        try {
+          const stored = localStorage.getItem("chopdrop-joined-pools");
+          if (stored) {
+            const joined = JSON.parse(stored);
+            delete joined[id];
+            localStorage.setItem("chopdrop-joined-pools", JSON.stringify(joined));
+          }
+        } catch {}
+        setJoinedStatus(null);
+        setJoinedPrice(0);
+        setLeaveOpen(false);
+        showToast(`Refunded ${fp(data.data.refundAmount)} to wallet`);
+        // Refresh pools
+        const refreshRes = await fetch(`/api/pools?productId=${id}`);
+        const refreshData = await refreshRes.json();
+        if (refreshData.success) setPools(refreshData.data);
+      } else {
+        showToast(data.error || "Couldn't leave pool");
+      }
+    } catch {
+      showToast("Network error");
+    }
+    setLeavingPool(false);
   }
 
   if (loading) {
@@ -508,6 +552,9 @@ export default function ProductDetailPage() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
               </button>
               <p className="text-[11px] text-center mt-2" style={{ color: "var(--text-muted)" }}>Pool fills → we notify you</p>
+              <button type="button" onClick={() => setLeaveOpen(true)} className="text-[12px] font-semibold mt-2 mx-auto block cursor-pointer" style={{ color: "var(--text-muted)" }}>
+                Leave pool
+              </button>
             </>
           )}
 
@@ -628,6 +675,43 @@ export default function ProductDetailPage() {
               <span className="text-[13px] font-bold text-white">{toast}</span>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Leave pool confirmation sheet ── */}
+      {leaveOpen && product && (
+        <div className="fixed inset-0 z-[70] flex items-end justify-center" onClick={() => setLeaveOpen(false)}>
+          <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
+          <div className="relative w-full max-w-[480px] rounded-t-[16px] p-5 sheet-enter" style={{ background: "var(--card)" }} onClick={(e) => e.stopPropagation()}>
+            <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
+            <h3 className="text-[18px] font-extrabold" style={{ color: "var(--text)" }}>Leave this pool?</h3>
+            <div className="flex items-center gap-2 mt-3">
+              <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>Full refund</span>
+              <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{fp(joinedPrice || product.groupPrice)}</span>
+            </div>
+            <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
+              {(() => {
+                const stored = localStorage.getItem("chopdrop-joined-pools");
+                if (!stored) return "Refund window closing soon";
+                try {
+                  // Estimate minutes left based on 30-min window — exact timing is server-side
+                  return "Refund available within 30 min of joining";
+                } catch { return "Refund window closing soon"; }
+              })()}
+            </p>
+            <div className="flex flex-col gap-2.5 mt-5">
+              <button type="button" onClick={() => setLeaveOpen(false)}
+                className="h-[50px] rounded-[12px] flex items-center justify-center text-[14px] font-bold text-white cursor-pointer press-feedback"
+                style={{ background: "var(--coral)" }}>
+                Keep my spot
+              </button>
+              <button type="button" onClick={leavePool} disabled={leavingPool}
+                className="h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold cursor-pointer press-feedback disabled:opacity-50"
+                style={{ background: "var(--sand)", color: "var(--text)" }}>
+                {leavingPool ? "Leaving..." : `Leave Pool \u2014 refund ${fp(joinedPrice || product.groupPrice)}`}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
