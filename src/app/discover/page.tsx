@@ -530,7 +530,10 @@ export default function DiscoverPage() {
                     <div className="p-2.5">
                       <h4 className="text-[12px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
                       <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                      <span className="text-[16px] font-extrabold tabular-nums block mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                      <div className="flex items-baseline gap-1.5 mt-1">
+                        <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                      </div>
                     </div>
                   </Link>
                 ))}
