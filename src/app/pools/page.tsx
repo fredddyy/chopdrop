@@ -77,7 +77,7 @@ export default function PoolsPage() {
       {/* ── Location ── */}
       {userArea && (
         <div className="px-5 mt-2">
-          <span className="text-[12px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "white" }}>{userArea}</span>
+          <span className="text-[11px] font-bold h-[25px] px-3 rounded-full inline-flex items-center" style={{ background: "#17271F", color: "white" }}>{userArea}</span>
         </div>
       )}
 

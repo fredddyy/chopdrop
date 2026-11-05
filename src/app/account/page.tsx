@@ -82,7 +82,7 @@ export default function AccountPage() {
           <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{name || "Set up your profile"}</h2>
           {phone && <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>{phone}</p>}
           {area && (
-            <span className="mt-1 text-[11px] font-bold px-3 py-1 rounded-full inline-block" style={{ background: "#17271F", color: "white" }}>
+            <span className="mt-1 text-[11px] font-bold h-[25px] px-3 rounded-full inline-flex items-center" style={{ background: "#17271F", color: "white" }}>
               {area}
             </span>
           )}
