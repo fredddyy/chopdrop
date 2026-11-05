@@ -21,6 +21,19 @@
 - [ ] Review section: verified order reviews with photo + stars
 - [ ] Trust copy: "Campus pickup only · Wait for vendor's ready alert"
 
+### Solo Meal Detail Page (ChopChop Figma — Image 96)
+- [ ] Header: "MAMA T'S KITCHEN" eyebrow + "Fried Rice" title
+- [ ] Hero food image (28px radius)
+- [ ] "NO ACTIVE POOL" + rating badges
+- [ ] Title + vendor + description
+- [ ] Price: ₦1,800 individual, "No pool discount"
+- [ ] Demand signal card (dark forest): "12 people want this pool" + "12/20 interested · 8 more"
+- [ ] Trust note: "Requesting shows demand. It doesn't place an order."
+- [ ] Solo quantity selector (- 1 +)
+- [ ] Pickup location card
+- [ ] "Need your own plate?" solo explanation copy
+- [ ] "Request Pool" CTA (coral) + "Order solo — ₦1,800 →" secondary
+
 ### Phase 1 — Core Loop (make one purchase work end-to-end)
 - [ ] Vendor pool creation — vendors create deals with prices, min orders, deadlines
 - [ ] Pickup point on Pool model — users know where to collect
