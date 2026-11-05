@@ -46,17 +46,18 @@ export default function StorePage() {
   const startBegPrice = useCallback(async () => {
     if (!cart.items.length) return;
     setBegLoading(true);
+    const showErr = (msg: string) => { setAddedToast(msg); setTimeout(() => setAddedToast(""), 3000); };
     try {
-      // Use first cart item to create/join a pool for beg price
       const firstItem = cart.items[0];
       const productId = firstItem.dailyMenuId;
+
       // Try to find an existing pool or create one
       const poolsRes = await fetch(`/api/pools?productId=${productId}`);
       const poolsData = await poolsRes.json();
       let begCode: string | null = null;
+      let lastError = "";
 
       if (poolsData.success && poolsData.data.length > 0) {
-        // Join existing pool for beg
         const res = await fetch(`/api/pools/${poolsData.data[0].id}/join`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -64,8 +65,8 @@ export default function StorePage() {
         });
         const data = await res.json();
         if (data.success) begCode = data.data.begCode;
+        else lastError = data.error || "Couldn't join pool";
       } else {
-        // Create new pool for beg
         const res = await fetch("/api/pools", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -73,17 +74,16 @@ export default function StorePage() {
         });
         const data = await res.json();
         if (data.success) begCode = data.data.begCode;
+        else lastError = data.error || "Couldn't create pool";
       }
 
       if (begCode) {
         router.push(`/beg/${begCode}`);
       } else {
-        setAddedToast("Log in to start beg price");
-        setTimeout(() => setAddedToast(""), 2500);
+        showErr(lastError.includes("Not authenticated") ? "Log in to start beg price" : lastError || "Beg price not available for this item");
       }
     } catch {
-      setAddedToast("Network error");
-      setTimeout(() => setAddedToast(""), 2500);
+      showErr("Network error — try again");
     }
     setBegLoading(false);
   }, [cart.items, router]);
@@ -434,15 +434,19 @@ export default function StorePage() {
         );
       })()}
 
-      {/* ── Added toast ── */}
-      {addedToast && (
-        <div className="fixed z-[100] left-0 right-0 bottom-[120px] px-5 celebrate">
-          <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: "var(--emerald)" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-            <span className="text-[13px] font-bold text-white">{addedToast} added to plate</span>
+      {/* ── Toast ── */}
+      {addedToast && (() => {
+        const isError = addedToast.includes("error") || addedToast.includes("Log in") || addedToast.includes("Couldn") || addedToast.includes("not available");
+        const isPlateAdd = !isError && !addedToast.includes("Network");
+        return (
+          <div className="fixed z-[100] left-0 right-0 bottom-[120px] px-5 celebrate">
+            <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: isError ? "var(--coral)" : "var(--emerald)" }}>
+              {!isError && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>}
+              <span className="text-[13px] font-bold text-white">{isPlateAdd ? `${addedToast} added to plate` : addedToast}</span>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       <BottomNav />
     </main>
