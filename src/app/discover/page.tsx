@@ -50,23 +50,7 @@ function PoolImage({ src, alt }: { src: string | null; alt: string }) {
   );
 }
 
-function StoreImage({ src, alt, height }: { src: string | null; alt: string; height: number }) {
-  const [failed, setFailed] = useState(false);
-  const handleError = useCallback(() => setFailed(true), []);
-  if (failed || !src) {
-    return (
-      <div className="w-full flex items-end px-4 pb-3" style={{ height, background: "var(--sand)" }}>
-        <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)" }}>{alt}</span>
-      </div>
-    );
-  }
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className="w-full object-cover block" style={{ height }} onError={handleError} />
-  );
-}
 
-const CATEGORIES = ["Food", "Electronics", "Fashion", "Groceries"];
 const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 const AREA_SUGGESTIONS = ["Victoria Island", "Lekki", "Ikeja", "Yaba", "Marina", "Surulere", "Ikoyi", "Ajah", "Gbagada", "Maryland", "Magodo", "Festac", "Apapa"];
 
@@ -84,7 +68,6 @@ export default function DiscoverPage() {
   const [poolProducts, setPoolProducts] = useState<PoolProduct[]>([]);
   const [activeCategory, setActiveCategory] = useState("Food");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchOpen] = useState(true); // Always visible per design
   const [feedFilter, setFeedFilter] = useState<"all" | "pools" | "stores">("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -349,15 +332,36 @@ export default function DiscoverPage() {
             ))}
           </div>
 
-          {/* ── Section header with personality ── */}
+          {/* ── Trending — stories row (Instagram-style circles) ── */}
           {sortedPools.length > 0 && feedFilter !== "stores" && (
-            <div className="px-5 mt-4 mb-1 flex items-center justify-between">
-              <h3 className="text-[21px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Almost full. Don&apos;t dull.</h3>
-              <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length} live pool{sortedPools.length !== 1 ? "s" : ""}</span>
+            <div className="mt-4">
+              <p className="px-5 text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2.5" style={{ color: "var(--coral)" }}>Trending now</p>
+              <div className="pl-5 flex gap-3.5 overflow-x-auto hide-scrollbar pr-5">
+                {sortedPools.slice(0, 8).map((p) => (
+                  <Link key={`story-${p.id}`} href={`/product/${p.id}`} className="flex flex-col items-center gap-1.5 shrink-0">
+                    <div className="w-[66px] h-[66px] rounded-full p-[2.5px]" style={{ background: p.fill.fillPct >= 80 ? "var(--coral)" : "var(--lime)" }}>
+                      <div className="w-full h-full rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                        {p.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>{p.name.charAt(0)}</div>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-center w-[66px] truncate" style={{ color: "var(--text)" }}>{p.name.split(" ")[0]}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
+
+          {/* ── Section header ── */}
           {sortedPools.length > 0 && feedFilter !== "stores" && (
-            <p className="px-5 text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Highest fill rate first</p>
+            <div className="px-5 mt-5 mb-2 flex items-center justify-between">
+              <h3 className="text-[21px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Almost full. Don&apos;t dull.</h3>
+              <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length} live</span>
+            </div>
           )}
 
           {/* ═══ FEATURED POOL CARD — dark hero, ChopChop style ═══ */}
@@ -402,7 +406,7 @@ export default function DiscoverPage() {
                   </div>
                   {/* Progress */}
                   <div className="mt-3 flex items-center justify-between text-[11px] font-bold" style={{ color: "white" }}>
-                    <span>{featured.fill.joined}/{featured.minPoolSize} plates claimed</span>
+                    <span>{featured.fill.joined}/{featured.minPoolSize} {activeCategory === "Food" ? "plates claimed" : "spots filled"}</span>
                     <span style={{ color: "var(--emerald)" }}>{featured.fill.hours > 0 ? `${featured.fill.hours * 60}m left` : "Ending soon"}</span>
                   </div>
                   <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
@@ -435,59 +439,52 @@ export default function DiscoverPage() {
             );
           })()}
 
-          {/* ═══ REMAINING POOLS — compact cards with full info ═══ */}
+          {/* ═══ FILLING FAST — horizontal swipe carousel ═══ */}
           {sortedPools.length > 1 && feedFilter !== "stores" && (
-            <div className="px-5 mt-4 flex flex-col gap-4">
-              {sortedPools.slice(1).map((p, idx) => {
-                const isHot = p.fill.spotsLeft <= 2;
-                return (
+            <div className="mt-5">
+              <div className="px-5 flex items-center justify-between mb-3">
+                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Filling fast</h3>
+                <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length - 1} more →</span>
+              </div>
+              <div className="pl-5 flex gap-3 overflow-x-auto hide-scrollbar pr-3 pb-1" style={{ scrollSnapType: "x mandatory" }}>
+                {sortedPools.slice(1, 8).map((p, idx) => (
                   <Link
                     key={p.id}
                     href={`/product/${p.id}`}
-                    className={`block p-4 rounded-[22px] press-feedback card-enter card-enter-${(idx % 7) + 2}`}
-                    style={{ background: "var(--card)" }}
+                    className={`shrink-0 w-[220px] rounded-[18px] overflow-hidden press-feedback card-enter card-enter-${(idx % 7) + 2}`}
+                    style={{ background: "var(--card)", scrollSnapAlign: "start" }}
                   >
-                    {/* Row 1: Image + Title/Vendor/Price */}
-                    <div className="flex gap-3">
-                      <div className="w-[82px] h-[86px] rounded-[16px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
-                        {p.imageUrl && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-[17px] font-extrabold leading-[145%] truncate" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>{p.name}</h4>
-                        <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{p.vendor.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.8</p>
-                        <div className="flex items-baseline gap-1.5 mt-1">
-                          <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
-                          <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                        </div>
+                    <div className="relative h-[150px]" style={{ background: "var(--sand)" }}>
+                      {p.imageUrl && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                      )}
+                      <div className="absolute top-2.5 left-2.5">
+                        <span className="text-[9px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: p.fill.spotsLeft <= 2 ? "var(--coral)" : "var(--lime)", color: p.fill.spotsLeft <= 2 ? "white" : "#17271F" }}>
+                          {p.fill.spotsLeft <= 2 ? `${p.fill.spotsLeft} left!` : `${p.fill.fillPct}% full`}
+                        </span>
                       </div>
                     </div>
-                    {/* Full-width: Progress, Pickup, Social */}
-                    <div className="mt-3">
-                      <div className="flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
-                        <span>{p.fill.joined}/{p.minPoolSize} plates claimed</span>
-                        <span style={{ color: "var(--coral)" }}>{p.fill.hours}h {(p.fill.hours * 20) % 60}m</span>
+                    <div className="p-3">
+                      <h4 className="text-[14px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
+                      <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                      <div className="flex items-baseline gap-1.5 mt-1.5">
+                        <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                       </div>
-                      <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
-                        <div className="h-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--coral)", borderRadius: "9px" }} />
+                      <div className="mt-2 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                        <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--coral)" }} />
                       </div>
-                      <div className="flex items-center gap-1 mt-2 text-[11px]" style={{ color: "var(--text-muted)" }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                        {userArea ? `${userArea} pickup` : "Pickup TBD"}
-                      </div>
-                      <p className="text-[11px] font-semibold mt-1.5" style={{ color: "var(--text)", lineHeight: "145%" }}>{p.fill.joined} people are in</p>
                     </div>
                   </Link>
-                );
-              })}
+                ))}
+              </div>
             </div>
           )}
 
-          {/* ── Demand signal ── */}
-          <div className="px-5 mt-5">
-            <Link href="/discover" className="flex items-center gap-3 p-4 rounded-[16px] min-h-[56px] press-feedback" style={{ background: "var(--lime)" }}>
+          {/* ── Demand signal — section breaker ── */}
+          <div className="px-5 mt-6">
+            <Link href="/request-sent/demand" className="flex items-center gap-3 p-4 rounded-[16px] min-h-[56px] press-feedback" style={{ background: "var(--lime)" }}>
               <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="#17271F" strokeWidth="1.4" strokeLinecap="round" className="shrink-0"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
               <div>
                 <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>Craving something else?</p>
@@ -496,30 +493,63 @@ export default function DiscoverPage() {
             </Link>
           </div>
 
-          {/* ═══ STORES — secondary, compact ═══ */}
+          {/* ═══ TOP KITCHENS — horizontal image cards ═══ */}
           {filteredStores.length > 0 && feedFilter !== "pools" && (
-            <section className="mt-8">
-              <div className="px-5 mb-2">
-                <h3 className="text-[15px] font-extrabold" style={{ color: "var(--text)" }}>Stores{userArea ? ` in ${userArea}` : ""}</h3>
+            <section className="mt-6">
+              <div className="px-5 flex items-center justify-between mb-3">
+                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>
+                  {activeCategory === "Food" ? "Top kitchens" : "Top stores"}{userArea ? ` near ${userArea}` : ""}
+                </h3>
+                <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{filteredStores.length} stores</span>
               </div>
-              <div className="px-5 flex flex-col gap-3">
+              <div className="pl-5 flex gap-3 overflow-x-auto hide-scrollbar pr-3 pb-1" style={{ scrollSnapType: "x mandatory" }}>
                 {filteredStores.map((store, idx) => (
-                  <Link key={store.id} href={`/store/${store.id}`} className={`flex gap-3 items-center press-feedback card-enter card-enter-${(idx % 8) + 1}`}>
-                    <div className="w-14 h-14 rounded-[10px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
-                      {store.heroImage && (
+                  <Link key={store.id} href={`/store/${store.id}`} className={`shrink-0 w-[160px] press-feedback card-enter card-enter-${(idx % 8) + 1}`} style={{ scrollSnapAlign: "start" }}>
+                    <div className="w-[160px] h-[160px] rounded-[18px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                      {store.heroImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={store.heroImage} alt={store.name} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
+                        </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-[14px] font-bold truncate" style={{ color: "var(--text)" }}>{store.name}</h4>
-                      <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate} · {store.orderCount}+ orders</p>
-                    </div>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                    <h4 className="text-[13px] font-bold mt-2 truncate" style={{ color: "#17271F" }}>{store.name}</h4>
+                    <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate} · {store.orderCount}+ orders</p>
+                    {store.bestSaving > 0 && (
+                      <span className="text-[10px] font-bold inline-block mt-0.5" style={{ color: "var(--coral)" }}>Up to {store.bestSaving}% off</span>
+                    )}
                   </Link>
                 ))}
               </div>
             </section>
+          )}
+
+          {/* ═══ MORE DEALS — 2-column grid for remaining pools ═══ */}
+          {sortedPools.length > 8 && feedFilter !== "stores" && (
+            <div className="px-5 mt-6">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>More deals</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {sortedPools.slice(8).map((p) => (
+                  <Link key={`grid-${p.id}`} href={`/product/${p.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                    <div className="h-[130px]" style={{ background: "var(--sand)" }}>
+                      {p.imageUrl && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <h4 className="text-[12px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
+                      <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                      <span className="text-[16px] font-extrabold tabular-nums block mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           )}
 
           {/* ── Empty state — actionable ── */}
@@ -534,7 +564,7 @@ export default function DiscoverPage() {
               {searchQuery ? (
                 <button type="button" onClick={() => setSearchQuery("")} className="text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>Clear search</button>
               ) : (
-                <Link href="/discover" className="h-11 px-6 rounded-full text-[13px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse deals</Link>
+                <button type="button" onClick={() => { setActiveCategory("Food"); setSearchQuery(""); setFeedFilter("all"); }} className="h-11 px-6 rounded-full text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>Browse all deals</button>
               )}
             </div>
           )}
