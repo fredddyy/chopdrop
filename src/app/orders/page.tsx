@@ -35,7 +35,7 @@ export default function OrdersPage() {
 
       {/* ── Tabs ── */}
       <div className="px-5 mt-4 flex">
-        {([["active", "Active · 3"], ["past", "Past orders"]] as const).map(([key, label]) => (
+        {([["active", "Active · 4"], ["past", "Past orders"]] as const).map(([key, label]) => (
           <button
             key={key} type="button" onClick={() => setTab(key as Tab)}
             className="flex-1 h-[40px] text-[13px] font-bold cursor-pointer rounded-full"
@@ -99,6 +99,36 @@ export default function OrdersPage() {
             </div>
             <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>You&apos;re paid in. One more person to fill the pool.</p>
             <button className="mt-2 text-[12px] font-bold cursor-pointer" style={{ color: "var(--coral)" }} onClick={() => { if (navigator.share) navigator.share({ title: "ChopDrop pool", text: "One spot left! Join before it fills.", url: window.location.origin + "/discover" }); }}>Share the last spot →</button>
+          </div>
+
+          {/* ── Beg Price · Active — same card style, beg pill + dual CTAs ── */}
+          <div className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>Beg Price · Active</span>
+              <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Today, 11:45</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-[60px] h-[60px] rounded-[12px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+                <div className="w-full h-full flex items-center justify-center text-[20px]" style={{ color: "var(--text-muted)", opacity: 0.3 }}>S</div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Shawarma Special</h4>
+                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Uncle K · Victoria Island</p>
+                <p className="text-[20px] font-extrabold tabular-nums mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fp(62000)} <span className="text-[12px] line-through" style={{ color: "var(--text-muted)" }}>{fp(80000)}</span></p>
+              </div>
+            </div>
+            <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
+              <span>5 clicks · ₦180 saved</span>
+              <span style={{ color: "var(--coral)" }}>2h 15m left</span>
+            </div>
+            <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
+              <div className="h-full" style={{ width: "60%", background: "var(--coral)", borderRadius: "9px" }} />
+            </div>
+            <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>Pool: 18/25 filling. Share more to drop your price further.</p>
+            <div className="flex gap-2 mt-2">
+              <Link href="/beg/sample-code" className="flex-1 h-[38px] rounded-full flex items-center justify-center text-[12px] font-bold press-feedback" style={{ background: "var(--coral)", color: "white" }}>Continue Begging</Link>
+              <button className="flex-1 h-[38px] rounded-full flex items-center justify-center text-[12px] font-bold cursor-pointer press-feedback" style={{ background: "#17271F", color: "white" }} onClick={() => alert("Paystack checkout at ₦620 coming soon")}>Pay {fp(62000)} Now</button>
+            </div>
           </div>
 
           {/* ── Order 3: Filled · Cooking ── */}
