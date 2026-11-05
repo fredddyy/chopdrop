@@ -1,6 +1,126 @@
 "use client";
 
+import { useState, useRef, useCallback, useEffect } from "react";
 import { BottomNav } from "@/components/bottom-nav";
+
+function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
+
+const PRIZES = [5000, 10000, 15000, 10000, 5000, 20000, 10000, 5000, 50000, 10000]; // kobo
+
+function ScratchCard() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [scratching, setScratch] = useState(false);
+  const [prize] = useState(() => PRIZES[Math.floor(Math.random() * PRIZES.length)]);
+  const [claimed, setClaimed] = useState(false);
+  const scratchPct = useRef(0);
+
+  const initCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * 2;
+    canvas.height = rect.height * 2;
+    ctx.scale(2, 2);
+    // Metallic lime surface
+    ctx.fillStyle = "#C8D96A";
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    // "SCRATCH ME" text
+    ctx.fillStyle = "#A8B84A";
+    ctx.font = "bold 18px 'Bricolage Grotesque', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("SCRATCH ME", rect.width / 2, rect.height / 2 + 6);
+  }, []);
+
+  useEffect(() => {
+    if (!claimed) initCanvas();
+  }, [initCanvas, claimed]);
+
+  function scratch(clientX: number, clientY: number) {
+    const canvas = canvasRef.current;
+    if (!canvas || revealed) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (clientX - rect.left);
+    const y = (clientY - rect.top);
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(x * 2, y * 2, 40, 0, Math.PI * 2);
+    ctx.fill();
+    // Check scratch percentage
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let clear = 0;
+    for (let i = 3; i < imageData.data.length; i += 4) {
+      if (imageData.data[i] === 0) clear++;
+    }
+    scratchPct.current = clear / (imageData.data.length / 4);
+    if (scratchPct.current > 0.55) {
+      setRevealed(true);
+      setClaimed(true);
+    }
+  }
+
+  function handleMove(e: React.TouchEvent | React.MouseEvent) {
+    if (!scratching) return;
+    const pt = "touches" in e ? e.touches[0] : e;
+    scratch(pt.clientX, pt.clientY);
+  }
+
+  if (claimed) {
+    return (
+      <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-[12px] font-extrabold uppercase tracking-wide" style={{ color: "#17271F" }}>Daily Scratch</p>
+          <span className="text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "var(--lime)" }}>Claimed today ✓</span>
+        </div>
+        <div className="rounded-[16px] p-6 text-center" style={{ background: "rgba(255,255,255,0.5)" }}>
+          <p className="text-[44px] font-extrabold tabular-nums leading-none celebrate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>{fp(prize)}</p>
+          <p className="text-[14px] font-bold mt-2" style={{ color: "#17271F" }}>Meal credit. Yours!</p>
+        </div>
+        <p className="text-[12px] mt-3 leading-[155%]" style={{ color: "#17271F", opacity: 0.7 }}>
+          Added to your credit balance. Scratch again tomorrow — a new chance at up to {fp(50000)}.
+        </p>
+        <p className="text-[12px] font-extrabold mt-2" style={{ color: "#17271F" }}>Next scratch in 20h 14m</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[12px] font-extrabold uppercase tracking-wide" style={{ color: "#17271F" }}>Daily Scratch</p>
+        <span className="text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "var(--lime)" }}>1 of 1 remaining</span>
+      </div>
+      {/* Scratch area */}
+      <div className="relative rounded-[16px] overflow-hidden" style={{ height: "120px", background: "rgba(255,255,255,0.5)" }}>
+        {/* Prize underneath */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p className="text-[36px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>{fp(prize)}</p>
+          <p className="text-[13px] font-bold mt-1" style={{ color: "#17271F" }}>Meal credit. Yours!</p>
+        </div>
+        {/* Canvas overlay */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full cursor-pointer"
+          style={{ touchAction: "none" }}
+          onMouseDown={() => setScratch(true)}
+          onMouseUp={() => setScratch(false)}
+          onMouseLeave={() => setScratch(false)}
+          onMouseMove={handleMove}
+          onTouchStart={() => setScratch(true)}
+          onTouchEnd={() => setScratch(false)}
+          onTouchMove={handleMove}
+        />
+      </div>
+      <p className="text-[12px] mt-3 leading-[155%]" style={{ color: "#17271F", opacity: 0.6 }}>
+        Scratch to reveal your prize. Join pools to earn more scratches.
+      </p>
+    </div>
+  );
+}
 
 export default function RewardsPage() {
   const streak = 4;
@@ -49,15 +169,7 @@ export default function RewardsPage() {
 
       {/* ── Daily Scratch ── */}
       <div className="px-5 mt-5">
-        <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[12px] font-extrabold uppercase tracking-wide" style={{ color: "#17271F" }}>Daily Scratch</p>
-            <span className="text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "var(--lime)" }}>Coming soon</span>
-          </div>
-          <p className="text-[15px] font-bold" style={{ color: "#17271F" }}>
-            Scratch daily to win meal credit. Join pools to earn more scratches.
-          </p>
-        </div>
+        <ScratchCard />
       </div>
 
       {/* ── Streak ── */}
