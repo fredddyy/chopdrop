@@ -266,9 +266,9 @@ export default function ProductDetailPage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Pool</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>{pool ? "Pool" : product.vendor.name}</p>
           <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-            {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} spot${pool.spotsLeft !== 1 ? "s" : ""}. One good lunch.` : "Join the pool. Save together."}
+            {pool ? (pool.spotsLeft <= 3 ? `${pool.spotsLeft} spot${pool.spotsLeft !== 1 ? "s" : ""}. One good lunch.` : "Join the pool. Save together.") : product.name}
           </p>
         </div>
         <button type="button" onClick={handleShare} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
@@ -285,7 +285,7 @@ export default function ProductDetailPage() {
           ) : (
             <div className="w-full h-[236px]" />
           )}
-          {savings > 0 && (
+          {pool && savings > 0 && (
             <div className="absolute top-3 left-3">
               <span className="text-[10px] font-extrabold uppercase tracking-wide text-white rounded-full" style={{ background: "var(--emerald)", padding: "6px 12px" }}>
                 {savings}% less together
@@ -293,9 +293,19 @@ export default function ProductDetailPage() {
             </div>
           )}
         </div>
+        {/* Badges below image */}
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: pool ? "var(--lime)" : "var(--sand)", color: "#17271F" }}>
+            {pool ? "Active pool" : "No active pool"}
+          </span>
+          <span className="text-[11px] font-bold flex items-center gap-1" style={{ color: "#17271F" }}>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="#17271F" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+            4.9 (128)
+          </span>
+        </div>
       </div>
 
-      {/* ── Title + Vendor + Rating ── */}
+      {/* ── Title + Vendor ── */}
       <div className="px-5 mt-5">
         <h1 className="text-[28px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#17271F" }}>{product.name}</h1>
         <div className="flex items-center justify-between mt-1.5">
@@ -309,15 +319,45 @@ export default function ProductDetailPage() {
 
       {/* ── Price ── */}
       <div className="px-5 mt-4 flex items-end gap-3">
-        <span className="text-[52px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
+        <span className="text-[52px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--coral)" }}>{fp(pool ? product.groupPrice : product.retailPrice)}</span>
         <div className="pb-1.5">
-          <span className="text-[14px] line-through tabular-nums block" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)} solo</span>
-          {savedAmount > 0 && <span className="text-[14px] font-bold block" style={{ color: "var(--text-muted)" }}>Keep {fp(savedAmount)} for yourself.</span>}
+          {pool ? (
+            <>
+              <span className="text-[14px] line-through tabular-nums block" style={{ color: "var(--text-muted)" }}>{fp(product.retailPrice)} solo</span>
+              {savedAmount > 0 && <span className="text-[14px] font-bold block" style={{ color: "var(--text-muted)" }}>Keep {fp(savedAmount)} for yourself.</span>}
+            </>
+          ) : (
+            <>
+              <span className="text-[14px] block" style={{ color: "var(--text-muted)" }}>Individual price</span>
+              <span className="text-[14px] block" style={{ color: "var(--text-muted)" }}>No pool discount</span>
+            </>
+          )}
         </div>
       </div>
 
-      {/* ── Pool progress card (dark forest) ── */}
+      {/* ── Pool progress / Demand signal ── */}
       <div className="px-5 mt-5">
+        {!pool && (
+          <div className="rounded-[22px] overflow-hidden p-5 mb-4" style={{ background: "#17271F" }}>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>Let&apos;s make it cheaper together</p>
+            <p className="text-[24px] font-extrabold text-white mt-2 leading-[120%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>12 people want this pool.</p>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-[12px] font-extrabold text-white">12/20 interested students</span>
+              <span className="text-[12px] font-bold" style={{ color: "var(--lime)" }}>8 more</span>
+            </div>
+            <p className="text-[12px] mt-3" style={{ color: "var(--subdued)" }}>
+              Add your request. At 20, we&apos;ll notify {product.vendor.name}. You&apos;ll hear if she opens a pool.
+            </p>
+          </div>
+        )}
+        {!pool && (
+          <div className="flex items-start gap-2.5 p-4 rounded-[16px] mb-4" style={{ background: "var(--emerald-soft)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <p className="text-[12px] leading-[155%]" style={{ color: "var(--emerald)" }}>
+              Requesting shows demand. It doesn&apos;t place an order, charge you or guarantee a pool.
+            </p>
+          </div>
+        )}
         <div className="rounded-[22px] overflow-hidden" style={{ background: "#17271F" }}>
           <div className="p-4">
             {/* Progress text */}
@@ -367,15 +407,44 @@ export default function ProductDetailPage() {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
       </div>
 
-      {/* ── Trust assurance ── */}
-      <div className="px-5 mt-4">
-        <div className="flex items-start gap-3 p-4 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-          <p className="text-[12px] leading-[160%]" style={{ color: "var(--emerald)" }}>
-            Payment stays held until the pool fills. If it expires unfilled, you&apos;re automatically refunded. Ready comes after cooking.
-          </p>
+      {/* ── Trust assurance (pool only) ── */}
+      {pool && (
+        <div className="px-5 mt-4">
+          <div className="flex items-start gap-3 p-4 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <p className="text-[12px] leading-[160%]" style={{ color: "var(--emerald)" }}>
+              Payment stays held until the pool fills. If it expires unfilled, you&apos;re automatically refunded. Ready comes after cooking.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ── Solo: quantity + explanation (no pool) ── */}
+      {!pool && (
+        <>
+          <div className="px-5 mt-5 flex items-center justify-between">
+            <span className="text-[15px] font-bold" style={{ color: "#17271F" }}>Solo quantity</span>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+              </button>
+              <span className="text-[16px] font-extrabold tabular-nums w-6 text-center" style={{ color: "#17271F" }}>{quantity}</span>
+              <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+              </button>
+            </div>
+          </div>
+          <div className="px-5 mt-5">
+            <h3 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Need your own plate?</h3>
+            <p className="text-[13px] mt-2 leading-[155%]" style={{ color: "var(--text-muted)" }}>
+              Solo checkout confirms your order after payment — no waiting for a pool to fill. {product.vendor.name} still needs time to prepare it.
+            </p>
+            <p className="text-[13px] mt-2 font-bold" style={{ color: "#17271F" }}>
+              We&apos;ll notify you when she marks it ready.
+            </p>
+          </div>
+        </>
+      )}
 
       {/* ── Description ── */}
       {product.description && (
@@ -386,28 +455,36 @@ export default function ProductDetailPage() {
 
       <div className="h-8" />
 
-      {/* ═══ STICKY CTA — "Jump In — ₦650" ═══ */}
+      {/* ═══ STICKY CTA ═══ */}
       <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto">
-          <button
-            type="button"
-            onClick={() => pool ? joinPool(pool.id) : createPool()}
-            disabled={joining}
-            className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
-            style={{ background: "var(--coral)" }}
-          >
-            <span>Jump In — {fp(product.groupPrice * quantity)}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-          </button>
-          <button
-            type="button"
-            onClick={joinForBeg}
-            disabled={joining}
-            className="text-[12px] text-center mt-2.5 w-full cursor-pointer disabled:opacity-50"
-            style={{ color: "var(--text-muted)" }}
-          >
-            or <span className="font-bold" style={{ color: "var(--coral)" }}>beg price</span> → pay as low as {fp(Math.round(product.groupPrice * 0.4))}
-          </button>
+          {pool ? (
+            <>
+              <button type="button" onClick={() => joinPool(pool.id)} disabled={joining}
+                className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
+                style={{ background: "var(--coral)" }}>
+                <span>Jump In — {fp(product.groupPrice * quantity)}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+              </button>
+              <button type="button" onClick={joinForBeg} disabled={joining}
+                className="text-[12px] text-center mt-2.5 w-full cursor-pointer disabled:opacity-50"
+                style={{ color: "var(--text-muted)" }}>
+                or <span className="font-bold" style={{ color: "var(--coral)" }}>beg price</span> → pay as low as {fp(Math.round(product.groupPrice * 0.4))}
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" onClick={createPool} disabled={joining}
+                className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
+                style={{ background: "var(--coral)" }}>
+                <span>Request Pool</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+              </button>
+              <p className="text-[12px] text-center mt-2.5" style={{ color: "var(--text-muted)" }}>
+                Order solo — {fp(product.retailPrice * quantity)} →
+              </p>
+            </>
+          )}
         </div>
       </div>
 
