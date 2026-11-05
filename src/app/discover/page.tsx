@@ -411,7 +411,7 @@ export default function DiscoverPage() {
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length - 1} more →</span>
               </div>
               <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-1" style={{ scrollSnapType: "x mandatory" }}>
-                <div className="shrink-0 w-2" aria-hidden="true" />
+                <div className="shrink-0 w-5" aria-hidden="true" />
                 {sortedPools.slice(1, 8).map((p, idx) => (
                   <Link
                     key={p.id}
@@ -477,7 +477,7 @@ export default function DiscoverPage() {
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{filteredStores.length} stores</span>
               </div>
               <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-1" style={{ scrollSnapType: "x mandatory" }}>
-                <div className="shrink-0 w-2" aria-hidden="true" />
+                <div className="shrink-0 w-5" aria-hidden="true" />
                 {filteredStores.map((store, idx) => (
                   <Link key={store.id} href={`/store/${store.id}`} className={`shrink-0 w-[160px] press-feedback card-enter card-enter-${(idx % 8) + 1}`} style={{ scrollSnapAlign: "start" }}>
                     <div className="w-[160px] h-[160px] rounded-[18px] overflow-hidden" style={{ background: "var(--sand)" }}>
