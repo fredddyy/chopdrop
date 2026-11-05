@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
@@ -40,7 +40,53 @@ export default function StorePage() {
   const [error, setError] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const [addedToast, setAddedToast] = useState("");
+  const [begLoading, setBegLoading] = useState(false);
   const cart = useCart();
+
+  const startBegPrice = useCallback(async () => {
+    if (!cart.items.length) return;
+    setBegLoading(true);
+    try {
+      // Use first cart item to create/join a pool for beg price
+      const firstItem = cart.items[0];
+      const productId = firstItem.dailyMenuId;
+      // Try to find an existing pool or create one
+      const poolsRes = await fetch(`/api/pools?productId=${productId}`);
+      const poolsData = await poolsRes.json();
+      let begCode: string | null = null;
+
+      if (poolsData.success && poolsData.data.length > 0) {
+        // Join existing pool for beg
+        const res = await fetch(`/api/pools/${poolsData.data[0].id}/join`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quantity: 1 }),
+        });
+        const data = await res.json();
+        if (data.success) begCode = data.data.begCode;
+      } else {
+        // Create new pool for beg
+        const res = await fetch("/api/pools", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId, quantity: 1 }),
+        });
+        const data = await res.json();
+        if (data.success) begCode = data.data.begCode;
+      }
+
+      if (begCode) {
+        router.push(`/beg/${begCode}`);
+      } else {
+        setAddedToast("Log in to start beg price");
+        setTimeout(() => setAddedToast(""), 2500);
+      }
+    } catch {
+      setAddedToast("Network error");
+      setTimeout(() => setAddedToast(""), 2500);
+    }
+    setBegLoading(false);
+  }, [cart.items, router]);
 
   function addToPlate(item: Product, storeName: string) {
     cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantName: storeName, price: item.retailPrice });
@@ -378,10 +424,11 @@ export default function StorePage() {
                 <span>Pay Now — {fp(total)}</span>
                 <span className="text-[12px]">{cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""}</span>
               </Link>
-              <Link href="/cart" className="w-full h-[44px] rounded-full flex items-center justify-center gap-2 mt-2 text-[13px] font-bold press-feedback" style={{ background: "#17271F", color: "white" }}>
-                <span>Beg Price — pay as low as {fp(begFloor)}</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-              </Link>
+              <button type="button" onClick={startBegPrice} disabled={begLoading}
+                className="w-full h-[44px] rounded-full flex items-center justify-center gap-2 mt-2 text-[13px] font-bold cursor-pointer press-feedback disabled:opacity-50" style={{ background: "#17271F", color: "white" }}>
+                <span>{begLoading ? "Starting..." : `Beg Price — pay as low as ${fp(begFloor)}`}</span>
+                {!begLoading && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>}
+              </button>
             </div>
           </div>
         );
