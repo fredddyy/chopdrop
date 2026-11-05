@@ -123,16 +123,16 @@ export default function ProductDetailPage() {
       });
       const data = await res.json();
       if (data.success) {
-        // Immediately initiate payment
+        // Mark joined immediately so CTA updates on return
+        markJoined(id, product.groupPrice);
+        // Initiate payment
         const checkoutRes = await fetch(`/api/pools/${poolId}/checkout`, { method: "POST" });
         const checkoutData = await checkoutRes.json();
         if (checkoutData.success && checkoutData.data.authorizationUrl) {
-          // Redirect to Paystack checkout
           window.location.href = checkoutData.data.authorizationUrl;
           return;
         }
         // Fallback: show joined toast if checkout fails
-        markJoined(id, product.groupPrice);
         showToast("joined");
         const poolsRes = await fetch(`/api/pools?productId=${id}`);
         const poolsData = await poolsRes.json();
@@ -161,11 +161,12 @@ export default function ProductDetailPage() {
       });
       const data = await res.json();
       if (data.success) {
+        // Mark joined immediately so CTA updates on return
+        markJoined(id, product.groupPrice);
         // Initiate payment for pool creator
         const checkoutRes = await fetch(`/api/pools/${data.data.poolId}/checkout`, { method: "POST" });
         const checkoutData = await checkoutRes.json();
         if (checkoutData.success && checkoutData.data.authorizationUrl) {
-          // Save share URL for after payment callback
           sessionStorage.setItem("chopdrop-pool-share", JSON.stringify({
             url: `${typeof window !== "undefined" ? window.location.origin : ""}/product/${product.id}?pool=${data.data.poolId}`,
             name: product.name,
@@ -174,7 +175,6 @@ export default function ProductDetailPage() {
           return;
         }
         // Fallback: show share prompt if checkout fails
-        markJoined(id, product.groupPrice);
         const shareUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/product/${product.id}?pool=${data.data.poolId}`;
         setSharePrompt({ url: shareUrl, name: product.name });
         const poolsRes = await fetch(`/api/pools?productId=${id}`);
