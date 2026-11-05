@@ -469,7 +469,7 @@ export default function DiscoverPage() {
           {/* ── Demand signal ── */}
           <div className="px-5 mt-5">
             <div className="flex items-center gap-3 p-4 rounded-[16px]" style={{ background: "var(--lime)" }}>
-              <span className="text-[24px] shrink-0">🍜</span>
+              <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="#17271F" strokeWidth="1.4" strokeLinecap="round" className="shrink-0"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
               <div>
                 <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>Craving something else?</p>
                 <p className="text-[12px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>Vote for food near you →</p>
