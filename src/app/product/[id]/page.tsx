@@ -44,9 +44,12 @@ export default function ProductDetailPage() {
   const [joining, setJoining] = useState(false);
   const [sharePrompt, setSharePrompt] = useState<{ url: string; name: string } | null>(null);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number; address?: string } | null>(null);
+  // Joined pool state: null = not joined, or status string
+  const [joinedStatus, setJoinedStatus] = useState<"filling" | "preparing" | "ready" | "collected" | null>(null);
+  const [joinedPrice, setJoinedPrice] = useState(0);
   const cart = useCart();
 
-  // Read user coordinates from localStorage
+  // Read user coordinates + joined pool status from localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem("chopdrop-customer");
@@ -54,8 +57,16 @@ export default function ProductDetailPage() {
         const p = JSON.parse(stored);
         if (p.latitude && p.longitude) setUserCoords({ lat: p.latitude, lng: p.longitude, address: p.deliveryAddress });
       }
+      const joined = localStorage.getItem("chopdrop-joined-pools");
+      if (joined) {
+        const pools: Record<string, { status: string; price: number }> = JSON.parse(joined);
+        if (pools[id]) {
+          setJoinedStatus(pools[id].status as "filling" | "preparing" | "ready" | "collected");
+          setJoinedPrice(pools[id].price);
+        }
+      }
     } catch {}
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -80,6 +91,17 @@ export default function ProductDetailPage() {
 
     return () => ctrl.abort();
   }, [id, retryKey]);
+
+  function markJoined(productId: string, price: number, status: "filling" | "preparing" | "ready" | "collected" = "filling") {
+    try {
+      const stored = localStorage.getItem("chopdrop-joined-pools");
+      const pools = stored ? JSON.parse(stored) : {};
+      pools[productId] = { status, price };
+      localStorage.setItem("chopdrop-joined-pools", JSON.stringify(pools));
+      setJoinedStatus(status);
+      setJoinedPrice(price);
+    } catch {}
+  }
 
   function addSolo() {
     if (!product) return;
@@ -110,6 +132,7 @@ export default function ProductDetailPage() {
           return;
         }
         // Fallback: show joined toast if checkout fails
+        markJoined(id, product.groupPrice);
         showToast("joined");
         const poolsRes = await fetch(`/api/pools?productId=${id}`);
         const poolsData = await poolsRes.json();
@@ -151,6 +174,7 @@ export default function ProductDetailPage() {
           return;
         }
         // Fallback: show share prompt if checkout fails
+        markJoined(id, product.groupPrice);
         const shareUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/product/${product.id}?pool=${data.data.poolId}`;
         setSharePrompt({ url: shareUrl, name: product.name });
         const poolsRes = await fetch(`/api/pools?productId=${id}`);
@@ -192,6 +216,7 @@ export default function ProductDetailPage() {
         if (data.success) { begCode = data.data.begCode; }
         else { showToast(data.error === "Not authenticated" ? "Log in first" : (data.error || "Couldn't create")); setJoining(false); return; }
       }
+      markJoined(id, product.groupPrice);
       if (begCode) {
         router.push(`/beg/${begCode}`);
       } else {
@@ -459,7 +484,61 @@ export default function ProductDetailPage() {
       {/* ═══ STICKY CTA ═══ */}
       <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto">
-          {hasPoolPricing ? (
+
+          {/* ── JOINED: filling ── */}
+          {joinedStatus === "filling" && hasPoolPricing && (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>You&apos;re in! Pool is filling...</span>
+                <span className="text-[12px] tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(joinedPrice || product.groupPrice)} paid</span>
+              </div>
+              <button type="button"
+                className="w-full h-[54px] rounded-full flex items-center justify-center gap-2 px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
+                style={{ background: "var(--coral)" }}
+                onClick={() => { if (navigator.share) navigator.share({ title: `Join my ChopDrop pool!`, text: `${product.name} for ${fp(product.groupPrice)}. Join before it fills!`, url: window.location.href }); }}>
+                Share to Fill
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
+              </button>
+              <p className="text-[11px] text-center mt-2" style={{ color: "var(--text-muted)" }}>Pool fills → we notify you</p>
+            </>
+          )}
+
+          {/* ── JOINED: preparing ── */}
+          {joinedStatus === "preparing" && (
+            <div className="text-center">
+              <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>Pool filled! Preparing now...</p>
+              <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>{fp(joinedPrice || product.groupPrice)} paid · {product.vendor.name} is cooking</p>
+              <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>We&apos;ll notify you when it&apos;s ready</p>
+            </div>
+          )}
+
+          {/* ── JOINED: ready ── */}
+          {joinedStatus === "ready" && (
+            <>
+              <p className="text-[14px] font-bold mb-2" style={{ color: "var(--emerald)" }}>Your food is ready!</p>
+              <button type="button"
+                className="w-full h-[54px] rounded-full flex items-center justify-center text-[15px] font-bold text-white cursor-pointer press-feedback"
+                style={{ background: "var(--emerald)" }}
+                onClick={() => alert("QR code feature coming soon")}>
+                Show QR Code
+              </button>
+            </>
+          )}
+
+          {/* ── JOINED: collected ── */}
+          {joinedStatus === "collected" && (
+            <div className="text-center">
+              <p className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>Collected ✓</p>
+              <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>{fp(joinedPrice || product.groupPrice)} paid · Saved {fp(product.retailPrice - product.groupPrice)}</p>
+              <div className="flex gap-2 mt-3 justify-center">
+                <button className="h-[42px] px-5 rounded-full text-[13px] font-bold cursor-pointer press-feedback" style={{ background: "var(--coral)", color: "white" }}>Leave a Review</button>
+                <Link href="/discover" className="h-[42px] px-5 rounded-full text-[13px] font-bold inline-flex items-center press-feedback" style={{ background: "var(--sand)", color: "#17271F" }}>Reorder</Link>
+              </div>
+            </div>
+          )}
+
+          {/* ── NOT JOINED: pool pricing ── */}
+          {!joinedStatus && hasPoolPricing && (
             <>
               <button type="button" onClick={() => pool ? joinPool(pool.id) : createPool()} disabled={joining}
                 className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
@@ -473,7 +552,10 @@ export default function ProductDetailPage() {
                 or <span className="font-bold" style={{ color: "var(--coral)" }}>beg price</span> → pay as low as {fp(Math.round(product.groupPrice * 0.4))}
               </button>
             </>
-          ) : (
+          )}
+
+          {/* ── NOT JOINED: no pool pricing ── */}
+          {!joinedStatus && !hasPoolPricing && (
             <>
               <button type="button" onClick={() => router.push(`/request-sent/${id}`)} disabled={joining}
                 className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
