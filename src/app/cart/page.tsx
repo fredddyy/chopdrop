@@ -132,7 +132,7 @@ export default function CartPage() {
           <h1 className="text-[24px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>Checkout</h1>
           <p className="text-[14px] mt-0.5" style={{ color: "var(--text-muted)" }}>{portionCount} item{portionCount !== 1 ? "s" : ""} · {formatNaira(cart.subtotal)}</p>
         </div>
-        <Link href="/menu" className="text-[14px] font-bold" style={{ color: "var(--coral)" }}>+ Add more</Link>
+        <Link href="/discover" className="text-[14px] font-bold" style={{ color: "var(--coral)" }}>+ Add more</Link>
       </div>
 
       {cart.items.length === 0 ? (
@@ -142,7 +142,7 @@ export default function CartPage() {
           </div>
           <h2 className="text-[18px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Your plate is empty</h2>
           <p className="text-[14px] mb-6" style={{ color: "var(--text-muted)" }}>Browse meals and add something tasty</p>
-          <Link href="/menu" className="h-11 px-6 rounded-[12px] text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse meals</Link>
+          <Link href="/discover" className="h-11 px-6 rounded-[12px] text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse meals</Link>
         </div>
       ) : (
         <div className="px-5 space-y-4">
@@ -466,7 +466,7 @@ export default function CartPage() {
                   <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Pre-order saved!</span>
                 </div>
                 <p className="text-[13px] mb-3" style={{ color: "var(--text-muted)" }}>Ready when orders open at 7:00 AM</p>
-                <Link href="/menu" className="w-full h-12 rounded-[12px] text-[14px] font-bold flex items-center justify-center" style={{ background: "var(--sand)", color: "var(--text)" }}>
+                <Link href="/discover" className="w-full h-12 rounded-[12px] text-[14px] font-bold flex items-center justify-center" style={{ background: "var(--sand)", color: "var(--text)" }}>
                   Back to menu
                 </Link>
               </div>

@@ -132,15 +132,28 @@ export default function AccountPage() {
       <div className="px-5 mt-6">
         <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Quick Links</h3>
         <div className="rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
+          {/* Edit profile — no page yet */}
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById("profile-toast");
+              if (el) { el.style.opacity = "1"; setTimeout(() => { el.style.opacity = "0"; }, 2000); }
+            }}
+            className="w-full flex items-center justify-between px-5 py-4 press-feedback cursor-pointer text-left"
+          >
+            <div>
+              <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>Edit profile</p>
+              <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Coming soon</p>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+          </button>
           {[
             { label: "My orders", sub: "Track a plate or revisit a receipt", href: "/orders" },
-            { label: "Edit profile", sub: "Your name, phone and delivery area", href: "/start" },
             { label: "Bring your people", sub: "Referrals · Share your link", href: "/pools" },
             { label: "Fun rewards", sub: "Daily scratch, streak and points", href: "/rewards" },
-            { label: "Settings", sub: "Notifications, payments and help", href: "/account" },
           ].map((item, i) => (
             <div key={item.label}>
-              {i > 0 && <div className="mx-5 h-px" style={{ background: "#E6E4D9" }} />}
+              <div className="mx-5 h-px" style={{ background: "#E6E4D9" }} />
               <Link href={item.href} className="flex items-center justify-between px-5 py-4 press-feedback">
                 <div>
                   <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>{item.label}</p>
@@ -163,6 +176,11 @@ export default function AccountPage() {
         >
           Log out
         </button>
+      </div>
+
+      {/* Toast for edit profile */}
+      <div id="profile-toast" className="fixed top-6 left-1/2 -translate-x-1/2 z-[80] px-5 py-3 rounded-[12px] text-[13px] font-bold text-white pointer-events-none" style={{ background: "var(--dark, #2D2A26)", opacity: 0, transition: "opacity 300ms ease" }}>
+        Edit profile coming soon
       </div>
 
       <BottomNav />

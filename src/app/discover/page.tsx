@@ -408,7 +408,7 @@ export default function DiscoverPage() {
             <div className="mt-5">
               <div className="px-5 flex items-center justify-between mb-3">
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Filling fast</h3>
-                <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length - 1} more →</span>
+                <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length - 1} more</span>
               </div>
               <div className="overflow-x-auto hide-scrollbar">
                 <div className="flex gap-3 px-5 pb-1 w-max" style={{ scrollSnapType: "x mandatory" }}>
@@ -458,13 +458,22 @@ export default function DiscoverPage() {
 
           {/* ── Demand signal — section breaker ── */}
           <div className="px-5 mt-6">
-            <Link href="/request-sent/demand" className="flex items-center gap-3 p-4 rounded-[16px] min-h-[56px] press-feedback" style={{ background: "var(--lime)" }}>
+            <button
+              type="button"
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: "ChopDrop", text: "What food do you want near you?", url: window.location.href }).catch(() => {});
+                }
+              }}
+              className="w-full flex items-center gap-3 p-4 rounded-[16px] min-h-[56px] press-feedback cursor-pointer text-left"
+              style={{ background: "var(--lime)" }}
+            >
               <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="#17271F" strokeWidth="1.4" strokeLinecap="round" className="shrink-0"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
               <div>
                 <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>Craving something else?</p>
-                <p className="text-[12px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>Vote for {activeCategory.toLowerCase()} near you →</p>
+                <p className="text-[12px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>Tell us what {activeCategory.toLowerCase()} you want near you</p>
               </div>
-            </Link>
+            </button>
           </div>
 
           {/* ═══ TOP KITCHENS — horizontal image cards ═══ */}
