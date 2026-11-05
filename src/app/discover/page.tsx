@@ -332,30 +332,6 @@ export default function DiscoverPage() {
             ))}
           </div>
 
-          {/* ── Trending — stories row (Instagram-style circles) ── */}
-          {sortedPools.length > 0 && feedFilter !== "stores" && (
-            <div className="mt-4">
-              <p className="px-5 text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2.5" style={{ color: "var(--coral)" }}>Trending now</p>
-              <div className="pl-5 flex gap-3.5 overflow-x-auto hide-scrollbar pr-5">
-                {sortedPools.slice(0, 8).map((p) => (
-                  <Link key={`story-${p.id}`} href={`/product/${p.id}`} className="flex flex-col items-center gap-1.5 shrink-0">
-                    <div className="w-[66px] h-[66px] rounded-full p-[2.5px]" style={{ background: p.fill.fillPct >= 80 ? "var(--coral)" : "var(--lime)" }}>
-                      <div className="w-full h-full rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                        {p.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>{p.name.charAt(0)}</div>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-bold text-center w-[66px] truncate" style={{ color: "var(--text)" }}>{p.name.split(" ")[0]}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* ── Section header ── */}
           {sortedPools.length > 0 && feedFilter !== "stores" && (
             <div className="px-5 mt-5 mb-2 flex items-center justify-between">
