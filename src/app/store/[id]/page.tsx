@@ -49,9 +49,17 @@ export default function StorePage() {
     const showErr = (msg: string) => { setAddedToast(msg); setTimeout(() => setAddedToast(""), 3000); };
     try {
       const firstItem = cart.items[0];
-      const productId = firstItem.dailyMenuId;
+      // Ensure a Product record exists for this item (works for Product, Meal, or MenuItem IDs)
+      const ensureRes = await fetch("/api/products/ensure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId: firstItem.dailyMenuId }),
+      });
+      const ensureData = await ensureRes.json();
+      if (!ensureData.success) { showErr(ensureData.error || "Item not poolable"); setBegLoading(false); return; }
+      const productId = ensureData.data.productId;
 
-      // Try to find an existing pool or create one
+      // Find existing pool or create one, then join for beg
       const poolsRes = await fetch(`/api/pools?productId=${productId}`);
       const poolsData = await poolsRes.json();
       let begCode: string | null = null;
@@ -59,17 +67,15 @@ export default function StorePage() {
 
       if (poolsData.success && poolsData.data.length > 0) {
         const res = await fetch(`/api/pools/${poolsData.data[0].id}/join`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ quantity: 1 }),
         });
         const data = await res.json();
         if (data.success) begCode = data.data.begCode;
-        else lastError = data.error || "Couldn't join pool";
+        else lastError = data.error || "Couldn't join";
       } else {
         const res = await fetch("/api/pools", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId, quantity: 1 }),
         });
         const data = await res.json();
@@ -80,10 +86,10 @@ export default function StorePage() {
       if (begCode) {
         router.push(`/beg/${begCode}`);
       } else {
-        showErr(lastError.includes("Not authenticated") ? "Log in to start beg price" : lastError || "Beg price not available for this item");
+        showErr(lastError.includes("Not authenticated") ? "Log in to beg price" : lastError);
       }
     } catch {
-      showErr("Network error — try again");
+      showErr("Network error");
     }
     setBegLoading(false);
   }, [cart.items, router]);
@@ -413,7 +419,7 @@ export default function StorePage() {
         </p>
       </div>
 
-      {/* ── Sticky cart bar — pay or beg ── */}
+      {/* ── Sticky cart bar ── */}
       {cart.totalItems > 0 && (() => {
         const total = cart.items.reduce((sum, i) => sum + i.price, 0);
         const begFloor = Math.round(total * 0.4);
