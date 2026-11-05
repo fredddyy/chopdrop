@@ -1,353 +1,170 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getCustomerProfile, saveCustomerProfile, clearCustomerProfile, type CustomerProfile } from "@/lib/customer";
-import { formatNaira } from "@/lib/utils";
-import { BottomNav } from "@/components/bottom-nav";
-import { useRouter } from "next/navigation";
-import { ConfirmDialog } from "@/components/confirm-dialog";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { BottomNav } from "@/components/bottom-nav";
+
+function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
 export default function AccountPage() {
-  const [profile, setProfile] = useState<CustomerProfile>({
-    name: "", phone: "", email: "", deliveryAddress: "",
-    preferredFulfillment: "PICKUP", collectionPoint: "", reminders: true,
-  });
-  const [editingProfile, setEditingProfile] = useState(false);
-  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
-  const [editingOffice, setEditingOffice] = useState(false);
-  const [officeCodeInput, setOfficeCodeInput] = useState("");
-  const [officeCodeError, setOfficeCodeError] = useState("");
-  const [officeCodeLoading, setOfficeCodeLoading] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [orderStats, setOrderStats] = useState({ count: 0, totalSpent: 0 });
-  const [creditBalance, setCreditBalance] = useState(0);
-  const [creditTransactions, setCreditTransactions] = useState<Array<{
-    id: string;
-    amount: number;
-    type: string;
-    description: string | null;
-    createdAt: string;
-  }>>([]);
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [area, setArea] = useState("");
+  const [poolCount, setPoolCount] = useState(0);
+  const [totalSaved, setTotalSaved] = useState(0);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [streak, setStreak] = useState(4);
 
   useEffect(() => {
-    const p = getCustomerProfile();
-    if (p) setProfile({ collectionPoint: "", reminders: true, ...p });
-
-    fetch("/api/auth/me").then((r) => r.json()).then((d) => {
-      if (d.success && d.data) {
-        const u = d.data;
-        const serverProfile = {
-          name: `${u.firstName} ${u.lastName || ""}`.trim(),
-          phone: u.phone || "", email: u.email || "",
-          deliveryAddress: p?.deliveryAddress || "",
-          preferredFulfillment: p?.preferredFulfillment || "PICKUP",
-          collectionPoint: u.office?.collectionPoint || p?.collectionPoint || "",
-          reminders: p?.reminders ?? true,
-          officeId: u.office?.id, officeName: u.office?.name, officeCode: u.office?.code,
-        };
-        setProfile(serverProfile);
-        saveCustomerProfile(serverProfile);
-
-        // Fetch order stats
-        fetch("/api/orders/mine").then((r) => r.json()).then((od) => {
-          if (od.success && od.data) {
-            setOrderStats({
-              count: od.data.length,
-              totalSpent: od.data.reduce((s: number, o: { totalAmount: number }) => s + o.totalAmount, 0),
-            });
-          }
-        }).catch(() => {});
-
-        // Fetch credit wallet
-        fetch("/api/credits").then((r) => r.json()).then((cd) => {
-          if (cd.success && cd.data) {
-            setCreditBalance(cd.data.balance);
-            setCreditTransactions(cd.data.transactions.slice(0, 8));
-          }
-        }).catch(() => {});
+    try {
+      const stored = localStorage.getItem("chopdrop-customer");
+      if (stored) {
+        const p = JSON.parse(stored);
+        if (p.name) setName(p.name);
+        if (p.phone) setPhone(p.phone);
+        if (p.areaName) setArea(p.areaName);
       }
-    }).catch(() => {});
+    } catch {}
+
+    // Fetch pool stats
+    fetch("/api/pools?mine=true")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => {
+        if (d?.success && d.data) {
+          setPoolCount(d.data.length);
+          const saved = d.data.reduce((sum: number, p: { product: { retailPrice: number; groupPrice: number }; myQuantity: number }) =>
+            sum + ((p.product.retailPrice - p.product.groupPrice) * p.myQuantity), 0);
+          setTotalSaved(saved);
+        }
+      })
+      .catch(() => {});
+
+    // Fetch wallet
+    fetch("/api/auth/me")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => {
+        if (d?.success && d.data) {
+          if (d.data.firstName) setName(d.data.firstName);
+          if (d.data.walletBalance) setWalletBalance(d.data.walletBalance);
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  function save(updates: Partial<CustomerProfile>) {
-    const updated = { ...profile, ...updates };
-    setProfile(updated);
-    saveCustomerProfile(updated);
-    setEditingProfile(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  function logout() {
+    document.cookie = "chopdrop-user-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    localStorage.removeItem("chopdrop-customer");
+    router.push("/auth");
   }
-
-  async function handleConnectOffice() {
-    if (!officeCodeInput.trim()) return;
-    setOfficeCodeLoading(true); setOfficeCodeError("");
-    try {
-      const res = await fetch("/api/auth/connect-office", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: officeCodeInput.trim() }) });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) { save({ officeId: data.data.id, officeName: data.data.name, officeCode: data.data.code, collectionPoint: data.data.collectionPoint }); setOfficeCodeInput(""); setEditingOffice(false); setOfficeCodeLoading(false); return; }
-      }
-      // If connect-office failed (401, 500, etc.), fall back to lookup
-      const lookupRes = await fetch(`/api/offices/lookup?code=${encodeURIComponent(officeCodeInput.trim().toUpperCase())}`);
-      const lookupData = await lookupRes.json();
-      if (lookupData.success) {
-        save({ officeId: lookupData.data.id, officeName: lookupData.data.name, officeCode: lookupData.data.code, collectionPoint: lookupData.data.collectionPoint });
-        setOfficeCodeInput(""); setEditingOffice(false);
-      } else {
-        setOfficeCodeError(lookupData.error || "Office not found. Check your code.");
-      }
-    } catch { setOfficeCodeError("Network error — check your connection and try again"); }
-    setOfficeCodeLoading(false);
-  }
-
-  async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    clearCustomerProfile();
-    localStorage.removeItem("chopdrop-cart");
-    localStorage.removeItem("chopdrop-banner-dismissed");
-    router.push("/");
-  }
-
-  const initials = profile.name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) || "?";
-  const firstName = profile.name.split(" ")[0] || "there";
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* Profile header — dark, bold */}
-      <div className="px-5 pt-8 pb-6" style={{ background: "var(--dark)" }}>
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full flex items-center justify-center text-[18px] font-extrabold text-white shrink-0" style={{ background: "var(--coral)" }}>
-            {initials}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-[22px] font-extrabold text-white tracking-[-0.02em]">{firstName}</h1>
-            <p className="text-[14px] text-white/50 mt-0.5">{profile.phone || "No phone set"}</p>
-          </div>
-          <button type="button" onClick={() => setEditingProfile(!editingProfile)} className="h-9 px-4 rounded-full text-[13px] font-bold cursor-pointer" style={{ background: "rgba(255,255,255,0.1)", color: "white" }}>
-            {editingProfile ? "Done" : "Edit"}
-          </button>
+      {/* ── Header ── */}
+      <div className="px-5 pt-4 flex items-center justify-between">
+        <div>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Me</p>
+          <h1 className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your little wins add up</h1>
         </div>
+        <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
+        </button>
+      </div>
 
-        {/* Edit form */}
-        {editingProfile && (
-          <div className="mt-5 space-y-3">
-            <input type="text" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} placeholder="Full name" className="w-full px-4 h-12 rounded-[12px] text-[15px] text-white placeholder:text-white/30 focus:outline-none" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }} />
-            <input type="tel" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} placeholder="Phone number" className="w-full px-4 h-12 rounded-[12px] text-[15px] text-white placeholder:text-white/30 focus:outline-none" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }} />
-            <button type="button" onClick={() => save(profile)} className="w-full h-11 rounded-[12px] text-[14px] font-bold text-white cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--coral)" }}>
-              Save changes
-            </button>
-          </div>
-        )}
-
-        {/* Order stats — only if they've ordered */}
-        {orderStats.count > 0 && !editingProfile && (
-          <div className="flex gap-4 mt-5 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-            <div>
-              <div className="text-[22px] font-extrabold text-white tabular-nums">{orderStats.count}</div>
-              <div className="text-[12px] text-white/40">orders</div>
-            </div>
-            <div>
-              <div className="text-[22px] font-extrabold text-white tabular-nums">{formatNaira(orderStats.totalSpent)}</div>
-              <div className="text-[12px] text-white/40">total spent</div>
-            </div>
-          </div>
+      {/* ── Profile ── */}
+      <div className="px-5 mt-5 flex flex-col items-center">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center text-[24px] font-extrabold text-white" style={{ background: "var(--coral)" }}>
+          {name ? name.charAt(0).toUpperCase() : "?"}
+        </div>
+        <h2 className="text-[22px] font-extrabold mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{name || "Set up your profile"}</h2>
+        {phone && <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>{phone}</p>}
+        {area && (
+          <span className="mt-2 text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "white" }}>
+            {area}
+          </span>
         )}
       </div>
 
-      <div className="px-5 space-y-4 mt-5">
+      {/* ── Savings card (lime) ── */}
+      <div className="px-5 mt-5">
+        <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Your earned value</p>
+          <p className="text-[36px] font-extrabold tabular-nums leading-none mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>{fp(totalSaved)} saved</p>
+          <p className="text-[14px] font-bold mt-2" style={{ color: "#17271F" }}>Same appetite. Smarter spending.</p>
+          <p className="text-[11px] mt-1" style={{ color: "#17271F", opacity: 0.6 }}>Food discounts compared with individual prices. Your wallet credit is separate.</p>
+        </div>
+      </div>
 
-        {/* Credit wallet */}
-        {creditBalance > 0 || creditTransactions.length > 0 ? (
-          <section className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(13,159,95,0.1)" }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
-                  </div>
-                  <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Pool credits</span>
-                </div>
-                <div className="text-right">
-                  <div className="text-[22px] font-extrabold tabular-nums leading-none" style={{ color: "var(--emerald)" }}>
-                    {formatNaira(creditBalance)}
-                  </div>
-                  <div className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>available</div>
-                </div>
-              </div>
+      {/* ── Stats row ── */}
+      <div className="px-5 mt-4 flex gap-3">
+        <div className="flex-1 p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" className="mb-2"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /></svg>
+          <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px", color: "#17271F" }}>{poolCount}</p>
+          <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--text-muted)" }}>pools joined</p>
+        </div>
+        <div className="flex-1 p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" className="mb-2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+          <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px", color: "#17271F" }}>{streak} days</p>
+          <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--text-muted)" }}>current streak</p>
+        </div>
+      </div>
 
-              {creditTransactions.length > 0 && (
-                <div className="pt-3 space-y-2.5" style={{ borderTop: "1px solid var(--border)" }}>
-                  <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Recent activity</p>
-                  {creditTransactions.map((t) => {
-                    const isCredit = t.amount > 0;
-                    const dateStr = new Date(t.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short" });
-                    return (
-                      <div key={t.id} className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: isCredit ? "rgba(13,159,95,0.08)" : "rgba(196,87,42,0.08)" }}>
-                          {isCredit ? (
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                          ) : (
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[13px] font-semibold truncate" style={{ color: "var(--text)" }}>
-                            {t.description || (t.type === "POOL_REFUND" ? "Pool cashback" : t.type === "APPLIED" ? "Credits applied" : "Credit adjustment")}
-                          </p>
-                          <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{dateStr}</p>
-                        </div>
-                        <span className="text-[14px] font-bold tabular-nums shrink-0" style={{ color: isCredit ? "var(--emerald)" : "var(--coral)" }}>
-                          {isCredit ? "+" : ""}{formatNaira(Math.abs(t.amount))}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </section>
-        ) : null}
+      {/* ── Wallet ── */}
+      <div className="px-5 mt-4">
+        <Link href="/rewards" className="flex items-center gap-3 p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /></svg>
+          <div className="flex-1 min-w-0">
+            <p className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{fp(walletBalance)}</p>
+            <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Wallet · Store credit for your next chop</p>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+        </Link>
+        <button className="mt-2 text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>
+          See how you earned it →
+        </button>
+      </div>
 
-        {/* Office connection */}
-        <section className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-          {profile.officeName ? (
-            /* Connected state — clean confirmation */
-            <div className="p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 21V4h11v17M15 9h5v12" /></svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-[16px] font-extrabold" style={{ color: "var(--text)" }}>{profile.officeName}</h2>
-                  <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>Pickup at {profile.collectionPoint || "reception"}</p>
-                </div>
-                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "rgba(13,159,95,0.1)", color: "var(--emerald)" }}>Connected</span>
-              </div>
-              <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid var(--border)" }}>
-                <span className="text-[13px] font-mono font-bold tabular-nums" style={{ color: "var(--text-muted)" }}>{profile.officeCode}</span>
-                <button type="button" onClick={() => setShowDisconnectConfirm(true)}
-                  className="text-[13px] font-semibold cursor-pointer" style={{ color: "var(--coral)" }}>
-                  Disconnect
-                </button>
-              </div>
-            </div>
-          ) : (
-            /* Not connected — join form */
-            <div className="p-4">
-              <h2 className="text-[16px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Connect your group</h2>
-              <p className="text-[13px] mb-4" style={{ color: "var(--text-secondary)" }}>Get free delivery on every order</p>
-              {editingOffice ? (
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <input type="text" value={officeCodeInput} onChange={(e) => setOfficeCodeInput(e.target.value)} placeholder="Office code e.g. STERL-001" className="flex-1 px-4 h-11 rounded-[10px] text-[14px] uppercase focus:outline-none" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} onKeyDown={(e) => e.key === "Enter" && handleConnectOffice()} />
-                    <button type="button" onClick={handleConnectOffice} disabled={officeCodeLoading} className="h-11 px-5 rounded-[10px] text-[14px] font-bold text-white disabled:opacity-50 cursor-pointer" style={{ background: "var(--dark)" }}>{officeCodeLoading ? "..." : "Join"}</button>
-                  </div>
-                  {officeCodeError && <p className="text-[12px]" style={{ color: "var(--coral)" }}>{officeCodeError}</p>}
-                  <button type="button" onClick={() => setEditingOffice(false)} className="text-[13px] font-semibold cursor-pointer" style={{ color: "var(--text-muted)" }}>Cancel</button>
-                </div>
-              ) : (
-                <button type="button" onClick={() => setEditingOffice(true)} className="w-full h-11 rounded-[12px] text-[14px] font-bold cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}>
-                  Enter group code
-                </button>
-              )}
-            </div>
-          )}
-        </section>
-
-        {/* Invite colleagues — viral growth */}
-        {profile.officeName && profile.officeCode && (
-          <section className="rounded-[20px] p-4" style={{ background: "var(--dark)" }}>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--gold)" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-              </div>
+      {/* ── Quick Links ── */}
+      <div className="px-5 mt-6">
+        <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Quick Links</h3>
+        <div className="rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
+          {[
+            { label: "My orders", sub: "Track a plate or revisit a receipt", href: "/pools" },
+            { label: "Edit profile", sub: "Your name, phone and delivery area", href: "#" },
+            { label: "Bring your people", sub: "Referrals · Share your link", href: "#" },
+            { label: "Fun rewards", sub: "Daily scratch, streak and points", href: "/rewards" },
+            { label: "Settings", sub: "Notifications, payments and help", href: "#" },
+          ].map((item, i) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="flex items-center justify-between px-5 py-4 press-feedback"
+              style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
+            >
               <div>
-                <h3 className="text-[15px] font-bold text-white">Invite friends</h3>
-                <p className="text-[13px] text-white/50">More people = better prices for everyone</p>
+                <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>{item.label}</p>
+                <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{item.sub}</p>
               </div>
-            </div>
-            <a href={`https://wa.me/?text=${encodeURIComponent(`Join me on ChopDrop! Pool orders together and everyone pays less.\n\nUse code: ${profile.officeCode}\n\n${typeof window !== "undefined" ? window.location.origin : ""}/join/${profile.officeName?.toLowerCase().replace(/\s+/g, "-")}`)}`}
-              target="_blank" rel="noopener noreferrer"
-              className="w-full h-11 rounded-[12px] text-[14px] font-bold flex items-center justify-center gap-2 text-white cursor-pointer active:scale-[0.97] transition-transform" style={{ background: "#25d366" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-              Share on WhatsApp
-            </a>
-          </section>
-        )}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+            </Link>
+          ))}
+        </div>
+      </div>
 
-        {/* Settings */}
-        <section className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-          {/* Order reminder */}
-          <button type="button" onClick={() => save({ reminders: !profile.reminders })} className="w-full flex items-center gap-3 p-4 text-left cursor-pointer" style={{ borderBottom: "1px solid var(--border)" }}>
-            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
-            </div>
-            <div className="flex-1">
-              <span className="text-[15px] font-semibold" style={{ color: "var(--text)" }}>Order reminder</span>
-              <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>{profile.reminders ? "Daily at 9:45 AM" : "Off"}</p>
-            </div>
-            <div className="w-[42px] h-[26px] rounded-full flex items-center px-[3px] transition-colors duration-200 shrink-0" style={{ background: profile.reminders ? "var(--emerald)" : "var(--border)", justifyContent: profile.reminders ? "flex-end" : "flex-start" }}>
-              <div className="w-5 h-5 bg-white rounded-full transition-transform" />
-            </div>
-          </button>
-
-          {/* Order history */}
-          <Link href="/orders" className="flex items-center gap-3 p-4 cursor-pointer" style={{ borderBottom: "1px solid var(--border)" }}>
-            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
-            </div>
-            <span className="text-[15px] font-semibold flex-1" style={{ color: "var(--text)" }}>Order history</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-          </Link>
-
-          {/* Help */}
-          <a href="https://wa.me/2349120532827?text=Hi%20ChopDrop!%20I%20need%20help" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 cursor-pointer">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-            </div>
-            <span className="text-[15px] font-semibold flex-1" style={{ color: "var(--text)" }}>Help & support</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-          </a>
-        </section>
-
-        {/* Log out */}
-        <button type="button" onClick={handleLogout} className="w-full h-12 rounded-[20px] text-[15px] font-semibold flex items-center justify-center gap-2 cursor-pointer active:scale-[0.97] transition-transform" style={{ color: "var(--coral)", background: "var(--card)", border: "1px solid var(--border)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+      {/* ── Logout ── */}
+      <div className="px-5 mt-6 mb-4">
+        <button
+          type="button"
+          onClick={logout}
+          className="w-full h-[50px] rounded-full text-[14px] font-bold cursor-pointer press-feedback"
+          style={{ background: "var(--sand)", color: "var(--coral)" }}
+        >
           Log out
         </button>
-
-        <div className="text-center pt-2 pb-4">
-          <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>ChopDrop v1.0 · Made in Lagos</p>
-        </div>
       </div>
 
-      {/* Toast */}
-      {saved && (
-        <div className="fixed z-[100] left-1/2 bottom-24 -translate-x-1/2 rounded-full pl-3 pr-4 py-2.5 flex items-center gap-2 text-[13px] font-semibold text-white" style={{ background: "var(--dark)", animation: "toastIn 0.3s ease" }}>
-          <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-          </div>
-          Saved
-        </div>
-      )}
-
-      {showDisconnectConfirm && (
-        <ConfirmDialog
-          title="Disconnect from office?"
-          message="You'll lose free delivery and pool benefits for this office."
-          confirmLabel="Disconnect"
-          destructive
-          onConfirm={async () => {
-            setShowDisconnectConfirm(false);
-            await fetch("/api/auth/disconnect-office", { method: "POST" });
-            save({ officeId: undefined, officeName: undefined, officeCode: undefined, collectionPoint: "" });
-          }}
-          onCancel={() => setShowDisconnectConfirm(false)}
-        />
-      )}
       <BottomNav />
     </main>
   );
