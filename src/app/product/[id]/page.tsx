@@ -497,31 +497,12 @@ export default function ProductDetailPage() {
         </div>
       )}
 
-      {/* ── Solo: quantity + explanation (no pool) ── */}
+      {/* ── No pool: request one ── */}
       {!hasPoolPricing && (
-        <>
-          <div className="px-5 mt-5 flex items-center justify-between">
-            <span className="text-[15px] font-bold" style={{ color: "#17271F" }}>Solo quantity</span>
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
-              </button>
-              <span className="text-[16px] font-extrabold tabular-nums w-6 text-center" style={{ color: "#17271F" }}>{quantity}</span>
-              <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style={{ background: "var(--sand)" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-              </button>
-            </div>
-          </div>
-          <div className="px-5 mt-5">
-            <h3 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Need your own plate?</h3>
-            <p className="text-[13px] mt-2 leading-[155%]" style={{ color: "var(--text-muted)" }}>
-              Solo checkout confirms your order after payment — no waiting for a pool to fill. {product.vendor.name} still needs time to prepare it.
-            </p>
-            <p className="text-[13px] mt-2 font-bold" style={{ color: "#17271F" }}>
-              We&apos;ll notify you when she marks it ready.
-            </p>
-          </div>
-        </>
+        <div className="px-5 mt-5 p-4 rounded-[16px]" style={{ background: "var(--lime)" }}>
+          <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>No pool yet for this item</p>
+          <p className="text-[12px] mt-1" style={{ color: "#17271F", opacity: 0.7 }}>Request a pool and we&apos;ll notify {product.vendor.name} when enough people want it. Add to your plate in the meantime.</p>
+        </div>
       )}
 
       {/* ── Description ── */}
@@ -615,20 +596,19 @@ export default function ProductDetailPage() {
             </>
           )}
 
-          {/* ── NOT JOINED: no pool pricing — solo is primary ── */}
+          {/* ── NOT JOINED: no pool pricing — request pool is primary ── */}
           {!joinedStatus && !hasPoolPricing && (
             <>
-              <button type="button" onClick={addSolo}
+              <button type="button" onClick={() => router.push(`/request-sent/${id}`)}
                 className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
                 style={{ background: "var(--coral)" }}>
-                <span>Order Now — {fp(product.retailPrice * quantity)}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+                <span>Request Pool</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
               </button>
-              <button type="button" onClick={() => router.push(`/request-sent/${id}`)}
-                className="w-full h-[40px] rounded-full flex items-center justify-center gap-2 text-[12px] font-bold mt-2 cursor-pointer press-feedback"
+              <button type="button" onClick={addSolo}
+                className="w-full h-[40px] rounded-full flex items-center justify-center text-[12px] font-bold mt-2 cursor-pointer press-feedback"
                 style={{ background: "var(--sand)", color: "#17271F" }}>
-                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
-                Request a pool for cheaper price
+                Add to plate — {fp(product.retailPrice)}
               </button>
             </>
           )}
