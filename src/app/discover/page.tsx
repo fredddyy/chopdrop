@@ -524,6 +524,7 @@ export default function DiscoverPage() {
                         <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
                         <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                       </div>
+                      <p className="text-[10px] font-bold mt-1" style={{ color: "var(--text-muted)" }}>{p.fill.spotsLeft} spot{p.fill.spotsLeft !== 1 ? "s" : ""} left · {p.minPoolSize} needed</p>
                     </div>
                   </Link>
                 ))}
