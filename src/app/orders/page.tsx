@@ -152,35 +152,29 @@ export default function OrdersPage() {
         </div>
       ) : (
         <div className="px-5 mt-5">
-          <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Past orders &amp; receipts</h3>
-          <div className="flex flex-col gap-3">
-            {[
-              { name: "Chicken Shawarma", price: 80000, type: "POOL", detail: "Collected yesterday · Saved ₦400", hasSaved: true },
-              { name: "Moi Moi + Pap", price: 50000, type: "EXPIRED", detail: "Expired & refunded, 22 Oct", hasSaved: false },
-              { name: "Fried Rice", price: 180000, type: "SOLO", detail: "Collected Monday · Full menu price", hasSaved: false },
-            ].map((order) => (
-              <div key={order.name} className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+          <h3 className="text-[17px] font-extrabold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Past orders &amp; receipts</h3>
+          {[
+            { name: "Chicken Shawarma", price: 80000, type: "POOL", detail: "Collected yesterday · Saved ₦400", expired: false },
+            { name: "Moi Moi + Pap", price: 50000, type: "EXPIRED", detail: "Expired unfilled · ₦500 refunded, 22 Oct", expired: true },
+            { name: "Fried Rice", price: 180000, type: "SOLO", detail: "Collected Monday · Full menu price", expired: false },
+          ].map((order, i, arr) => (
+            <div key={order.name}>
+              <div className="py-3">
                 <h4 className="text-[14px] font-bold" style={{ color: "#17271F" }}>{order.name} · {fp(order.price)}</h4>
-                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-                  {order.type} · {order.detail}
-                </p>
-                {order.type !== "EXPIRED" && (
-                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                    {order.type === "SOLO" ? "Collected Monday · Full menu price" : ""}
-                  </p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{order.type} · {order.detail}</p>
+                {order.expired && (
+                  <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>Returned to original payment source</p>
                 )}
-                {order.type === "EXPIRED" && (
-                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Returned to original payment source</p>
-                )}
-                <div className="flex gap-2 mt-3">
-                  {order.type !== "EXPIRED" && (
+                <div className="flex gap-2 mt-2.5">
+                  {!order.expired && (
                     <Link href="/discover" className="h-[32px] px-4 rounded-full text-[11px] font-bold inline-flex items-center press-feedback" style={{ background: "var(--coral)", color: "white" }}>Reorder</Link>
                   )}
                   <button className="h-[32px] px-4 rounded-full text-[11px] font-bold cursor-pointer press-feedback" style={{ background: "var(--sand)", color: "#17271F" }} onClick={() => alert("Receipt feature coming soon")}>Receipt</button>
                 </div>
               </div>
-            ))}
-          </div>
+              {i < arr.length - 1 && <div className="h-px" style={{ background: "var(--border)" }} />}
+            </div>
+          ))}
           <p className="text-[11px] mt-4" style={{ color: "var(--text-muted)" }}>
             Reorder picks a cheaper live pool when available. Otherwise, order solo.
           </p>
