@@ -265,43 +265,38 @@ export default function StorePage() {
             <div key={cat} className="mt-6">
               <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-3" style={{ color: "var(--coral)" }}>{cat} · {items.length} meal{items.length !== 1 ? "s" : ""}</p>
 
-              {/* Pool-eligible items — keep as cards */}
+              {/* Pool-eligible items — clean list with pool indicator */}
               {poolItems.length > 0 && (
-                <div className="flex flex-col gap-3 mb-3">
-                  {poolItems.map((item) => {
+                <div className="rounded-[22px] overflow-hidden mb-3" style={{ background: "var(--card)" }}>
+                  {poolItems.map((item, i) => {
                     const hasPool = item.groupPrice < item.retailPrice;
-                    const fill = hasPool ? poolFill(item.id, 0, item.minPoolSize) : null;
+                    const sav = hasPool ? Math.round(((item.retailPrice - item.groupPrice) / item.retailPrice) * 100) : 0;
                     return (
-                      <Link key={item.id} href={`/product/${item.id}`} className="block p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
-                        <div className="flex items-start gap-3">
+                      <Link key={item.id} href={`/product/${item.id}`} className="block press-feedback">
+                        {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
+                        <div className="flex items-center gap-3 px-4 py-3">
                           {item.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={item.imageUrl} alt={item.name} className="w-[72px] h-[72px] rounded-[14px] object-cover shrink-0" loading="lazy" />
+                            <img src={item.imageUrl} alt={item.name} className="w-[56px] h-[56px] rounded-[12px] object-cover shrink-0" loading="lazy" />
                           ) : (
-                            <div className="w-[72px] h-[72px] rounded-[14px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
-                              <span className="text-[18px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                            <div className="w-[56px] h-[56px] rounded-[12px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                              <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-[15px] font-extrabold leading-[140%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{item.name}</h4>
-                            <div className="flex items-baseline gap-1.5 mt-1">
-                              <span className="text-[17px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fp(item.groupPrice)}</span>
+                            <h4 className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#17271F" }}>{item.name}</h4>
+                            <div className="flex items-baseline gap-1.5 mt-0.5">
+                              <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.groupPrice)}</span>
                               {hasPool && <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>}
                             </div>
                           </div>
+                          {hasPool ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ background: "var(--lime)", color: "#17271F" }}>-{sav}%</span>
+                          ) : (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>Pool</span>
+                          )}
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
                         </div>
-                        {hasPool && fill && (
-                          <div className="mt-2.5 flex items-center justify-between text-[11px] font-extrabold" style={{ color: "#17271F" }}>
-                            <span>{fill.joined}/{item.minPoolSize} in</span>
-                            <span style={{ color: "var(--coral)" }}>{fill.hours}h {(fill.hours * 20) % 60}m</span>
-                          </div>
-                        )}
-                        {!hasPool && (
-                          <div className="mt-2.5 h-[34px] rounded-full flex items-center justify-between px-4 text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                            <span>Request Pool</span>
-                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
-                          </div>
-                        )}
                       </Link>
                     );
                   })}
