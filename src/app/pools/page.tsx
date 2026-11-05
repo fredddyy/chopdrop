@@ -1,233 +1,109 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 
-function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
-
-interface PoolItem {
-  id: string;
-  product: { id: string; name: string; imageUrl: string | null; groupPrice: number; retailPrice: number };
-  name: string | null;
-  areaName: string | null;
-  status: string;
-  minSize: number;
-  memberCount: number;
-  deadline: string;
-  creatorName: string;
-  isCreator: boolean;
-  myQuantity: number;
-  myPaymentStatus: string;
-  begCode: string | null;
-  begDiscount: number;
-}
-
-type Tab = "pools" | "members" | "activity";
-
-export default function PoolsPage() {
-  const [tab, setTab] = useState<Tab>("pools");
-  const [pools, setPools] = useState<PoolItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userArea, setUserArea] = useState("");
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("chopdrop-customer");
-      if (stored) {
-        const p = JSON.parse(stored);
-        if (p.name) setUserName(p.name);
-        if (p.areaName) setUserArea(p.areaName);
-      }
-    } catch {}
-    loadPools();
-  }, []);
-
-  function loadPools() {
-    setLoading(true);
-    fetch("/api/pools?mine=true")
-      .then((r) => {
-        if (r.status === 401) { setAuthError(true); setLoading(false); return null; }
-        if (!r.ok) throw new Error(`${r.status}`);
-        return r.json();
-      })
-      .then((d) => { if (d?.success) setPools(d.data); if (d) setLoading(false); })
-      .catch(() => setLoading(false));
-  }
-
-  const activePools = pools.filter((p) => p.status === "OPEN" || p.status === "FILLED");
-  const totalSaved = pools.reduce((sum, p) => sum + ((p.product.retailPrice - p.product.groupPrice) * p.myQuantity), 0);
+export default function GangsPage() {
+  const [inviteLink, setInviteLink] = useState("");
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
       {/* ── Header ── */}
       <div className="px-5 pt-4 flex items-center justify-between">
-        <div>
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Pools</p>
-          <h1 className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your food people</h1>
+        <div className="flex items-center gap-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+          <div>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Gangs</p>
+            <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+              Chop<span style={{ color: "var(--coral)" }}>Drop</span>
+            </span>
+          </div>
         </div>
         <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
         </button>
       </div>
 
-      {/* ── Location ── */}
-      {userArea && (
-        <div className="px-5 mt-2">
-          <span className="text-[11px] font-bold h-[25px] px-3 rounded-full inline-flex items-center" style={{ background: "#17271F", color: "white" }}>{userArea}</span>
-        </div>
-      )}
+      {/* ── Hero ── */}
+      <div className="px-5 mt-5">
+        <h1 className="text-[28px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#17271F" }}>
+          Good chop needs<br />good company.
+        </h1>
+        <p className="text-[14px] mt-2 leading-[145%]" style={{ color: "var(--text-muted)" }}>
+          Create your food gang or join your friends. Your people make it easier to find and fill better-priced pools.
+        </p>
+      </div>
 
-      {loading ? (
-        <div className="px-5 pt-8 space-y-4" aria-busy="true">
-          <div className="h-[90px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-          <div className="h-[120px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
+      {/* ── Start your crew — lime CTA card ── */}
+      <div className="px-5 mt-5">
+        <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
+          <h3 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Start your crew.</h3>
+          <p className="text-[13px] mt-1 leading-[155%]" style={{ color: "#17271F", opacity: 0.7 }}>
+            Roommates, coursemates, late-night foodies — give your table a name and bring them together.
+          </p>
+          <Link href="/pools/create" className="mt-4 h-[44px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+            <span>Create a gang</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+          </Link>
         </div>
-      ) : authError ? (
-        <div className="flex flex-col items-center pt-16 px-8">
-          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "#17271F" }}>Log in to see your pools</h2>
-          <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Your active deals and savings appear here.</p>
-          <Link href="/auth?returnTo=/pools" className="h-[50px] px-6 rounded-full text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Log in</Link>
-        </div>
-      ) : (
-        <>
-          {/* ── Tabs ── */}
-          <div className="px-5 mt-4 flex">
-            {(["pools", "members", "activity"] as Tab[]).map((t) => (
-              <button
-                key={t} type="button" onClick={() => setTab(t)}
-                className="flex-1 h-[40px] text-[13px] font-bold cursor-pointer rounded-full"
-                style={{
-                  background: tab === t ? "#17271F" : "transparent",
-                  color: tab === t ? "white" : "var(--text-muted)",
-                }}
-              >
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </button>
-            ))}
+      </div>
+
+      {/* ── Got an invite? ── */}
+      <div className="px-5 mt-5">
+        <div className="p-5 rounded-[22px]" style={{ background: "var(--card)" }}>
+          <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Got an invite?</h3>
+          <p className="text-[13px] mt-1 leading-[145%]" style={{ color: "var(--text-muted)" }}>
+            Paste a gang invite link from your friends to find their table.
+          </p>
+          <div className="mt-3">
+            <label className="text-[12px] font-bold block mb-1.5" style={{ color: "#17271F" }}>Gang invite link</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Paste your invite link"
+                value={inviteLink}
+                onChange={(e) => setInviteLink(e.target.value)}
+                className="w-full h-[44px] px-4 pr-10 rounded-[12px] text-[14px] font-medium outline-none"
+                style={{ background: "var(--bg)", color: "var(--text)", border: "1px solid var(--border)" }}
+              />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute right-3 top-1/2 -translate-y-1/2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+            </div>
           </div>
+          <button className="mt-3 text-[13px] font-bold cursor-pointer flex items-center gap-1.5" style={{ color: "#17271F" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+            Find &amp; join a gang
+          </button>
+        </div>
+      </div>
 
-          {tab === "pools" && (
-            <>
-              {/* ── Stats card ── */}
-              <div className="px-5 mt-4">
-                <div className="p-5 rounded-[22px] flex items-center justify-between" style={{ background: "#17271F" }}>
-                  <div>
-                    <p className="text-[28px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px" }}>{fp(totalSaved)}</p>
-                    <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--subdued)" }}>saved this month</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[28px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px" }}>{pools.length}</p>
-                    <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--subdued)" }}>plates shared</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* ── Active pools ── */}
-              <div className="px-5 mt-5 flex items-center justify-between">
-                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>On the table</h3>
-                <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{activePools.length} active</span>
-              </div>
-
-              {activePools.length > 0 ? (
-                <div className="px-5 mt-3 flex flex-col gap-4">
-                  {activePools.map((pool) => {
-                    const fillPct = Math.round((pool.memberCount / pool.minSize) * 100);
-                    const minutesLeft = Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 60000));
-                    const isPaid = pool.myPaymentStatus === "SUCCESS";
-                    return (
-                      <Link
-                        key={pool.id}
-                        href={`/product/${pool.product.id}?pool=${pool.id}`}
-                        className="block p-4 rounded-[22px] press-feedback"
-                        style={{ background: "var(--card)" }}
-                      >
-                        {/* Product row — image left, info + price right */}
-                        <div className="flex items-start gap-3">
-                          <div className="w-[70px] h-[70px] rounded-[16px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
-                            {pool.product.imageUrl && (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={pool.product.imageUrl} alt={pool.product.name} className="w-full h-full object-cover" />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            {isPaid && (
-                              <span className="text-[10px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full inline-block mb-1" style={{ background: "var(--lime)", color: "#17271F" }}>{pool.memberCount} members in</span>
-                            )}
-                            <h4 className="text-[17px] font-extrabold leading-[145%] truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{pool.product.name}</h4>
-                            <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{pool.creatorName} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--text-muted)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
-                            <p className="mt-1">
-                              <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--coral)" }}>{fp(pool.product.groupPrice)}</span>
-                              <span className="text-[14px] font-extrabold tabular-nums ml-1" style={{ color: "var(--coral)", textDecoration: "line-through" }}> was {fp(pool.product.retailPrice)}</span>
-                            </p>
-                          </div>
-                        </div>
-                        {/* Progress — full width */}
-                        <div className="mt-3">
-                          <div className="flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
-                            <span>{pool.memberCount}/{pool.minSize} plates claimed</span>
-                            <span style={{ color: "var(--coral)" }}>{minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h left` : `${minutesLeft}m left`}</span>
-                          </div>
-                          <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
-                            <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--coral)", borderRadius: "9px" }} />
-                          </div>
-                        </div>
-                        {/* Beg price link */}
-                        {pool.begCode && (
-                          <a
-                            href={`/beg/${pool.begCode}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="mt-3 h-9 px-4 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 press-feedback"
-                            style={{ background: "var(--lime)", color: "#17271F" }}
-                          >
-                            {pool.begDiscount > 0 ? `${fp(pool.begDiscount)} saved via beg price` : "Beg price \u2014 share to save more"}
-                          </a>
-                        )}
-                      </Link>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="px-5 mt-6 text-center">
-                  <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>No active pools. Join one from Discover.</p>
-                </div>
-              )}
-
-              {/* ── Start a pool CTA ── */}
-              <div className="px-5 mt-5">
-                <Link
-                  href="/discover"
-                  className="flex items-center gap-3 p-5 rounded-[22px] press-feedback"
-                  style={{ background: "var(--lime)" }}
-                >
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#17271F" }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--lime)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                  </div>
-                  <div>
-                    <p className="text-[15px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Start a pool</p>
-                    <p className="text-[12px]" style={{ color: "#17271F", opacity: 0.6 }}>Find a deal and bring your people along.</p>
-                  </div>
-                </Link>
-              </div>
-            </>
-          )}
-
-          {tab === "members" && (
-            <div className="px-5 mt-8 text-center">
-              <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>Crews coming soon. For now, share pool links with friends on WhatsApp.</p>
+      {/* ── Why eat as a gang? ── */}
+      <div className="px-5 mt-6">
+        <h3 className="text-[17px] font-extrabold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Why eat as a gang?</h3>
+        <div className="space-y-3.5">
+          {[
+            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" /></svg>, text: "Discover pools your friends rate" },
+            { icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="var(--coral)" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>, text: "Request the meals you all want" },
+            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>, text: "Invite more people to fill a pool" },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-3">
+              {item.icon}
+              <span className="text-[14px] font-medium" style={{ color: "#17271F" }}>{item.text}</span>
             </div>
-          )}
+          ))}
+        </div>
+      </div>
 
-          {tab === "activity" && (
-            <div className="px-5 mt-8 text-center">
-              <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>Pool activity feed coming soon.</p>
-            </div>
-          )}
-        </>
-      )}
+      {/* ── Trust note ── */}
+      <div className="px-5 mt-6 mb-4">
+        <div className="flex items-start gap-2.5 p-4 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+          <p className="text-[12px] leading-[155%]" style={{ color: "var(--emerald)" }}>
+            A gang is your food crew, not a shared bill. Everyone chooses and pays for their own plates.
+          </p>
+        </div>
+      </div>
 
       <BottomNav />
     </main>
