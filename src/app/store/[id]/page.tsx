@@ -145,50 +145,51 @@ export default function StorePage() {
             <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--lime)", color: "#17271F" }}>1 live pool</span>
           </div>
 
-          <Link href={`/product/${featured.id}`} className="block rounded-[22px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-            {/* Badges + image */}
-            <div className="relative">
-              {featured.imageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={featured.imageUrl} alt={featured.name} className="w-full h-[200px] object-cover" />
-              )}
-              <div className="absolute top-3 left-3 flex gap-2">
-                <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "var(--lime)", color: "#17271F", padding: "6px 10px" }}>
-                  Only {featuredFill.spotsLeft} spots
-                </span>
-                <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "#FFE9DD", color: "#17271F", padding: "6px 10px" }}>
-                  Save {featuredSav}%
-                </span>
-              </div>
-            </div>
-            {/* Info */}
+          <Link href={`/product/${featured.id}`} className="block rounded-[22px] overflow-hidden press-feedback" style={{ background: "#17271F" }}>
+            {/* Image — no badges on it */}
+            {featured.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={featured.imageUrl} alt={featured.name} className="w-full h-[200px] object-cover" />
+            )}
+            {/* Info on dark */}
             <div className="p-4">
+              {/* Badges above title */}
+              <p className="text-[10px] font-extrabold uppercase tracking-wide mb-2" style={{ color: "var(--subdued)" }}>
+                Only {featuredFill.spotsLeft} spots · Save {featuredSav}%
+              </p>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h4 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{featured.name}</h4>
-                  <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{store.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--text-muted)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
+                  <h4 className="text-[17px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{featured.name}</h4>
+                  <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{store.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--subdued)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
                 </div>
-                <span className="text-[24px] font-extrabold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--coral)" }}>{fp(featured.groupPrice)}</span>
+                <div className="text-right shrink-0">
+                  <span className="text-[24px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--lime)" }}>{fp(featured.groupPrice)}</span>
+                  <p className="text-[12px]" style={{ color: "var(--subdued)" }}>{fp(featured.retailPrice)}</p>
+                </div>
               </div>
-              <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{fp(featured.retailPrice)} individual</p>
               {/* Progress */}
-              <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
+              <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold text-white">
                 <span>{featuredFill.joined}/{featured.minPoolSize} plates claimed</span>
-                <span style={{ color: "var(--coral)" }}>{featuredFill.hours * 60}m left</span>
+                <span style={{ color: "var(--lime)" }}>{featuredFill.hours * 60}m left</span>
               </div>
-              <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
-                <div className="h-full" style={{ width: `${featuredFill.fillPct}%`, background: "var(--coral)", borderRadius: "9px" }} />
+              <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+                <div className="h-full" style={{ width: `${featuredFill.fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
+              </div>
+              {/* Pickup */}
+              <div className="flex items-center gap-1.5 mt-2.5 text-[11px]" style={{ color: "var(--subdued)" }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                Jaja Hostel Reception · Free pickup
               </div>
               {/* Social proof */}
               <div className="flex items-center gap-2 mt-3">
                 <div className="flex -space-x-2">
                   {Array.from({ length: Math.min(featuredFill.joined, 3) }).map((_, j) => (
-                    <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid var(--card)" }}>
+                    <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
                       {String.fromCharCode(65 + j)}
                     </div>
                   ))}
                 </div>
-                <span className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>{featuredFill.joined} people are in</span>
+                <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>{featuredFill.joined} people are in</span>
               </div>
               {/* Jump In CTA */}
               <div className="mt-4">
