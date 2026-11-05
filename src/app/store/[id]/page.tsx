@@ -378,9 +378,10 @@ export default function StorePage() {
                 <span>Pay Now — {fp(total)}</span>
                 <span className="text-[12px]">{cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""}</span>
               </Link>
-              <p className="text-[12px] text-center mt-2" style={{ color: "var(--text-muted)" }}>
-                or <span className="font-bold" style={{ color: "var(--coral)" }}>beg price</span> → pay as low as {fp(begFloor)}
-              </p>
+              <Link href="/cart" className="w-full h-[44px] rounded-full flex items-center justify-center gap-2 mt-2 text-[13px] font-bold press-feedback" style={{ background: "#17271F", color: "white" }}>
+                <span>Beg Price — pay as low as {fp(begFloor)}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+              </Link>
             </div>
           </div>
         );
