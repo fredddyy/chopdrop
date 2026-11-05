@@ -1,215 +1,72 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useCart } from "@/lib/cart";
-import { formatNaira } from "@/lib/utils";
-import { SkeletonListItem } from "@/components/skeleton";
-import { BottomNav } from "@/components/bottom-nav";
+import { useState } from "react";
 import Link from "next/link";
+import { BottomNav } from "@/components/bottom-nav";
 
-interface OrderData {
-  id: string; orderCode: string; customerName: string; status: string;
-  paymentStatus: string; totalAmount: number; quantity: number; createdAt: string;
-  dailyMenu: { meal: { name: string; imageUrl: string | null; restaurant: { name: string } }; timeSlot: { startTime: string; endTime: string } };
-  office?: { name: string; collectionPoint: string } | null;
-}
+function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
-function cleanName(name: string) { return name.replace(/^(Small|Regular|Large|XL)\s*(VM\s*[-–]\s*)?/i, ""); }
-
-function statusStyle(status: string): { label: string; bg: string; color: string } {
-  switch (status) {
-    case "CONFIRMED": return { label: "Cooking", bg: "rgba(212,162,78,0.12)", color: "var(--gold)" };
-    case "READY": return { label: "On the way", bg: "rgba(13,159,95,0.1)", color: "var(--emerald)" };
-    case "COMPLETED": return { label: "Delivered", bg: "rgba(13,159,95,0.1)", color: "var(--emerald)" };
-    case "CANCELLED": return { label: "Cancelled", bg: "rgba(232,96,76,0.1)", color: "var(--coral)" };
-    default: return { label: "Pending", bg: "var(--sand)", color: "var(--text-muted)" };
-  }
-}
+type Tab = "active" | "past";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<OrderData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"active" | "past">("active");
-  const [reorderToast, setReorderToast] = useState("");
-  const cart = useCart();
-
-  useEffect(() => {
-    fetch("/api/orders/mine").then((r) => r.json()).then((data) => { if (data.success) setOrders(data.data); setLoading(false); }).catch(() => setLoading(false));
-  }, []);
-
-  const activeOrders = orders.filter((o) => o.status !== "COMPLETED" && o.status !== "CANCELLED");
-  const pastOrders = orders.filter((o) => o.status === "COMPLETED" || o.status === "CANCELLED");
-  const hasActive = activeOrders.length > 0;
-  const hasPast = pastOrders.length > 0;
-
-  function handleReorder(order: OrderData) {
-    cart.addItem({
-      dailyMenuId: order.id,
-      name: order.dailyMenu.meal.name,
-      description: "",
-      imageUrl: order.dailyMenu.meal.imageUrl,
-      restaurantName: order.dailyMenu.meal.restaurant.name,
-      price: order.totalAmount / order.quantity,
-    });
-    setReorderToast(order.dailyMenu.meal.name);
-    setTimeout(() => setReorderToast(""), 2200);
-  }
-
-  if (loading) {
-    return (
-      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
-        <div className="px-5 pt-6 pb-4">
-          <div className="rounded-[8px] animate-pulse mb-2" style={{ width: "40%", height: 24, background: "var(--sand)" }} />
-          <div className="rounded-[8px] animate-pulse" style={{ width: "55%", height: 14, background: "var(--sand)" }} />
-        </div>
-        <div className="px-5">
-          <SkeletonListItem />
-          <SkeletonListItem />
-          <SkeletonListItem />
-        </div>
-        <BottomNav />
-      </main>
-    );
-  }
+  const [tab, setTab] = useState<Tab>("active");
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
-      {/* Header */}
-      <div className="px-5 pt-6 pb-4">
-        <h1 className="text-[24px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>Orders</h1>
+
+      {/* ── Header ── */}
+      <div className="px-5 pt-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
+          <div>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Orders</p>
+            <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>My orders</span>
+          </div>
+        </div>
+        <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
+        </button>
       </div>
 
-      {orders.length === 0 ? (
-        <div className="flex flex-col items-center py-16 px-6">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round">
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
+      {/* ── Title ── */}
+      <div className="px-5 mt-4">
+        <h1 className="text-[28px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#17271F" }}>Order history</h1>
+      </div>
+
+      {/* ── Tabs ── */}
+      <div className="px-5 mt-4 flex gap-2">
+        <button type="button" onClick={() => setTab("active")}
+          className="h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
+          style={{ background: tab === "active" ? "#17271F" : "var(--sand)", color: tab === "active" ? "white" : "var(--text-secondary)" }}>
+          Active · 0
+        </button>
+        <button type="button" onClick={() => setTab("past")}
+          className="h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
+          style={{ background: tab === "past" ? "#17271F" : "var(--sand)", color: tab === "past" ? "white" : "var(--text-secondary)" }}>
+          Past orders
+        </button>
+      </div>
+
+      <p className="px-5 mt-2 text-[12px]" style={{ color: "var(--text-muted)" }}>
+        Every pool you joined and every solo order you made.
+      </p>
+
+      {tab === "active" ? (
+        <div className="px-5 mt-8 flex flex-col items-center text-center">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
           </div>
-          <h2 className="text-[18px] font-extrabold mb-1" style={{ color: "var(--text)" }}>No orders yet</h2>
-          <p className="text-[14px] mb-6 text-center" style={{ color: "var(--text-muted)" }}>Your orders will appear here</p>
-          <Link href="/menu" className="h-11 px-6 rounded-[12px] text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse meals</Link>
+          <h2 className="text-[17px] font-extrabold" style={{ color: "#17271F" }}>No active orders</h2>
+          <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Join a pool or order solo. Track everything here.</p>
+          <Link href="/discover" className="mt-4 h-[44px] px-6 rounded-full text-[13px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse deals</Link>
         </div>
       ) : (
-        <>
-          {/* Tabs — only show if there are both active and past */}
-          {hasActive && hasPast && (
-            <div className="px-5 mb-4">
-              <div className="flex rounded-full p-[3px]" style={{ background: "var(--sand)" }}>
-                {(["active", "past"] as const).map((t) => (
-                  <button key={t} type="button" onClick={() => setTab(t)}
-                    className={`flex-1 h-10 rounded-full text-[14px] font-bold transition-all cursor-pointer`}
-                    style={{ background: tab === t ? "var(--dark)" : "transparent", color: tab === t ? "white" : "var(--text-secondary)" }}>
-                    {t === "active" ? `Active (${activeOrders.length})` : `Past (${pastOrders.length})`}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="px-5 space-y-3">
-            {/* Active orders */}
-            {(tab === "active" || !hasPast) && activeOrders.map((order) => {
-              const st = statusStyle(order.status);
-              return (
-                <Link key={order.id} href={`/order/confirmation/${order.orderCode}`}
-                  className="block rounded-[20px] p-4 active:scale-[0.98] transition-transform" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                  {/* Row 1: Code + status + price */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-[18px] font-extrabold tracking-[0.03em] tabular-nums" style={{ color: "var(--text)" }}>{order.orderCode}</span>
-                      <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: st.bg, color: st.color }}>{st.label}</span>
-                    </div>
-                    <span className="text-[17px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(order.totalAmount)}</span>
-                  </div>
-                  {/* Row 2: Food photo + name + restaurant */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-[12px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
-                      {order.dailyMenu.meal.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={order.dailyMenu.meal.imageUrl} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-[15px] font-bold truncate" style={{ color: "var(--text)" }}>{cleanName(order.dailyMenu.meal.name)}</h3>
-                      <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{order.dailyMenu.meal.restaurant.name} · {order.quantity} item{order.quantity !== 1 ? "s" : ""}</p>
-                    </div>
-                  </div>
-                  {/* Row 3: Arrival time + collection point */}
-                  <div className="flex items-center gap-2 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>
-                      Arrives by 12:00 PM
-                      {order.office?.collectionPoint && ` · ${order.office.collectionPoint}`}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-
-            {/* Past orders */}
-            {(tab === "past" || !hasActive) && pastOrders.length > 0 && (
-              <div className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                {pastOrders.map((order, idx) => {
-                  const st = statusStyle(order.status);
-                  return (
-                    <div key={order.id} className="flex items-center gap-3 p-4" style={{ borderTop: idx > 0 ? "1px solid var(--border)" : "none" }}>
-                      <div className="w-12 h-12 rounded-[12px] overflow-hidden shrink-0" style={{ background: "var(--sand)" }}>
-                        {order.dailyMenu.meal.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={order.dailyMenu.meal.imageUrl} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5"><path d="M6 7h12l1 14H5L6 7Z" /></svg>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-[15px] font-bold truncate" style={{ color: "var(--text)" }}>{cleanName(order.dailyMenu.meal.name)}</h3>
-                        <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>
-                          {new Date(order.createdAt).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · {order.dailyMenu.meal.restaurant.name}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end gap-1.5 shrink-0">
-                        <span className="text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(order.totalAmount)}</span>
-                        {order.status === "CANCELLED" ? (
-                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full" style={{ background: "rgba(232,96,76,0.1)", color: "var(--coral)" }}>Cancelled</span>
-                        ) : (
-                          <button type="button" onClick={(e) => { e.preventDefault(); handleReorder(order); }}
-                            className="text-[12px] font-bold px-3 py-1 rounded-full cursor-pointer active:scale-95 transition-transform"
-                            style={{ background: "rgba(232,96,76,0.1)", color: "var(--coral)" }}>
-                            Reorder
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* No active orders message */}
-            {tab === "active" && activeOrders.length === 0 && hasPast && (
-              <div className="text-center py-10">
-                <p className="text-[15px] font-semibold mb-1" style={{ color: "var(--text)" }}>No active orders</p>
-                <p className="text-[14px] mb-4" style={{ color: "var(--text-muted)" }}>Browse the menu to start a new order</p>
-                <Link href="/menu" className="h-10 px-5 rounded-[12px] text-[13px] font-bold inline-flex items-center" style={{ background: "var(--sand)", color: "var(--text)" }}>Browse meals</Link>
-              </div>
-            )}
+        <div className="px-5 mt-5">
+          <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Past orders &amp; receipts</h3>
+          <div className="flex flex-col items-center text-center mt-8">
+            <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No past orders yet.</p>
+            <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>Reorder picks a cheaper live pool when available. Otherwise, order solo.</p>
           </div>
-        </>
-      )}
-
-      {reorderToast && (
-        <div className="fixed z-[100] left-1/2 bottom-24 -translate-x-1/2 rounded-[12px] pl-3 pr-4 py-2.5 flex items-center gap-2 text-[13px] font-semibold text-white" style={{ background: "var(--dark)", animation: "toastIn 0.3s ease" }}>
-          <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald)" }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-          </div>
-          {reorderToast} added to cart
         </div>
       )}
 

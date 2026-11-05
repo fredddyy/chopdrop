@@ -13,7 +13,7 @@ export function BottomNav() {
   const links = [
     { href: "/discover", label: "Discover", icon: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5", match: ["/discover", "/menu", "/product"], count: 0 },
     { href: "/pools", label: "Pools", icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75", count: 0 },
-    { href: "/cart", label: cart.totalItems > 0 ? formatNaira(cart.subtotal) : "Cart", icon: "M6 7h12l1 14H5L6 7ZM9 9V6a3 3 0 0 1 6 0v3", count: cart.totalItems },
+    { href: "/orders", label: "Orders", icon: "M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2", count: 0 },
     { href: "/rewards", label: "Rewards", icon: "M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z", count: 0 },
     { href: "/account", label: "Me", icon: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z", count: 0 },
   ];
