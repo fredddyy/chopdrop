@@ -34,17 +34,16 @@ export default function OrdersPage() {
       </div>
 
       {/* ── Tabs ── */}
-      <div className="px-5 mt-4 flex gap-2">
-        <button type="button" onClick={() => setTab("active")}
-          className="h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
-          style={{ background: tab === "active" ? "#17271F" : "var(--sand)", color: tab === "active" ? "white" : "var(--text-secondary)" }}>
-          Active · 3
-        </button>
-        <button type="button" onClick={() => setTab("past")}
-          className="h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
-          style={{ background: tab === "past" ? "#17271F" : "var(--sand)", color: tab === "past" ? "white" : "var(--text-secondary)" }}>
-          Past orders
-        </button>
+      <div className="px-5 mt-4 flex">
+        {([["active", "Active · 3"], ["past", "Past orders"]] as const).map(([key, label]) => (
+          <button
+            key={key} type="button" onClick={() => setTab(key as Tab)}
+            className="flex-1 h-[40px] text-[13px] font-bold cursor-pointer rounded-full"
+            style={{ background: tab === key ? "#17271F" : "transparent", color: tab === key ? "white" : "var(--text-muted)" }}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       <p className="px-5 mt-2 text-[12px]" style={{ color: "var(--text-muted)" }}>
