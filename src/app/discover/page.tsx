@@ -287,6 +287,15 @@ export default function DiscoverPage() {
             </p>
           </div>
 
+          {/* ── Active items banner ── */}
+          <Link href="/orders" className="mx-5 mt-1 mb-2 flex items-center justify-between p-3 rounded-[14px] press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full" style={{ background: "var(--emerald)" }} />
+              <span className="text-[12px] font-bold" style={{ color: "#17271F" }}>2 active pools · 1 begging</span>
+            </div>
+            <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>View All →</span>
+          </Link>
+
           {/* ── Category tabs ── */}
           <div className="px-5 mt-2 flex gap-2 overflow-x-auto hide-scrollbar">
             {[
