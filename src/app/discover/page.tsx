@@ -68,7 +68,6 @@ export default function DiscoverPage() {
   const [poolProducts, setPoolProducts] = useState<PoolProduct[]>([]);
   const [activeCategory, setActiveCategory] = useState("Food");
   const [searchQuery, setSearchQuery] = useState("");
-  const [feedFilter, setFeedFilter] = useState<"all" | "pools" | "stores">("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [userArea, setUserArea] = useState("");
@@ -321,19 +320,8 @@ export default function DiscoverPage() {
             )}
           </div>
 
-          {/* ── Feed filter pills ── */}
-          <div className="px-5 mt-2 flex gap-2">
-            {([["all", "All meals"], ["pools", "Pools"], ["stores", "Stores"]] as const).map(([key, label]) => (
-              <button
-                key={key} type="button" onClick={() => setFeedFilter(key)}
-                className="h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
-                style={{ background: feedFilter === key ? "#17271F" : "var(--sand)", color: feedFilter === key ? "white" : "var(--text-secondary)" }}
-              >{label}</button>
-            ))}
-          </div>
-
           {/* ── Section header ── */}
-          {sortedPools.length > 0 && feedFilter !== "stores" && (
+          {sortedPools.length > 0 && (
             <div className="px-5 mt-5 mb-2 flex items-center justify-between">
               <h3 className="text-[21px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Almost full. Don&apos;t dull.</h3>
               <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length} live</span>
@@ -341,7 +329,7 @@ export default function DiscoverPage() {
           )}
 
           {/* ═══ FEATURED POOL CARD — dark hero, ChopChop style ═══ */}
-          {sortedPools.length > 0 && feedFilter !== "stores" && (() => {
+          {sortedPools.length > 0 && (() => {
             const featured = sortedPools[0];
             const sav = Math.round(((featured.retailPrice - featured.groupPrice) / featured.retailPrice) * 100);
             const isHot = featured.fill.spotsLeft <= 3;
@@ -416,7 +404,7 @@ export default function DiscoverPage() {
           })()}
 
           {/* ═══ FILLING FAST — horizontal swipe carousel ═══ */}
-          {sortedPools.length > 1 && feedFilter !== "stores" && (
+          {sortedPools.length > 1 && (
             <div className="mt-5">
               <div className="px-5 flex items-center justify-between mb-3">
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Filling fast</h3>
@@ -479,7 +467,7 @@ export default function DiscoverPage() {
           </div>
 
           {/* ═══ TOP KITCHENS — horizontal image cards ═══ */}
-          {filteredStores.length > 0 && feedFilter !== "pools" && (
+          {filteredStores.length > 0 && (
             <section className="mt-6">
               <div className="px-5 flex items-center justify-between mb-3">
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>
@@ -513,7 +501,7 @@ export default function DiscoverPage() {
           )}
 
           {/* ═══ MORE DEALS — 2-column grid for remaining pools ═══ */}
-          {sortedPools.length > 8 && feedFilter !== "stores" && (
+          {sortedPools.length > 8 && (
             <div className="px-5 mt-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>More deals</h3>
@@ -553,7 +541,7 @@ export default function DiscoverPage() {
               {searchQuery ? (
                 <button type="button" onClick={() => setSearchQuery("")} className="text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>Clear search</button>
               ) : (
-                <button type="button" onClick={() => { setActiveCategory("Food"); setSearchQuery(""); setFeedFilter("all"); }} className="h-11 px-6 rounded-full text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>Browse all deals</button>
+                <button type="button" onClick={() => { setActiveCategory("Food"); setSearchQuery(""); }} className="h-11 px-6 rounded-full text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>Browse all deals</button>
               )}
             </div>
           )}
