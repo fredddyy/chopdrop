@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/bottom-nav";
 interface Product {
   id: string; name: string; description: string | null; imageUrl: string | null;
   category: string; subcategory: string | null; retailPrice: number; groupPrice: number; minPoolSize: number;
+  poolable: boolean;
 }
 
 interface StoreDetail {
@@ -81,18 +82,21 @@ export default function StorePage() {
     id: c.id, name: c.name, description: c.description, imageUrl: c.imageUrl,
     category: "Combos", subcategory: null,
     retailPrice: c.originalPrice || c.price, groupPrice: c.price, minPoolSize: 10,
+    poolable: true,
   }));
   const productsFromMenu: Product[] = store.menuCategories.flatMap((cat) =>
     cat.items.map((item) => ({
       id: item.id, name: item.name, description: item.description, imageUrl: item.imageUrl,
       category: cat.name, subcategory: null,
       retailPrice: item.price, groupPrice: item.price, minPoolSize: 10,
+      poolable: false,
     })),
   );
   // Deduplicate by id — products take priority, then combos, then menu items
   const seenIds = new Set<string>();
   const allItems: Product[] = [];
-  for (const list of [store.products, productsFromCombos, productsFromMenu]) {
+  const taggedProducts = store.products.map((p) => ({ ...p, poolable: true }));
+  for (const list of [taggedProducts, productsFromCombos, productsFromMenu]) {
     for (const p of list) {
       if (!seenIds.has(p.id)) { seenIds.add(p.id); allItems.push(p); }
     }
@@ -103,8 +107,10 @@ export default function StorePage() {
   const featuredFill = featured ? poolFill(featured.id, 0, featured.minPoolSize) : null;
   const featuredSav = featured ? Math.round(((featured.retailPrice - featured.groupPrice) / featured.retailPrice) * 100) : 0;
 
-  const menuTabs = ["All meals", ...new Set(allItems.map((p) => p.subcategory || p.category))];
-  const filteredItems = activeTab === "All meals" ? allItems : allItems.filter((p) => (p.subcategory || p.category) === activeTab);
+  const menuTabs = [...new Set(allItems.map((p) => p.subcategory || p.category))];
+  // Default to first tab
+  const currentTab = menuTabs.includes(activeTab) ? activeTab : menuTabs[0] || "";
+  const filteredItems = menuTabs.length <= 1 ? allItems : allItems.filter((p) => (p.subcategory || p.category) === currentTab);
 
   // Group by subcategory
   const grouped = new Map<string, Product[]>();
@@ -236,7 +242,7 @@ export default function StorePage() {
           {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab) => (
             <button key={tab} type="button" onClick={() => setActiveTab(tab)}
               className="h-[25px] px-3 rounded-full text-[11px] font-bold whitespace-nowrap cursor-pointer shrink-0"
-              style={{ background: activeTab === tab ? "#17271F" : "var(--sand)", color: activeTab === tab ? "white" : "var(--text-secondary)" }}
+              style={{ background: currentTab === tab ? "#17271F" : "var(--sand)", color: currentTab === tab ? "white" : "var(--text-secondary)" }}
             >{tab}</button>
           ))}
         </div>
@@ -251,7 +257,6 @@ export default function StorePage() {
                 const fill = hasPool ? poolFill(item.id, 0, item.minPoolSize) : null;
                 return (
                   <Link key={item.id} href={`/product/${item.id}`} className="block p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
-                    {/* Image + Info */}
                     <div className="flex items-start gap-3">
                       {item.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -270,12 +275,12 @@ export default function StorePage() {
                             <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>
                           </div>
                         ) : (
-                          <p className="text-[15px] font-extrabold tabular-nums mt-1" style={{ color: "#17271F" }}>{fp(item.retailPrice)} individual</p>
+                          <p className="text-[15px] font-extrabold tabular-nums mt-1" style={{ color: "#17271F" }}>{fp(item.retailPrice)}</p>
                         )}
                       </div>
                     </div>
-                    {/* Full width: pool progress OR request */}
-                    {hasPool && fill ? (
+                    {/* Pool progress — only for poolable items with active savings */}
+                    {hasPool && fill && (
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
                           <span>{fill.joined}/{item.minPoolSize} plates claimed</span>
@@ -284,22 +289,15 @@ export default function StorePage() {
                         <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
                           <div className="h-full" style={{ width: `${fill.fillPct}%`, background: "var(--coral)", borderRadius: "9px" }} />
                         </div>
-                        <div className="flex items-center gap-1 mt-2 text-[11px]" style={{ color: "var(--text-muted)" }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                          Pickup TBD
-                        </div>
-                        <p className="text-[11px] font-semibold mt-1.5" style={{ color: "#17271F" }}>{fill.joined} people are in</p>
                       </div>
-                    ) : (
+                    )}
+                    {/* Request Pool — only for poolable combos without active savings */}
+                    {!hasPool && item.poolable && (
                       <div className="mt-3">
-                        <p className="text-[11px] font-semibold" style={{ color: "var(--emerald)" }}>
-                          12 students want a pool · 8 more to notify {store.name.split(" ")[0]}
-                        </p>
-                        <div className="mt-2 h-[44px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                        <div className="h-[38px] rounded-full flex items-center justify-between px-4 text-[13px] font-bold text-white" style={{ background: "var(--coral)" }}>
                           <span>Request Pool</span>
-                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
+                          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
                         </div>
-                        <p className="text-[11px] mt-2 text-center" style={{ color: "var(--text-muted)" }}>Order {fp(item.retailPrice)} · one plate, no pool</p>
                       </div>
                     )}
                   </Link>
