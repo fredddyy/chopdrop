@@ -474,7 +474,7 @@ export default function ProductDetailPage() {
             </>
           ) : (
             <>
-              <button type="button" onClick={createPool} disabled={joining}
+              <button type="button" onClick={() => router.push(`/request-sent/${id}`)} disabled={joining}
                 className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
                 style={{ background: "var(--coral)" }}>
                 <span>Request Pool</span>

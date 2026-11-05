@@ -34,6 +34,19 @@
 - [ ] "Need your own plate?" solo explanation copy
 - [ ] "Request Pool" CTA (coral) + "Order solo — ₦1,800 →" secondary
 
+### Food Request Sent Page (ChopChop Figma — Image 103)
+- [ ] New route: /request-sent/[productId]
+- [ ] Header: "CAMPUS CRAVINGS" + "The kitchens heard you"
+- [ ] Megaphone icon + "Craving noted." heading
+- [ ] "Your [item] request has joined the demand around [area]"
+- [ ] "REQUEST SENT · NO CHARGE" badge
+- [ ] Lime demand card: "39 students want [item] under ₦X" + avatars
+- [ ] "Here's what happens next" — 3-step explainer
+- [ ] Trust note: "This is demand, not an order or a promised pool"
+- [ ] "Hungry in the meantime?" section with "See nearby alternatives →"
+- [ ] "Invite friends to request" coral CTA + "Browse nearby food" secondary
+- [ ] Needs: DemandRequest model in schema, POST /api/demand-request endpoint
+
 ### Phase 1 — Core Loop (make one purchase work end-to-end)
 - [ ] Vendor pool creation — vendors create deals with prices, min orders, deadlines
 - [ ] Pickup point on Pool model — users know where to collect
