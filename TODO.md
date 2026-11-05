@@ -11,6 +11,16 @@
 
 ## Features to Build
 
+### Vendor/Store Page Redesign (ChopChop Figma — Images 93-95)
+- [ ] Vendor profile header: avatar, name, location, rating, review count, pools completed
+- [ ] Vendor quote/description
+- [ ] "Chop together first" — active pools section with featured card + Jump In CTA
+- [ ] "The full menu" — category-filtered meal list (All meals, Rice, Swallows, Beans)
+- [ ] Menu items: image, name, description, individual price, "Request Pool" CTA
+- [ ] Demand signal per item: "12 students want a pool · 8 more to notify [vendor]"
+- [ ] Review section: verified order reviews with photo + stars
+- [ ] Trust copy: "Campus pickup only · Wait for vendor's ready alert"
+
 ### Phase 1 — Core Loop (make one purchase work end-to-end)
 - [ ] Vendor pool creation — vendors create deals with prices, min orders, deadlines
 - [ ] Pickup point on Pool model — users know where to collect
