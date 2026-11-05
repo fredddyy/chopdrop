@@ -95,6 +95,9 @@ export default function OrdersPage() {
               <span>Filling — 34/35</span>
               <span style={{ color: "var(--coral)" }}>43m left</span>
             </div>
+            <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
+              <div className="h-full" style={{ width: "97%", background: "var(--coral)", borderRadius: "9px" }} />
+            </div>
             <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>You&apos;re paid in. One more person to fill the pool.</p>
             <button className="mt-2 text-[12px] font-bold cursor-pointer" style={{ color: "var(--coral)" }}>Share the last spot →</button>
           </div>
