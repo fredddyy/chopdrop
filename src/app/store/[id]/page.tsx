@@ -154,7 +154,7 @@ export default function StorePage() {
             {/* Info on dark */}
             <div className="p-4">
               {/* Badges above title */}
-              <p className="text-[10px] font-extrabold uppercase tracking-wide mb-2" style={{ color: "var(--subdued)" }}>
+              <p className="text-[10px] font-extrabold uppercase tracking-wide mb-2" style={{ color: "var(--lime)" }}>
                 Only {featuredFill.spotsLeft} spots · Save {featuredSav}%
               </p>
               <div className="flex items-start justify-between gap-3">
