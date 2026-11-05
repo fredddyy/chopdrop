@@ -234,7 +234,7 @@ export default function DiscoverPage() {
           <button
             type="button"
             onClick={() => setAreaOpen(!areaOpen)}
-            className="flex items-center gap-1.5 h-[30px] px-3 rounded-full text-[12px] font-bold cursor-pointer"
+            className="flex items-center gap-1.5 h-[25px] px-3 rounded-full text-[11px] font-bold cursor-pointer"
             style={{ background: "#17271F", color: "white" }}
           >
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
