@@ -13,6 +13,7 @@ interface PoolOrder {
   memberCount: number;
   deadline: string;
   myPaymentStatus: string;
+  creatorName: string;
   product: { id: string; name: string; imageUrl: string | null; groupPrice: number; retailPrice: number };
 }
 
@@ -89,45 +90,52 @@ export default function OrdersPage() {
                 const fillPct = Math.round((pool.memberCount / pool.minSize) * 100);
                 const minsLeft = Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 60000));
                 return (
-                  <Link key={pool.id} href={`/product/${pool.product.id}`} className="block p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: pool.status === "FILLED" ? "var(--emerald-soft)" : "var(--lime)", color: pool.status === "FILLED" ? "var(--emerald)" : "#17271F" }}>
+                  <div key={pool.id} className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+                    {/* Header: pill + timestamp */}
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: pool.status === "FILLED" ? "var(--emerald-soft)" : "var(--coral-soft)", color: pool.status === "FILLED" ? "var(--emerald)" : "var(--coral)" }}>
                         {pool.status === "FILLED" ? "Filled · Cooking" : "Pool · Filling"}
                       </span>
-                      <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{pool.myPaymentStatus === "SUCCESS" ? "Paid" : "Pending"}</span>
+                      <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Today · {new Date(pool.deadline).toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit", hour12: false })}</span>
                     </div>
+                    {/* Product: image + name + vendor + price */}
                     <div className="flex items-start gap-3">
-                      <div className="w-[56px] h-[56px] rounded-[12px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+                      <div className="w-[60px] h-[60px] rounded-[12px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
                         {pool.product.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={pool.product.imageUrl} alt={pool.product.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[16px]" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{pool.product.name.charAt(0)}</div>
+                          <div className="w-full h-full flex items-center justify-center text-[18px]" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{pool.product.name.charAt(0)}</div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-[15px] font-extrabold leading-[140%] truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{pool.product.name}</h4>
-                        <p className="text-[18px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#17271F" }}>{fp(pool.product.groupPrice)}</p>
+                        <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{pool.product.name}</h4>
+                        <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{pool.creatorName}&apos;s pool · ★ 4.9</p>
+                        <p className="text-[20px] font-extrabold tabular-nums mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#17271F" }}>{fp(pool.product.groupPrice)}</p>
                       </div>
                     </div>
+                    {/* Filling progress */}
                     {pool.status === "OPEN" && (
                       <>
-                        <div className="mt-3 flex items-center justify-between text-[11px] font-extrabold" style={{ color: "#17271F" }}>
-                          <span>{pool.memberCount}/{pool.minSize} in</span>
-                          <span style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft}m left`}</span>
+                        <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
+                          <span>Filling — {pool.memberCount}/{pool.minSize}</span>
+                          <span style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m left` : `${minsLeft}m left`}</span>
                         </div>
-                        <div className="mt-1 h-[5px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                          <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: "var(--coral)" }} />
+                        <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
+                          <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--coral)", borderRadius: "9px" }} />
                         </div>
-                        <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>
-                          {spotsLeft === 1 ? "One more person and everyone eats." : `${spotsLeft} more needed. Share to fill it.`}
+                        <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
+                          You&apos;re paid in. {spotsLeft === 1 ? "One more person to fill the pool." : `${spotsLeft} more to fill the pool.`}
                         </p>
+                        <button className="mt-2 text-[12px] font-bold cursor-pointer" style={{ color: "var(--coral)" }} onClick={() => { if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: "ChopDrop pool", text: `${pool.product.name} for ${fp(pool.product.groupPrice)}. We need ${spotsLeft} more or nobody eats!`, url: `${window.location.origin}/product/${pool.product.id}` }).catch(() => {}); }}>
+                          Share to fill the pool →
+                        </button>
                       </>
                     )}
                     {pool.status === "FILLED" && (
-                      <p className="text-[11px] mt-3" style={{ color: "var(--text-muted)" }}>{pool.memberCount}/{pool.minSize} confirmed. Vendor is cooking. We&apos;ll notify you when ready.</p>
+                      <p className="text-[12px] mt-3" style={{ color: "var(--text-muted)" }}>{pool.memberCount}/{pool.minSize} confirmed. Vendor is cooking. We&apos;ll notify you when ready.</p>
                     )}
-                  </Link>
+                  </div>
                 );
               })}
             </div>
