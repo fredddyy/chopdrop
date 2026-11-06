@@ -357,16 +357,14 @@ export default function ProductDetailPage() {
 
       {/* ── Two-price display — PDD style ── */}
       {hasPoolPricing ? (
-        <div className="px-5 mt-4 flex gap-4">
-          <div className="flex-1 p-3 rounded-[14px]" style={{ background: "var(--coral-soft)" }}>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.1em]" style={{ color: "var(--coral)" }}>Pool price</p>
-            <span className="text-[36px] font-extrabold tabular-nums leading-none block mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
-            <p className="text-[12px] mt-1" style={{ color: "var(--coral)" }}>Join others</p>
+        <div className="px-5 mt-4 flex gap-6">
+          <div className="flex-1">
+            <span className="text-[36px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
+            <p className="text-[12px] font-bold mt-1" style={{ color: "var(--coral)" }}>Pool · join others</p>
           </div>
-          <div className="flex-1 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>Solo price</p>
-            <span className="text-[36px] font-extrabold tabular-nums leading-none block mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "#17271F" }}>{fp(product.retailPrice)}</span>
-            <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Order alone</p>
+          <div className="flex-1">
+            <span className="text-[36px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "#17271F" }}>{fp(product.retailPrice)}</span>
+            <p className="text-[12px] font-bold mt-1" style={{ color: "var(--text-muted)" }}>Solo · order alone</p>
           </div>
         </div>
       ) : (
@@ -603,8 +601,8 @@ export default function ProductDetailPage() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
               </button>
               <button type="button" onClick={addSolo}
-                className="w-full text-[12px] font-bold text-center mt-2.5 cursor-pointer press-feedback"
-                style={{ color: "var(--text-muted)" }}>
+                className="w-full h-[48px] rounded-full flex items-center justify-center mt-2 text-[14px] font-bold cursor-pointer press-feedback"
+                style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
                 or order solo at {fp(product.retailPrice)}
               </button>
             </>
