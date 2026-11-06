@@ -36,9 +36,11 @@ export async function GET() {
   // 2. Find all meals in the DB and create Products from them
   const meals = await prisma.meal.findMany({
     include: { restaurant: { select: { id: true, name: true } } },
-    where: { isAvailable: true },
-    take: 12, // just enough to give the app life
+    take: 15,
   });
+
+  // Also list what restaurants exist for debugging
+  const restaurants = await prisma.restaurant.findMany({ select: { id: true, name: true, _count: { select: { meals: true, products: true, menuCategories: true } } } });
 
   for (const meal of meals) {
     // Skip if a Product with same name + vendor already exists
@@ -76,6 +78,8 @@ export async function GET() {
     success: true,
     created,
     skipped,
+    mealsFound: meals.length,
+    restaurants: restaurants.map(r => ({ name: r.name, meals: r._count.meals, products: r._count.products, menuCats: r._count.menuCategories })),
     message: `${created.length} products created, ${skipped.length} already existed`,
   });
 }
