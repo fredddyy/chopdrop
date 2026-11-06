@@ -342,23 +342,27 @@ export default function ProductDetailPage() {
         <div className="px-5 mt-5">
           <div className="rounded-[22px] p-4" style={{ background: "#17271F" }}>
             <div className="flex items-center justify-between text-[12px] font-extrabold">
-              <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `${poolSize} spots · Be first to join`}</span>
+              <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `0/${poolSize} plates claimed`}</span>
               <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
             </div>
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
               <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
             </div>
-            <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left to fill it.</h3>
-            <div className="flex items-center gap-2.5 mt-2.5">
-              <div className="flex -space-x-1.5">
-                {Array.from({ length: Math.min(3, memberCount) }).map((_, j) => (
-                  <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
-                    {["F", "T", "D", "A", "C"][j] || String.fromCharCode(65 + j)}
-                  </div>
-                ))}
+            <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+              {memberCount === 0 ? "Be first to jump in." : spotsLeft === 1 ? "One more plate to unlock it." : `${spotsLeft} more to unlock it.`}
+            </h3>
+            {memberCount > 0 && (
+              <div className="flex items-center gap-2.5 mt-2.5">
+                <div className="flex -space-x-1.5">
+                  {Array.from({ length: Math.min(3, memberCount) }).map((_, j) => (
+                    <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
+                      {["F", "T", "D", "A", "C"][j] || String.fromCharCode(65 + j)}
+                    </div>
+                  ))}
+                </div>
+                <span className="text-[11px]" style={{ color: "var(--subdued)" }}>You + {memberCount - 1} from this pool</span>
               </div>
-              <span className="text-[11px]" style={{ color: "var(--subdued)" }}>You {memberCount > 1 ? `+ ${memberCount - 1} other${memberCount > 2 ? "s" : ""} in this pool` : "are in this pool"}</span>
-            </div>
+            )}
           </div>
         </div>
 
@@ -572,7 +576,7 @@ export default function ProductDetailPage() {
           <div className="p-4">
             {/* Progress text */}
             <div className="flex items-center justify-between text-[12px] font-extrabold">
-              <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `${poolSize} spots · Be first to join`}</span>
+              <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `0/${poolSize} plates claimed`}</span>
               <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
             </div>
             {/* Progress bar */}
