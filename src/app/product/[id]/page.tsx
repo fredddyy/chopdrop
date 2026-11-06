@@ -355,17 +355,20 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* ── Two-price display — PDD style ── */}
+      {/* ── Two-price display — pool is hero, solo is anchor ── */}
       {hasPoolPricing ? (
-        <div className="px-5 mt-4 flex gap-6">
-          <div className="flex-1">
-            <span className="text-[36px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
-            <p className="text-[12px] font-bold mt-1" style={{ color: "var(--coral)" }}>Pool · join others</p>
+        <div className="px-5 mt-4">
+          <div className="flex items-end gap-4">
+            <div>
+              <span className="text-[44px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
+              <p className="text-[12px] font-bold mt-1" style={{ color: "var(--coral)" }}>Pool · join others</p>
+            </div>
+            <div className="pb-0.5">
+              <span className="text-[22px] font-extrabold tabular-nums leading-none line-through block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fp(product.retailPrice)}</span>
+              <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>solo</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <span className="text-[36px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "#17271F" }}>{fp(product.retailPrice)}</span>
-            <p className="text-[12px] font-bold mt-1" style={{ color: "var(--text-muted)" }}>Solo · order alone</p>
-          </div>
+          <p className="text-[13px] font-bold mt-2" style={{ color: "var(--emerald)" }}>Keep {fp(savedAmount)} for yourself.</p>
         </div>
       ) : (
         <div className="px-5 mt-4">
@@ -602,7 +605,7 @@ export default function ProductDetailPage() {
               </button>
               <button type="button" onClick={addSolo}
                 className="w-full h-[48px] rounded-full flex items-center justify-center mt-2 text-[14px] font-bold cursor-pointer press-feedback"
-                style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
+                style={{ background: "var(--card)", color: "#17271F", border: "1px solid var(--border)" }}>
                 or order solo at {fp(product.retailPrice)}
               </button>
             </>
