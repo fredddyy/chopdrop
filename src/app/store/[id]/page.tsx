@@ -194,12 +194,6 @@ export default function StorePage() {
         </span>
       </div>
 
-      {/* ── Quote ── */}
-      <div className="px-5 mt-4">
-        <p className="text-[13px] leading-[155%]" style={{ color: "var(--text-muted)" }}>
-          &ldquo;Fresh ewedu, proper portions, no long story.&rdquo; A campus favourite for the kind of lunch that feels like home.
-        </p>
-      </div>
 
       {/* ═══ CHOP TOGETHER FIRST — active pool ═══ */}
       {featured && featuredFill && (
