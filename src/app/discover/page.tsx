@@ -287,19 +287,19 @@ export default function DiscoverPage() {
             </p>
           </div>
 
-          {/* ── Category tabs ── */}
+          {/* ── Category tabs — SVG icons, no emoji ── */}
           <div className="px-5 mt-2 flex gap-2 overflow-x-auto hide-scrollbar">
             {[
-              { key: "Food", label: "🍛 Food" },
-              { key: "Fashion", label: "👗 Fashion" },
-              { key: "Electronics", label: "🎧 Gadgets" },
-              { key: "Groceries", label: "🛒 Groceries" },
+              { key: "Food", label: "Food", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" /><path d="M6 1v3M10 1v3M14 1v3" /></svg> },
+              { key: "Fashion", label: "Fashion", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6.3 2h11.4L22 8l-10 14L2 8z" /></svg> },
+              { key: "Electronics", label: "Gadgets", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" /></svg> },
+              { key: "Groceries", label: "Groceries", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><path d="M3 6h18M16 10a4 4 0 0 1-8 0" /></svg> },
             ].map((cat) => (
               <button
                 key={cat.key} type="button" onClick={() => setActiveCategory(cat.key)}
-                className="h-[34px] px-4 rounded-full text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0"
+                className="h-[34px] px-4 rounded-full text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5"
                 style={{ background: activeCategory === cat.key ? "#17271F" : "var(--sand)", color: activeCategory === cat.key ? "white" : "var(--text-secondary)", transition: "background 200ms, color 200ms" }}
-              >{cat.label}</button>
+              >{cat.icon}{cat.label}</button>
             ))}
           </div>
 
