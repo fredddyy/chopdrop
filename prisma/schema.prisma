@@ -35,6 +35,8 @@ model User {
   streak            Streak?
   referrals         Referral[]       @relation("Referrals")
   referredBy        Referral[]       @relation("ReferredBy")
+  gangsCreated      Gang[]           @relation("GangCreator")
+  gangMembers       GangMember[]
 }
 
 model PushSubscription {
@@ -543,4 +545,37 @@ enum DealStatus {
   COMPLETED
   EXPIRED
   CANCELLED
+}
+
+// ═══════════════════════════════════════
+// GANGS — Persistent food crews
+// ═══════════════════════════════════════
+
+model Gang {
+  id           String   @id @default(cuid())
+  name         String
+  emoji        String   @default("🍛")
+  motto        String?
+  campus       String?
+  whatsappLink String?
+  creatorId    String
+  inviteCode   String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  creator  User         @relation("GangCreator", fields: [creatorId], references: [id])
+  members  GangMember[]
+}
+
+model GangMember {
+  id       String   @id @default(cuid())
+  gangId   String
+  userId   String
+  role     String   @default("MEMBER") // ADMIN | MEMBER
+  joinedAt DateTime @default(now())
+
+  gang Gang @relation(fields: [gangId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([gangId, userId])
 }
