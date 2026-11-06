@@ -246,48 +246,58 @@ export default function CartPage() {
             </section>
           )}
 
-          {/* ── Wallet credit card ── */}
-          {creditBalance > 0 && (
-            <div className="p-4 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-2.5">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 10h20" /></svg>
-                  <div>
-                    <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>{formatNaira(creditsToApply)} credit applied</p>
-                    <p className="text-[11px]" style={{ color: "var(--emerald)" }}>Automatically using your wallet balance</p>
-                  </div>
-                </div>
-                <span className="text-[12px] font-bold underline cursor-pointer" style={{ color: "var(--emerald)" }}>Remove</span>
-              </div>
-              <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>
-                Prefer to keep it for later? Remove credit and pay the full {formatNaira(cart.subtotal + deliveryFee + serviceFee)}.
-              </p>
-            </div>
-          )}
-
-          {/* ── Price breakdown ── */}
+          {/* Order summary — transparent breakdown */}
           <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <div className="space-y-2.5 text-[14px]">
+            <div className="space-y-3 text-[14px]">
               <div className="flex justify-between">
-                <span style={{ color: "var(--text-secondary)" }}>Food + free pickup</span>
+                <span style={{ color: "var(--text-secondary)" }}>Subtotal ({portionCount} item{portionCount !== 1 ? "s" : ""})</span>
                 <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(cart.subtotal)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
+                <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-1.5">
+                  <span style={{ color: "var(--text-secondary)" }}>Order handling</span>
+                  <span className="text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>₦150 × {packCount} {packCount === 1 ? "pack" : "packs"}</span>
+                </div>
+                <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
               </div>
               {creditsToApply > 0 && (
                 <div className="flex justify-between">
-                  <span style={{ color: "var(--emerald)" }}>Wallet store credit</span>
-                  <span className="font-bold tabular-nums" style={{ color: "var(--emerald)" }}>−{formatNaira(creditsToApply)}</span>
+                  <span style={{ color: "var(--emerald)" }}>Pool credits applied</span>
+                  <span className="font-bold" style={{ color: "var(--emerald)" }}>-{formatNaira(creditsToApply)}</span>
                 </div>
               )}
-              <div className="flex justify-between items-center pt-2" style={{ borderTop: "1px solid var(--border)" }}>
-                <span className="text-[15px] font-extrabold" style={{ color: "var(--text)" }}>Remaining to pay</span>
-                <span className="text-[22px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
+              {/* Pool savings callout — only when discount is active */}
+              {cart.items.some(item => {
+                const key = item.realDailyMenuId || item.dailyMenuId;
+                return poolData?.meals?.[key]?.savings > 0;
+              }) && (() => {
+                const totalSaved = cart.items.reduce((sum, item) => {
+                  const key = item.realDailyMenuId || item.dailyMenuId;
+                  const pool = poolData?.meals?.[key];
+                  return sum + (pool ? pool.savings * item.quantity : 0);
+                }, 0);
+                return totalSaved > 0 ? (
+                  <div className="flex items-center gap-2 p-3 rounded-[12px] mt-1 mb-1" style={{ background: "rgba(13,159,95,0.08)" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                    <div className="flex-1">
+                      <span className="text-[14px] font-bold" style={{ color: "var(--emerald)" }}>Saving {formatNaira(totalSaved)} with pool pricing</span>
+                      {poolData.officeOrderCount > 0 && (
+                        <span className="text-[12px] ml-1" style={{ color: "var(--text-muted)" }}>· {poolData.officeOrderCount} orders in pool</span>
+                      )}
+                    </div>
+                  </div>
+                ) : null;
+              })()}
+              <div className="flex justify-between items-center pt-3" style={{ borderTop: "2px solid var(--border)" }}>
+                <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Total</span>
+                <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
               </div>
-              {creditBalance > 0 && (
-                <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                  Wallet after this order: {formatNaira(creditBalance - creditsToApply)}. Points are separate and aren&apos;t being used.
-                </p>
-              )}
             </div>
+
           </section>
 
           {/* Error shown only in sticky footer — no duplicate */}
