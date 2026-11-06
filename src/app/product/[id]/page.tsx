@@ -50,6 +50,7 @@ export default function ProductDetailPage() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [leavingPool, setLeavingPool] = useState(false);
   const [justPaid, setJustPaid] = useState(false);
+  const [userName, setUserName] = useState("");
   const cart = useCart();
 
   // Read user coordinates + joined pool status from localStorage
@@ -59,6 +60,7 @@ export default function ProductDetailPage() {
       if (stored) {
         const p = JSON.parse(stored);
         if (p.latitude && p.longitude) setUserCoords({ lat: p.latitude, lng: p.longitude, address: p.deliveryAddress });
+        if (p.name) setUserName(p.name);
       }
       const joined = localStorage.getItem("chopdrop-joined-pools");
       if (joined) {
@@ -509,7 +511,7 @@ export default function ProductDetailPage() {
           </div>
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[13px] font-medium" style={{ color: "var(--text-muted)" }}>Tunde Bakare · CC-JL-084</p>
+              <p className="text-[13px] font-medium" style={{ color: "var(--text-muted)" }}>{userName || "You"}</p>
               <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>Paid upfront. One plate reserved in your name. Keep this receipt.</p>
             </div>
             <span className="text-[18px] font-extrabold tabular-nums shrink-0 ml-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{fp(joinedPrice || product.groupPrice)} paid</span>
@@ -529,7 +531,7 @@ export default function ProductDetailPage() {
             <div className="mt-3 flex items-center gap-2">
               <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[0] }}>T</div>
               <div>
-                <p className="text-[11px] font-bold" style={{ color: "#17271F" }}>Tunde Bakare (you) · pinned</p>
+                <p className="text-[11px] font-bold" style={{ color: "#17271F" }}>{userName || "You"} (you) · pinned</p>
                 <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Payment confirmed · Included above</p>
               </div>
             </div>
