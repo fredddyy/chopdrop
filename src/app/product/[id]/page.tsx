@@ -604,9 +604,10 @@ export default function ProductDetailPage() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
               </button>
               <button type="button" onClick={addSolo}
-                className="w-full h-[48px] rounded-full flex items-center justify-center mt-2 text-[14px] font-bold cursor-pointer press-feedback"
+                className="w-full h-[48px] rounded-full flex items-center justify-between px-6 mt-2 text-[14px] font-bold cursor-pointer press-feedback"
                 style={{ background: "var(--card)", color: "#17271F", border: "1px solid var(--border)" }}>
-                or order solo at {fp(product.retailPrice)}
+                <span>or order solo at {fp(product.retailPrice)}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
               </button>
             </>
           )}
