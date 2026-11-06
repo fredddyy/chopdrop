@@ -31,8 +31,7 @@ export async function POST(
     return NextResponse.json({ success: false, error: "Pool is no longer active" }, { status: 400 });
   }
 
-  // Total = product cost - beg discount + delivery fee
-  const totalAmount = Math.max(0, member.totalAmount - member.begDiscount) + member.deliveryFee;
+  const totalAmount = member.totalAmount + member.deliveryFee;
 
   // Generate unique payment reference
   const reference = `pool_${poolId.slice(0, 8)}_${user.id.slice(0, 8)}_${Date.now()}`;
