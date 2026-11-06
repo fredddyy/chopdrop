@@ -31,6 +31,10 @@ model User {
   dealParticipants  DealParticipant[]
   poolsCreated      Pool[]           @relation("PoolCreator")
   poolMemberships   PoolMember[]
+  scratchCards      ScratchCard[]
+  streak            Streak?
+  referrals         Referral[]       @relation("Referrals")
+  referredBy        Referral[]       @relation("ReferredBy")
 }
 
 model PushSubscription {
@@ -303,6 +307,40 @@ model CreditTransaction {
 
   wallet CreditWallet @relation(fields: [walletId], references: [id])
   order  Order?       @relation(fields: [orderId], references: [id])
+}
+
+model ScratchCard {
+  id        String   @id @default(cuid())
+  userId    String
+  prize     Int      // kobo
+  claimedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  @@index([userId, claimedAt])
+}
+
+model Streak {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  current     Int       @default(0)
+  longest     Int       @default(0)
+  lastCheckIn DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Referral {
+  id          String   @id @default(cuid())
+  referrerId  String
+  referredId  String
+  bonusAmount Int      @default(20000) // kobo — ₦200
+  credited    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  referrer User @relation("Referrals", fields: [referrerId], references: [id])
+  referred User @relation("ReferredBy", fields: [referredId], references: [id])
+  @@unique([referrerId, referredId])
 }
 
 model Rating {
