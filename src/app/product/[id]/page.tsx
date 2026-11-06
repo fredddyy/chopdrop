@@ -321,7 +321,7 @@ export default function ProductDetailPage() {
         <div className="px-5 pt-4 flex items-center justify-between">
           <div />
           <div className="text-center">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--emerald)" }}>Student · You&apos;re on the list</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Student · You&apos;re on the list</p>
             <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>You&apos;re in!</p>
           </div>
           <div />
