@@ -54,13 +54,9 @@ function PoolImage({ src, alt }: { src: string | null; alt: string }) {
 const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 const AREA_SUGGESTIONS = ["Victoria Island", "Lekki", "Ikeja", "Yaba", "Marina", "Surulere", "Ikoyi", "Ajah", "Gbagada", "Maryland", "Magodo", "Festac", "Apapa"];
 
-// Simulated pool fill data — anonymous counts only, no fake names
-function poolFill(id: string, idx: number, minSize: number) {
-  const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1) + (id.charCodeAt(Math.floor(id.length / 2)) || 0) + idx * 7;
-  const fillPct = 0.6 + ((seed % 4) * 0.1);
-  const joined = Math.max(2, Math.min(minSize - 1, Math.round(minSize * fillPct)));
-  const hours = [1, 2, 3, 4, 6][seed % 5];
-  return { joined, spotsLeft: minSize - joined, hours, fillPct: Math.round((joined / minSize) * 100) };
+// Real pool state — no fake fill data
+function poolState(minSize: number) {
+  return { joined: 0, spotsLeft: minSize, hours: 6, fillPct: 0 };
 }
 
 export default function DiscoverPage() {
@@ -177,11 +173,13 @@ export default function DiscoverPage() {
   // Sort pools by fill rate (most full first) — "Filling Now" at top
   const sortedPools = [...filteredPools].map((p, idx) => ({
     ...p,
-    fill: poolFill(p.id, idx, p.minPoolSize),
-  })).sort((a, b) => b.fill.fillPct - a.fill.fillPct);
-
-  const fillingNow = sortedPools.filter((p) => p.fill.fillPct >= 60);
-  const allPools = sortedPools.filter((p) => p.fill.fillPct < 60);
+    fill: poolState(p.minPoolSize),
+  })).sort((a, b) => {
+    // Sort by savings percentage (best deals first)
+    const savA = ((a.retailPrice - a.groupPrice) / a.retailPrice);
+    const savB = ((b.retailPrice - b.groupPrice) / b.retailPrice);
+    return savB - savA;
+  });
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
@@ -370,8 +368,8 @@ export default function DiscoverPage() {
                   </div>
                   {/* Progress */}
                   <div className="mt-3 flex items-center justify-between text-[11px] font-bold" style={{ color: "white" }}>
-                    <span>{featured.fill.joined}/{featured.minPoolSize} {activeCategory === "Food" ? "plates claimed" : "spots filled"}</span>
-                    <span style={{ color: "var(--emerald)" }}>{featured.fill.hours > 0 ? `${featured.fill.hours * 60}m left` : "Ending soon"}</span>
+                    <span>{featured.fill.joined > 0 ? `${featured.fill.joined}/${featured.minPoolSize} ${activeCategory === "Food" ? "plates claimed" : "spots filled"}` : `${featured.minPoolSize} spots · Be first to join`}</span>
+                    <span style={{ color: "var(--lime)" }}>Save {sav}%</span>
                   </div>
                   <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
                     <div className="h-full" style={{
@@ -438,11 +436,8 @@ export default function DiscoverPage() {
                           <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                         </div>
                         <div className="flex items-center justify-between text-[11px] font-extrabold mt-2" style={{ color: "#17271F" }}>
-                          <span>{p.fill.joined}/{p.minPoolSize} {activeCategory === "Food" ? "plates claimed" : "spots filled"}</span>
-                          <span style={{ color: "var(--coral)" }}>{p.fill.hours}h {(p.fill.hours * 20) % 60}m</span>
-                        </div>
-                        <div className="mt-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                          <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--coral)" }} />
+                          <span>{p.fill.joined > 0 ? `${p.fill.joined}/${p.minPoolSize} in` : `${p.minPoolSize} spots`}</span>
+                          <span style={{ color: "var(--coral)" }}>Save {Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100)}%</span>
                         </div>
                         <div className="flex items-center gap-1 mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
