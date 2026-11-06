@@ -40,9 +40,22 @@ export async function GET(request: NextRequest) {
     distinct: ["category"],
   });
 
+  // Attach real pool member counts
+  const productIds = products.map(p => p.id);
+  const pools = await prisma.pool.findMany({
+    where: { productId: { in: productIds }, status: "OPEN" },
+    select: { productId: true, _count: { select: { members: true } }, minSize: true },
+  });
+  const poolMap = new Map(pools.map(p => [p.productId, { memberCount: p._count.members, minSize: p.minSize }]));
+
+  const enriched = products.map(p => ({
+    ...p,
+    poolMemberCount: poolMap.get(p.id)?.memberCount || 0,
+  }));
+
   return NextResponse.json({
     success: true,
-    data: products,
+    data: enriched,
     meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     categories: categories.map(c => c.category),
   });

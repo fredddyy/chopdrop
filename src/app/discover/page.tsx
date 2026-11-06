@@ -27,6 +27,7 @@ interface PoolProduct {
   retailPrice: number;
   groupPrice: number;
   minPoolSize: number;
+  poolMemberCount: number;
   vendor: { name: string };
 }
 
@@ -54,9 +55,10 @@ function PoolImage({ src, alt }: { src: string | null; alt: string }) {
 const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 const AREA_SUGGESTIONS = ["Victoria Island", "Lekki", "Ikeja", "Yaba", "Marina", "Surulere", "Ikoyi", "Ajah", "Gbagada", "Maryland", "Magodo", "Festac", "Apapa"];
 
-// Real pool state — no fake fill data
-function poolState(minSize: number) {
-  return { joined: 0, spotsLeft: minSize, hours: 6, fillPct: 0 };
+// Real pool state from API data
+function poolState(minSize: number, memberCount: number) {
+  const joined = memberCount;
+  return { joined, spotsLeft: minSize - joined, hours: 6, fillPct: minSize > 0 ? Math.round((joined / minSize) * 100) : 0 };
 }
 
 export default function DiscoverPage() {
@@ -173,7 +175,7 @@ export default function DiscoverPage() {
   // Sort pools by fill rate (most full first) — "Filling Now" at top
   const sortedPools = [...filteredPools].map((p, idx) => ({
     ...p,
-    fill: poolState(p.minPoolSize),
+    fill: poolState(p.minPoolSize, p.poolMemberCount || 0),
   })).sort((a, b) => {
     // Sort by savings percentage (best deals first)
     const savA = ((a.retailPrice - a.groupPrice) / a.retailPrice);

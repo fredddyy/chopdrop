@@ -502,8 +502,6 @@ export default function ProductDetailPage() {
         </div>
       )}
 
-      )}
-
       {/* ── Joined: green progress card ── */}
       {joinedStatus === "filling" && hasPoolPricing && (
         <div className="px-5 mt-4">
@@ -512,13 +510,10 @@ export default function ProductDetailPage() {
             <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
               {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} more person and everyone eats.` : "More people needed and everyone eats."}
             </p>
-            {/* Activity feed */}
+            {/* You joined */}
             <div className="mt-3 flex items-center gap-2">
-              <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[0] }}>T</div>
-              <div>
-                <p className="text-[11px] font-bold" style={{ color: "#17271F" }}>{userName || "You"} (you) · pinned</p>
-                <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Payment confirmed · Included above</p>
-              </div>
+              <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[0] }}>{(userName || "Y").charAt(0)}</div>
+              <span className="text-[11px] font-bold" style={{ color: "#17271F" }}>{userName || "You"} (you)</span>
             </div>
             {pool && pool.memberCount > 1 && (
               <div className="mt-2 flex items-center gap-2">
