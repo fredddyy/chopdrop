@@ -502,21 +502,6 @@ export default function ProductDetailPage() {
         </div>
       )}
 
-      {/* ── Payment confirmed (when joined) ── */}
-      {joinedStatus === "filling" && hasPoolPricing && (
-        <div className="px-5 mt-5">
-          <div className="flex items-center gap-2 mb-2">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em]" style={{ color: "var(--text-muted)" }}>Payment confirmed</p>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-          </div>
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-[13px] font-medium" style={{ color: "var(--text-muted)" }}>{userName || "You"}</p>
-              <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>Paid upfront. One plate reserved in your name. Keep this receipt.</p>
-            </div>
-            <span className="text-[18px] font-extrabold tabular-nums shrink-0 ml-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{fp(joinedPrice || product.groupPrice)} paid</span>
-          </div>
-        </div>
       )}
 
       {/* ── Joined: green progress card ── */}
