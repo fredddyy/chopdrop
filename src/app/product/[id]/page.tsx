@@ -406,9 +406,9 @@ export default function ProductDetailPage() {
               <span>Share to WhatsApp — Help Fill It</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
             </button>
-            <button type="button" onClick={() => setJustPaid(false)} className="w-full text-[13px] font-bold text-center mt-3 cursor-pointer" style={{ color: "var(--text-muted)" }}>
+            <Link href="/orders" className="w-full text-[13px] font-bold text-center mt-3 block" style={{ color: "var(--text-muted)" }}>
               View Pool
-            </button>
+            </Link>
           </div>
         </div>
       </main>
