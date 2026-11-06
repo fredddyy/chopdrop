@@ -338,7 +338,7 @@ export default function ProductDetailPage() {
           <p className="text-[11px] mt-1" style={{ color: "var(--emerald)" }}>Automatic refund guarantee</p>
         </div>
 
-        {/* Progress */}
+        {/* Progress — spots left inside dark card */}
         <div className="px-5 mt-5">
           <div className="rounded-[22px] p-4" style={{ background: "#17271F" }}>
             <div className="flex items-center justify-between text-[12px] font-extrabold">
@@ -361,36 +361,39 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Urgency */}
+        {/* Urgency — below dark card */}
         <div className="px-5 mt-4">
           <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left to fill it.</h2>
         </div>
 
-        {/* WhatsApp preview */}
+        {/* WhatsApp preview — image left, text right */}
         <div className="px-5 mt-4">
           <p className="text-[10px] font-extrabold uppercase tracking-[0.1em] mb-2" style={{ color: "var(--text-muted)" }}>Share to fill it · WhatsApp preview</p>
-          <div className="p-3 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
-            <div className="flex items-start gap-2.5">
-              <p className="text-[13px] font-bold flex-1" style={{ color: "#17271F" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} to fill it 😭</p>
-            </div>
-            <div className="flex items-center gap-2.5 mt-2 p-2 rounded-[10px]" style={{ background: "var(--card)" }}>
+          <div className="p-3.5 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
+            <div className="flex items-start gap-3">
               {product.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={product.imageUrl} alt={product.name} className="w-[44px] h-[44px] rounded-[8px] object-cover shrink-0" />
+                <img src={product.imageUrl} alt={product.name} className="w-[56px] h-[56px] rounded-[10px] object-cover shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-bold truncate" style={{ color: "#17271F" }}>{product.name} · {product.vendor.name}</p>
-                <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{product.name} · {fp(product.groupPrice)} · {memberCount}/{poolSize} in!</p>
+                <p className="text-[14px] font-bold leading-[130%]" style={{ color: "#17271F" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} to fill it 😭</p>
+                <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>{product.name} · {product.vendor.name}</p>
               </div>
             </div>
+            <p className="text-[13px] font-extrabold mt-2.5" style={{ color: "#17271F" }}>{product.name} · {fp(product.groupPrice)} · {memberCount}/{poolSize} in!</p>
+            <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} or the pool expires and nobody eats 😭. Share now!</p>
+            <p className="text-[11px] mt-1" style={{ color: "var(--emerald)" }}>chopdrop.ng/p/{product.name.toLowerCase().replace(/\s+/g, "-").slice(0, 12)}</p>
           </div>
         </div>
 
-        {/* Info */}
+        {/* Info card */}
         <div className="px-5 mt-4">
-          <p className="text-[11px] leading-[155%]" style={{ color: "var(--text-muted)" }}>
-            If it fills → food is made, we notify you. If it doesn&apos;t → refund is automatic.
-          </p>
+          <div className="flex items-start gap-2.5 p-3.5 rounded-[14px]" style={{ background: "var(--sand)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <p className="text-[11px] leading-[155%]" style={{ color: "var(--text-muted)" }}>
+              If it fills → food is made, we notify you.<br />If it doesn&apos;t → you&apos;re refunded automatically.
+            </p>
+          </div>
         </div>
 
         {/* Sticky CTA */}
