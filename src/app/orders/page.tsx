@@ -1,13 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
+
+function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
+
+interface PoolOrder {
+  id: string;
+  status: string;
+  minSize: number;
+  memberCount: number;
+  deadline: string;
+  myPaymentStatus: string;
+  product: { id: string; name: string; imageUrl: string | null; groupPrice: number; retailPrice: number };
+}
 
 type Tab = "active" | "history";
 
 export default function OrdersPage() {
   const [tab, setTab] = useState<Tab>("active");
+  const [pools, setPools] = useState<PoolOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/pools?mine=true")
+      .then((r) => r.json())
+      .then((d) => { if (d.success) setPools(d.data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const activePools = pools.filter((p) => p.status === "OPEN" || p.status === "FILLED");
+  const pastPools = pools.filter((p) => p.status === "COMPLETED" || p.status === "EXPIRED" || p.status === "CANCELLED");
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
@@ -26,10 +50,10 @@ export default function OrdersPage() {
         </button>
       </div>
 
-      {/* ── Tabs — full width ── */}
+      {/* ── Tabs ── */}
       <div className="px-5 mt-4 flex">
         {([
-          ["active", "Active"],
+          ["active", `Active${activePools.length > 0 ? ` · ${activePools.length}` : ""}`],
           ["history", "History"],
         ] as const).map(([key, label]) => (
           <button key={key} type="button" onClick={() => setTab(key as Tab)}
@@ -43,33 +67,117 @@ export default function OrdersPage() {
       {/* ═══ ACTIVE TAB ═══ */}
       {tab === "active" && (
         <div className="px-5 mt-4">
-          <p className="text-[12px] mb-4" style={{ color: "var(--text-muted)" }}>
-            Track paid pools, cooking orders, pick-up-ready meals, and live campaigns.
-          </p>
-
-          {/* Empty state */}
-          <div className="py-12 text-center">
-            <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
+          {loading ? (
+            <div className="py-8 space-y-3">
+              {[0, 1].map((i) => (
+                <div key={i} className="h-[120px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
+              ))}
             </div>
-            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>No active orders</h3>
-            <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Join a pool or order solo — your active orders will appear here.</p>
-            <Link href="/discover" className="h-[40px] px-5 rounded-full text-[13px] font-bold text-white inline-flex items-center mt-4 press-feedback" style={{ background: "var(--coral)" }}>Browse deals</Link>
-          </div>
+          ) : activePools.length === 0 ? (
+            <div className="py-12 text-center">
+              <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
+              </div>
+              <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>No active orders</h3>
+              <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Join a pool or order solo — your active orders will appear here.</p>
+              <Link href="/discover" className="h-[40px] px-5 rounded-full text-[13px] font-bold text-white inline-flex items-center mt-4 press-feedback" style={{ background: "var(--coral)" }}>Browse deals</Link>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {activePools.map((pool) => {
+                const spotsLeft = pool.minSize - pool.memberCount;
+                const fillPct = Math.round((pool.memberCount / pool.minSize) * 100);
+                const minsLeft = Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 60000));
+                return (
+                  <Link key={pool.id} href={`/product/${pool.product.id}`} className="block p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: pool.status === "FILLED" ? "var(--emerald-soft)" : "var(--lime)", color: pool.status === "FILLED" ? "var(--emerald)" : "#17271F" }}>
+                        {pool.status === "FILLED" ? "Filled · Cooking" : "Pool · Filling"}
+                      </span>
+                      <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{pool.myPaymentStatus === "SUCCESS" ? "Paid" : "Pending"}</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-[56px] h-[56px] rounded-[12px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+                        {pool.product.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={pool.product.imageUrl} alt={pool.product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[16px]" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{pool.product.name.charAt(0)}</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[15px] font-extrabold leading-[140%] truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{pool.product.name}</h4>
+                        <p className="text-[18px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#17271F" }}>{fp(pool.product.groupPrice)}</p>
+                      </div>
+                    </div>
+                    {pool.status === "OPEN" && (
+                      <>
+                        <div className="mt-3 flex items-center justify-between text-[11px] font-extrabold" style={{ color: "#17271F" }}>
+                          <span>{pool.memberCount}/{pool.minSize} in</span>
+                          <span style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft}m left`}</span>
+                        </div>
+                        <div className="mt-1 h-[5px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: "var(--coral)" }} />
+                        </div>
+                        <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>
+                          {spotsLeft === 1 ? "One more person and everyone eats." : `${spotsLeft} more needed. Share to fill it.`}
+                        </p>
+                      </>
+                    )}
+                    {pool.status === "FILLED" && (
+                      <p className="text-[11px] mt-3" style={{ color: "var(--text-muted)" }}>{pool.memberCount}/{pool.minSize} confirmed. Vendor is cooking. We&apos;ll notify you when ready.</p>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
       {/* ═══ HISTORY TAB ═══ */}
       {tab === "history" && (
         <div className="px-5 mt-4">
-          {/* Empty state */}
-          <div className="py-12 text-center">
-            <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+          {loading ? (
+            <div className="py-8 space-y-3">
+              <div className="h-[80px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
             </div>
-            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>No past orders yet</h3>
-            <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Your completed and refunded orders will show here with receipts.</p>
-          </div>
+          ) : pastPools.length === 0 ? (
+            <div className="py-12 text-center">
+              <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+              </div>
+              <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>No past orders yet</h3>
+              <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Completed and refunded orders will show here.</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {pastPools.map((pool) => (
+                <div key={pool.id} className="p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+                  <div className="flex items-start gap-3">
+                    <div className="w-[48px] h-[48px] rounded-[10px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+                      {pool.product.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={pool.product.imageUrl} alt={pool.product.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[14px]" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{pool.product.name.charAt(0)}</div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-[14px] font-bold truncate" style={{ color: "#17271F" }}>{pool.product.name}</h4>
+                      <p className="text-[13px] font-extrabold tabular-nums" style={{ color: "#17271F" }}>{fp(pool.product.groupPrice)}</p>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block" style={{
+                        background: pool.status === "COMPLETED" ? "var(--emerald-soft)" : pool.status === "EXPIRED" ? "var(--coral-soft)" : "var(--sand)",
+                        color: pool.status === "COMPLETED" ? "var(--emerald)" : pool.status === "EXPIRED" ? "var(--coral)" : "var(--text-muted)",
+                      }}>
+                        {pool.status === "COMPLETED" ? "Completed" : pool.status === "EXPIRED" ? "Expired · Refunded" : "Cancelled"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
