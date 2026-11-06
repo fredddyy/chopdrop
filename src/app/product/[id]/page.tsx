@@ -91,11 +91,12 @@ export default function ProductDetailPage() {
     setLoading(true);
     setError(false);
 
-    // Fetch product + active pools in parallel
+    // Fetch product + active pools + user's memberships in parallel
     Promise.allSettled([
       fetch(`/api/products/${id}`, { signal: ctrl.signal }).then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); }),
       fetch(`/api/pools?productId=${id}`, { signal: ctrl.signal }).then(r => r.ok ? r.json() : null),
-    ]).then(([productResult, poolsResult]) => {
+      fetch(`/api/pools?mine=true`, { signal: ctrl.signal }).then(r => r.ok ? r.json() : null),
+    ]).then(([productResult, poolsResult, myPoolsResult]) => {
       if (productResult.status === "fulfilled" && productResult.value.success) {
         setProduct(productResult.value.data);
       } else if (productResult.status === "rejected" && (productResult.reason as Error).name !== "AbortError") {
@@ -103,6 +104,18 @@ export default function ProductDetailPage() {
       }
       if (poolsResult.status === "fulfilled" && poolsResult.value?.success) {
         setPools(poolsResult.value.data);
+      }
+      // Check if user is already a member of a pool for this product (server truth)
+      if (myPoolsResult.status === "fulfilled" && myPoolsResult.value?.success) {
+        const myPool = myPoolsResult.value.data.find((p: { product: { id: string }; status: string; myPaymentStatus: string }) => p.product.id === id);
+        if (myPool) {
+          const price = myPool.product.groupPrice || 0;
+          const status = myPool.status === "FILLED" ? "preparing" : "filling";
+          setJoinedStatus(status as "filling" | "preparing");
+          setJoinedPrice(price);
+          // Sync localStorage so it stays consistent
+          markJoined(id, price, status as "filling" | "preparing");
+        }
       }
       if (!ctrl.signal.aborted) setLoading(false);
     });
