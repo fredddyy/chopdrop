@@ -307,9 +307,9 @@ export default function ProductDetailPage() {
   const pool = pools.length > 0 ? pools[0] : null;
   // Show pool variant when product has group pricing, even without a real Pool record
   const hasPoolPricing = savings > 0;
-  const fillPct = pool ? Math.round((pool.memberCount / pool.minSize) * 100) : (hasPoolPricing ? Math.round(0.7 * 100) : 0);
+  const fillPct = pool ? Math.round((pool.memberCount / pool.minSize) * 100) : 0;
   const minutesLeft = pool ? Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 60000)) : 180;
-  const memberCount = pool ? pool.memberCount : Math.round(product.minPoolSize * 0.7);
+  const memberCount = pool ? pool.memberCount : 0;
   const poolSize = pool ? pool.minSize : product.minPoolSize;
   const spotsLeft = poolSize - memberCount;
 
@@ -342,7 +342,7 @@ export default function ProductDetailPage() {
         <div className="px-5 mt-5">
           <div className="rounded-[22px] p-4" style={{ background: "#17271F" }}>
             <div className="flex items-center justify-between text-[12px] font-extrabold">
-              <span className="text-white">{memberCount}/{poolSize} plates claimed</span>
+              <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `${poolSize} spots · Be first to join`}</span>
               <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
             </div>
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
@@ -517,7 +517,7 @@ export default function ProductDetailPage() {
       {joinedStatus === "filling" && hasPoolPricing && (
         <div className="px-5 mt-4">
           <div className="rounded-[22px] overflow-hidden p-4" style={{ background: "var(--emerald-soft)" }}>
-            <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>You&apos;re in! {pool ? `${pool.memberCount} of ${pool.minSize}` : `${Math.round(product.minPoolSize * 0.7)} of ${product.minPoolSize}`} needed</p>
+            <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>You&apos;re in! {pool ? `${pool.memberCount} of ${pool.minSize}` : `${memberCount} of ${product.minPoolSize}`} needed</p>
             <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
               {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} more person and everyone eats.` : "More people needed and everyone eats."}
             </p>
@@ -572,7 +572,7 @@ export default function ProductDetailPage() {
           <div className="p-4">
             {/* Progress text */}
             <div className="flex items-center justify-between text-[12px] font-extrabold">
-              <span className="text-white">{pool ? `${pool.memberCount}/${pool.minSize}` : `${Math.round(product.minPoolSize * 0.7)}/${product.minPoolSize}`} plates claimed</span>
+              <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `${poolSize} spots · Be first to join`}</span>
               <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
             </div>
             {/* Progress bar */}
@@ -662,7 +662,7 @@ export default function ProductDetailPage() {
           {/* ── JOINED: filling — loss aversion copy ── */}
           {joinedStatus === "filling" && hasPoolPricing && (
             <>
-              <p className="text-[13px] font-bold mb-1" style={{ color: "var(--emerald)" }}>You&apos;re in! {pool ? `${pool.memberCount} of ${pool.minSize}` : `${Math.round(product.minPoolSize * 0.7)} of ${product.minPoolSize}`} needed</p>
+              <p className="text-[13px] font-bold mb-1" style={{ color: "var(--emerald)" }}>You&apos;re in! {pool ? `${pool.memberCount} of ${pool.minSize}` : `${memberCount} of ${product.minPoolSize}`} needed</p>
               <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>
                 {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} more and everyone eats.` : "Share so the pool fills and you get your food."} If it doesn&apos;t fill, everyone gets refunded.
               </p>
