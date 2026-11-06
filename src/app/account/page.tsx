@@ -115,7 +115,7 @@ export default function AccountPage() {
 
       {/* ── Wallet ── */}
       <div className="px-5 mt-4">
-        <Link href="/rewards" className="flex items-center gap-3 p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
+        <Link href="/wallet" className="flex items-center gap-3 p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /></svg>
           <div className="flex-1 min-w-0">
             <p className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{fp(walletBalance)}</p>
