@@ -384,9 +384,9 @@ export default function ProductDetailPage() {
 
         {/* Info card */}
         <div className="px-5 mt-4">
-          <div className="flex items-start gap-2.5 p-3.5 rounded-[14px]" style={{ background: "var(--sand)" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-            <p className="text-[11px] leading-[155%]" style={{ color: "var(--text-muted)" }}>
+          <div className="flex items-start gap-2.5 p-3.5 rounded-[14px]" style={{ background: "var(--emerald-soft)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <p className="text-[11px] leading-[155%]" style={{ color: "var(--emerald)" }}>
               If it fills → food is made, we notify you.<br />If it doesn&apos;t → you&apos;re refunded automatically.
             </p>
           </div>
