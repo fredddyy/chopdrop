@@ -57,11 +57,41 @@ export default function StorePage() {
   if (loading) {
     return (
       <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
-        <div className="h-[200px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-        <div className="px-5 pt-4 space-y-3">
-          <div className="h-6 rounded w-[50%]" style={{ background: "var(--sand)" }} />
-          <div className="h-4 rounded w-[70%]" style={{ background: "var(--sand)" }} />
+        {/* Hero image placeholder */}
+        <div className="h-[200px] rounded-b-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+
+        {/* Vendor name + address */}
+        <div className="px-5 mt-5 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full shrink-0" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+          <div className="flex-1 space-y-2">
+            <div className="h-6 rounded-[12px] w-[55%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
+            <div className="h-4 rounded-[12px] w-[75%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
+          </div>
         </div>
+
+        {/* Category pills placeholder */}
+        <div className="px-5 mt-5 flex gap-2">
+          {[80, 60, 70].map((w, i) => (
+            <div key={i} className="h-[25px] rounded-full shrink-0" style={{ width: `${w}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${250 + i * 50}ms` }} />
+          ))}
+        </div>
+
+        {/* Menu item rows */}
+        <div className="px-5 mt-5 rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
+          {[0, 1, 2].map((i) => (
+            <div key={i}>
+              {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="w-[56px] h-[56px] rounded-[12px] shrink-0" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${400 + i * 100}ms` }} />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 rounded-[12px] w-[60%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${450 + i * 100}ms` }} />
+                  <div className="h-3 rounded-[12px] w-[35%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${500 + i * 100}ms` }} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <BottomNav />
       </main>
     );

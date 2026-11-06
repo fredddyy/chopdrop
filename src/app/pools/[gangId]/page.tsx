@@ -35,11 +35,56 @@ export default function GangDetailPage() {
   if (loading) {
     return (
       <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
-        <div className="px-5 pt-12 space-y-4">
-          <div className="h-8 rounded w-[50%] mx-auto" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-          <div className="h-14 w-14 rounded-full mx-auto" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-          <div className="h-6 rounded w-[60%] mx-auto" style={{ background: "var(--sand)" }} />
+        {/* Header */}
+        <div className="px-5 pt-4 flex items-center justify-between">
+          <div className="w-9 h-9 rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div className="space-y-1 text-center">
+            <div className="h-3 w-[80px] mx-auto rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "50ms" }} />
+            <div className="h-4 w-[100px] mx-auto rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+          </div>
+          <div className="w-9 h-9 rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
         </div>
+
+        {/* Gang profile */}
+        <div className="px-5 mt-5 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full shrink-0" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
+          <div className="flex-1 space-y-2">
+            <div className="h-6 w-[55%] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
+            <div className="h-4 w-[40%] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "250ms" }} />
+          </div>
+        </div>
+
+        {/* Share buttons */}
+        <div className="px-5 mt-3 flex gap-2">
+          <div className="h-[25px] w-[120px] rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "300ms" }} />
+          <div className="h-[25px] w-[110px] rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "350ms" }} />
+        </div>
+
+        {/* Tabs */}
+        <div className="px-5 mt-5 flex gap-2">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex-1 h-[40px] rounded-full" style={{ background: i === 0 ? "var(--sand)" : "transparent", borderWidth: i > 0 ? 1 : 0, borderColor: "var(--border)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${400 + i * 50}ms` }} />
+          ))}
+        </div>
+
+        {/* Activity card */}
+        <div className="px-5 mt-4">
+          <div className="h-[70px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "550ms" }} />
+        </div>
+
+        {/* Activity items */}
+        <div className="px-5 mt-5 space-y-4">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full shrink-0" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${600 + i * 80}ms` }} />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-4 rounded-[12px] w-[70%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${650 + i * 80}ms` }} />
+                <div className="h-3 rounded-[12px] w-[30%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${700 + i * 80}ms` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
         <BottomNav />
       </main>
     );

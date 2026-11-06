@@ -172,6 +172,70 @@ export default function RewardsPage() {
     setCheckingIn(false);
   }
 
+  if (loading) {
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        {/* Header placeholder */}
+        <div className="px-5 pt-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+            <div className="space-y-1">
+              <div className="h-3 w-[50px] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "50ms" }} />
+              <div className="h-5 w-[90px] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+            </div>
+          </div>
+          <div className="h-[30px] w-[80px] rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+        </div>
+
+        {/* Hero heading placeholder */}
+        <div className="px-5 mt-5 space-y-2">
+          <div className="h-7 w-[70%] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
+          <div className="h-7 w-[55%] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
+        </div>
+
+        {/* Dark points card placeholder */}
+        <div className="px-5 mt-5">
+          <div className="h-[120px] rounded-[22px]" style={{ background: "#17271F", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "250ms" }} />
+        </div>
+
+        {/* Scratch card placeholder */}
+        <div className="px-5 mt-5">
+          <div className="h-[160px] rounded-[22px]" style={{ background: "var(--lime)", opacity: 0.5, animation: "pulse 1.5s ease-in-out infinite", animationDelay: "350ms" }} />
+        </div>
+
+        {/* Streak row placeholder */}
+        <div className="px-5 mt-6">
+          <div className="h-5 w-[55%] rounded-[12px] mb-3" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "400ms" }} />
+          <div className="flex gap-2">
+            {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="flex-1 h-10 rounded-[10px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${450 + i * 50}ms` }} />
+            ))}
+          </div>
+        </div>
+
+        {/* How you earned it placeholder */}
+        <div className="px-5 mt-6">
+          <div className="p-5 rounded-[22px]" style={{ background: "var(--card)" }}>
+            <div className="h-5 w-[50%] rounded-[12px] mb-4" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "800ms" }} />
+            <div className="space-y-3">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="space-y-1.5">
+                    <div className="h-4 rounded-[12px]" style={{ width: `${90 + i * 20}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${850 + i * 80}ms` }} />
+                    <div className="h-3 rounded-[12px]" style={{ width: `${120 + i * 15}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${900 + i * 80}ms` }} />
+                  </div>
+                  <div className="h-4 w-[40px] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${950 + i * 80}ms` }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <BottomNav />
+      </main>
+    );
+  }
+
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 

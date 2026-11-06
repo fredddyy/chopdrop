@@ -9,6 +9,7 @@ function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleStrin
 
 export default function AccountPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [area, setArea] = useState("");
@@ -28,6 +29,9 @@ export default function AccountPage() {
       }
     } catch {}
 
+    let done = 0;
+    const checkDone = () => { done++; if (done >= 2) setLoading(false); };
+
     // Fetch pool stats
     fetch("/api/pools?mine=true")
       .then((r) => r.ok ? r.json() : null)
@@ -39,7 +43,8 @@ export default function AccountPage() {
           setTotalSaved(saved);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(checkDone);
 
     // Fetch wallet
     fetch("/api/auth/me")
@@ -50,13 +55,72 @@ export default function AccountPage() {
           if (d.data.walletBalance) setWalletBalance(d.data.walletBalance);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(checkDone);
   }, []);
 
   function logout() {
     document.cookie = "chopdrop-user-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     localStorage.removeItem("chopdrop-customer");
     router.push("/auth");
+  }
+
+  if (loading) {
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        {/* Header placeholder */}
+        <div className="px-5 pt-4 flex items-center justify-between">
+          <div className="space-y-1">
+            <div className="h-3 w-[30px] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+            <div className="h-5 w-[160px] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "50ms" }} />
+          </div>
+          <div className="w-9 h-9 rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+        </div>
+
+        {/* Avatar + name placeholder */}
+        <div className="px-5 mt-5 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full shrink-0" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
+          <div className="flex-1 space-y-2">
+            <div className="h-5 w-[55%] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
+            <div className="h-4 w-[40%] rounded-[12px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "250ms" }} />
+          </div>
+        </div>
+
+        {/* Savings card placeholder (dark) */}
+        <div className="px-5 mt-5">
+          <div className="h-[120px] rounded-[22px]" style={{ background: "#17271F", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "300ms" }} />
+        </div>
+
+        {/* Stats row placeholder */}
+        <div className="px-5 mt-4 flex gap-3">
+          <div className="flex-1 h-[100px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "400ms" }} />
+          <div className="flex-1 h-[100px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "450ms" }} />
+        </div>
+
+        {/* Wallet card placeholder */}
+        <div className="px-5 mt-4">
+          <div className="h-[72px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "500ms" }} />
+        </div>
+
+        {/* Quick links placeholder */}
+        <div className="px-5 mt-6">
+          <div className="h-5 w-[100px] rounded-[12px] mb-3" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "550ms" }} />
+          <div className="rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i}>
+                {i > 0 && <div className="mx-5 h-px" style={{ background: "var(--border)" }} />}
+                <div className="px-5 py-4 space-y-1.5">
+                  <div className="h-4 rounded-[12px]" style={{ width: `${90 + i * 15}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${600 + i * 60}ms` }} />
+                  <div className="h-3 rounded-[12px]" style={{ width: `${150 + i * 10}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${650 + i * 60}ms` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <BottomNav />
+      </main>
+    );
   }
 
   return (
