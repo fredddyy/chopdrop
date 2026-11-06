@@ -298,48 +298,6 @@ export default function CartPage() {
               </div>
             </div>
 
-            {/* Pool refund guarantee — with potential savings */}
-            {officeId && (
-              <div className="mt-3 p-4 rounded-[14px]" style={{ background: "var(--dark)" }}>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  <span className="text-[14px] font-bold text-white">Pool member guarantee</span>
-                </div>
-                {poolData.officeOrderCount > 0 && poolData.officeOrderCount < 30 ? (() => {
-                  const currentPct = poolData.officeOrderCount >= 30 ? 8 : poolData.officeOrderCount >= 20 ? 5 : poolData.officeOrderCount >= 10 ? 3 : 0;
-                  const nextPct = currentPct >= 8 ? 8 : currentPct >= 5 ? 8 : currentPct >= 3 ? 5 : 3;
-                  const nextMin = nextPct === 3 ? 10 : nextPct === 5 ? 20 : 30;
-                  const moreNeeded = Math.max(0, nextMin - poolData.officeOrderCount);
-                  const potentialCredit = Math.round(cart.subtotal * (nextPct - currentPct) / 100);
-                  return (
-                    <p className="text-[13px] text-white/70 leading-relaxed">
-                      {moreNeeded > 0
-                        ? <>If <span className="font-bold text-white">{moreNeeded} more</span> people join your group, you get <span className="font-bold" style={{ color: "var(--emerald)" }}>{formatNaira(potentialCredit)} credit</span> back on this order.</>
-                        : <>Credits will be calculated when the pool closes today.</>
-                      }
-                    </p>
-                  );
-                })() : (
-                  <p className="text-[13px] text-white/70 leading-relaxed">
-                    Order at today&apos;s rate. As more people join, your rate improves — <span className="font-bold" style={{ color: "var(--emerald)" }}>bonus credit added to your wallet</span>.
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Delivery info */}
-            {officeId && (
-              <div className="flex items-center gap-2 mt-3 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>Arriving by 12:00 PM at {collectionPoint || "reception"}</span>
-              </div>
-            )}
-
-            {/* Collection code preview */}
-            <div className="flex items-center gap-2 mt-2 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-              <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>You&apos;ll get a unique code to collect your food</span>
-            </div>
           </section>
 
           {/* Error shown only in sticky footer — no duplicate */}
