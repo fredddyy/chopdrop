@@ -357,15 +357,16 @@ export default function ProductDetailPage() {
 
       {/* ── Two-price display — PDD style ── */}
       {hasPoolPricing ? (
-        <div className="px-5 mt-4 flex items-start gap-6">
-          <div>
-            <span className="text-[40px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
-            <p className="text-[12px] mt-1" style={{ color: "var(--coral)" }}>Pool: join others</p>
+        <div className="px-5 mt-4 flex gap-4">
+          <div className="flex-1 p-3 rounded-[14px]" style={{ background: "var(--coral-soft)" }}>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.1em]" style={{ color: "var(--coral)" }}>Pool price</p>
+            <span className="text-[36px] font-extrabold tabular-nums leading-none block mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
+            <p className="text-[12px] mt-1" style={{ color: "var(--coral)" }}>Join others</p>
           </div>
-          <div>
-            <span className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#17271F" }}>{fp(product.retailPrice)}</span>
-            <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Solo: order alone</p>
-            <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Keep {fp(savedAmount)} for yourself.</p>
+          <div className="flex-1 p-3 rounded-[14px]" style={{ background: "var(--sand)" }}>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>Solo price</p>
+            <span className="text-[36px] font-extrabold tabular-nums leading-none block mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "#17271F" }}>{fp(product.retailPrice)}</span>
+            <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Order alone</p>
           </div>
         </div>
       ) : (
