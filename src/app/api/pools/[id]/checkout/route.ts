@@ -41,7 +41,7 @@ export async function POST(
   const email = dbUser?.email || `${dbUser?.phone || "user"}@chopdrop.ng`;
 
   const origin = request.headers.get("origin") || "https://chopdrop-app.vercel.app";
-  const callbackUrl = `${origin}/pools?paid=${poolId}`;
+  const callbackUrl = `${origin}/product/${member.pool.productId}?reference=${reference}`;
 
   const paystack = await initializeTransaction({
     email,
