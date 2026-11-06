@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
@@ -22,12 +22,8 @@ interface StoreDetail {
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
-function poolFill(id: string, idx: number, minSize: number) {
-  const seed = id.charCodeAt(0) + id.charCodeAt(id.length - 1) + idx * 7;
-  const fillPct = 0.6 + ((seed % 4) * 0.1);
-  const joined = Math.max(2, Math.min(minSize - 1, Math.round(minSize * fillPct)));
-  const hours = [1, 2, 3, 4, 6][seed % 5];
-  return { joined, spotsLeft: minSize - joined, hours, fillPct: Math.round((joined / minSize) * 100) };
+function poolState(minSize: number) {
+  return { joined: 0, spotsLeft: minSize, hours: 6, fillPct: 0 };
 }
 
 const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
@@ -40,59 +36,7 @@ export default function StorePage() {
   const [error, setError] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const [addedToast, setAddedToast] = useState("");
-  const [begLoading, setBegLoading] = useState(false);
   const cart = useCart();
-
-  const startBegPrice = useCallback(async () => {
-    if (!cart.items.length) return;
-    setBegLoading(true);
-    const showErr = (msg: string) => { setAddedToast(msg); setTimeout(() => setAddedToast(""), 3000); };
-    try {
-      const firstItem = cart.items[0];
-      // Ensure a Product record exists for this item (works for Product, Meal, or MenuItem IDs)
-      const ensureRes = await fetch("/api/products/ensure", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId: firstItem.dailyMenuId }),
-      });
-      const ensureData = await ensureRes.json();
-      if (!ensureData.success) { showErr(ensureData.error || "Item not poolable"); setBegLoading(false); return; }
-      const productId = ensureData.data.productId;
-
-      // Find existing pool or create one, then join for beg
-      const poolsRes = await fetch(`/api/pools?productId=${productId}`);
-      const poolsData = await poolsRes.json();
-      let begCode: string | null = null;
-      let lastError = "";
-
-      if (poolsData.success && poolsData.data.length > 0) {
-        const res = await fetch(`/api/pools/${poolsData.data[0].id}/join`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ quantity: 1 }),
-        });
-        const data = await res.json();
-        if (data.success) begCode = data.data.begCode;
-        else lastError = data.error || "Couldn't join";
-      } else {
-        const res = await fetch("/api/pools", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId, quantity: 1 }),
-        });
-        const data = await res.json();
-        if (data.success) begCode = data.data.begCode;
-        else lastError = data.error || "Couldn't create pool";
-      }
-
-      if (begCode) {
-        router.push(`/beg/${begCode}`);
-      } else {
-        showErr(lastError.includes("Not authenticated") ? "Log in to beg price" : lastError);
-      }
-    } catch {
-      showErr("Network error");
-    }
-    setBegLoading(false);
-  }, [cart.items, router]);
 
   function addToPlate(item: Product, storeName: string) {
     cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantName: storeName, price: item.retailPrice });
@@ -165,7 +109,7 @@ export default function StorePage() {
 
   // Featured pool product (first product with savings)
   const featured = allItems.find((p) => p.groupPrice < p.retailPrice && p.imageUrl);
-  const featuredFill = featured ? poolFill(featured.id, 0, featured.minPoolSize) : null;
+  const featuredFill = featured ? poolState(featured.minPoolSize) : null;
   const featuredSav = featured ? Math.round(((featured.retailPrice - featured.groupPrice) / featured.retailPrice) * 100) : 0;
 
   const menuTabs = [...new Set(allItems.map((p) => p.subcategory || p.category))];
@@ -259,7 +203,7 @@ export default function StorePage() {
               </div>
               {/* Progress */}
               <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold text-white">
-                <span>{featuredFill.joined}/{featured.minPoolSize} plates claimed</span>
+                <span>{featuredFill.joined > 0 ? `${featuredFill.joined}/${featured.minPoolSize} plates claimed` : `${featured.minPoolSize} spots · Be first to join`}</span>
                 <span style={{ color: "var(--lime)" }}>{featuredFill.hours * 60}m left</span>
               </div>
               <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
@@ -279,7 +223,7 @@ export default function StorePage() {
                     </div>
                   ))}
                 </div>
-                <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>{featuredFill.joined} people are in</span>
+                <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>{featuredFill.joined > 0 ? `${featuredFill.joined} people are in` : "Be the first"}</span>
               </div>
               {/* Jump In CTA */}
               <div className="mt-4">
@@ -447,7 +391,6 @@ export default function StorePage() {
       {/* ── Sticky cart bar ── */}
       {cart.totalItems > 0 && (() => {
         const total = cart.items.reduce((sum, i) => sum + i.price, 0);
-        const begFloor = Math.round(total * 0.4);
         return (
           <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
             <div className="max-w-[480px] mx-auto">
@@ -455,11 +398,6 @@ export default function StorePage() {
                 <span>Pay Now — {fp(total)}</span>
                 <span className="text-[12px]">{cart.totalItems} item{cart.totalItems !== 1 ? "s" : ""}</span>
               </Link>
-              <button type="button" onClick={startBegPrice} disabled={begLoading}
-                className="w-full h-[44px] rounded-full flex items-center justify-center gap-2 mt-2 text-[13px] font-bold cursor-pointer press-feedback disabled:opacity-50" style={{ background: "#17271F", color: "white" }}>
-                <span>{begLoading ? "Starting..." : `Beg Price — pay as low as ${fp(begFloor)}`}</span>
-                {!begLoading && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>}
-              </button>
             </div>
           </div>
         );
