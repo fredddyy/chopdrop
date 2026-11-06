@@ -100,7 +100,7 @@ export default function CartPage() {
   async function handlePay() {
     if (!customerName.trim() || !customerPhone.trim()) { setError("Name and phone required"); setEditContact(true); return; }
     const phoneClean = customerPhone.trim().replace(/\s/g, "");
-    if (!/^(\+234|0)\d{10}$/.test(phoneClean)) { setError("Enter a valid Nigerian phone number (e.g. 08012345678)"); setEditContact(true); return; }
+    if (!/^(\+?234|0)\d{10}$/.test(phoneClean)) { setError("Enter a valid Nigerian phone number (e.g. 08012345678)"); setEditContact(true); return; }
     if (cart.items.length === 0) return;
     if (fulfillment === "office" && !officeId && !isFirstOrder) { setError("Enter your group code for free delivery"); return; }
     if (fulfillment === "delivery" && !deliveryAddress.trim()) { setError("Enter delivery address"); return; }
