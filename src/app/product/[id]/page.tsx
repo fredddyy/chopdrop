@@ -49,6 +49,7 @@ export default function ProductDetailPage() {
   const [joinedPrice, setJoinedPrice] = useState(0);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [leavingPool, setLeavingPool] = useState(false);
+  const [justPaid, setJustPaid] = useState(false);
   const cart = useCart();
 
   // Read user coordinates + joined pool status from localStorage
@@ -75,6 +76,7 @@ export default function ProductDetailPage() {
           const { productId, price } = JSON.parse(pending);
           if (productId === id) {
             markJoined(id, price);
+            setJustPaid(true);
             sessionStorage.removeItem("chopdrop-pending-join");
           }
         }
@@ -307,6 +309,111 @@ export default function ProductDetailPage() {
   const hasPoolPricing = savings > 0;
   const fillPct = pool ? Math.round((pool.memberCount / pool.minSize) * 100) : (hasPoolPricing ? Math.round(0.7 * 100) : 0);
   const minutesLeft = pool ? Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 60000)) : 180;
+  const memberCount = pool ? pool.memberCount : Math.round(product.minPoolSize * 0.7);
+  const poolSize = pool ? pool.minSize : product.minPoolSize;
+  const spotsLeft = poolSize - memberCount;
+
+  // ═══ POST-PAYMENT CELEBRATION SCREEN ═══
+  if (justPaid && product) {
+    const shareText = `${product.name} for ${fp(product.groupPrice)} (normally ${fp(product.retailPrice)})!\nWe need ${spotsLeft} more ${spotsLeft === 1 ? "person" : "people"} or the pool expires and nobody eats 😭\nJump in 👉 ${typeof window !== "undefined" ? window.location.origin : ""}/product/${id}`;
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full pb-32" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-4 flex items-center justify-between">
+          <div />
+          <div className="text-center">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--emerald)" }}>Student · You&apos;re on the list</p>
+            <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>You&apos;re in!</p>
+          </div>
+          <div />
+        </div>
+
+        {/* Celebration */}
+        <div className="text-center px-5 mt-6 celebrate">
+          <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ background: "var(--emerald-soft)" }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+          </div>
+          <h1 className="text-[28px] font-extrabold mt-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>✓ You&apos;re in!</h1>
+          <p className="text-[14px] mt-2" style={{ color: "var(--text-muted)" }}>{product.name} · {fp(joinedPrice || product.groupPrice)} paid</p>
+          <p className="text-[13px] font-bold" style={{ color: "#17271F" }}>{memberCount}/{poolSize} joined · {spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left</p>
+          <p className="text-[11px] mt-1" style={{ color: "var(--emerald)" }}>Automatic refund guarantee</p>
+        </div>
+
+        {/* Progress */}
+        <div className="px-5 mt-5">
+          <div className="rounded-[22px] p-4" style={{ background: "#17271F" }}>
+            <div className="flex items-center justify-between text-[12px] font-extrabold">
+              <span className="text-white">{memberCount}/{poolSize} plates claimed</span>
+              <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
+            </div>
+            <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+              <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
+            </div>
+            <div className="flex items-center gap-2 mt-3">
+              <div className="flex -space-x-2">
+                {Array.from({ length: Math.min(3, memberCount) }).map((_, j) => (
+                  <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
+                    {String.fromCharCode(65 + j)}
+                  </div>
+                ))}
+              </div>
+              <span className="text-[11px]" style={{ color: "var(--subdued)" }}>You + {memberCount - 1} others in this pool</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Urgency */}
+        <div className="px-5 mt-4">
+          <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left to fill it.</h2>
+        </div>
+
+        {/* WhatsApp preview */}
+        <div className="px-5 mt-4">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.1em] mb-2" style={{ color: "var(--text-muted)" }}>Share to fill it · WhatsApp preview</p>
+          <div className="p-3 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
+            <div className="flex items-start gap-2.5">
+              <p className="text-[13px] font-bold flex-1" style={{ color: "#17271F" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} to fill it 😭</p>
+            </div>
+            <div className="flex items-center gap-2.5 mt-2 p-2 rounded-[10px]" style={{ background: "var(--card)" }}>
+              {product.imageUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={product.imageUrl} alt={product.name} className="w-[44px] h-[44px] rounded-[8px] object-cover shrink-0" />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-bold truncate" style={{ color: "#17271F" }}>{product.name} · {product.vendor.name}</p>
+                <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{product.name} · {fp(product.groupPrice)} · {memberCount}/{poolSize} in!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="px-5 mt-4">
+          <p className="text-[11px] leading-[155%]" style={{ color: "var(--text-muted)" }}>
+            If it fills → food is made, we notify you. If it doesn&apos;t → refund is automatic.
+          </p>
+        </div>
+
+        {/* Sticky CTA */}
+        <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pt-3 pb-5" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
+          <div className="max-w-[480px] mx-auto">
+            <button type="button"
+              className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
+              style={{ background: "var(--coral)" }}
+              onClick={() => {
+                if (navigator.share) navigator.share({ title: product.name, text: shareText, url: `${window.location.origin}/product/${id}` }).catch(() => {});
+                else { navigator.clipboard.writeText(shareText); showToast("link"); }
+              }}>
+              <span>Share to WhatsApp — Help Fill It</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
+            </button>
+            <button type="button" onClick={() => setJustPaid(false)} className="w-full text-[13px] font-bold text-center mt-3 cursor-pointer" style={{ color: "var(--text-muted)" }}>
+              View Pool
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-40" style={{ background: "var(--bg)" }}>
