@@ -450,7 +450,7 @@ export default function ProductDetailPage() {
           )}
           {hasPoolPricing && (
             <div className="absolute top-3 left-3">
-              <span className="text-[10px] font-extrabold uppercase tracking-wide text-white rounded-full" style={{ background: "var(--emerald)", padding: "6px 12px" }}>
+              <span className="text-[10px] font-extrabold uppercase tracking-wide rounded-full" style={{ background: "var(--lime)", color: "#17271F", padding: "6px 12px" }}>
                 {savings}% less together
               </span>
             </div>
