@@ -583,6 +583,9 @@ export default function ProductDetailPage() {
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
               <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
             </div>
+            <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+              {memberCount === 0 ? "Be first to jump in." : spotsLeft === 1 ? "One more plate to unlock it." : `${spotsLeft} more to unlock it.`}
+            </h3>
             {/* Avatar social proof + join feed */}
             {pool && pool.memberCount >= 1 && (
               <div className="mt-3">
