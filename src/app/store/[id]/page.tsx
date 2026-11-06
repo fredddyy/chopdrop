@@ -267,7 +267,7 @@ export default function StorePage() {
                   {poolItems.map((item, i) => {
                     const hasPool = item.groupPrice < item.retailPrice;
                     const sav = hasPool ? Math.round(((item.retailPrice - item.groupPrice) / item.retailPrice) * 100) : 0;
-                    const inCart = cart.items.filter((c) => c.dailyMenuId === item.id).length;
+                    const inCart = cart.items.find((c) => c.dailyMenuId === item.id)?.quantity || 0;
                     return (
                       <div key={item.id}>
                         {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
@@ -298,7 +298,7 @@ export default function StorePage() {
                           {/* Add to cart / stepper */}
                           {inCart > 0 ? (
                             <div className="flex items-center gap-0.5 shrink-0">
-                              <button type="button" onClick={() => cart.removeItem(item.id)}
+                              <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
                                 className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
                                 style={{ background: "var(--sand)" }}>
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
@@ -328,7 +328,7 @@ export default function StorePage() {
               {menuItems.length > 0 && (
                 <div className="rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
                   {menuItems.map((item, i) => {
-                    const inCart = cart.items.filter((c) => c.dailyMenuId === item.id).length;
+                    const inCart = cart.items.find((c) => c.dailyMenuId === item.id)?.quantity || 0;
                     return (
                       <div key={item.id}>
                         {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
@@ -351,7 +351,7 @@ export default function StorePage() {
                           {/* + / stepper */}
                           {inCart > 0 ? (
                             <div className="flex items-center gap-0.5 shrink-0">
-                              <button type="button" onClick={() => cart.removeItem(item.id)}
+                              <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
                                 className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
                                 style={{ background: "var(--sand)" }}>
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
