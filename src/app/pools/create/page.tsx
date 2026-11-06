@@ -8,6 +8,7 @@ const EMOJIS = ["🍛", "🔥", "🍗", "🍕", "🌶️"];
 export default function CreateGangPage() {
   const router = useRouter();
   const [selectedEmoji, setSelectedEmoji] = useState(0);
+  const [creating, setCreating] = useState(false);
   const [gangName, setGangName] = useState("");
   const [motto, setMotto] = useState("");
   const [campus, setCampus] = useState("UNILAG · Akoka");
@@ -143,8 +144,20 @@ export default function CreateGangPage() {
         {/* ── CTA ── */}
         <button
           type="button"
-          disabled={!gangName.trim()}
-          onClick={() => router.push("/pools/sample-gang")}
+          disabled={!gangName.trim() || creating}
+          onClick={async () => {
+            setCreating(true);
+            try {
+              const res = await fetch("/api/gangs", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: gangName.trim(), emoji: EMOJIS[selectedEmoji], motto: motto.trim() || undefined, campus: campus || undefined, whatsappLink: waLink.trim() || undefined }),
+              });
+              const data = await res.json();
+              if (data.success) { router.push(`/pools/${data.data.id}`); }
+              else { alert(data.error || "Couldn't create gang"); setCreating(false); }
+            } catch { alert("Network error"); setCreating(false); }
+          }}
           className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50 mt-5"
           style={{ background: "var(--coral)" }}
         >
