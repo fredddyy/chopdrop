@@ -651,10 +651,6 @@ export default function ProductDetailPage() {
           {/* ── JOINED: filling — loss aversion copy ── */}
           {joinedStatus === "filling" && hasPoolPricing && (
             <>
-              <p className="text-[13px] font-bold mb-1" style={{ color: "var(--emerald)" }}>You&apos;re in! {pool ? `${pool.memberCount} of ${pool.minSize}` : `${memberCount} of ${product.minPoolSize}`} needed</p>
-              <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>
-                {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} more and everyone eats.` : "Share so the pool fills and you get your food."} If it doesn&apos;t fill, everyone gets refunded.
-              </p>
               <button type="button"
                 className="w-full h-[54px] rounded-full flex items-center justify-center gap-2 px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
                 style={{ background: "var(--coral)" }}
