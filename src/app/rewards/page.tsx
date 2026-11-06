@@ -123,8 +123,22 @@ function ScratchCard() {
 }
 
 export default function RewardsPage() {
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [poolsJoined, setPoolsJoined] = useState(0);
   const streak = 4;
   const days = ["M", "T", "W", "T", "F", "S", "S"];
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) {
+          setWalletBalance(d.data.walletBalance || 0);
+          setPoolsJoined(d.data.poolsJoined || 0);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
@@ -157,11 +171,11 @@ export default function RewardsPage() {
         <div className="p-5 rounded-[22px] flex items-center justify-between" style={{ background: "#17271F" }}>
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>Your little wins add up</p>
-            <p className="text-[40px] font-extrabold tabular-nums leading-none text-white mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>0</p>
+            <p className="text-[40px] font-extrabold tabular-nums leading-none text-white mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>{poolsJoined * 20}</p>
             <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>Chop points</p>
           </div>
           <div className="text-right">
-            <p className="text-[28px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px" }}>{"\u20A6"}0</p>
+            <p className="text-[28px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px" }}>{fp(walletBalance)}</p>
             <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>meal credit</p>
           </div>
         </div>
