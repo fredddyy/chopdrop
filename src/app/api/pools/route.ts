@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       include: {
         pool: {
           include: {
-            product: { select: { id: true, name: true, imageUrl: true, groupPrice: true, retailPrice: true } },
+            product: { select: { id: true, name: true, imageUrl: true, groupPrice: true, retailPrice: true, vendor: { select: { name: true } } } },
             members: { select: { id: true, userId: true, quantity: true } },
             creator: { select: { firstName: true } },
           },

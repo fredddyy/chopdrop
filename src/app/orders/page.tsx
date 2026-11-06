@@ -14,7 +14,7 @@ interface PoolOrder {
   deadline: string;
   myPaymentStatus: string;
   creatorName: string;
-  product: { id: string; name: string; imageUrl: string | null; groupPrice: number; retailPrice: number };
+  product: { id: string; name: string; imageUrl: string | null; groupPrice: number; retailPrice: number; vendor?: { name: string } };
 }
 
 type Tab = "active" | "history";
@@ -110,7 +110,7 @@ export default function OrdersPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{pool.product.name}</h4>
-                        <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{pool.creatorName}&apos;s pool · ★ 4.9</p>
+                        <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{pool.product.vendor?.name || "Restaurant"} · ★ 4.9</p>
                         <p className="text-[20px] font-extrabold tabular-nums mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#17271F" }}>{fp(pool.product.groupPrice)}</p>
                       </div>
                     </div>
