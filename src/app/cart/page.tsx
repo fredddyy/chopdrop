@@ -106,16 +106,13 @@ export default function CartPage() {
     if (fulfillment === "delivery" && !deliveryAddress.trim()) { setError("Enter delivery address"); return; }
     setError(null); setLoading(true);
     saveCustomerProfile({ name: customerName.trim(), phone: customerPhone.trim(), email: "", deliveryAddress: deliveryAddress.trim(), preferredFulfillment: "DELIVERY", officeId, officeName, collectionPoint });
-    const primaryItem = cart.items[0];
-    const realDailyMenuId = primaryItem.realDailyMenuId || primaryItem.dailyMenuId;
-    const totalQuantity = cart.items.reduce((sum, i) => sum + i.quantity, 0);
-    const allCustomItems = cart.items.filter((i) => i.customItems?.length).flatMap((i) => i.customItems || []);
     try {
-      const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyMenuId: realDailyMenuId, officeId: fulfillment === "office" ? officeId : undefined, customerName: customerName.trim(), customerPhone: customerPhone.trim(), customerEmail: "", fulfillmentType: fulfillment === "delivery" ? "DELIVERY" : "PICKUP", deliveryAddress: fulfillment === "delivery" ? deliveryAddress.trim() : undefined, quantity: totalQuantity, subtotal: cart.subtotal, captainTip: 0, serviceFee, creditsApplied: creditsToApply, items: allCustomItems.length > 0 ? allCustomItems : undefined }) });
+      // Use instant order API for solo purchases
+      const items = cart.items.map((i) => ({ productId: i.dailyMenuId, quantity: i.quantity, price: i.price }));
+      const res = await fetch("/api/orders/instant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items }) });
       const data = await res.json();
-      if (!data.success) { if (data.error === "Menu item not found") { setError("Some items are no longer available. Remove them and try again, or browse the menu to re-add."); } else { setError(data.error || "Something went wrong"); } setLoading(false); return; }
-      const redirectUrl = data.data.authorizationUrl;
-      if (redirectUrl) { window.location.href = redirectUrl; }
+      if (!data.success) { setError(data.error || "Something went wrong"); setLoading(false); return; }
+      if (data.data.authorizationUrl) { cart.clearCart(); window.location.href = data.data.authorizationUrl; }
       else { setError("Payment failed. Try again."); setLoading(false); }
     } catch { setError("Network error."); setLoading(false); }
   }
