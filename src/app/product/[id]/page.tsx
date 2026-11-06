@@ -348,15 +348,15 @@ export default function ProductDetailPage() {
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
               <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
             </div>
-            <div className="flex items-center gap-2 mt-3">
-              <div className="flex -space-x-2">
+            <div className="flex items-center gap-2.5 mt-3">
+              <div className="flex -space-x-1.5">
                 {Array.from({ length: Math.min(3, memberCount) }).map((_, j) => (
-                  <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
-                    {String.fromCharCode(65 + j)}
+                  <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
+                    {["F", "T", "D", "A", "C"][j] || String.fromCharCode(65 + j)}
                   </div>
                 ))}
               </div>
-              <span className="text-[11px]" style={{ color: "var(--subdued)" }}>You + {memberCount - 1} others in this pool</span>
+              <span className="text-[11px]" style={{ color: "var(--subdued)" }}>You {memberCount > 1 ? `+ ${memberCount - 1} other${memberCount > 2 ? "s" : ""} in this pool` : "are in this pool"}</span>
             </div>
           </div>
         </div>
