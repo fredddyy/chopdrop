@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
@@ -152,19 +153,30 @@ export default function RewardsPage() {
         </h1>
       </div>
 
-      {/* ── Points + Credit card ── */}
-      <div className="px-5 mt-5">
-        <div className="p-5 rounded-[22px] flex items-center justify-between" style={{ background: "#17271F" }}>
-          <div>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>Your little wins add up</p>
-            <p className="text-[40px] font-extrabold tabular-nums leading-none text-white mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>0</p>
-            <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>Chop points</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[28px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px" }}>{"\u20A6"}0</p>
-            <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>meal credit</p>
-          </div>
+      {/* ── Stat cards — pools joined + streak ── */}
+      <div className="px-5 mt-5 flex gap-3">
+        <div className="flex-1 p-4 rounded-[22px]" style={{ background: "var(--card)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" className="mb-2"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
+          <p className="text-[28px] font-extrabold leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>2</p>
+          <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>pools joined</p>
         </div>
+        <div className="flex-1 p-4 rounded-[22px]" style={{ background: "var(--lime)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2" strokeLinecap="round" className="mb-2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+          <p className="text-[28px] font-extrabold leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{streak} days</p>
+          <p className="text-[11px] mt-1" style={{ color: "#17271F", opacity: 0.7 }}>current streak</p>
+        </div>
+      </div>
+
+      {/* ── Wallet link ── */}
+      <div className="px-5 mt-3">
+        <Link href="/wallet" className="flex items-center gap-3 p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /></svg>
+          <div className="flex-1 min-w-0">
+            <p className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{"\u20A6"}0</p>
+            <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Wallet · Store credit for your next chop</p>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+        </Link>
       </div>
 
       {/* ── Daily Scratch ── */}
