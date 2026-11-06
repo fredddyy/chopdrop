@@ -348,7 +348,8 @@ export default function ProductDetailPage() {
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
               <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
             </div>
-            <div className="flex items-center gap-2.5 mt-3">
+            <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left to fill it.</h3>
+            <div className="flex items-center gap-2.5 mt-2.5">
               <div className="flex -space-x-1.5">
                 {Array.from({ length: Math.min(3, memberCount) }).map((_, j) => (
                   <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
@@ -359,11 +360,6 @@ export default function ProductDetailPage() {
               <span className="text-[11px]" style={{ color: "var(--subdued)" }}>You {memberCount > 1 ? `+ ${memberCount - 1} other${memberCount > 2 ? "s" : ""} in this pool` : "are in this pool"}</span>
             </div>
           </div>
-        </div>
-
-        {/* Urgency — below dark card */}
-        <div className="px-5 mt-4">
-          <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left to fill it.</h2>
         </div>
 
         {/* WhatsApp preview — image left, text right */}
