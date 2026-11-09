@@ -23,9 +23,9 @@ function ScratchCard({ canScratch, todayPrize, onClaim }: { canScratch: boolean;
     canvas.width = rect.width * 2;
     canvas.height = rect.height * 2;
     ctx.scale(2, 2);
-    ctx.fillStyle = "#C8D96A";
+    ctx.fillStyle = "#F97316";
     ctx.fillRect(0, 0, rect.width, rect.height);
-    ctx.fillStyle = "#A8B84A";
+    ctx.fillStyle = "#EA580C";
     ctx.font = "bold 18px 'Bricolage Grotesque', sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("SCRATCH ME", rect.width / 2, rect.height / 2 + 6);
@@ -82,10 +82,10 @@ function ScratchCard({ canScratch, todayPrize, onClaim }: { canScratch: boolean;
   if (todayPrize || (revealed && prize)) {
     const displayPrize = prize || todayPrize || 0;
     return (
-      <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
+      <div className="p-5 rounded-[22px]" style={{ background: "linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)" }}>
         <div className="flex items-center justify-between mb-4">
           <p className="text-[12px] font-extrabold uppercase tracking-wide" style={{ color: "#17271F" }}>Daily Scratch</p>
-          <span className="text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "var(--lime)" }}>Claimed today ✓</span>
+          <span className="text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "#FFEDD5" }}>Claimed today ✓</span>
         </div>
         <div className="rounded-[16px] p-6 text-center" style={{ background: "rgba(255,255,255,0.5)" }}>
           <p className="text-[44px] font-extrabold tabular-nums leading-none celebrate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>{fp(displayPrize)}</p>
@@ -101,7 +101,7 @@ function ScratchCard({ canScratch, todayPrize, onClaim }: { canScratch: boolean;
   // Can't scratch (not logged in or error)
   if (!canScratch) {
     return (
-      <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
+      <div className="p-5 rounded-[22px]" style={{ background: "linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)" }}>
         <p className="text-[12px] font-extrabold uppercase tracking-wide" style={{ color: "#17271F" }}>Daily Scratch</p>
         <p className="text-[13px] mt-2" style={{ color: "#17271F", opacity: 0.7 }}>Log in to scratch and win meal credit.</p>
       </div>
@@ -110,10 +110,10 @@ function ScratchCard({ canScratch, todayPrize, onClaim }: { canScratch: boolean;
 
   // Ready to scratch
   return (
-    <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
+    <div className="p-5 rounded-[22px]" style={{ background: "linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)" }}>
       <div className="flex items-center justify-between mb-3">
         <p className="text-[12px] font-extrabold uppercase tracking-wide" style={{ color: "#17271F" }}>Daily Scratch</p>
-        <span className="text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "var(--lime)" }}>1 of 1 remaining</span>
+        <span className="text-[10px] font-bold px-3 py-1 rounded-full" style={{ background: "#17271F", color: "#FFEDD5" }}>1 of 1 remaining</span>
       </div>
       <div className="relative rounded-[16px] overflow-hidden" style={{ height: "120px", background: "rgba(255,255,255,0.5)" }}>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -265,7 +265,7 @@ export default function RewardsPage() {
 
       {/* ── Points + Credit card ── */}
       <div className="px-5 mt-5">
-        <div className="p-5 rounded-[22px] flex items-center justify-between" style={{ background: "#17271F" }}>
+        <div className="p-5 rounded-[22px] flex items-center justify-between" style={{ background: "linear-gradient(135deg, #0B6623 0%, #16A34A 100%)" }}>
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>Your little wins add up</p>
             <p className="text-[40px] font-extrabold tabular-nums leading-none text-white mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>{loading ? "—" : points}</p>
@@ -297,7 +297,7 @@ export default function RewardsPage() {
           {days.map((d, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
               <div className="w-full h-10 rounded-[10px] flex items-center justify-center text-[13px] font-bold" style={{
-                background: i < streak.current ? "var(--coral)" : "var(--sand)",
+                background: i < streak.current ? "#E8652B" : "var(--sand)",
                 color: i < streak.current ? "white" : "var(--text-muted)",
               }}>
                 {d}

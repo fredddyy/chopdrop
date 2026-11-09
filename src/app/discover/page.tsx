@@ -222,9 +222,9 @@ export default function DiscoverPage() {
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" /></svg>
             {userArea || "UNILAG"} · {userAddress?.split(",")[0] || "Set location"}
           </button>
-          <Link href="/rewards" className="flex items-center gap-1 h-[30px] px-3 rounded-full text-[11px] font-bold" style={{ background: "var(--lime)", color: "#17271F" }}>
+          <Link href="/rewards" className="flex items-center gap-1 h-[30px] px-3 rounded-full text-[11px] font-bold" style={{ background: "#FFF1E6", color: "#E8652B" }}>
             280 pts
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" /><path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" /></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E8652B" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" /><path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" /></svg>
           </Link>
         </div>
 
@@ -341,7 +341,7 @@ export default function DiscoverPage() {
               <Link
                 href={`/product/${featured.id}`}
                 className="mx-5 block rounded-[22px] overflow-hidden press-feedback card-enter card-enter-1"
-                style={{ background: "#17271F" }}
+                style={{ background: "linear-gradient(135deg, #0B6623 0%, #064016 100%)" }}
               >
                 {/* Badges + Food image */}
                 <div className="relative">

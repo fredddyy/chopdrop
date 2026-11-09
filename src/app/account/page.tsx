@@ -155,7 +155,7 @@ export default function AccountPage() {
 
       {/* ── Savings card (dark forest) ── */}
       <div className="px-5 mt-5">
-        <div className="p-5 rounded-[22px]" style={{ background: "#17271F" }}>
+        <div className="p-5 rounded-[22px]" style={{ background: "linear-gradient(135deg, #0B6623 0%, #059669 100%)" }}>
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>This semester · Your earned value</p>
           <p className="text-[36px] font-extrabold tabular-nums leading-none mt-2 text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>{fp(totalSaved)} saved</p>
           <p className="text-[14px] font-bold mt-2 text-white">Same appetite. Smarter spending.</p>
@@ -170,7 +170,7 @@ export default function AccountPage() {
           <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px", color: "#17271F" }}>{poolCount}</p>
           <p className="text-[11px] font-semibold mt-1" style={{ color: "var(--text-muted)" }}>pools joined</p>
         </div>
-        <div className="flex-1 p-4 rounded-[22px]" style={{ background: "var(--lime)" }}>
+        <div className="flex-1 p-4 rounded-[22px]" style={{ background: "#FFF1E6" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2" strokeLinecap="round" className="mb-2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
           <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px", color: "#17271F" }}>{streak} days</p>
           <p className="text-[11px] font-semibold mt-1" style={{ color: "#17271F", opacity: 0.6 }}>current streak</p>
