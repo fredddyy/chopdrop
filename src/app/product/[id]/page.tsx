@@ -377,6 +377,8 @@ export default function ProductDetailPage() {
   const memberCount = pool ? pool.memberCount : 0;
   const poolSize = pool ? pool.minSize : product.minPoolSize;
   const spotsLeft = poolSize - memberCount;
+  const deliveryShare = deliveryOption === "delivery" && deliveryEstimate ? deliveryEstimate.subsidizedFee : 0;
+  const poolUnitTotal = product.groupPrice + deliveryShare;
 
   // ═══ POST-PAYMENT CELEBRATION SCREEN ═══
   if (justPaid && product) {
@@ -893,7 +895,7 @@ export default function ProductDetailPage() {
               <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
                 className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
                 style={{ background: "var(--coral)" }}>
-                <span>{joining ? "Joining\u2026" : isPoolExpired ? `Start New Pool \u2014 ${fp(product.groupPrice)}` : pool ? `Join Pool \u2014 ${fp(product.groupPrice)}` : `Start Pool \u2014 ${fp(product.groupPrice)}`}</span>
+                <span>{joining ? "Joining\u2026" : isPoolExpired ? `Start New Pool \u2014 ${fp(poolUnitTotal)}` : pool ? `Join Pool \u2014 ${fp(poolUnitTotal)}` : `Start Pool \u2014 ${fp(poolUnitTotal)}`}</span>
                 <span className="text-[12px] font-bold opacity-80">Save {savings}%</span>
               </button>
               {/* Pre-payment share — Pinduoduo viral loop */}
@@ -1095,6 +1097,12 @@ export default function ProductDetailPage() {
                     </button>
                   </div>
                 </div>
+                {deliveryShare > 0 && (
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Delivery (split across pool)</span>
+                    <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{fp(deliveryShare * quantity)}</span>
+                  </div>
+                )}
                 {pool && memberCount > 0 && (
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Pool status</span>
@@ -1104,18 +1112,11 @@ export default function ProductDetailPage() {
                 <div className="h-px my-2" style={{ background: "var(--border)" }} />
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>You pay</span>
-                  <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(product.groupPrice * quantity)}</span>
+                  <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(poolUnitTotal * quantity)}</span>
                 </div>
-                {quantity > 1 && (
-                  <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
-                    {quantity} × {fp(product.groupPrice)} · Save {fp(savedAmount * quantity)} vs solo
-                  </p>
-                )}
-                {quantity === 1 && (
-                  <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
-                    Solo price is {fp(product.retailPrice)} — you save {fp(savedAmount)}
-                  </p>
-                )}
+                <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
+                  {quantity > 1 ? `${quantity} × ${fp(poolUnitTotal)}` : `Solo is ${fp(product.retailPrice)}`} · Save {fp((savedAmount - deliveryShare) * quantity)} vs solo
+                </p>
               </div>
 
               {/* Refund guarantee */}
@@ -1141,7 +1142,7 @@ export default function ProductDetailPage() {
                 className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-5 disabled:opacity-50"
                 style={{ background: "var(--coral)" }}
               >
-                {joining ? "Processing\u2026" : `Pay ${fp(product.groupPrice * quantity)}`}
+                {joining ? "Processing\u2026" : `Pay ${fp(poolUnitTotal * quantity)}`}
               </button>
 
               <button type="button" onClick={() => setConfirmSheet(null)} className="w-full h-[44px] flex items-center justify-center text-[13px] font-bold press-feedback mt-2" style={{ color: "var(--text-muted)" }}>
