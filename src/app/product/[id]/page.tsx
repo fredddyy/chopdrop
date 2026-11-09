@@ -554,7 +554,14 @@ export default function ProductDetailPage() {
               <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>solo</p>
             </div>
           </div>
-          <p className="text-[13px] font-bold mt-2" style={{ color: "var(--emerald)" }}>Keep {fp(savedAmount)} for yourself.</p>
+          <p className="text-[13px] font-bold mt-2" style={{ color: "var(--emerald)" }}>
+            Keep {fp(savedAmount)} for yourself — enough for {savedAmount >= 50000 ? "a full drink" : savedAmount >= 30000 ? "a snack" : "extra sides"}.
+          </p>
+          {/* Refund badge — inline with price, not buried below fold */}
+          <div className="flex items-center gap-1.5 mt-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Full refund if pool doesn&apos;t fill</span>
+          </div>
         </div>
       ) : (
         <div className="px-5 mt-4">
@@ -847,18 +854,45 @@ export default function ProductDetailPage() {
           {/* ── NOT JOINED: pool pricing ── */}
           {!joinedStatus && hasPoolPricing && (
             <>
+              {/* Pool status scoreboard — visible at decision point */}
+              {pool && memberCount > 0 && (
+                <div className="flex items-center justify-between mb-2 text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>
+                  <span style={{ color: "var(--emerald)" }}>{memberCount}/{poolSize} joined</span>
+                  <span>{minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`}</span>
+                </div>
+              )}
+              {/* Pool confidence — reduce risk for first-timers */}
+              {!pool && (
+                <p className="text-[11px] font-bold mb-2 text-center" style={{ color: "var(--emerald)" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="inline -mt-px mr-1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                  {poolSize <= 5 ? `Only ${poolSize} people needed. Pools this size usually fill fast.` : `${poolSize} people needed. Start it and share to your gang.`}
+                </p>
+              )}
               <button type="button" onClick={() => pool ? joinPool(pool.id) : createPool()} disabled={joining}
                 className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
                 style={{ background: "var(--coral)" }}>
-                <span>Jump In — {fp(product.groupPrice)}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+                <span>{joining ? "Joining\u2026" : pool ? `Join Pool \u2014 ${fp(product.groupPrice)}` : `Start Pool \u2014 ${fp(product.groupPrice)}`}</span>
+                <span className="text-[12px] font-bold opacity-80">Save {savings}%</span>
               </button>
-              <button type="button" onClick={addSolo}
-                className="w-full h-[48px] rounded-full flex items-center justify-between px-6 mt-2 text-[14px] font-bold cursor-pointer press-feedback"
-                style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}>
-                <span>or order solo at {fp(product.retailPrice)}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-              </button>
+              {/* Pre-payment share — Pinduoduo viral loop */}
+              <div className="flex gap-2 mt-2">
+                <button type="button" onClick={addSolo}
+                  className="flex-1 h-[44px] rounded-full flex items-center justify-center text-[13px] font-bold cursor-pointer press-feedback"
+                  style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
+                  Solo {fp(product.retailPrice)}
+                </button>
+                <button type="button"
+                  className="flex-1 h-[44px] rounded-full flex items-center justify-center gap-1.5 text-[13px] font-bold cursor-pointer press-feedback"
+                  style={{ background: "var(--dark)", color: "white" }}
+                  onClick={() => {
+                    const shareText = `${product.name} for ${fp(product.groupPrice)} instead of ${fp(product.retailPrice)}! ${spotsLeft} spot${spotsLeft !== 1 ? "s" : ""} left. Join the pool: ${typeof window !== "undefined" ? window.location.href : ""}`;
+                    if (navigator.share) navigator.share({ title: product.name, text: shareText, url: window.location.href }).catch(() => {});
+                    else { navigator.clipboard.writeText(window.location.href); setToast("Link copied!"); }
+                  }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
+                  Share deal
+                </button>
+              </div>
             </>
           )}
 
