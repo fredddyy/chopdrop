@@ -252,7 +252,7 @@ function Sidebar({
         className={`
           fixed top-0 left-0 z-50 h-full w-60 bg-[#1C1C1E] flex flex-col
           transition-transform duration-200 ease-out
-          lg:translate-x-0 lg:static lg:z-auto
+          lg:translate-x-0 lg:static lg:z-auto lg:min-h-screen
           ${open ? "translate-x-0" : "-translate-x-full"}
         `}
       >
