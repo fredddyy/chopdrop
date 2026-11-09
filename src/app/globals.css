@@ -2,26 +2,26 @@
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop v9 — ChopChop design system ── */
-  /* Dark forest + orange + warm cream. Lime for progress. No shadows. */
+  /* ── ChopDrop v10 — Premium social commerce ── */
+  /* Warm cream + deep terracotta + forest. Restrained, editorial, trustworthy. */
   --bg: #FFF9F1;
   --card: #FFFFFF;
-  --border: #E6E4D9;
-  --coral: #EF502B;
-  --coral-soft: #FFE9DD;
-  --coral-track: #FFE9DD;
-  --coral-ink: #8B2E1B;
-  --coral-dark: #D94420;
-  --emerald: #246347;
-  --emerald-soft: #E8F1E7;
-  --lime: #E6F58A;
-  --gold: #F8CB57;
-  --dark: #17271F;
-  --text: #17271F;
-  --text-secondary: #6D766D;
-  --text-muted: #5A635A;
-  --sand: #F1EBDD;
-  --subdued: #B9C7B8;
+  --border: #E8E2D8;
+  --coral: #C4572A;
+  --coral-soft: #FAE8E0;
+  --coral-track: #FAE8E0;
+  --coral-ink: #7A3218;
+  --coral-dark: #A8471F;
+  --emerald: #2D6B4F;
+  --emerald-soft: #EAF0E8;
+  --lime: #D4DFC7;
+  --gold: #E8C065;
+  --dark: #1A2B21;
+  --text: #1A2B21;
+  --text-secondary: #6B756B;
+  --text-muted: #818A81;
+  --sand: #F0EADc;
+  --subdued: #A8B5A7;
 
   /* Legacy compat */
   --ink: var(--text);
@@ -31,7 +31,7 @@
   --line: var(--border);
   --green: var(--emerald);
   --green-soft: #E8F1E7;
-  --lime: #dff24d;
+  --lime: #D4DFC7;
   --amber: var(--gold);
   --amber-soft: #fff1c9;
   --red-soft: #fee7e1;
