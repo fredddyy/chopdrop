@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { Suspense, useState, useEffect, useCallback } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 
@@ -75,8 +75,26 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }
 };
 
 export default function GroupOrderPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-6">
+          <div className="h-6 w-[60%] rounded-[8px] mb-4" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div className="h-4 w-[40%] rounded-[8px] mb-8" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+        </div>
+        <BottomNav />
+      </main>
+    }>
+      <GroupOrderInner />
+    </Suspense>
+  );
+}
+
+function GroupOrderInner() {
   const { code } = useParams<{ code: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const paymentReference = searchParams.get("reference");
 
   const [invite, setInvite] = useState<InviteData | null>(null);
   const [fullOrder, setFullOrder] = useState<FullOrder | null>(null);
@@ -101,6 +119,10 @@ export default function GroupOrderPage() {
 
   // Share
   const [copied, setCopied] = useState(false);
+
+  // Payment confirmation
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [verifyingPayment, setVerifyingPayment] = useState(!!paymentReference);
 
   // Fetch current user on mount
   useEffect(() => {
@@ -218,6 +240,25 @@ export default function GroupOrderPage() {
     load();
     return () => { cancelled = true; };
   }, [code]);
+
+  // Verify payment if returning from Paystack
+  useEffect(() => {
+    if (!paymentReference || !fullOrder) return;
+    setVerifyingPayment(true);
+    fetch(`/api/group-orders/${fullOrder.id}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) {
+          setFullOrder(d.data);
+          const me = d.data.members.find((m: Member) => m.userId === currentUserId);
+          if (me?.paymentStatus === "SUCCESS") {
+            setPaymentConfirmed(true);
+          }
+        }
+        setVerifyingPayment(false);
+      })
+      .catch(() => setVerifyingPayment(false));
+  }, [paymentReference, fullOrder?.id, currentUserId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync myItems from fullOrder once we know the current user
   useEffect(() => {
@@ -338,7 +379,7 @@ export default function GroupOrderPage() {
   const restaurantName = fullOrder?.restaurant.name || invite?.restaurantName || "";
   const whatsappText = `Join my group order from ${restaurantName}! Add your items before the deadline. ${shareUrl}`;
 
-  if (loading) {
+  if (loading || verifyingPayment) {
     return (
       <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen" style={{ background: "var(--bg)" }}>
         <div className="px-5 pt-6">
@@ -359,6 +400,67 @@ export default function GroupOrderPage() {
           <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>This group order link may have expired.</p>
           <button type="button" onClick={() => router.push("/discover")} className="text-[14px] font-bold mt-4 cursor-pointer" style={{ color: "#E84C3D" }}>
             Back to Discover
+          </button>
+        </div>
+        <BottomNav />
+      </main>
+    );
+  }
+
+  // -- Payment confirmation screen --
+  if (paymentConfirmed && fullOrder) {
+    const paidMember = fullOrder.members.find((m) => m.userId === currentUserId);
+    const paidTotal = (paidMember?.subtotal || 0) + (paidMember?.deliveryShare || 0);
+    const paidCount = fullOrder.members.filter((m) => m.paymentStatus === "SUCCESS").length;
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen pb-24" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-10 pb-10">
+          <div className="flex items-center justify-center w-16 h-16 rounded-full mx-auto mb-5" style={{ background: "#F0FDF4" }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+          </div>
+          <h1 className="text-[26px] font-extrabold text-center" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
+            Payment confirmed
+          </h1>
+          <p className="text-[14px] text-center mt-2" style={{ color: "var(--text-secondary)" }}>
+            You&apos;re locked in for this group order.
+          </p>
+
+          <div className="mt-8 rounded-[16px] p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Restaurant</span>
+              <span className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>{fullOrder.restaurant.name}</span>
+            </div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Your items</span>
+              <span className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>{paidMember?.items ? (paidMember.items as OrderItem[]).length : 0} items</span>
+            </div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>People paid</span>
+              <span className="text-[14px] font-bold" style={{ color: "#22C55E" }}>{paidCount}/{fullOrder.members.length}</span>
+            </div>
+            <div className="h-px my-3" style={{ background: "var(--border)" }} />
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] font-extrabold" style={{ color: "#1C1C1E" }}>Amount paid</span>
+              <span className="text-[22px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#22C55E" }}>{fp(paidTotal)}</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setPaymentConfirmed(false)}
+            className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white cursor-pointer press-feedback mt-6"
+            style={{ background: "#1C1C1E" }}
+          >
+            View group order
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push("/orders")}
+            className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold cursor-pointer press-feedback mt-3"
+            style={{ background: "var(--sand)", color: "#1C1C1E", border: "1px solid var(--border)" }}
+          >
+            Go to My Orders
           </button>
         </div>
         <BottomNav />
@@ -464,10 +566,25 @@ export default function GroupOrderPage() {
           </button>
         </div>
 
-        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Group Order</p>
-        <h1 className="text-[26px] font-extrabold mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
-          {fullOrder.restaurant.name}
-        </h1>
+        {/* Restaurant profile — matches store page */}
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+            {fullOrder.restaurant.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={fullOrder.restaurant.imageUrl} alt={fullOrder.restaurant.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[18px] font-extrabold" style={{ color: "var(--text-muted)" }}>
+                {fullOrder.restaurant.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2)}
+              </div>
+            )}
+          </div>
+          <div>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Group Order</p>
+            <h1 className="text-[22px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
+              {fullOrder.restaurant.name}
+            </h1>
+          </div>
+        </div>
 
         {/* Status + deadline */}
         <div className="flex items-center gap-2 mt-3 flex-wrap">
@@ -705,19 +822,6 @@ export default function GroupOrderPage() {
               <p className="text-[11px] font-bold mt-2 text-center" style={{ color: "var(--text-muted)" }}>Saving...</p>
             )}
 
-            {/* Pay CTA */}
-            {myItems.length > 0 && (
-              <button
-                type="button"
-                onClick={handleCheckout}
-                disabled={checkingOut}
-                className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white cursor-pointer press-feedback mt-5"
-                style={{ background: checkingOut ? "var(--text-muted)" : "#E84C3D" }}
-              >
-                <span>{checkingOut ? "Redirecting..." : `Pay ${fp(myTotal)}`}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-              </button>
-            )}
           </section>
         )}
 
@@ -730,6 +834,25 @@ export default function GroupOrderPage() {
           </div>
         )}
       </div>
+
+      {/* ── Sticky pay bar ── */}
+      {fullOrder.status === "OPEN" && myItems.length > 0 && !hasPaid && (
+        <div className="fixed bottom-[72px] left-0 right-0 z-30 px-5 pb-3 pt-3" style={{ background: "linear-gradient(transparent, var(--bg) 8px)" }}>
+          <div className="max-w-[480px] mx-auto">
+            <button
+              type="button"
+              onClick={handleCheckout}
+              disabled={checkingOut}
+              className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white cursor-pointer press-feedback"
+              style={{ background: checkingOut ? "var(--text-muted)" : "#E84C3D" }}
+            >
+              <span>{checkingOut ? "Redirecting..." : `Pay ${fp(myTotal)}`}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       <BottomNav />
     </main>
   );
