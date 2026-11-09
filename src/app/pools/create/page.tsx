@@ -172,6 +172,23 @@ export default function CreateGangPage() {
               style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
             />
           </div>
+
+          {/* Live preview — visible while typing */}
+          {nameReady && (
+            <div className="mt-5 p-3.5 rounded-[16px]" style={{ background: "#1C1C1E" }}>
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full flex items-center justify-center text-[16px] font-extrabold text-white shrink-0" style={{ background: face.color }}>
+                  {gangName.trim().charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[16px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{gangName.trim()}</p>
+                  <p className="text-[11px]" style={{ color: "var(--subdued)" }}>
+                    1 member{campus ? ` \u00B7 ${campus}` : ""}{motto.trim() ? ` \u00B7 "${motto.trim()}"` : ""}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── Section: Logistics ── */}
@@ -239,25 +256,7 @@ export default function CreateGangPage() {
           </div>
         </div>
 
-        {/* ── Live preview card ── */}
-        {nameReady && (
-          <div className="mt-6 p-4 rounded-[16px]" style={{ background: "#1C1C1E" }}>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--subdued)" }}>Preview</p>
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full flex items-center justify-center text-[16px] font-extrabold text-white shrink-0" style={{ background: face.color }}>
-                {gangName.trim().charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="text-[16px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{gangName.trim()}</p>
-                <p className="text-[11px]" style={{ color: "var(--subdued)" }}>
-                  1 member{campus ? ` \u00B7 ${campus}` : ""}{motto.trim() ? ` \u00B7 "${motto.trim()}"` : ""}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── Error banner (replaces alert()) ── */}
+        {/* ── Error banner ── */}
         {error && (
           <div className="mt-4 p-3.5 rounded-[12px] flex items-start gap-2.5" style={{ background: "#FEF2F0", border: "1px solid #FECACA" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
