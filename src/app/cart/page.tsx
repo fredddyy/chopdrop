@@ -311,8 +311,11 @@ export default function CartPage() {
                   aria-label="Delivery address" autoComplete="street-address"
                   className="w-full h-[44px] px-3.5 rounded-[12px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
                   style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
-                {deliveryFee === 0 && !deliveryPref && (
-                  <p className="text-[11px] mt-1.5" style={{ color: "var(--text-muted)" }}>Delivery fee calculated after you set your location on a product page</p>
+                {deliveryFee === 0 && !deliveryPref && !deliveryAddress.trim() && (
+                  <p className="text-[11px] mt-1.5" style={{ color: "var(--text-muted)" }}>Enter your address above for a delivery quote</p>
+                )}
+                {deliveryFee === 0 && deliveryAddress.trim() && !deliveryPref && (
+                  <p className="text-[11px] mt-1.5" style={{ color: "var(--emerald)" }}>Delivery fee will be confirmed at checkout</p>
                 )}
               </div>
             )}
