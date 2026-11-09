@@ -17,22 +17,43 @@ interface PoolOrder {
   product: { id: string; name: string; imageUrl: string | null; groupPrice: number; retailPrice: number; vendor?: { name: string } };
 }
 
+interface GroupOrderItem {
+  id: string;
+  status: string;
+  deadline: string;
+  deliveryAddress: string;
+  deliveryFee: number;
+  inviteCode: string;
+  restaurantName: string;
+  memberCount: number;
+  mySubtotal: number;
+  myPaymentStatus: string;
+}
+
 type Tab = "active" | "history";
 
 export default function OrdersPage() {
   const [tab, setTab] = useState<Tab>("active");
   const [pools, setPools] = useState<PoolOrder[]>([]);
+  const [groupOrders, setGroupOrders] = useState<GroupOrderItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/pools?mine=true")
-      .then((r) => r.json())
-      .then((d) => { if (d.success) setPools(d.data); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch("/api/pools?mine=true").then((r) => r.json()).catch(() => ({ success: false })),
+      fetch("/api/group-orders?mine=true").then((r) => r.ok ? r.json() : { success: false }).catch(() => ({ success: false })),
+    ]).then(([poolData, goData]) => {
+      if (poolData.success) setPools(poolData.data);
+      if (goData.success) setGroupOrders(goData.data || []);
+      setLoading(false);
+    });
   }, []);
 
   const activePools = pools.filter((p) => p.status === "OPEN" || p.status === "FILLED");
   const pastPools = pools.filter((p) => p.status === "COMPLETED" || p.status === "EXPIRED" || p.status === "CANCELLED");
+  const activeGroupOrders = groupOrders.filter((g) => g.status === "OPEN" || g.status === "CLOSED" || g.status === "ORDERED" || g.status === "READY");
+  const pastGroupOrders = groupOrders.filter((g) => g.status === "DELIVERED" || g.status === "CANCELLED");
+  const totalActive = activePools.length + activeGroupOrders.length;
 
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
@@ -54,7 +75,7 @@ export default function OrdersPage() {
       {/* ── Tabs ── */}
       <div className="px-5 mt-4 flex">
         {([
-          ["active", `Active${activePools.length > 0 ? ` · ${activePools.length}` : ""}`],
+          ["active", `Active${totalActive > 0 ? ` · ${totalActive}` : ""}`],
           ["history", "History"],
         ] as const).map(([key, label]) => (
           <button key={key} type="button" onClick={() => setTab(key as Tab)}
@@ -74,7 +95,7 @@ export default function OrdersPage() {
                 <div key={i} className="h-[120px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
               ))}
             </div>
-          ) : activePools.length === 0 ? (
+          ) : totalActive === 0 ? (
             <div className="py-12 text-center">
               <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
@@ -136,6 +157,30 @@ export default function OrdersPage() {
                       <p className="text-[12px] mt-3" style={{ color: "var(--text-muted)" }}>{pool.memberCount}/{pool.minSize} confirmed. Vendor is cooking. We&apos;ll notify you when ready.</p>
                     )}
                   </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Group orders */}
+          {activeGroupOrders.length > 0 && (
+            <div className="flex flex-col gap-3 mt-3">
+              {activeGroupOrders.map((go) => {
+                const minsLeft = Math.max(0, Math.round((new Date(go.deadline).getTime() - Date.now()) / 60000));
+                return (
+                  <Link key={go.id} href={`/group/${go.inviteCode}`} className="p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: "#FEF2F0", color: "var(--coral)" }}>
+                        Group order · {go.status === "OPEN" ? "Ordering" : go.status}
+                      </span>
+                      {go.status === "OPEN" && <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft}m left`}</span>}
+                    </div>
+                    <h4 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{go.restaurantName}</h4>
+                    <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{go.memberCount} people · {go.deliveryAddress}</p>
+                    {go.mySubtotal > 0 && (
+                      <p className="text-[12px] font-bold mt-1" style={{ color: "#1C1C1E" }}>Your items: {fp(go.mySubtotal)} · {go.myPaymentStatus === "SUCCESS" ? "Paid ✓" : "Unpaid"}</p>
+                    )}
+                  </Link>
                 );
               })}
             </div>

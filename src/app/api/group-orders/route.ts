@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
     status: m.groupOrder.status,
     deadline: m.groupOrder.deadline,
     deliveryAddress: m.groupOrder.deliveryAddress,
+    deliveryFee: m.groupOrder.deliveryFee,
     inviteCode: m.groupOrder.inviteCode,
     myPaymentStatus: m.paymentStatus,
     mySubtotal: m.subtotal,
