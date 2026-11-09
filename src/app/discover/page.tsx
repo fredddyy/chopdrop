@@ -77,6 +77,7 @@ export default function DiscoverPage() {
   const [locating, setLocating] = useState(false);
   const [userLat, setUserLat] = useState(0);
   const [userLng, setUserLng] = useState(0);
+  const [creditBalance, setCreditBalance] = useState(0);
   const cart = useCart();
 
   // Read profile on mount
@@ -92,6 +93,8 @@ export default function DiscoverPage() {
         if (p.longitude) setUserLng(p.longitude);
       }
     } catch {}
+    // Fetch real credit balance
+    fetch("/api/credits").then(r => r.json()).then(d => { if (d.success && d.data) setCreditBalance(d.data.balance); }).catch(() => {});
   }, []);
 
   function saveLocation(area: string, address?: string, lat?: number, lng?: number) {
@@ -230,7 +233,7 @@ export default function DiscoverPage() {
             {userArea || "Your area"} · {userAddress?.split(",")[0] || "Set location"}
           </button>
           <Link href="/rewards" aria-label="Rewards" className="flex items-center gap-1 h-[30px] px-3 rounded-full text-[11px] font-bold" style={{ background: "var(--dark)", color: "white" }}>
-            Rewards
+            {creditBalance > 0 ? fmt(creditBalance) : "Rewards"}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" /><path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" /></svg>
           </Link>
         </div>
