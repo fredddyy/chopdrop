@@ -55,6 +55,19 @@ function CreateGroupOrderInner() {
   const [result, setResult] = useState<{ inviteCode: string; restaurantName: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
+  // Pre-fill delivery address from saved profile
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("chopdrop-customer");
+      if (stored) {
+        const p = JSON.parse(stored);
+        if (p.deliveryAddress && !address) setAddress(p.deliveryAddress);
+        if (p.latitude) setLat(p.latitude);
+        if (p.longitude) setLng(p.longitude);
+      }
+    } catch {}
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     fetch("/api/stores?category=Food")
       .then((r) => r.json())
