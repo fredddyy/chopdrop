@@ -149,6 +149,7 @@ export default function DiscoverPage() {
         fetch(`/api/stores?category=${activeCategory}${userLat ? `&lat=${userLat}&lng=${userLng}` : ""}`, { signal }).then((r) => r.json()),
         fetch(`/api/products?category=${activeCategory}&limit=20`, { signal }).then((r) => r.json()),
       ]);
+      if (signal?.aborted) return;
       if (storesResult.status === "fulfilled" && storesResult.value.success) {
         setStores(storesResult.value.data);
       }
@@ -162,6 +163,7 @@ export default function DiscoverPage() {
         setError(true);
       }
     } catch (e) {
+      if (signal?.aborted) return;
       if ((e as Error).name !== "AbortError") setError(true);
     }
     if (signal?.aborted) return;

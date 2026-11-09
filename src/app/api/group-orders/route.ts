@@ -7,18 +7,47 @@ import type { DeliveryTier } from "@/lib/delivery-fee";
 import crypto from "crypto";
 
 // GET /api/group-orders?mine=true — list user's group orders
+// GET /api/group-orders?gangId=xxx — list group orders for a gang
 export async function GET(request: NextRequest) {
   const mine = request.nextUrl.searchParams.get("mine");
-
-  if (mine !== "true") {
-    return NextResponse.json({ success: false, error: "mine=true required" }, { status: 400 });
-  }
+  const gangId = request.nextUrl.searchParams.get("gangId");
 
   const cookieStore = await cookies();
   const token = cookieStore.get("chopdrop-user-token")?.value;
   if (!token) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
   const user = verifyToken(token);
   if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
+
+  // Filter by gang — show all group orders linked to this gang
+  if (gangId) {
+    const orders = await prisma.groupOrder.findMany({
+      where: { gangId },
+      include: {
+        restaurant: { select: { name: true } },
+        coordinator: { select: { firstName: true } },
+        members: { select: { id: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const data = orders.map((o) => ({
+      id: o.id,
+      restaurantName: o.restaurant.name,
+      coordinatorName: o.coordinator.firstName,
+      memberCount: o.members.length,
+      status: o.status,
+      deadline: o.deadline,
+      deliveryAddress: o.deliveryAddress,
+      deliveryFee: o.deliveryFee,
+      inviteCode: o.inviteCode,
+    }));
+
+    return NextResponse.json({ success: true, data });
+  }
+
+  if (mine !== "true") {
+    return NextResponse.json({ success: false, error: "mine=true or gangId required" }, { status: 400 });
+  }
 
   const memberships = await prisma.groupOrderMember.findMany({
     where: { userId: user.id },
@@ -60,7 +89,7 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
 
   const body = await request.json();
-  const { restaurantId, deliveryAddress, deliveryLat, deliveryLng, deadline } = body;
+  const { restaurantId, deliveryAddress, deliveryLat, deliveryLng, deadline, gang: gangId } = body;
 
   if (!restaurantId || !deliveryAddress || !deadline) {
     return NextResponse.json({ success: false, error: "restaurantId, deliveryAddress, and deadline are required" }, { status: 400 });
@@ -93,6 +122,7 @@ export async function POST(request: NextRequest) {
       data: {
         restaurantId,
         coordinatorId: user.id,
+        gangId: gangId || null,
         inviteCode,
         deliveryAddress,
         deliveryLat: deliveryLat || null,

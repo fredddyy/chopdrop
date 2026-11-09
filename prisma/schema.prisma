@@ -566,8 +566,9 @@ model Gang {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  creator  User         @relation("GangCreator", fields: [creatorId], references: [id])
-  members  GangMember[]
+  creator     User         @relation("GangCreator", fields: [creatorId], references: [id])
+  members     GangMember[]
+  groupOrders GroupOrder[]
 }
 
 model GangMember {
@@ -591,6 +592,7 @@ model GroupOrder {
   id              String           @id @default(cuid())
   restaurantId    String
   coordinatorId   String
+  gangId          String?
   inviteCode      String           @unique
   deliveryAddress String
   deliveryLat     Float?
@@ -602,6 +604,7 @@ model GroupOrder {
 
   restaurant  Restaurant        @relation(fields: [restaurantId], references: [id])
   coordinator User              @relation("GroupOrderCoordinator", fields: [coordinatorId], references: [id])
+  gang        Gang?             @relation(fields: [gangId], references: [id])
   members     GroupOrderMember[]
 }
 
