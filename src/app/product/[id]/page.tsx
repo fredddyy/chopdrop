@@ -837,10 +837,9 @@ export default function ProductDetailPage() {
                 Get refund to wallet
               </button>
               <button type="button" onClick={addSolo}
-                className="w-full h-[44px] rounded-full flex items-center justify-between px-6 mt-2 text-[13px] font-bold cursor-pointer press-feedback"
+                className="w-full h-[44px] rounded-full flex items-center justify-center mt-2 text-[13px] font-bold cursor-pointer press-feedback"
                 style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}>
-                <span>Order solo at {fp(product.retailPrice)}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+                Order solo at {fp(product.retailPrice)}
               </button>
             </>
           )}
