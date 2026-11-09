@@ -302,31 +302,40 @@ export default function StorePage() {
 
       {/* ═══ THE FULL MENU ═══ */}
       <section className="px-5 mt-8">
-        <h2 className="text-[24px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>The full menu</h2>
-        <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Want a better price? Request a pool. Ordering one plate is always the full individual price.</p>
+        <h2 className="text-[24px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>The full menu</h2>
+        <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Tap any item to see pool pricing. Solo orders use the full price.</p>
 
-        {/* Category pills */}
+        {/* Category pills — 44px touch target */}
         <div className="flex overflow-x-auto hide-scrollbar gap-2 mt-4">
           {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab) => (
             <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-              className="h-[25px] px-3 rounded-full text-[11px] font-bold whitespace-nowrap cursor-pointer shrink-0"
-              style={{ background: currentTab === tab ? "#1C1C1E" : "var(--sand)", color: currentTab === tab ? "white" : "var(--text-secondary)" }}
+              className="h-[36px] px-4 rounded-full text-[12px] font-bold whitespace-nowrap cursor-pointer shrink-0 press-feedback"
+              style={{ background: currentTab === tab ? "var(--dark)" : "var(--sand)", color: currentTab === tab ? "white" : "var(--text-secondary)", transition: "background 150ms, color 150ms" }}
             >{tab}</button>
           ))}
         </div>
 
         {/* Menu items by category */}
         {Array.from(grouped.entries()).map(([cat, items]) => {
-          const poolItems = items.filter((i) => i.groupPrice < i.retailPrice || i.poolable);
-          const menuItems = items.filter((i) => !(i.groupPrice < i.retailPrice) && !i.poolable);
+          // Filter out ₦0 placeholder items and deduplicate by name
+          const seen = new Set<string>();
+          const validItems = items.filter((i) => {
+            if (i.retailPrice <= 0 && i.groupPrice <= 0) return false;
+            if (seen.has(i.name)) return false;
+            seen.add(i.name);
+            return true;
+          });
+          const poolItems = validItems.filter((i) => i.groupPrice < i.retailPrice || i.poolable);
+          const menuItems = validItems.filter((i) => !(i.groupPrice < i.retailPrice) && !i.poolable);
+          if (validItems.length === 0) return null;
 
           return (
             <div key={cat} className="mt-6">
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-3" style={{ color: "var(--coral)" }}>{cat} · {items.length} meal{items.length !== 1 ? "s" : ""}</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-3" style={{ color: "var(--coral)" }}>{cat} · {validItems.length} meal{validItems.length !== 1 ? "s" : ""}</p>
 
-              {/* Pool-eligible items — megaphone + cart buttons */}
+              {/* Pool-eligible items */}
               {poolItems.length > 0 && (
-                <div className="rounded-[22px] overflow-hidden mb-3" style={{ background: "var(--card)" }}>
+                <div className="rounded-[16px] overflow-hidden mb-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                   {poolItems.map((item, i) => {
                     const hasPool = item.groupPrice < item.retailPrice;
                     const sav = hasPool ? Math.round(((item.retailPrice - item.groupPrice) / item.retailPrice) * 100) : 0;
@@ -346,36 +355,38 @@ export default function StorePage() {
                             )}
                           </Link>
                           <Link href={`/product/${item.id}`} className="flex-1 min-w-0 press-feedback">
-                            <h4 className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#1C1C1E" }}>{item.name}</h4>
+                            {/* 2-line wrap instead of truncate */}
+                            <h4 className="text-[14px] font-bold leading-[135%]" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4>
                             <div className="flex items-baseline gap-1.5 mt-0.5">
-                              <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fp(item.retailPrice)}</span>
-                              {hasPool && (
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "var(--lime)", color: "#1C1C1E" }}>-{sav}%</span>
+                              {hasPool ? (
+                                <>
+                                  <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fp(item.groupPrice)}</span>
+                                  <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>
+                                  <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>-{sav}%</span>
+                                </>
+                              ) : (
+                                <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.retailPrice)}</span>
                               )}
                             </div>
-                          </Link>
-                          {/* Request pool */}
-                          <Link href={`/product/${item.id}`} className="w-[32px] h-[32px] rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "var(--sand)" }}>
-                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#1C1C1E" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
                           </Link>
                           {/* Add to cart / stepper */}
                           {inCart > 0 ? (
                             <div className="flex items-center gap-0.5 shrink-0">
-                              <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
-                                className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                              <button type="button" aria-label="Decrease quantity" onClick={() => cart.changeQuantity(item.id, -1)}
+                                className="w-[36px] h-[36px] rounded-full flex items-center justify-center press-feedback"
                                 style={{ background: "var(--sand)" }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                               </button>
-                              <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "#1C1C1E" }}>{inCart}</span>
-                              <button type="button" onClick={() => addToPlate(item, store.name)}
-                                className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                              <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{inCart}</span>
+                              <button type="button" aria-label="Add another" onClick={() => addToPlate(item, store.name)}
+                                className="w-[36px] h-[36px] rounded-full flex items-center justify-center press-feedback"
                                 style={{ background: "var(--coral)" }}>
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                               </button>
                             </div>
                           ) : (
-                            <button type="button" onClick={() => addToPlate(item, store.name)}
-                              className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback shrink-0"
+                            <button type="button" aria-label={`Add ${item.name} to plate`} onClick={() => addToPlate(item, store.name)}
+                              className="w-[36px] h-[36px] rounded-full flex items-center justify-center press-feedback shrink-0"
                               style={{ background: "var(--coral)" }}>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                             </button>
@@ -387,16 +398,15 @@ export default function StorePage() {
                 </div>
               )}
 
-              {/* Regular menu items — clean list rows, no card per item */}
+              {/* Regular menu items */}
               {menuItems.length > 0 && (
-                <div className="rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
+                <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                   {menuItems.map((item, i) => {
                     const inCart = cart.items.find((c) => c.dailyMenuId === item.id)?.quantity || 0;
                     return (
                       <div key={item.id}>
                         {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
                         <div className="flex items-center gap-3 px-4 py-3">
-                          {/* Food image */}
                           {item.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.imageUrl} alt={item.name} className="w-[56px] h-[56px] rounded-[12px] object-cover shrink-0" loading="lazy" />
@@ -405,30 +415,28 @@ export default function StorePage() {
                               <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
                             </div>
                           )}
-                          {/* Name + description + price */}
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#1C1C1E" }}>{item.name}</h4>
-                            {item.description && <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
-                            <p className="text-[14px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{fp(item.retailPrice)}</p>
+                            <h4 className="text-[14px] font-bold leading-[135%]" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4>
+                            {item.description && <p className="text-[11px]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
+                            <p className="text-[14px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.retailPrice)}</p>
                           </div>
-                          {/* + / stepper */}
                           {inCart > 0 ? (
                             <div className="flex items-center gap-0.5 shrink-0">
-                              <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
-                                className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                              <button type="button" aria-label="Decrease quantity" onClick={() => cart.changeQuantity(item.id, -1)}
+                                className="w-[36px] h-[36px] rounded-full flex items-center justify-center press-feedback"
                                 style={{ background: "var(--sand)" }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                               </button>
-                              <span className="w-[28px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "#1C1C1E" }}>{inCart}</span>
-                              <button type="button" onClick={() => addToPlate(item, store.name)}
-                                className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                              <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{inCart}</span>
+                              <button type="button" aria-label="Add another" onClick={() => addToPlate(item, store.name)}
+                                className="w-[36px] h-[36px] rounded-full flex items-center justify-center press-feedback"
                                 style={{ background: "var(--coral)" }}>
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                               </button>
                             </div>
                           ) : (
-                            <button type="button" onClick={() => addToPlate(item, store.name)}
-                              className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback shrink-0"
+                            <button type="button" aria-label={`Add ${item.name} to plate`} onClick={() => addToPlate(item, store.name)}
+                              className="w-[36px] h-[36px] rounded-full flex items-center justify-center press-feedback shrink-0"
                               style={{ background: "var(--coral)" }}>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                             </button>
