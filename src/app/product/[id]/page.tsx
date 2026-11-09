@@ -379,102 +379,84 @@ export default function ProductDetailPage() {
 
   // ═══ POST-PAYMENT CELEBRATION SCREEN ═══
   if (justPaid && product) {
-    const shareText = `${product.name} for ${fp(product.groupPrice)} (normally ${fp(product.retailPrice)})!\nWe need ${spotsLeft} more ${spotsLeft === 1 ? "person" : "people"} or the pool expires and nobody eats 😭\nJump in 👉 ${typeof window !== "undefined" ? window.location.origin : ""}/product/${id}`;
+    const shareText = `${product.name} for ${fp(product.groupPrice)} (normally ${fp(product.retailPrice)})!\nWe need ${spotsLeft} more ${spotsLeft === 1 ? "person" : "people"} or the pool expires. Jump in: ${typeof window !== "undefined" ? window.location.origin : ""}/product/${id}`;
     return (
-      <main className="flex-1 max-w-[480px] mx-auto w-full pb-32" style={{ background: "var(--bg)" }}>
-        <div className="px-5 pt-4 flex items-center justify-between">
-          <div />
-          <div className="text-center">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>You&apos;re on the list</p>
-            <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>You&apos;re in!</p>
-          </div>
-          <div />
-        </div>
+      <main className="flex-1 max-w-[428px] mx-auto w-full pb-32" style={{ background: "var(--bg)" }}>
 
-        {/* Celebration */}
-        <div className="text-center px-5 mt-6 celebrate">
-          <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ background: "#F0FDF4" }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+        {/* ── Celebration card — dark hero ── */}
+        <div className="mx-5 mt-6 rounded-[16px] p-6 text-center celebrate" style={{ background: "var(--dark)" }}>
+          <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: "var(--emerald)" }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
           </div>
-          <h1 className="text-[28px] font-extrabold mt-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>✓ You&apos;re in!</h1>
-          <p className="text-[14px] mt-2" style={{ color: "var(--text-muted)" }}>{product.name} · {fp(joinedPrice || product.groupPrice)} paid</p>
-          <p className="text-[13px] font-bold" style={{ color: "#1C1C1E" }}>{memberCount}/{poolSize} joined · {spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left</p>
-          <p className="text-[11px] mt-1" style={{ color: "var(--emerald)" }}>Automatic refund guarantee</p>
-        </div>
+          <h1 className="text-[24px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>You&apos;re in!</h1>
+          <p className="text-[14px] mt-1" style={{ color: "var(--subdued)" }}>{product.name} · {fp(joinedPrice || product.groupPrice)} paid</p>
 
-        {/* Progress — spots left inside dark card */}
-        <div className="px-5 mt-5">
-          <div className="rounded-[22px] p-4" style={{ background: "#1C1C1E" }}>
-            <div className="flex items-center justify-between text-[12px] font-extrabold">
-              <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `0/${poolSize} plates claimed`}</span>
-              <span style={{ color: "var(--lime)" }}>{timeLeft > 0 ? `${Math.floor(timeLeft / 60)}h ${String(timeLeft % 60).padStart(2, "0")}m left` : "Expired"}</span>
+          {/* Progress bar */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-[11px] font-bold mb-1.5">
+              <span className="text-white">{memberCount}/{poolSize} joined</span>
+              <span style={{ color: "var(--lime)" }}>{spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left</span>
             </div>
-            <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
-              <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
+            <div className="h-[6px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+              <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--emerald)", borderRadius: "9px", transition: "width 300ms ease-out" }} />
             </div>
-            <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-              {memberCount === 0 ? "Be first to jump in." : spotsLeft === 1 ? "One more plate to unlock it." : `${spotsLeft} more to unlock it.`}
-            </h3>
-            {memberCount > 0 && (
-              <div className="flex items-center gap-2.5 mt-2.5">
-                <div className="flex -space-x-1.5">
-                  {Array.from({ length: Math.min(3, memberCount) }).map((_, j) => (
-                    <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #1C1C1E" }}>
-                      {["F", "T", "D", "A", "C"][j] || String.fromCharCode(65 + j)}
-                    </div>
-                  ))}
-                </div>
-                <span className="text-[11px]" style={{ color: "var(--subdued)" }}>You + {memberCount - 1} from this pool</span>
+          </div>
+
+          {/* Avatars */}
+          {memberCount > 0 && (
+            <div className="flex items-center justify-center gap-2 mt-3">
+              <div className="flex -space-x-1.5">
+                {Array.from({ length: Math.min(3, memberCount) }).map((_, j) => (
+                  <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid var(--dark)" }}>
+                    {j === 0 ? (userName || "Y").charAt(0) : String.fromCharCode(65 + j)}
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
+              <span className="text-[11px]" style={{ color: "var(--subdued)" }}>You{memberCount > 1 ? ` + ${memberCount - 1} more` : ""}</span>
+            </div>
+          )}
         </div>
 
-        {/* WhatsApp preview — image left, text right */}
-        <div className="px-5 mt-4">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.1em] mb-2" style={{ color: "var(--text-muted)" }}>Share to fill it · WhatsApp preview</p>
-          <div className="p-3.5 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
+        {/* ── Refund guarantee — compact ── */}
+        <div className="mx-5 mt-3 flex items-center gap-2 px-3.5 py-2.5 rounded-[12px]" style={{ background: "var(--emerald-soft)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+          <p className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>
+            Fills → food is made. Doesn&apos;t fill → full refund.
+          </p>
+        </div>
+
+        {/* ── Share prompt — what the message will say ── */}
+        <div className="px-5 mt-5">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-2" style={{ color: "var(--text-muted)" }}>Share to fill it</p>
+          <div className="p-3.5 rounded-[16px]" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <div className="flex items-start gap-3">
               {product.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={product.imageUrl} alt={product.name} className="w-[56px] h-[56px] rounded-[10px] object-cover shrink-0" />
+                <img src={product.imageUrl} alt={product.name} className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-bold leading-[130%]" style={{ color: "#1C1C1E" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} to fill it 😭</p>
-                <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>{product.name} · {product.vendor.name}</p>
+                <p className="text-[13px] font-bold leading-[135%]" style={{ color: "var(--text)" }}>{product.name} · {fp(product.groupPrice)}</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{product.vendor.name} · {memberCount}/{poolSize} in</p>
               </div>
             </div>
-            <p className="text-[13px] font-extrabold mt-2.5" style={{ color: "#1C1C1E" }}>{product.name} · {fp(product.groupPrice)} · {memberCount}/{poolSize} in!</p>
-            <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} or the pool expires and nobody eats 😭. Share now!</p>
-            <p className="text-[11px] mt-1" style={{ color: "var(--emerald)" }}>chopdrop.ng/p/{product.name.toLowerCase().replace(/\s+/g, "-").slice(0, 12)}</p>
           </div>
         </div>
 
-        {/* Info card */}
-        <div className="px-5 mt-4">
-          <div className="flex items-start gap-2.5 p-3.5 rounded-[14px]" style={{ background: "var(--emerald-soft)" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-            <p className="text-[11px] leading-[155%]" style={{ color: "var(--emerald)" }}>
-              If it fills → food is made, we notify you.<br />If it doesn&apos;t → you&apos;re refunded automatically.
-            </p>
-          </div>
-        </div>
-
-        {/* Sticky CTA */}
-        <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pt-3 pb-5" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
-          <div className="max-w-[480px] mx-auto">
+        {/* ── Sticky CTA ── */}
+        <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
+          <div className="max-w-[428px] mx-auto">
             <button type="button"
-              className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
+              className="w-full h-[50px] rounded-full flex items-center justify-center gap-2 text-[15px] font-bold text-white press-feedback"
               style={{ background: "var(--coral)" }}
               onClick={() => {
                 if (navigator.share) navigator.share({ title: product.name, text: shareText, url: `${window.location.origin}/product/${id}` }).catch(() => {});
                 else { navigator.clipboard.writeText(shareText); showToast("link"); }
               }}>
-              <span>Share to WhatsApp — Help Fill It</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
+              Share to fill it
             </button>
-            <Link href="/orders" className="w-full text-[13px] font-bold text-center mt-3 block" style={{ color: "var(--text-muted)" }}>
-              View Pool
+            <Link href="/orders" className="w-full text-[13px] font-bold text-center mt-2 block press-feedback" style={{ color: "var(--text-muted)" }}>
+              View my orders
             </Link>
           </div>
         </div>
