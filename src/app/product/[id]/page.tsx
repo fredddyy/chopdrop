@@ -805,7 +805,9 @@ export default function ProductDetailPage() {
           )}
 
           {/* ── EXPIRED: empathetic recovery with clear options ── */}
-          {joinedStatus === "expired" && (
+          {joinedStatus === "expired" && (() => {
+            const [refunding, setRefunding] = [joining, setJoining]; // reuse joining state
+            return (
             <div className="space-y-3">
               {/* Empathy card */}
               <div className="rounded-[16px] p-4 text-center" style={{ background: "var(--dark)" }}>
@@ -820,22 +822,33 @@ export default function ProductDetailPage() {
 
               {/* Refund — primary action */}
               <button type="button"
-                className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback"
+                disabled={refunding}
+                className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback disabled:opacity-50"
                 style={{ background: "var(--emerald)" }}
                 onClick={async () => {
-                  if (!expiredPoolId) return;
+                  if (!expiredPoolId) { showToast("No pool found to refund"); return; }
+                  setJoining(true);
                   try {
-                    await fetch(`/api/pools/${expiredPoolId}/leave`, { method: "POST" });
-                    try {
-                      const stored = localStorage.getItem("chopdrop-joined-pools");
-                      if (stored) { const j = JSON.parse(stored); delete j[id]; localStorage.setItem("chopdrop-joined-pools", JSON.stringify(j)); }
-                    } catch {}
-                    setJoinedStatus(null);
-                    setJoinedPrice(0);
-                    setExpiredPoolId(null);
-                  } catch {}
+                    const res = await fetch(`/api/pools/${expiredPoolId}/leave`, { method: "POST" });
+                    const data = await res.json();
+                    if (data.success) {
+                      try {
+                        const stored = localStorage.getItem("chopdrop-joined-pools");
+                        if (stored) { const j = JSON.parse(stored); delete j[id]; localStorage.setItem("chopdrop-joined-pools", JSON.stringify(j)); }
+                      } catch {}
+                      setJoinedStatus(null);
+                      setJoinedPrice(0);
+                      setExpiredPoolId(null);
+                      showToast(`${fp(data.data.refundAmount)} refunded to your wallet`);
+                    } else {
+                      showToast(data.error || "Refund failed. Try again.");
+                    }
+                  } catch {
+                    showToast("Network error. Check your connection.");
+                  }
+                  setJoining(false);
                 }}>
-                <span>Get full refund</span>
+                <span>{refunding ? "Refunding\u2026" : "Get full refund"}</span>
                 <span className="text-[13px] opacity-80">{fp(joinedPrice || product.groupPrice)}</span>
               </button>
 
@@ -855,7 +868,8 @@ export default function ProductDetailPage() {
                 Start a new pool and invite more people
               </button>
             </div>
-          )}
+            );
+          })()}
 
           {/* ── NOT JOINED: pool pricing ── */}
           {!joinedStatus && hasPoolPricing && (

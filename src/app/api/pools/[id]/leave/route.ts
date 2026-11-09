@@ -27,13 +27,19 @@ export async function POST(
     return NextResponse.json({ success: false, error: "You are not a member of this pool" }, { status: 404 });
   }
 
-  // Check refund window (30 minutes from join time)
-  const elapsed = Date.now() - new Date(member.createdAt).getTime();
-  if (elapsed > REFUND_WINDOW_MS) {
-    return NextResponse.json({
-      success: false,
-      error: "Refund window has expired. You can only leave within 30 minutes of joining.",
-    }, { status: 400 });
+  // Check if pool is expired — always allow refund for expired pools
+  const pool = await prisma.pool.findUnique({ where: { id }, select: { status: true } });
+  const isExpired = pool?.status === "EXPIRED" || pool?.status === "CANCELLED";
+
+  // Check refund window (30 minutes from join time) — skip for expired pools
+  if (!isExpired) {
+    const elapsed = Date.now() - new Date(member.createdAt).getTime();
+    if (elapsed > REFUND_WINDOW_MS) {
+      return NextResponse.json({
+        success: false,
+        error: "Refund window has expired. You can only leave within 30 minutes of joining.",
+      }, { status: 400 });
+    }
   }
 
   const refundAmount = member.totalAmount;
