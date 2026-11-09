@@ -156,7 +156,7 @@ export default function AccountPage() {
       {/* ── Savings card (dark forest) ── */}
       <div className="px-5 mt-5">
         <div className="p-5 rounded-[22px]" style={{ background: "#1C1C1E" }}>
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>This semester · Your earned value</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Your earned value</p>
           <p className="text-[36px] font-extrabold tabular-nums leading-none mt-2 text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>{fp(totalSaved)} saved</p>
           <p className="text-[14px] font-bold mt-2 text-white">Same appetite. Smarter spending.</p>
           <p className="text-[11px] mt-1" style={{ color: "var(--subdued)" }}>Food discounts compared with individual prices. Your wallet credit is separate.</p>

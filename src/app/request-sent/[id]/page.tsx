@@ -51,7 +51,7 @@ export default function RequestSentPage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Campus Cravings</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Local Cravings</p>
           <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>The kitchens heard you</p>
         </div>
         <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
@@ -78,7 +78,7 @@ export default function RequestSentPage() {
         <div className="p-5 rounded-[22px]" style={{ background: "var(--lime)" }}>
           <p className="text-[36px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#17271F" }}>39</p>
           <p className="text-[17px] font-extrabold mt-1 leading-[130%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>
-            students want {product.name.toLowerCase()} under {fp(product.retailPrice)}
+            people want {product.name.toLowerCase()} under {fp(product.retailPrice)}
           </p>
           <p className="text-[12px] mt-2" style={{ color: "#17271F", opacity: 0.6 }}>{userArea || "Your area"}</p>
           <div className="flex items-center gap-2 mt-3">
@@ -89,7 +89,7 @@ export default function RequestSentPage() {
                 </div>
               ))}
             </div>
-            <span className="text-[11px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>You, + 38 students</span>
+            <span className="text-[11px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>You, + 38 people</span>
           </div>
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function RequestSentPage() {
           {[
             { icon: <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="var(--coral)" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>, title: "Your voices add up", desc: "We group requests for the same food and zone." },
             { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>, title: "Vendors see the demand", desc: `When the request threshold is reached, nearby vendors get notified.` },
-            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>, title: "You hear if a pool opens", desc: "We alert interested students. You choose whether to join and pay." },
+            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>, title: "You hear if a pool opens", desc: "We alert interested people. You choose whether to join and pay." },
           ].map((step) => (
             <div key={step.title} className="flex items-start gap-3">
               <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>

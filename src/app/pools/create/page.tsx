@@ -11,7 +11,7 @@ export default function CreateGangPage() {
   const [creating, setCreating] = useState(false);
   const [gangName, setGangName] = useState("");
   const [motto, setMotto] = useState("");
-  const [campus, setCampus] = useState("UNILAG · Akoka");
+  const [campus, setCampus] = useState("");
   const [waLink, setWaLink] = useState("");
 
   return (
@@ -70,7 +70,7 @@ export default function CreateGangPage() {
             type="text"
             value={gangName}
             onChange={(e) => setGangName(e.target.value)}
-            placeholder="Block C Foodies"
+            placeholder="The Lunch Crew"
             className="w-full h-[48px] px-4 rounded-[12px] text-[14px] font-medium outline-none"
             style={{ background: "var(--card)", color: "#17271F", border: "1px solid var(--border)" }}
           />
@@ -90,9 +90,9 @@ export default function CreateGangPage() {
           />
         </div>
 
-        {/* ── Campus ── */}
+        {/* ── Area ── */}
         <div className="mt-5">
-          <label className="text-[12px] font-bold block mb-1.5" style={{ color: "#17271F" }}>Campus</label>
+          <label className="text-[12px] font-bold block mb-1.5" style={{ color: "#17271F" }}>Area</label>
           <div className="relative">
             <select
               value={campus}
@@ -100,11 +100,14 @@ export default function CreateGangPage() {
               className="w-full h-[48px] px-4 rounded-[12px] text-[14px] font-medium outline-none appearance-none cursor-pointer"
               style={{ background: "var(--card)", color: "#17271F", border: "1px solid var(--border)" }}
             >
-              <option>UNILAG · Akoka</option>
-              <option>LASU · Ojo</option>
-              <option>OAU · Ile-Ife</option>
-              <option>UI · Ibadan</option>
-              <option>FUTA · Akure</option>
+              <option value="">Select area</option>
+              <option>Ikeja</option>
+              <option>Lekki</option>
+              <option>Victoria Island</option>
+              <option>Yaba</option>
+              <option>Surulere</option>
+              <option>Ajah</option>
+              <option>Ikoyi</option>
             </select>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"><path d="m6 9 6 6 6-6" /></svg>
           </div>

@@ -336,7 +336,7 @@ export default function ProductDetailPage() {
         <div className="px-5 pt-4 flex items-center justify-between">
           <div />
           <div className="text-center">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Student · You&apos;re on the list</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>You&apos;re on the list</p>
             <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>You&apos;re in!</p>
           </div>
           <div />
@@ -442,7 +442,7 @@ export default function ProductDetailPage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Student · {hasPoolPricing ? "Pool" : "Food"}</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>{hasPoolPricing ? "Pool" : "Food"}</p>
           <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             {hasPoolPricing ? "One good lunch. Your people." : product.name}
           </p>
@@ -537,7 +537,7 @@ export default function ProductDetailPage() {
                     </div>
                   ))}
                 </div>
-                <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{pool.creatorName} + {pool.memberCount - 1} campus foodies</span>
+                <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{pool.creatorName} + {pool.memberCount - 1} others in this pool</span>
               </div>
             )}
           </div>
@@ -551,7 +551,7 @@ export default function ProductDetailPage() {
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>Let&apos;s make it cheaper together</p>
             <p className="text-[24px] font-extrabold text-white mt-2 leading-[120%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>12 people want this pool.</p>
             <div className="flex items-center justify-between mt-2">
-              <span className="text-[12px] font-extrabold text-white">12/20 interested students</span>
+              <span className="text-[12px] font-extrabold text-white">12/20 people interested</span>
               <span className="text-[12px] font-bold" style={{ color: "var(--lime)" }}>8 more</span>
             </div>
             <p className="text-[12px] mt-3" style={{ color: "var(--subdued)" }}>
@@ -614,7 +614,7 @@ export default function ProductDetailPage() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[15px] font-bold" style={{ color: "#1C1C1E" }}>Pickup location</p>
-          <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>Campus pickup · Not delivery</p>
+          <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>Pickup nearby · Not delivery</p>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
       </div>

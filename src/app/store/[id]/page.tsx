@@ -164,7 +164,7 @@ export default function StorePage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Campus Kitchens</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Local Kitchens</p>
           <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>A kitchen your people trust</p>
         </div>
         <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
@@ -236,7 +236,7 @@ export default function StorePage() {
               {/* Pickup */}
               <div className="flex items-center gap-1.5 mt-2.5 text-[11px]" style={{ color: "var(--subdued)" }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                Campus pickup
+                Pickup nearby
               </div>
               {/* Social proof */}
               <div className="flex items-center gap-2 mt-3">
@@ -408,7 +408,7 @@ export default function StorePage() {
       {/* ── Trust copy ── */}
       <div className="px-5 mt-8 mb-4">
         <p className="text-[11px] leading-[155%]" style={{ color: "var(--text-muted)" }}>
-          Campus pickup only · Pickup instructions are on every order. Wait for the vendor&apos;s ready alert before you set off.
+          Pickup only · Pickup instructions are on every order. Wait for the vendor&apos;s ready alert before you set off.
         </p>
       </div>
 

@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
       topItems,
       distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
       walkMinutes,
-      deliveryEstimate: walkMinutes !== null ? `${walkMinutes} min walk` : "Campus pickup",
+      deliveryEstimate: walkMinutes !== null ? `${walkMinutes} min walk` : "Pickup nearby",
       rating: ratingBase,
       orderCount: orderBase,
     };

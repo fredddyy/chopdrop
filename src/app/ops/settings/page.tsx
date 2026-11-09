@@ -50,8 +50,8 @@ const SETTING_GROUPS: SettingGroup[] = [
     description: "Pickup and delivery configuration",
     settings: [
       {
-        key: "campus-pickup",
-        label: "Campus pickup enabled",
+        key: "pickup-enabled",
+        label: "Pickup enabled",
         type: "toggle",
         defaultValue: "true",
       },

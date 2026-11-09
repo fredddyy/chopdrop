@@ -53,7 +53,7 @@ export default function WalletPage() {
         <div className="rounded-[22px] p-5" style={{ background: "#1C1C1E" }}>
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Available store credit</p>
           <p className="text-[44px] font-extrabold tabular-nums leading-none mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "white" }}>{fp(balance)}</p>
-          <p className="text-[13px] mt-2" style={{ color: "var(--subdued)" }}>Earned on campus. Spent on food.</p>
+          <p className="text-[13px] mt-2" style={{ color: "var(--subdued)" }}>Earned locally. Spent on food.</p>
           <p className="text-[11px] mt-1" style={{ color: "var(--subdued)", opacity: 0.7 }}>Meal credit, not cash. Use it on ChopDrop meals.</p>
         </div>
       </div>
