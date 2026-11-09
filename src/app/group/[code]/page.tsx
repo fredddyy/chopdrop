@@ -419,44 +419,96 @@ function GroupOrderInner() {
     const paidMember = fullOrder.members.find((m) => m.userId === currentUserId);
     const paidTotal = (paidMember?.subtotal || 0) + (paidMember?.deliveryShare || 0);
     const paidCount = fullOrder.members.filter((m) => m.paymentStatus === "SUCCESS").length;
+    const allPaid = paidCount === fullOrder.members.length;
+    const itemCount = paidMember?.items ? (paidMember.items as OrderItem[]).length : 0;
+    const paidItems = (paidMember?.items || []) as OrderItem[];
+    const confirmShareUrl = typeof window !== "undefined" ? `${window.location.origin}/group/${code}` : "";
+    const unpaidCount = fullOrder.members.length - paidCount;
     return (
-      <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen pb-24" style={{ background: "var(--bg)" }}>
-        <div className="px-5 pt-10 pb-10">
-          <div className="flex items-center justify-center w-16 h-16 rounded-full mx-auto mb-5" style={{ background: "#F0FDF4" }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-          </div>
-          <h1 className="text-[26px] font-extrabold text-center" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
-            Payment confirmed
-          </h1>
-          <p className="text-[14px] text-center mt-2" style={{ color: "var(--text-secondary)" }}>
-            You&apos;re locked in for this group order.
-          </p>
+      <main className="flex-1 max-w-[428px] mx-auto w-full min-h-screen pb-24" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-6 pb-10">
 
-          <div className="mt-8 rounded-[16px] p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Restaurant</span>
-              <span className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>{fullOrder.restaurant.name}</span>
+          {/* ── Celebration card ── */}
+          <div className="rounded-[16px] p-6 text-center" style={{ background: "var(--dark)" }}>
+            <div className="flex items-center justify-center w-14 h-14 rounded-full mx-auto mb-4" style={{ background: "var(--emerald)" }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
             </div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Your items</span>
-              <span className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>{paidMember?.items ? (paidMember.items as OrderItem[]).length : 0} items</span>
-            </div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>People paid</span>
-              <span className="text-[14px] font-bold" style={{ color: "#22C55E" }}>{paidCount}/{fullOrder.members.length}</span>
-            </div>
-            <div className="h-px my-3" style={{ background: "var(--border)" }} />
-            <div className="flex items-center justify-between">
-              <span className="text-[13px] font-extrabold" style={{ color: "#1C1C1E" }}>Amount paid</span>
-              <span className="text-[22px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#22C55E" }}>{fp(paidTotal)}</span>
-            </div>
+            <h1 className="text-[24px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "white" }}>
+              You&apos;re in!
+            </h1>
+            <p className="text-[14px] mt-1" style={{ color: "var(--subdued)" }}>
+              {fullOrder.restaurant.name} · {allPaid ? "Everyone\u2019s paid" : `Waiting for ${unpaidCount} more`}
+            </p>
           </div>
 
+          {/* ── Receipt ── */}
+          <div className="mt-5 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>Your receipt</p>
+
+            {/* Item list */}
+            {paidItems.length > 0 && (
+              <div className="mb-3">
+                {paidItems.map((item, i) => (
+                  <div key={item.productId || i} className="flex items-center justify-between py-1.5">
+                    <span className="text-[13px]" style={{ color: "var(--text)" }}>{item.name} {item.quantity > 1 ? `×${item.quantity}` : ""}</span>
+                    <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{fp(item.price * item.quantity)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {paidItems.length === 0 && (
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>Items</span>
+                <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{itemCount} item{itemCount !== 1 ? "s" : ""}</span>
+              </div>
+            )}
+
+            <div className="h-px" style={{ background: "var(--border)" }} />
+
+            {/* Delivery share */}
+            {(paidMember?.deliveryShare || 0) > 0 && (
+              <div className="flex items-center justify-between py-2.5">
+                <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>Delivery ({fullOrder.members.length}-way split)</span>
+                <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{fp(paidMember?.deliveryShare || 0)}</span>
+              </div>
+            )}
+
+            {/* Total */}
+            <div className="flex items-center justify-between pt-2">
+              <span className="text-[13px] font-extrabold" style={{ color: "var(--text)" }}>Total paid</span>
+              <span className="text-[24px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fp(paidTotal)}</span>
+            </div>
+
+            {/* Squad progress */}
+            <div className="mt-3 flex items-center justify-between text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>
+              <span>{paidCount} of {fullOrder.members.length} paid</span>
+              <span style={{ color: allPaid ? "var(--emerald)" : "var(--coral)" }}>{allPaid ? "All set!" : `${unpaidCount} pending`}</span>
+            </div>
+            <div className="mt-1.5 h-[6px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
+              <div className="h-full" style={{ width: `${Math.round((paidCount / fullOrder.members.length) * 100)}%`, background: "var(--emerald)", borderRadius: "9px", transition: "width 300ms ease-out" }} />
+            </div>
+          </div>
+
+          {/* ── Nudge unpaid members ── */}
+          {!allPaid && (
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`I just paid for my items from ${fullOrder.restaurant.name}! Add yours before the deadline: ${confirmShareUrl}`)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="mt-4 w-full h-[44px] rounded-full flex items-center justify-center gap-2 text-[13px] font-bold text-white press-feedback"
+              style={{ background: "#25D366" }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+              Nudge {unpaidCount} to pay
+            </a>
+          )}
+
+          {/* ── Actions ── */}
           <button
             type="button"
             onClick={() => setPaymentConfirmed(false)}
-            className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white cursor-pointer press-feedback mt-6"
-            style={{ background: "#1C1C1E" }}
+            className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-4"
+            style={{ background: "var(--dark)" }}
           >
             View group order
           </button>
@@ -464,8 +516,8 @@ function GroupOrderInner() {
           <button
             type="button"
             onClick={() => router.push("/orders")}
-            className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold cursor-pointer press-feedback mt-3"
-            style={{ background: "var(--sand)", color: "#1C1C1E", border: "1px solid var(--border)" }}
+            className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold press-feedback mt-3"
+            style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
           >
             Go to My Orders
           </button>
