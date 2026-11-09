@@ -41,6 +41,7 @@ export default function ProductDetailPage() {
   const [error, setError] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
   const [joining, setJoining] = useState(false);
+  const [confirmSheet, setConfirmSheet] = useState<{ action: "join" | "create"; poolId?: string } | null>(null);
   const [sharePrompt, setSharePrompt] = useState<{ url: string; name: string } | null>(null);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number; address?: string } | null>(null);
   const [deliveryOption, setDeliveryOption] = useState<"pickup" | "delivery">("pickup");
@@ -486,17 +487,17 @@ export default function ProductDetailPage() {
 
       {/* ── Header ── */}
       <div className="px-5 pt-4 flex items-center justify-between">
-        <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
+        <button type="button" onClick={() => router.back()} aria-label="Go back" className="w-11 h-11 rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--sand)" }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>{hasPoolPricing ? "Pool" : "Food"}</p>
-          <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-            {hasPoolPricing ? "One good lunch. Your people." : product.name}
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>{hasPoolPricing ? "Pool deal" : product.vendor.name}</p>
+          <p className="text-[14px] font-extrabold truncate max-w-[200px]" style={{ color: "var(--text)", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+            {product.name}
           </p>
         </div>
-        <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
+        <button type="button" onClick={handleShare} aria-label="Share this deal" className="w-11 h-11 rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--sand)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
         </button>
       </div>
 
@@ -867,7 +868,7 @@ export default function ProductDetailPage() {
                   {poolSize <= 5 ? `Only ${poolSize} people needed. Pools this size usually fill fast.` : `${poolSize} people needed. Start it and share to your gang.`}
                 </p>
               )}
-              <button type="button" onClick={() => pool ? joinPool(pool.id) : createPool()} disabled={joining}
+              <button type="button" onClick={() => setConfirmSheet(pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
                 className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
                 style={{ background: "var(--coral)" }}>
                 <span>{joining ? "Joining\u2026" : pool ? `Join Pool \u2014 ${fp(product.groupPrice)}` : `Start Pool \u2014 ${fp(product.groupPrice)}`}</span>
@@ -1032,6 +1033,75 @@ export default function ProductDetailPage() {
               {/* Skip */}
               <button type="button" onClick={() => setSharePrompt(null)} className="text-[13px] font-bold cursor-pointer py-2" style={{ color: "var(--text-muted)" }}>
                 Share later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ PAYMENT CONFIRMATION SHEET ═══ */}
+      {confirmSheet && product && (
+        <div className="fixed inset-0 z-[80]" role="dialog" aria-modal="true" aria-label="Confirm payment" onClick={() => setConfirmSheet(null)}>
+          <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
+          <div className="absolute bottom-0 left-0 right-0 sheet-enter" onClick={(e) => e.stopPropagation()}>
+            <div className="max-w-[428px] mx-auto rounded-t-[22px] px-5 pt-5 pb-8" style={{ background: "var(--card)" }}>
+              {/* Handle */}
+              <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: "var(--border)" }} />
+
+              <h3 className="text-[18px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                {confirmSheet.action === "join" ? "Join this pool?" : "Start a new pool?"}
+              </h3>
+
+              {/* Order summary */}
+              <div className="mt-4 rounded-[12px] p-4" style={{ background: "var(--sand)" }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>{product.name}</span>
+                  <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{fp(product.groupPrice)}</span>
+                </div>
+                {pool && memberCount > 0 && (
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Pool status</span>
+                    <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>{memberCount}/{poolSize} joined</span>
+                  </div>
+                )}
+                <div className="h-px my-2" style={{ background: "var(--border)" }} />
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>You pay</span>
+                  <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(product.groupPrice)}</span>
+                </div>
+                <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
+                  Solo price is {fp(product.retailPrice)} — you save {fp(savedAmount)}
+                </p>
+              </div>
+
+              {/* Refund guarantee */}
+              <div className="flex items-center gap-2 mt-3">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                <p className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>
+                  {confirmSheet.action === "join" ? "Full refund if pool doesn\u2019t fill in time." : `Need ${poolSize} people total. Full refund if it doesn\u2019t fill.`}
+                </p>
+              </div>
+
+              {/* Confirm CTA */}
+              <button
+                type="button"
+                disabled={joining}
+                onClick={async () => {
+                  setConfirmSheet(null);
+                  if (confirmSheet.action === "join" && confirmSheet.poolId) {
+                    await joinPool(confirmSheet.poolId);
+                  } else {
+                    await createPool();
+                  }
+                }}
+                className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-5 disabled:opacity-50"
+                style={{ background: "var(--coral)" }}
+              >
+                {joining ? "Processing\u2026" : `Pay ${fp(product.groupPrice)}`}
+              </button>
+
+              <button type="button" onClick={() => setConfirmSheet(null)} className="w-full h-[44px] flex items-center justify-center text-[13px] font-bold press-feedback mt-2" style={{ color: "var(--text-muted)" }}>
+                Cancel
               </button>
             </div>
           </div>
