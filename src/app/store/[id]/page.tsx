@@ -22,8 +22,13 @@ interface StoreDetail {
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
-function poolState(minSize: number) {
-  return { joined: 0, spotsLeft: minSize, hours: 6, fillPct: 0 };
+interface RealPool {
+  id: string;
+  memberCount: number;
+  spotsLeft: number;
+  deadline: string;
+  minSize: number;
+  productId: string;
 }
 
 const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
@@ -36,6 +41,7 @@ export default function StorePage() {
   const [error, setError] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const [addedToast, setAddedToast] = useState("");
+  const [livePools, setLivePools] = useState<RealPool[]>([]);
   const cart = useCart();
 
   function addToPlate(item: Product, storeName: string) {
@@ -53,6 +59,31 @@ export default function StorePage() {
       .catch((e) => { if ((e as Error).name !== "AbortError") { setError(true); setLoading(false); } });
     return () => ctrl.abort();
   }, [id]);
+
+  // Fetch real pools for this store's products
+  useEffect(() => {
+    if (!store) return;
+    const productIds = store.products.map((p: { id: string }) => p.id);
+    if (productIds.length === 0) return;
+    Promise.all(
+      productIds.slice(0, 10).map((pid: string) =>
+        fetch(`/api/pools?productId=${pid}`).then(r => r.json()).catch(() => ({ success: false }))
+      )
+    ).then((results) => {
+      const now = Date.now();
+      const active: RealPool[] = [];
+      for (const r of results) {
+        if (r.success && r.data) {
+          for (const p of r.data) {
+            if (new Date(p.deadline).getTime() > now && p.status === "OPEN") {
+              active.push({ id: p.id, memberCount: p.memberCount, spotsLeft: p.minSize - p.memberCount, deadline: p.deadline, minSize: p.minSize, productId: p.productId || "" });
+            }
+          }
+        }
+      }
+      setLivePools(active);
+    });
+  }, [store]);
 
   if (loading) {
     return (
@@ -137,10 +168,12 @@ export default function StorePage() {
     }
   }
 
-  // Featured pool product (first product with savings)
+  // Featured pool product — only show if there's a real active pool or a product with savings
   const featured = allItems.find((p) => p.groupPrice < p.retailPrice && p.imageUrl);
-  const featuredFill = featured ? poolState(featured.minPoolSize) : null;
+  const featuredPool = featured ? livePools.find((lp) => lp.productId === featured.id) : null;
   const featuredSav = featured ? Math.round(((featured.retailPrice - featured.groupPrice) / featured.retailPrice) * 100) : 0;
+  const featuredMinutesLeft = featuredPool ? Math.max(0, Math.round((new Date(featuredPool.deadline).getTime() - Date.now()) / 60000)) : 0;
+  const hasLivePool = featuredPool && featuredMinutesLeft > 0;
 
   const menuTabs = [...new Set(allItems.map((p) => p.subcategory || p.category))];
   // Default to first tab
@@ -199,66 +232,63 @@ export default function StorePage() {
       </div>
 
 
-      {/* ═══ CHOP TOGETHER FIRST — active pool ═══ */}
-      {featured && featuredFill && (
+      {/* ═══ CHOP TOGETHER — real pool data, hidden when expired ═══ */}
+      {featured && (hasLivePool || featuredSav > 0) && (
         <section className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Chop together first</h3>
-            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--lime)", color: "#1C1C1E" }}>1 live pool</span>
+            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Chop together first</h3>
+            {hasLivePool && (
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
+                {livePools.length} live pool{livePools.length !== 1 ? "s" : ""}
+              </span>
+            )}
+            {!hasLivePool && featuredSav > 0 && (
+              <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>Save up to {featuredSav}%</span>
+            )}
           </div>
 
-          <Link href={`/product/${featured.id}`} className="block rounded-[22px] overflow-hidden press-feedback" style={{ background: "#1C1C1E" }}>
-            {/* Image — no badges on it */}
+          <Link href={`/product/${featured.id}`} className="block rounded-[16px] overflow-hidden press-feedback card-enter card-enter-1" style={{ background: "var(--dark)" }}>
             {featured.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={featured.imageUrl} alt={featured.name} className="w-full h-[200px] object-cover" />
             )}
-            {/* Info on dark */}
             <div className="p-4">
-              {/* Badges above title */}
-              <p className="text-[10px] font-extrabold uppercase tracking-wide mb-2" style={{ color: "var(--lime)" }}>
-                Only {featuredFill.spotsLeft} spots · Save {featuredSav}%
-              </p>
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h4 className="text-[17px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{featured.name}</h4>
-                  <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{store.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--subdued)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
+                <div className="min-w-0">
+                  <h4 className="text-[17px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{featured.name}</h4>
+                  <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{store.name}</p>
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-[24px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--gold)" }}>{fp(featured.groupPrice)}</span>
-                  <p className="text-[12px]" style={{ color: "var(--subdued)" }}>{fp(featured.retailPrice)}</p>
+                  <p className="text-[12px] line-through" style={{ color: "var(--subdued)" }}>{fp(featured.retailPrice)}</p>
                 </div>
               </div>
-              {/* Progress */}
-              <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold text-white">
-                <span>{featuredFill.joined > 0 ? `${featuredFill.joined}/${featured.minPoolSize} plates claimed` : `${featured.minPoolSize} spots · Be first to join`}</span>
-                <span style={{ color: "var(--lime)" }}>{featuredFill.hours * 60}m left</span>
-              </div>
-              <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
-                <div className="h-full" style={{ width: `${featuredFill.fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
-              </div>
-              {/* Pickup */}
-              <div className="flex items-center gap-1.5 mt-2.5 text-[11px]" style={{ color: "var(--subdued)" }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                Pickup nearby
-              </div>
-              {/* Social proof */}
-              <div className="flex items-center gap-2 mt-3">
-                <div className="flex -space-x-2">
-                  {Array.from({ length: Math.min(featuredFill.joined, 3) }).map((_, j) => (
-                    <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #1C1C1E" }}>
-                      {String.fromCharCode(65 + j)}
-                    </div>
-                  ))}
+
+              {/* Live pool progress — real data */}
+              {hasLivePool && featuredPool && (
+                <>
+                  <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold text-white">
+                    <span>{featuredPool.memberCount}/{featuredPool.minSize} joined</span>
+                    <span style={{ color: "var(--emerald)" }}>{featuredMinutesLeft > 60 ? `${Math.floor(featuredMinutesLeft / 60)}h ${featuredMinutesLeft % 60}m left` : `${featuredMinutesLeft}m left`}</span>
+                  </div>
+                  <div className="mt-1.5 h-[6px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+                    <div className="h-full" style={{ width: `${Math.round((featuredPool.memberCount / featuredPool.minSize) * 100)}%`, background: "var(--emerald)", borderRadius: "9px", transition: "width 300ms ease-out" }} />
+                  </div>
+                </>
+              )}
+
+              {/* No active pool — show savings hook instead */}
+              {!hasLivePool && (
+                <div className="mt-3 flex items-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                  <span className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>Save {featuredSav}% when {featured.minPoolSize} people join. Start a pool.</span>
                 </div>
-                <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>{featuredFill.joined > 0 ? `${featuredFill.joined} people are in` : "Be the first"}</span>
-              </div>
-              {/* Jump In CTA */}
-              <div className="mt-4">
-                <div className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[15px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                  <span>Jump In — {fp(featured.groupPrice)}</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
-                </div>
+              )}
+
+              {/* CTA */}
+              <div className="mt-4 w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[15px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                <span>{hasLivePool ? `Join Pool \u2014 ${fp(featured.groupPrice)}` : `Start Pool \u2014 ${fp(featured.groupPrice)}`}</span>
+                <span className="text-[12px] font-bold opacity-80">Save {featuredSav}%</span>
               </div>
             </div>
           </Link>
