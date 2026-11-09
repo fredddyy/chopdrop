@@ -804,16 +804,24 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {/* ── EXPIRED: prompt refund or solo ── */}
+          {/* ── EXPIRED: empathetic recovery with clear options ── */}
           {joinedStatus === "expired" && (
-            <>
-              <div className="text-center mb-3">
-                <p className="text-[14px] font-bold" style={{ color: "#E84C3D" }}>This pool didn&apos;t fill.</p>
-                <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Your payment is on hold. Choose what to do:</p>
+            <div className="space-y-3">
+              {/* Empathy card */}
+              <div className="rounded-[16px] p-4 text-center" style={{ background: "var(--dark)" }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: "var(--coral)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+                </div>
+                <p className="text-[16px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Pool didn&apos;t fill this time</p>
+                <p className="text-[13px] mt-1" style={{ color: "var(--subdued)" }}>
+                  Not enough people joined before the deadline. Your {fp(joinedPrice || product.groupPrice)} is safe — choose what to do next.
+                </p>
               </div>
+
+              {/* Refund — primary action */}
               <button type="button"
-                className="w-full h-[48px] rounded-full flex items-center justify-center text-[14px] font-bold text-white cursor-pointer press-feedback"
-                style={{ background: "var(--coral)" }}
+                className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback"
+                style={{ background: "var(--emerald)" }}
                 onClick={async () => {
                   if (!expiredPoolId) return;
                   try {
@@ -827,14 +835,26 @@ export default function ProductDetailPage() {
                     setExpiredPoolId(null);
                   } catch {}
                 }}>
-                Get refund to wallet
+                <span>Get full refund</span>
+                <span className="text-[13px] opacity-80">{fp(joinedPrice || product.groupPrice)}</span>
               </button>
+
+              {/* Solo fallback */}
               <button type="button" onClick={addSolo}
-                className="w-full h-[44px] rounded-full flex items-center justify-center mt-2 text-[13px] font-bold cursor-pointer press-feedback"
-                style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}>
-                Order solo at {fp(product.retailPrice)}
+                className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold press-feedback"
+                style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
+                <span>Order solo instead</span>
+                <span className="tabular-nums">{fp(product.retailPrice)}</span>
               </button>
-            </>
+
+              {/* Try again nudge */}
+              <button type="button"
+                onClick={() => { setJoinedStatus(null); setJoinedPrice(0); setExpiredPoolId(null); }}
+                className="w-full text-[13px] font-bold text-center press-feedback py-2"
+                style={{ color: "var(--coral)" }}>
+                Start a new pool and invite more people
+              </button>
+            </div>
           )}
 
           {/* ── NOT JOINED: pool pricing ── */}
