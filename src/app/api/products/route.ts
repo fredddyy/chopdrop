@@ -48,10 +48,15 @@ export async function GET(request: NextRequest) {
   });
   const poolMap = new Map(pools.map(p => [p.productId, { memberCount: p._count.members, minSize: p.minSize }]));
 
-  const enriched = products.map(p => ({
-    ...p,
-    poolMemberCount: poolMap.get(p.id)?.memberCount || 0,
-  }));
+  const enriched = products.map(p => {
+    const poolData = poolMap.get(p.id);
+    return {
+      ...p,
+      poolMemberCount: poolData?.memberCount || 0,
+      // Use the real pool's minSize when a pool exists, otherwise fall back to product default
+      minPoolSize: poolData?.minSize || p.minPoolSize,
+    };
+  });
 
   return NextResponse.json({
     success: true,
