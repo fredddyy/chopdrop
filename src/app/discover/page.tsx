@@ -144,6 +144,15 @@ export default function DiscoverPage() {
     return () => ctrl.abort();
   }, [activeCategory, userLat, userLng]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Re-fetch when user navigates back (pool joins won't reflect otherwise)
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.visibilityState === "visible") fetchData();
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [activeCategory, userLat, userLng]); // eslint-disable-line react-hooks/exhaustive-deps
+
   async function fetchData(signal?: AbortSignal) {
     setLoading(true);
     setError(false);
