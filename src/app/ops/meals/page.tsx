@@ -49,8 +49,11 @@ export default function MealsPage() {
     if (!selectedRestaurant) return;
     setCatLoading(true);
     fetch(`/api/admin/menu-items?restaurantId=${selectedRestaurant}`).then(r => r.json()).then(d => {
-      if (d.success && d.data?.length > 0) setCategories(d.data[0].menuCategories || []);
-      else setCategories([]);
+      if (d.success && d.data) {
+        // API returns single restaurant object when restaurantId is provided
+        const cats = d.data.menuCategories || (Array.isArray(d.data) && d.data[0]?.menuCategories) || [];
+        setCategories(cats);
+      } else setCategories([]);
       setCatLoading(false);
     }).catch(() => setCatLoading(false));
   }, [selectedRestaurant]);
