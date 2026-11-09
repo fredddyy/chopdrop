@@ -80,7 +80,7 @@ export default function GangsPage() {
             </span>
           </div>
         </div>
-        <Link href="/pools/create" className="h-[44px] px-4 rounded-[12px] text-[12px] font-bold text-white inline-flex items-center gap-1.5 press-feedback" style={{ background: "var(--coral)" }}>
+        <Link href="/pools/create" className="h-[32px] px-4 rounded-full text-[12px] font-bold text-white inline-flex items-center gap-1.5 press-feedback" style={{ background: "var(--coral)" }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
           New gang
         </Link>
@@ -108,7 +108,7 @@ export default function GangsPage() {
           <div className="p-5 rounded-[16px] text-center" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Couldn&apos;t load your gangs</p>
             <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
-            <button type="button" onClick={fetchGangs} className="mt-3 h-[44px] px-5 rounded-[12px] text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+            <button type="button" onClick={fetchGangs} className="mt-3 h-[44px] px-5 rounded-full text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
               Try again
             </button>
           </div>
@@ -155,7 +155,7 @@ export default function GangsPage() {
             <p className="text-[13px] mt-1 leading-[155%]" style={{ color: "var(--subdued)" }}>
               Friends, neighbours, colleagues — your regular food crew. Order together, split delivery, save up to 30%.
             </p>
-            <Link href="/pools/create" className="mt-4 h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+            <Link href="/pools/create" className="mt-4 h-[50px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
               <span>Create a gang</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
@@ -183,7 +183,7 @@ export default function GangsPage() {
               type="button"
               onClick={handleJoinInvite}
               disabled={!inviteLink.trim() || joining}
-              className="h-[44px] px-4 rounded-[12px] text-[13px] font-bold text-white press-feedback disabled:opacity-50 shrink-0"
+              className="h-[44px] px-4 rounded-full text-[13px] font-bold text-white press-feedback disabled:opacity-50 shrink-0"
               style={{ background: "var(--coral)" }}
             >
               {joining ? "Joining\u2026" : "Join"}
