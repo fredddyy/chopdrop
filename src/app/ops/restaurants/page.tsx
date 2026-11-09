@@ -275,12 +275,34 @@ export default function RestaurantsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[#6B7280] mb-1">Image URL</label>
+                <label className="block text-xs font-medium text-[#6B7280] mb-1">Image</label>
+                <div className="flex items-center gap-3">
+                  {form.imageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={form.imageUrl} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                  )}
+                  <label className="h-10 px-4 rounded-lg border border-[#E5E7EB] text-sm font-medium text-[#1C1C1E] flex items-center gap-2 cursor-pointer hover:bg-[#F8F8F6]">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
+                    Upload
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const fd = new FormData();
+                      fd.append("file", file);
+                      fd.append("folder", "chopdrop/restaurants");
+                      try {
+                        const res = await fetch("/api/upload", { method: "POST", body: fd });
+                        const data = await res.json();
+                        if (data.success) setForm({ ...form, imageUrl: data.url });
+                      } catch {}
+                    }} />
+                  </label>
+                </div>
                 <input
                   value={form.imageUrl}
                   onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                  className="w-full h-10 px-3 rounded-lg border border-[#E5E7EB] text-sm text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#E84C3D]/30 focus:border-[#E84C3D]"
-                  placeholder="https://..."
+                  className="w-full h-8 px-3 mt-2 rounded-lg border border-[#E5E7EB] text-xs text-[#9CA3AF] focus:outline-none"
+                  placeholder="or paste URL..."
                 />
               </div>
             </div>
