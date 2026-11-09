@@ -37,6 +37,8 @@ model User {
   referredBy        Referral[]       @relation("ReferredBy")
   gangsCreated      Gang[]           @relation("GangCreator")
   gangMembers       GangMember[]
+  groupOrdersCreated  GroupOrder[]       @relation("GroupOrderCoordinator")
+  groupOrderMembers   GroupOrderMember[]
 }
 
 model PushSubscription {
@@ -87,6 +89,7 @@ model Restaurant {
   meals          Meal[]
   products       Product[]
   menuCategories MenuCategory[]
+  groupOrders    GroupOrder[]
 }
 
 model Meal {
@@ -578,4 +581,52 @@ model GangMember {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([gangId, userId])
+}
+
+// ═══════════════════════════════════════
+// GROUP ORDERS — Batch lunch ordering
+// ═══════════════════════════════════════
+
+model GroupOrder {
+  id              String           @id @default(cuid())
+  restaurantId    String
+  coordinatorId   String
+  inviteCode      String           @unique
+  deliveryAddress String
+  deliveryLat     Float?
+  deliveryLng     Float?
+  deadline        DateTime
+  status          GroupOrderStatus @default(OPEN)
+  deliveryFee     Int              @default(0)
+  createdAt       DateTime         @default(now())
+
+  restaurant  Restaurant        @relation(fields: [restaurantId], references: [id])
+  coordinator User              @relation("GroupOrderCoordinator", fields: [coordinatorId], references: [id])
+  members     GroupOrderMember[]
+}
+
+model GroupOrderMember {
+  id            String        @id @default(cuid())
+  groupOrderId  String
+  userId        String
+  items         Json          @default("[]")
+  subtotal      Int           @default(0)
+  deliveryShare Int           @default(0)
+  paymentRef    String?       @unique
+  paymentStatus PaymentStatus @default(PENDING)
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+
+  groupOrder GroupOrder @relation(fields: [groupOrderId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+  @@unique([groupOrderId, userId])
+}
+
+enum GroupOrderStatus {
+  OPEN
+  CLOSED
+  ORDERED
+  READY
+  DELIVERED
+  CANCELLED
 }
