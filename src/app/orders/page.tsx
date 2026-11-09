@@ -122,7 +122,7 @@ export default function OrdersPage() {
                           <span style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m left` : `${minsLeft}m left`}</span>
                         </div>
                         <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
-                          <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--coral)", borderRadius: "9px" }} />
+                          <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--emerald)", borderRadius: "9px" }} />
                         </div>
                         <p className="text-[12px] mt-2" style={{ color: "var(--text-muted)" }}>
                           You&apos;re paid in. {spotsLeft === 1 ? "One more person to fill the pool." : `${spotsLeft} more to fill the pool.`}

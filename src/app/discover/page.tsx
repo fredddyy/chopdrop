@@ -368,7 +368,7 @@ export default function DiscoverPage() {
                       <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{featured.vendor.name} · <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="text-[32px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--lime)" }}>{fmt(featured.groupPrice)}</span>
+                      <span className="text-[32px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--gold)" }}>{fmt(featured.groupPrice)}</span>
                       <p className="text-[13px] line-through tabular-nums mt-0.5" style={{ color: "var(--subdued)" }}>{fmt(featured.retailPrice)}</p>
                     </div>
                   </div>
@@ -438,12 +438,12 @@ export default function DiscoverPage() {
                         <h4 className="text-[14px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
                         <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
                         <div className="flex items-baseline gap-1.5 mt-1.5">
-                          <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                          <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fmt(p.groupPrice)}</span>
                           <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                         </div>
                         <div className="flex items-center justify-between text-[11px] font-extrabold mt-2" style={{ color: "#17271F" }}>
                           <span>{p.fill.joined > 0 ? `${p.fill.joined}/${p.minPoolSize} in` : `${p.minPoolSize} spots`}</span>
-                          <span style={{ color: "var(--coral)" }}>Save {Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100)}%</span>
+                          <span style={{ color: "var(--gold)" }}>Save {Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100)}%</span>
                         </div>
                         <div className="flex items-center gap-1 mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
@@ -503,7 +503,7 @@ export default function DiscoverPage() {
                       <h4 className="text-[13px] font-bold mt-2 truncate" style={{ color: "#17271F" }}>{store.name}</h4>
                       <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate} · {store.orderCount}+ orders</p>
                       {store.bestSaving > 0 && (
-                        <span className="text-[10px] font-bold inline-block mt-0.5" style={{ color: "var(--coral)" }}>Up to {store.bestSaving}% off</span>
+                        <span className="text-[10px] font-bold inline-block mt-0.5" style={{ color: "var(--gold)" }}>Up to {store.bestSaving}% off</span>
                       )}
                     </Link>
                   ))}
@@ -531,7 +531,7 @@ export default function DiscoverPage() {
                       <h4 className="text-[12px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
                       <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
                       <div className="flex items-baseline gap-1.5 mt-1">
-                        <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(p.groupPrice)}</span>
+                        <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fmt(p.groupPrice)}</span>
                         <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                       </div>
                       <p className="text-[10px] font-bold mt-1" style={{ color: "var(--text-muted)" }}>{p.fill.spotsLeft} spot{p.fill.spotsLeft !== 1 ? "s" : ""} left · {p.minPoolSize} needed</p>

@@ -498,8 +498,8 @@ export default function ProductDetailPage() {
         <div className="px-5 mt-4">
           <div className="flex items-end gap-4">
             <div>
-              <span className="text-[44px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--coral)" }}>{fp(product.groupPrice)}</span>
-              <p className="text-[12px] font-bold mt-1" style={{ color: "var(--coral)" }}>Pool · join others</p>
+              <span className="text-[44px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--gold)" }}>{fp(product.groupPrice)}</span>
+              <p className="text-[12px] font-bold mt-1" style={{ color: "var(--gold)" }}>Pool · join others</p>
             </div>
             <div className="pb-0.5">
               <span className="text-[22px] font-extrabold tabular-nums leading-none line-through block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fp(product.retailPrice)}</span>
@@ -510,7 +510,7 @@ export default function ProductDetailPage() {
         </div>
       ) : (
         <div className="px-5 mt-4">
-          <span className="text-[40px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "var(--coral)" }}>{fp(product.retailPrice)}</span>
+          <span className="text-[40px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1.5px", color: "var(--gold)" }}>{fp(product.retailPrice)}</span>
           <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Individual price · No pool discount</p>
         </div>
       )}

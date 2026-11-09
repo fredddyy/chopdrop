@@ -221,7 +221,7 @@ export default function StorePage() {
                   <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{store.name} · <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--subdued)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-[24px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--lime)" }}>{fp(featured.groupPrice)}</span>
+                  <span className="text-[24px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--gold)" }}>{fp(featured.groupPrice)}</span>
                   <p className="text-[12px]" style={{ color: "var(--subdued)" }}>{fp(featured.retailPrice)}</p>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export default function StorePage() {
                           <Link href={`/product/${item.id}`} className="flex-1 min-w-0 press-feedback">
                             <h4 className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#17271F" }}>{item.name}</h4>
                             <div className="flex items-baseline gap-1.5 mt-0.5">
-                              <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.retailPrice)}</span>
+                              <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fp(item.retailPrice)}</span>
                               {hasPool && (
                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "var(--lime)", color: "#17271F" }}>-{sav}%</span>
                               )}
