@@ -648,22 +648,27 @@ export default function ProductDetailPage() {
                 </h3>
               </>
             )}
-            {/* ── No pool yet: explain what happens when you start one ── */}
+            {/* ── No pool yet: delightful start prompt ── */}
             {!pool && (
               <>
-                <div className="flex items-center justify-between text-[12px] font-extrabold">
-                  <span className="text-white">{poolSize} people needed</span>
-                  <span style={{ color: "var(--lime)" }}>6h window</span>
+                <div className="text-center py-2">
+                  <div className="flex items-center justify-center gap-3 mb-3">
+                    <div className="flex -space-x-2">
+                      {Array.from({ length: Math.min(poolSize, 5) }).map((_, j) => (
+                        <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: j === 0 ? "var(--coral)" : "rgba(255,255,255,0.12)", color: j === 0 ? "white" : "rgba(255,255,255,0.3)", border: "2px solid var(--dark)" }}>
+                          {j === 0 ? (userName || "You").charAt(0) : "?"}
+                        </div>
+                      ))}
+                    </div>
+                    {poolSize > 5 && <span className="text-[11px]" style={{ color: "var(--subdued)" }}>+{poolSize - 5}</span>}
+                  </div>
+                  <h3 className="text-[18px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                    {poolSize} people, one pool.
+                  </h3>
+                  <p className="text-[12px] mt-1.5 leading-[150%] max-w-[260px] mx-auto" style={{ color: "var(--subdued)" }}>
+                    Start it, share the link, and wait for {poolSize} people to join. Everyone eats at the pool price. Doesn&apos;t fill? Full refund.
+                  </p>
                 </div>
-                <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
-                  <div className="h-full" style={{ width: "0%", borderRadius: "9px" }} />
-                </div>
-                <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                  Be the first to start it.
-                </h3>
-                <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>
-                  You pay now, then share. Pool runs for 6 hours. If it fills, food is made. If not, full refund.
-                </p>
               </>
             )}
             {/* Avatar social proof + join feed */}
