@@ -383,7 +383,9 @@ export default function ProductDetailPage() {
   const poolSize = pool ? pool.minSize : product.minPoolSize;
   const spotsLeft = poolSize - memberCount;
   const deliveryShare = deliveryOption === "delivery" && deliveryEstimate ? deliveryEstimate.subsidizedFee : 0;
+  const fullDeliveryFee = deliveryOption === "delivery" && deliveryEstimate ? deliveryEstimate.fullFee : 0;
   const poolUnitTotal = product.groupPrice + deliveryShare;
+  const soloTotal = product.retailPrice + fullDeliveryFee;
 
   // ═══ POST-PAYMENT CELEBRATION SCREEN ═══
   if (justPaid && product) {
@@ -901,7 +903,7 @@ export default function ProductDetailPage() {
                 className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold press-feedback"
                 style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
                 <span>Order solo instead</span>
-                <span className="tabular-nums">{fp(product.retailPrice)}</span>
+                <span className="tabular-nums">{fp(soloTotal)}</span>
               </button>
 
               {/* Try again nudge */}
@@ -949,7 +951,7 @@ export default function ProductDetailPage() {
                 <button type="button" onClick={addSolo}
                   className="flex-1 h-[44px] rounded-full flex items-center justify-center text-[13px] font-bold cursor-pointer press-feedback"
                   style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
-                  Solo {fp(product.retailPrice)}
+                  Solo {fp(soloTotal)}
                 </button>
                 <button type="button"
                   className="flex-1 h-[44px] rounded-full flex items-center justify-center gap-1.5 text-[13px] font-bold cursor-pointer press-feedback"
@@ -1161,7 +1163,7 @@ export default function ProductDetailPage() {
                   <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(poolUnitTotal * quantity)}</span>
                 </div>
                 <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
-                  {quantity > 1 ? `${quantity} × ${fp(poolUnitTotal)}` : `Solo is ${fp(product.retailPrice)}`} · Save {fp((savedAmount - deliveryShare) * quantity)} vs solo
+                  {quantity > 1 ? `${quantity} × ${fp(poolUnitTotal)}` : `Solo is ${fp(soloTotal)}`} · Save {fp((soloTotal - poolUnitTotal) * quantity)} vs solo
                 </p>
               </div>
 
