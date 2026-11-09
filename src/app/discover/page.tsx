@@ -391,7 +391,7 @@ export default function DiscoverPage() {
                   {/* Pickup location */}
                   <div className="flex items-center gap-1.5 mt-2.5 text-[11px]" style={{ color: "var(--subdued)" }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                    {userArea ? `${userArea} pickup` : "Pickup location TBD"}
+                    {userArea ? `${userArea} pickup` : "Campus pickup"}
                   </div>
                   {/* Social proof — avatar circles */}
                   {featured.fill.joined >= 2 && (
@@ -451,7 +451,7 @@ export default function DiscoverPage() {
                         </div>
                         <div className="flex items-center gap-1 mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                          {userArea ? `${userArea} · ${5 + (idx * 3) % 15} min` : "Pickup TBD"}
+                          {userArea ? `${userArea} pickup` : "Campus pickup"}
                         </div>
                       </div>
                     </Link>
@@ -505,7 +505,7 @@ export default function DiscoverPage() {
                         )}
                       </div>
                       <h4 className="text-[13px] font-bold mt-2 truncate" style={{ color: "#1C1C1E" }}>{store.name}</h4>
-                      <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate} · {store.orderCount}+ orders</p>
+                      <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}{store.orderCount > 0 ? ` · ${store.orderCount}+ orders` : ""}</p>
                       {store.bestSaving > 0 && (
                         <span className="text-[10px] font-bold inline-block mt-0.5" style={{ color: "var(--gold)" }}>Up to {store.bestSaving}% off</span>
                       )}

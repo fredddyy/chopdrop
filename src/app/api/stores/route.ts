@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
 
     // Social proof — simulated from product count until real order data exists
     const ratingBase = [0, 4.8, 4.5, 4.9, 4.3, 4.7][s.sortOrder % 6] || 4.5;
-    const orderBase = [0, 124, 89, 203, 47, 156][s.sortOrder % 6] || 50;
+    const orderBase = 0; // Real order count — will be populated from actual data
 
     // Distance from user
     const distanceKm = hasLocation && s.latitude && s.longitude
@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
       topItems,
       distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
       walkMinutes,
-      deliveryEstimate: walkMinutes !== null ? `${walkMinutes} min walk` : ([null, "20–35 min", "25–40 min", "30–45 min", "35–50 min"][s.sortOrder % 5] || "30–45 min"),
+      deliveryEstimate: walkMinutes !== null ? `${walkMinutes} min walk` : "Campus pickup",
       rating: ratingBase,
       orderCount: orderBase,
     };
