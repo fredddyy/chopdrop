@@ -3,11 +3,15 @@
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { BottomNav } from "@/components/bottom-nav";
 
 interface Restaurant {
   id: string;
   name: string;
-  address: string;
+  address: string | null;
+  heroImage: string | null;
+  topItems: string[];
+  deliveryEstimate: string | null;
 }
 
 function fp(kobo: number): string {
@@ -34,6 +38,7 @@ function CreateGroupOrderInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedRestaurant = searchParams.get("restaurant") || "";
+  const gangParam = searchParams.get("gang") || "";
 
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [restaurantId, setRestaurantId] = useState(preselectedRestaurant);
@@ -51,7 +56,7 @@ function CreateGroupOrderInner() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    fetch("/api/admin/restaurants")
+    fetch("/api/stores?category=Food")
       .then((r) => r.json())
       .then((d) => {
         if (d.success) setRestaurants(d.data);
@@ -115,6 +120,7 @@ function CreateGroupOrderInner() {
           deliveryLat: lat,
           deliveryLng: lng,
           deadline: computeDeadline(),
+          ...(gangParam ? { gang: gangParam } : {}),
         }),
       });
       const d = await res.json();
@@ -191,6 +197,7 @@ function CreateGroupOrderInner() {
             View group order
           </Link>
         </div>
+        <BottomNav />
       </main>
     );
   }
@@ -237,7 +244,9 @@ function CreateGroupOrderInner() {
                   style={{ borderBottom: "1px solid var(--border)" }}
                 >
                   <p className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>{r.name}</p>
-                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{r.address}</p>
+                  {(r.address || r.deliveryEstimate) && (
+                    <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{r.address || r.deliveryEstimate}</p>
+                  )}
                 </button>
               ))}
             </div>
@@ -310,6 +319,14 @@ function CreateGroupOrderInner() {
           />
         )}
 
+        {/* Delivery fee note */}
+        <div className="flex items-center gap-2 mb-4 px-1">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>
+          <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+            Delivery fee split among all members after creation
+          </p>
+        </div>
+
         {error && (
           <p className="text-[13px] font-bold mb-4" style={{ color: "#E84C3D" }}>{error}</p>
         )}
@@ -325,6 +342,7 @@ function CreateGroupOrderInner() {
           {submitting ? "Creating..." : "Create & Share"}
         </button>
       </div>
+      <BottomNav />
     </main>
   );
 }

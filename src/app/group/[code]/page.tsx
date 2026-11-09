@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { BottomNav } from "@/components/bottom-nav";
 
 interface InviteData {
   id: string;
@@ -43,6 +44,15 @@ interface FullOrder {
   members: Member[];
 }
 
+interface MenuItem {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: number;
+  category: string;
+}
+
 function fp(kobo: number): string {
   return "\u20A6" + (kobo / 100).toLocaleString();
 }
@@ -75,9 +85,14 @@ export default function GroupOrderPage() {
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState("");
 
-  // Item entry
-  const [itemName, setItemName] = useState("");
-  const [itemPrice, setItemPrice] = useState("");
+  // Current user
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Menu browser
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [menuLoading, setMenuLoading] = useState(false);
+
+  // Items
   const [savingItems, setSavingItems] = useState(false);
   const [myItems, setMyItems] = useState<OrderItem[]>([]);
 
@@ -87,31 +102,98 @@ export default function GroupOrderPage() {
   // Share
   const [copied, setCopied] = useState(false);
 
+  // Fetch current user on mount
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => { if (d.success) setCurrentUserId(d.data.id); })
+      .catch(() => {});
+  }, []);
+
   const fetchFull = useCallback(async (orderId: string) => {
     try {
       const res = await fetch(`/api/group-orders/${orderId}`);
       const d = await res.json();
       if (d.success) {
         setFullOrder(d.data);
-        // Find my items from the member list
-        const me = d.data.members.find((m: Member) =>
-          // We don't have the current user id client-side, so we use the fact that
-          // if we got a 200 on the auth'd endpoint, we're in. Match by checking all members.
-          true
-        );
-        // We'll extract items from the API response after identifying the user
         setIsMember(true);
       }
     } catch {
-      // Auth might have failed — fall back to invite view
+      // Auth might have failed -- fall back to invite view
     }
+  }, []);
+
+  // Fetch restaurant menu when we know the restaurant
+  const fetchMenu = useCallback(async (restaurantId: string) => {
+    setMenuLoading(true);
+    try {
+      const res = await fetch(`/api/stores/${restaurantId}`);
+      const d = await res.json();
+      if (d.success) {
+        const store = d.data;
+        // Merge all menu sources into flat list (same pattern as store page)
+        const seenIds = new Set<string>();
+        const items: MenuItem[] = [];
+
+        // Products
+        for (const p of (store.products || [])) {
+          if (!seenIds.has(p.id)) {
+            seenIds.add(p.id);
+            items.push({
+              id: p.id,
+              name: p.name,
+              description: p.description || null,
+              imageUrl: p.imageUrl || null,
+              price: p.retailPrice,
+              category: p.subcategory || p.category || "Menu",
+            });
+          }
+        }
+
+        // Combos
+        for (const c of (store.combos || [])) {
+          if (!seenIds.has(c.id)) {
+            seenIds.add(c.id);
+            items.push({
+              id: c.id,
+              name: c.name,
+              description: c.description || null,
+              imageUrl: c.imageUrl || null,
+              price: c.price,
+              category: "Combos",
+            });
+          }
+        }
+
+        // Menu category items
+        for (const cat of (store.menuCategories || [])) {
+          for (const item of cat.items) {
+            if (!seenIds.has(item.id)) {
+              seenIds.add(item.id);
+              items.push({
+                id: item.id,
+                name: item.name,
+                description: item.description || null,
+                imageUrl: item.imageUrl || null,
+                price: item.price,
+                category: cat.name,
+              });
+            }
+          }
+        }
+
+        setMenuItems(items);
+      }
+    } catch {
+      // Menu fetch failed -- user can still add manually
+    }
+    setMenuLoading(false);
   }, []);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       setLoading(true);
-      // Try auth'd full fetch first
       try {
         // First get invite to know the order ID
         const invRes = await fetch(`/api/group-orders/invite/${code}`);
@@ -137,13 +219,21 @@ export default function GroupOrderPage() {
     return () => { cancelled = true; };
   }, [code]);
 
-  // Sync local items from fullOrder when it loads
+  // Sync myItems from fullOrder once we know the current user
   useEffect(() => {
-    if (!fullOrder) return;
-    // We need to identify which member is "me". Since we don't have userId client-side,
-    // we use a heuristic: try to match from the items endpoint later.
-    // For now, show all members but track "myItems" separately from what we add locally.
-  }, [fullOrder]);
+    if (!fullOrder || !currentUserId) return;
+    const me = fullOrder.members.find((m) => m.userId === currentUserId);
+    if (me && me.items && Array.isArray(me.items)) {
+      setMyItems(me.items as OrderItem[]);
+    }
+  }, [fullOrder, currentUserId]);
+
+  // Fetch menu when fullOrder loads
+  useEffect(() => {
+    if (fullOrder?.restaurant.id) {
+      fetchMenu(fullOrder.restaurant.id);
+    }
+  }, [fullOrder?.restaurant.id, fetchMenu]);
 
   async function handleJoin() {
     if (!invite) return;
@@ -158,7 +248,6 @@ export default function GroupOrderPage() {
           return;
         }
         if (d.error === "You already joined this group order") {
-          // Already a member, just reload full
           await fetchFull(invite.id);
           setJoining(false);
           return;
@@ -174,49 +263,58 @@ export default function GroupOrderPage() {
     setJoining(false);
   }
 
-  async function addItem() {
-    if (!itemName.trim() || !itemPrice.trim() || !fullOrder) return;
-    const priceKobo = Math.round(parseFloat(itemPrice) * 100);
-    if (isNaN(priceKobo) || priceKobo <= 0) return;
-
-    const newItem: OrderItem = {
-      productId: `manual_${Date.now()}`,
-      name: itemName.trim(),
-      quantity: 1,
-      price: priceKobo,
-    };
-    const updated = [...myItems, newItem];
+  function addMenuItemToOrder(menuItem: MenuItem) {
+    if (!fullOrder) return;
+    // Check if already in myItems
+    const existingIdx = myItems.findIndex((i) => i.productId === menuItem.id);
+    let updated: OrderItem[];
+    if (existingIdx >= 0) {
+      updated = myItems.map((item, i) =>
+        i === existingIdx ? { ...item, quantity: item.quantity + 1 } : item
+      );
+    } else {
+      updated = [...myItems, {
+        productId: menuItem.id,
+        name: menuItem.name,
+        quantity: 1,
+        price: menuItem.price,
+      }];
+    }
     setMyItems(updated);
-    setItemName("");
-    setItemPrice("");
+    saveItems(updated);
+  }
 
-    // Save to API
+  function changeItemQuantity(productId: string, delta: number) {
+    if (!fullOrder) return;
+    let updated: OrderItem[];
+    const existingIdx = myItems.findIndex((i) => i.productId === productId);
+    if (existingIdx < 0) return;
+    const newQty = myItems[existingIdx].quantity + delta;
+    if (newQty <= 0) {
+      updated = myItems.filter((_, i) => i !== existingIdx);
+    } else {
+      updated = myItems.map((item, i) =>
+        i === existingIdx ? { ...item, quantity: newQty } : item
+      );
+    }
+    setMyItems(updated);
+    saveItems(updated);
+  }
+
+  async function saveItems(items: OrderItem[]) {
+    if (!fullOrder) return;
     setSavingItems(true);
     try {
       await fetch(`/api/group-orders/${fullOrder.id}/items`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: updated }),
+        body: JSON.stringify({ items }),
       });
-      // Refresh full order
       await fetchFull(fullOrder.id);
     } catch {
-      // Revert on failure
-      setMyItems(myItems);
+      // silently fail
     }
     setSavingItems(false);
-  }
-
-  function removeItem(index: number) {
-    if (!fullOrder) return;
-    const updated = myItems.filter((_, i) => i !== index);
-    setMyItems(updated);
-    // Save
-    fetch(`/api/group-orders/${fullOrder.id}/items`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: updated }),
-    }).then(() => fetchFull(fullOrder.id)).catch(() => {});
   }
 
   async function handleCheckout() {
@@ -248,6 +346,7 @@ export default function GroupOrderPage() {
           <div className="h-4 w-[40%] rounded-[8px] mb-8" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
           <div className="h-[120px] rounded-[16px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
         </div>
+        <BottomNav />
       </main>
     );
   }
@@ -262,11 +361,12 @@ export default function GroupOrderPage() {
             Back to Discover
           </button>
         </div>
+        <BottomNav />
       </main>
     );
   }
 
-  // ── State A: Not a member ──
+  // -- State A: Not a member --
   if (!isMember && invite) {
     const st = STATUS_LABELS[invite.status] || STATUS_LABELS.OPEN;
     return (
@@ -323,11 +423,12 @@ export default function GroupOrderPage() {
             {joining ? "Joining..." : "Join this group order"}
           </button>
         </div>
+        <BottomNav />
       </main>
     );
   }
 
-  // ── State B: Member view ──
+  // -- State B: Member view --
   if (!fullOrder) return null;
 
   const st = STATUS_LABELS[fullOrder.status] || STATUS_LABELS.OPEN;
@@ -336,25 +437,15 @@ export default function GroupOrderPage() {
   const mySubtotal = myItems.reduce((s, i) => s + i.price * i.quantity, 0);
   const myTotal = mySubtotal + deliveryPerPerson;
 
-  // Find current user's member record by checking payment status from any member
-  // that matches our session. Since we can't know userId client-side easily,
-  // we check if any member has items matching our local myItems.
-  // The safer approach: the member whose items we can PATCH is "us".
-  const myMember = fullOrder.members.find((m) => {
-    // Heuristic: if myItems is empty, the first unpaid member with 0 items might be us
-    // This is imperfect but works for MVP
-    if (myItems.length > 0) return false;
-    return true;
-  });
+  // Find current user's member record
+  const myMember = currentUserId
+    ? fullOrder.members.find((m) => m.userId === currentUserId)
+    : null;
 
-  // Determine if current user already paid (check all members for a SUCCESS status
-  // whose items match myItems)
-  const hasPaid = fullOrder.members.some(
-    (m) => m.paymentStatus === "SUCCESS" && m.subtotal > 0 && myItems.length === 0
-  );
+  const hasPaid = myMember?.paymentStatus === "SUCCESS";
 
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen pb-10" style={{ background: "var(--bg)" }}>
+    <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen pb-24" style={{ background: "var(--bg)" }}>
       <div className="px-5 pt-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
@@ -408,52 +499,59 @@ export default function GroupOrderPage() {
           Invite more people
         </a>
 
-        {/* ── Members ── */}
+        {/* -- Members -- */}
         <section className="mt-7">
           <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
             Members ({memberCount})
           </h2>
           <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            {fullOrder.members.map((m, i) => (
-              <div key={m.id}>
-                {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
-                <div className="flex items-center justify-between px-4 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: m.userId === fullOrder.coordinator.id ? "#E84C3D" : "#1C1C1E" }}>
-                      {m.firstName.charAt(0)}
+            {fullOrder.members.map((m, i) => {
+              const isMe = currentUserId && m.userId === currentUserId;
+              const isCoordinator = m.userId === fullOrder.coordinator.id;
+              return (
+                <div key={m.id}>
+                  {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: isCoordinator ? "#E84C3D" : "#1C1C1E" }}>
+                        {m.firstName.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>
+                          {m.firstName}
+                          {isMe && (
+                            <span className="text-[10px] font-bold ml-1.5" style={{ color: "#E84C3D" }}>(you)</span>
+                          )}
+                          {isCoordinator && (
+                            <span className="text-[10px] font-bold ml-1.5" style={{ color: "var(--text-muted)" }}>Organizer</span>
+                          )}
+                        </p>
+                        <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                          {(m.items as OrderItem[]).length} item{(m.items as OrderItem[]).length !== 1 ? "s" : ""}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>
-                        {m.firstName}
-                        {m.userId === fullOrder.coordinator.id && (
-                          <span className="text-[10px] font-bold ml-1.5" style={{ color: "var(--text-muted)" }}>Organizer</span>
-                        )}
-                      </p>
-                      <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                        {(m.items as OrderItem[]).length} item{(m.items as OrderItem[]).length !== 1 ? "s" : ""}
-                      </p>
-                    </div>
+                    <span
+                      className="text-[11px] font-bold px-2.5 py-1 rounded-full"
+                      style={{
+                        background: m.paymentStatus === "SUCCESS" ? "#F0FDF4" : "var(--sand)",
+                        color: m.paymentStatus === "SUCCESS" ? "#22C55E" : "var(--text-muted)",
+                      }}
+                    >
+                      {m.paymentStatus === "SUCCESS" ? "Paid" : "Unpaid"}
+                    </span>
                   </div>
-                  <span
-                    className="text-[11px] font-bold px-2.5 py-1 rounded-full"
-                    style={{
-                      background: m.paymentStatus === "SUCCESS" ? "#F0FDF4" : "var(--sand)",
-                      color: m.paymentStatus === "SUCCESS" ? "#22C55E" : "var(--text-muted)",
-                    }}
-                  >
-                    {m.paymentStatus === "SUCCESS" ? "Paid" : "Unpaid"}
-                  </span>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
-        {/* ── My items ── */}
+        {/* -- My items section -- */}
         {fullOrder.status === "OPEN" && (
           <section className="mt-7">
             <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
-              My items
+              Your items
             </h2>
 
             {myItems.length > 0 && (
@@ -462,20 +560,35 @@ export default function GroupOrderPage() {
                   <div key={item.productId}>
                     {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
                     <div className="flex items-center justify-between px-4 py-3">
-                      <div>
-                        <p className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>{item.name}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[14px] font-bold truncate" style={{ color: "#1C1C1E" }}>{item.name}</p>
                         <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
-                          {fp(item.price)}
+                          {fp(item.price * item.quantity)}
                         </p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeItem(i)}
-                        className="w-[28px] h-[28px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
-                        style={{ background: "var(--sand)" }}
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E84C3D" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
-                      </button>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => changeItemQuantity(item.productId, -1)}
+                          className="w-[28px] h-[28px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                          style={{ background: "var(--sand)" }}
+                        >
+                          {item.quantity === 1 ? (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E84C3D" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                          ) : (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                          )}
+                        </button>
+                        <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "#1C1C1E" }}>{item.quantity}</span>
+                        <button
+                          type="button"
+                          onClick={() => changeItemQuantity(item.productId, 1)}
+                          className="w-[28px] h-[28px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                          style={{ background: "#E84C3D" }}
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -487,7 +600,7 @@ export default function GroupOrderPage() {
                   </div>
                   {deliveryPerPerson > 0 && (
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Delivery ({memberCount} split)</span>
+                      <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Delivery ({memberCount}-way split)</span>
                       <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text-secondary)" }}>{fp(deliveryPerPerson)}</span>
                     </div>
                   )}
@@ -499,52 +612,98 @@ export default function GroupOrderPage() {
               </div>
             )}
 
-            {/* Add item form */}
-            <div className="rounded-[16px] p-4" style={{ background: "var(--sand)", border: "1px solid var(--border)" }}>
-              <p className="text-[12px] font-bold mb-3" style={{ color: "var(--text-secondary)" }}>
-                {myItems.length === 0 ? "Add your items manually" : "Add another item"}
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={itemName}
-                  onChange={(e) => setItemName(e.target.value)}
-                  placeholder="Item name"
-                  className="flex-1 h-[40px] rounded-[10px] px-3 text-[13px] font-medium outline-none"
-                  style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}
-                />
-                <input
-                  type="number"
-                  value={itemPrice}
-                  onChange={(e) => setItemPrice(e.target.value)}
-                  placeholder="Price"
-                  className="w-[90px] h-[40px] rounded-[10px] px-3 text-[13px] font-medium outline-none tabular-nums"
-                  style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}
-                />
-                <button
-                  type="button"
-                  onClick={addItem}
-                  disabled={savingItems || !itemName.trim() || !itemPrice.trim()}
-                  className="w-[40px] h-[40px] rounded-[10px] flex items-center justify-center cursor-pointer press-feedback shrink-0"
-                  style={{ background: itemName.trim() && itemPrice.trim() ? "#E84C3D" : "var(--border)", color: "white" }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                </button>
-              </div>
-              <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>
-                Price in naira (e.g. 1500 for {fp(150000)})
-              </p>
+            {/* Menu browser */}
+            <div className="mt-2">
+              <h3 className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
+                {fullOrder.restaurant.name} menu
+              </h3>
+
+              {menuLoading && (
+                <div className="rounded-[16px] p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.2s ease-in-out infinite" }} />
+                    <p className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Loading menu...</p>
+                  </div>
+                </div>
+              )}
+
+              {!menuLoading && menuItems.length > 0 && (
+                <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                  {menuItems.map((item, i) => {
+                    const inOrder = myItems.find((o) => o.productId === item.id);
+                    const qty = inOrder?.quantity || 0;
+                    return (
+                      <div key={item.id}>
+                        {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
+                        <div className="flex items-center gap-3 px-4 py-3">
+                          {/* Food image */}
+                          {item.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.imageUrl} alt={item.name} className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0" loading="lazy" />
+                          ) : (
+                            <div className="w-[48px] h-[48px] rounded-[10px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                              <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                            </div>
+                          )}
+                          {/* Name + price */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#1C1C1E" }}>{item.name}</p>
+                            {item.description && (
+                              <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{item.description}</p>
+                            )}
+                            <p className="text-[14px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
+                              {fp(item.price)}
+                            </p>
+                          </div>
+                          {/* Add / stepper */}
+                          {qty > 0 ? (
+                            <div className="flex items-center gap-0.5 shrink-0">
+                              <button type="button" onClick={() => changeItemQuantity(item.id, -1)}
+                                className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                                style={{ background: "var(--sand)" }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                              </button>
+                              <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "#1C1C1E" }}>{qty}</span>
+                              <button type="button" onClick={() => addMenuItemToOrder(item)}
+                                className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                                style={{ background: "#E84C3D" }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <button type="button" onClick={() => addMenuItemToOrder(item)}
+                              className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback shrink-0"
+                              style={{ background: "#E84C3D" }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {!menuLoading && menuItems.length === 0 && (
+                <div className="rounded-[16px] p-5 text-center" style={{ background: "var(--sand)", border: "1px solid var(--border)" }}>
+                  <p className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>
+                    Menu not available yet
+                  </p>
+                  <Link
+                    href={`/store/${fullOrder.restaurant.id}?groupOrder=${fullOrder.id}`}
+                    className="text-[12px] font-bold mt-2 inline-block"
+                    style={{ color: "#E84C3D" }}
+                  >
+                    Browse full store page
+                  </Link>
+                </div>
+              )}
             </div>
 
-            {/* Browse menu link */}
-            <Link
-              href={`/store/${fullOrder.restaurant.id}?groupOrder=${fullOrder.id}`}
-              className="mt-3 w-full h-[40px] rounded-[10px] flex items-center justify-center gap-2 text-[13px] font-bold press-feedback"
-              style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
-              Browse {fullOrder.restaurant.name} menu
-            </Link>
+            {/* Saving indicator */}
+            {savingItems && (
+              <p className="text-[11px] font-bold mt-2 text-center" style={{ color: "var(--text-muted)" }}>Saving...</p>
+            )}
 
             {/* Pay CTA */}
             {myItems.length > 0 && (
@@ -571,6 +730,7 @@ export default function GroupOrderPage() {
           </div>
         )}
       </div>
+      <BottomNav />
     </main>
   );
 }
