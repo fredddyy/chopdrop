@@ -137,16 +137,9 @@ export async function POST(request: NextRequest) {
     areaName = creator?.areaName || null;
   }
 
-  // Pool timer from admin settings, fallback to 6 hours
-  let poolHours = 6;
-  try {
-    const timerSetting = await prisma.setting.findUnique({ where: { key: "pool-default-timer" } });
-    if (timerSetting?.value && typeof timerSetting.value === "number" && timerSetting.value > 0) {
-      poolHours = timerSetting.value;
-    } else if (timerSetting?.value && typeof timerSetting.value === "string" && Number(timerSetting.value) > 0) {
-      poolHours = Number(timerSetting.value);
-    }
-  } catch {}
+  // Pool timer from admin settings (pool-default-timer in hours)
+  const timerSetting = await prisma.setting.findUnique({ where: { key: "pool-default-timer" } });
+  const poolHours = timerSetting?.value && Number(timerSetting.value) > 0 ? Number(timerSetting.value) : 2;
   const deadline = new Date(Date.now() + poolHours * 60 * 60 * 1000);
 
   // Create pool + add creator as first member in one transaction
