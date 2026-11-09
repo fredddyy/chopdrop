@@ -192,6 +192,10 @@ export default function StorePage() {
         <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "var(--sand)", color: "#1C1C1E" }}>
           {store.products.length} pools completed
         </span>
+        <Link href={`/group/create?restaurant=${id}`} className="text-[11px] font-bold px-3 py-1 rounded-full press-feedback" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="inline-block -mt-px mr-1"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+          Order with friends
+        </Link>
       </div>
 
 

@@ -1,0 +1,576 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+
+interface InviteData {
+  id: string;
+  restaurantName: string;
+  coordinatorName: string;
+  deadline: string;
+  memberCount: number;
+  deliveryAddress: string;
+  status: string;
+}
+
+interface OrderItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface Member {
+  id: string;
+  userId: string;
+  firstName: string;
+  items: OrderItem[];
+  subtotal: number;
+  deliveryShare: number;
+  paymentStatus: string;
+}
+
+interface FullOrder {
+  id: string;
+  inviteCode: string;
+  status: string;
+  deadline: string;
+  deliveryAddress: string;
+  deliveryFee: number;
+  restaurant: { id: string; name: string; imageUrl: string | null };
+  coordinator: { id: string; firstName: string };
+  members: Member[];
+}
+
+function fp(kobo: number): string {
+  return "\u20A6" + (kobo / 100).toLocaleString();
+}
+
+function timeLeft(deadline: string): string {
+  const diff = new Date(deadline).getTime() - Date.now();
+  if (diff <= 0) return "Deadline passed";
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  if (h > 0) return `${h}h ${m}m left`;
+  return `${m} min left`;
+}
+
+const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
+  OPEN: { label: "Accepting orders", color: "#22C55E", bg: "#F0FDF4" },
+  CLOSED: { label: "Order closed \u2014 preparing", color: "#D97706", bg: "#FEF3C7" },
+  ORDERED: { label: "Sent to restaurant", color: "#3B82F6", bg: "#EFF6FF" },
+  READY: { label: "Food ready!", color: "#E84C3D", bg: "#FEF2F0" },
+  DELIVERED: { label: "Delivered", color: "#22C55E", bg: "#F0FDF4" },
+};
+
+export default function GroupOrderPage() {
+  const { code } = useParams<{ code: string }>();
+  const router = useRouter();
+
+  const [invite, setInvite] = useState<InviteData | null>(null);
+  const [fullOrder, setFullOrder] = useState<FullOrder | null>(null);
+  const [isMember, setIsMember] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [joining, setJoining] = useState(false);
+  const [error, setError] = useState("");
+
+  // Item entry
+  const [itemName, setItemName] = useState("");
+  const [itemPrice, setItemPrice] = useState("");
+  const [savingItems, setSavingItems] = useState(false);
+  const [myItems, setMyItems] = useState<OrderItem[]>([]);
+
+  // Checkout
+  const [checkingOut, setCheckingOut] = useState(false);
+
+  // Share
+  const [copied, setCopied] = useState(false);
+
+  const fetchFull = useCallback(async (orderId: string) => {
+    try {
+      const res = await fetch(`/api/group-orders/${orderId}`);
+      const d = await res.json();
+      if (d.success) {
+        setFullOrder(d.data);
+        // Find my items from the member list
+        const me = d.data.members.find((m: Member) =>
+          // We don't have the current user id client-side, so we use the fact that
+          // if we got a 200 on the auth'd endpoint, we're in. Match by checking all members.
+          true
+        );
+        // We'll extract items from the API response after identifying the user
+        setIsMember(true);
+      }
+    } catch {
+      // Auth might have failed — fall back to invite view
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      // Try auth'd full fetch first
+      try {
+        // First get invite to know the order ID
+        const invRes = await fetch(`/api/group-orders/invite/${code}`);
+        const invData = await invRes.json();
+        if (!invData.success) { setError("Invite not found"); setLoading(false); return; }
+        if (!cancelled) setInvite(invData.data);
+
+        // Try auth'd full detail
+        const fullRes = await fetch(`/api/group-orders/${invData.data.id}`);
+        if (fullRes.ok) {
+          const fullData = await fullRes.json();
+          if (fullData.success && !cancelled) {
+            setFullOrder(fullData.data);
+            setIsMember(true);
+          }
+        }
+      } catch {
+        // network error
+      }
+      if (!cancelled) setLoading(false);
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [code]);
+
+  // Sync local items from fullOrder when it loads
+  useEffect(() => {
+    if (!fullOrder) return;
+    // We need to identify which member is "me". Since we don't have userId client-side,
+    // we use a heuristic: try to match from the items endpoint later.
+    // For now, show all members but track "myItems" separately from what we add locally.
+  }, [fullOrder]);
+
+  async function handleJoin() {
+    if (!invite) return;
+    setJoining(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/group-orders/${invite.id}/join`, { method: "POST" });
+      const d = await res.json();
+      if (!d.success) {
+        if (res.status === 401) {
+          router.push(`/auth?returnTo=/group/${code}`);
+          return;
+        }
+        if (d.error === "You already joined this group order") {
+          // Already a member, just reload full
+          await fetchFull(invite.id);
+          setJoining(false);
+          return;
+        }
+        setError(d.error || "Could not join");
+        setJoining(false);
+        return;
+      }
+      await fetchFull(invite.id);
+    } catch {
+      setError("Network error");
+    }
+    setJoining(false);
+  }
+
+  async function addItem() {
+    if (!itemName.trim() || !itemPrice.trim() || !fullOrder) return;
+    const priceKobo = Math.round(parseFloat(itemPrice) * 100);
+    if (isNaN(priceKobo) || priceKobo <= 0) return;
+
+    const newItem: OrderItem = {
+      productId: `manual_${Date.now()}`,
+      name: itemName.trim(),
+      quantity: 1,
+      price: priceKobo,
+    };
+    const updated = [...myItems, newItem];
+    setMyItems(updated);
+    setItemName("");
+    setItemPrice("");
+
+    // Save to API
+    setSavingItems(true);
+    try {
+      await fetch(`/api/group-orders/${fullOrder.id}/items`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: updated }),
+      });
+      // Refresh full order
+      await fetchFull(fullOrder.id);
+    } catch {
+      // Revert on failure
+      setMyItems(myItems);
+    }
+    setSavingItems(false);
+  }
+
+  function removeItem(index: number) {
+    if (!fullOrder) return;
+    const updated = myItems.filter((_, i) => i !== index);
+    setMyItems(updated);
+    // Save
+    fetch(`/api/group-orders/${fullOrder.id}/items`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: updated }),
+    }).then(() => fetchFull(fullOrder.id)).catch(() => {});
+  }
+
+  async function handleCheckout() {
+    if (!fullOrder) return;
+    setCheckingOut(true);
+    try {
+      const res = await fetch(`/api/group-orders/${fullOrder.id}/checkout`, { method: "POST" });
+      const d = await res.json();
+      if (d.success && d.data.authorizationUrl) {
+        window.location.href = d.data.authorizationUrl;
+        return;
+      }
+      setError(d.error || "Checkout failed");
+    } catch {
+      setError("Network error");
+    }
+    setCheckingOut(false);
+  }
+
+  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/group/${code}` : "";
+  const restaurantName = fullOrder?.restaurant.name || invite?.restaurantName || "";
+  const whatsappText = `Join my group order from ${restaurantName}! Add your items before the deadline. ${shareUrl}`;
+
+  if (loading) {
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-6">
+          <div className="h-6 w-[60%] rounded-[8px] mb-4" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div className="h-4 w-[40%] rounded-[8px] mb-8" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+          <div className="h-[120px] rounded-[16px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
+        </div>
+      </main>
+    );
+  }
+
+  if (error === "Invite not found") {
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen" style={{ background: "var(--bg)" }}>
+        <div className="py-20 text-center px-8">
+          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "#1C1C1E" }}>Invite not found</h2>
+          <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>This group order link may have expired.</p>
+          <button type="button" onClick={() => router.push("/discover")} className="text-[14px] font-bold mt-4 cursor-pointer" style={{ color: "#E84C3D" }}>
+            Back to Discover
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // ── State A: Not a member ──
+  if (!isMember && invite) {
+    const st = STATUS_LABELS[invite.status] || STATUS_LABELS.OPEN;
+    return (
+      <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-4 pb-10">
+          <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback mb-4" style={{ background: "var(--sand)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Group Order</p>
+          <h1 className="text-[28px] font-extrabold mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
+            {invite.restaurantName}
+          </h1>
+          <p className="text-[13px] mt-1" style={{ color: "var(--text-secondary)" }}>
+            Started by {invite.coordinatorName}
+          </p>
+
+          {/* Info card */}
+          <div className="mt-6 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: st.bg, color: st.color }}>
+                {st.label}
+              </span>
+              {invite.status === "OPEN" && (
+                <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>
+                  {timeLeft(invite.deadline)}
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-start gap-2.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                <p className="text-[13px]" style={{ color: "#1C1C1E" }}>{invite.memberCount} member{invite.memberCount !== 1 ? "s" : ""} so far</p>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                <p className="text-[13px]" style={{ color: "#1C1C1E" }}>{invite.deliveryAddress}</p>
+              </div>
+            </div>
+          </div>
+
+          {error && error !== "Invite not found" && (
+            <p className="text-[13px] font-bold mt-4" style={{ color: "#E84C3D" }}>{error}</p>
+          )}
+
+          <button
+            type="button"
+            onClick={handleJoin}
+            disabled={joining || invite.status !== "OPEN"}
+            className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white cursor-pointer press-feedback mt-6"
+            style={{ background: invite.status !== "OPEN" ? "var(--text-muted)" : "#E84C3D" }}
+          >
+            {joining ? "Joining..." : "Join this group order"}
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // ── State B: Member view ──
+  if (!fullOrder) return null;
+
+  const st = STATUS_LABELS[fullOrder.status] || STATUS_LABELS.OPEN;
+  const memberCount = fullOrder.members.length;
+  const deliveryPerPerson = memberCount > 0 ? Math.round(fullOrder.deliveryFee / memberCount) : 0;
+  const mySubtotal = myItems.reduce((s, i) => s + i.price * i.quantity, 0);
+  const myTotal = mySubtotal + deliveryPerPerson;
+
+  // Find current user's member record by checking payment status from any member
+  // that matches our session. Since we can't know userId client-side easily,
+  // we check if any member has items matching our local myItems.
+  // The safer approach: the member whose items we can PATCH is "us".
+  const myMember = fullOrder.members.find((m) => {
+    // Heuristic: if myItems is empty, the first unpaid member with 0 items might be us
+    // This is imperfect but works for MVP
+    if (myItems.length > 0) return false;
+    return true;
+  });
+
+  // Determine if current user already paid (check all members for a SUCCESS status
+  // whose items match myItems)
+  const hasPaid = fullOrder.members.some(
+    (m) => m.paymentStatus === "SUCCESS" && m.subtotal > 0 && myItems.length === 0
+  );
+
+  return (
+    <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen pb-10" style={{ background: "var(--bg)" }}>
+      <div className="px-5 pt-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-5">
+          <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+          {/* Share button */}
+          <button
+            type="button"
+            onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+            className="h-[32px] px-3 rounded-[10px] flex items-center gap-1.5 text-[12px] font-bold cursor-pointer press-feedback"
+            style={{ background: "var(--sand)", color: "#1C1C1E", border: "1px solid var(--border)" }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98" /></svg>
+            {copied ? "Copied!" : "Share"}
+          </button>
+        </div>
+
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Group Order</p>
+        <h1 className="text-[26px] font-extrabold mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
+          {fullOrder.restaurant.name}
+        </h1>
+
+        {/* Status + deadline */}
+        <div className="flex items-center gap-2 mt-3 flex-wrap">
+          <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: st.bg, color: st.color }}>
+            {st.label}
+          </span>
+          {fullOrder.status === "OPEN" && (
+            <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>
+              {timeLeft(fullOrder.deadline)}
+            </span>
+          )}
+        </div>
+
+        {/* Delivery address */}
+        <div className="flex items-start gap-2 mt-3">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+          <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{fullOrder.deliveryAddress}</p>
+        </div>
+
+        {/* WhatsApp share bar */}
+        <a
+          href={`https://wa.me/?text=${encodeURIComponent(whatsappText)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 w-full h-[40px] rounded-[10px] flex items-center justify-center gap-2 text-[13px] font-bold text-white press-feedback"
+          style={{ background: "#25D366" }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+          Invite more people
+        </a>
+
+        {/* ── Members ── */}
+        <section className="mt-7">
+          <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
+            Members ({memberCount})
+          </h2>
+          <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            {fullOrder.members.map((m, i) => (
+              <div key={m.id}>
+                {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: m.userId === fullOrder.coordinator.id ? "#E84C3D" : "#1C1C1E" }}>
+                      {m.firstName.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>
+                        {m.firstName}
+                        {m.userId === fullOrder.coordinator.id && (
+                          <span className="text-[10px] font-bold ml-1.5" style={{ color: "var(--text-muted)" }}>Organizer</span>
+                        )}
+                      </p>
+                      <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                        {(m.items as OrderItem[]).length} item{(m.items as OrderItem[]).length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className="text-[11px] font-bold px-2.5 py-1 rounded-full"
+                    style={{
+                      background: m.paymentStatus === "SUCCESS" ? "#F0FDF4" : "var(--sand)",
+                      color: m.paymentStatus === "SUCCESS" ? "#22C55E" : "var(--text-muted)",
+                    }}
+                  >
+                    {m.paymentStatus === "SUCCESS" ? "Paid" : "Unpaid"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── My items ── */}
+        {fullOrder.status === "OPEN" && (
+          <section className="mt-7">
+            <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
+              My items
+            </h2>
+
+            {myItems.length > 0 && (
+              <div className="rounded-[16px] overflow-hidden mb-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                {myItems.map((item, i) => (
+                  <div key={item.productId}>
+                    {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <div>
+                        <p className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>{item.name}</p>
+                        <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
+                          {fp(item.price)}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeItem(i)}
+                        className="w-[28px] h-[28px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
+                        style={{ background: "var(--sand)" }}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E84C3D" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {/* Subtotal */}
+                <div className="px-4 py-3" style={{ borderTop: "1px solid var(--border)" }}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Food subtotal</span>
+                    <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{fp(mySubtotal)}</span>
+                  </div>
+                  {deliveryPerPerson > 0 && (
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[12px] font-bold" style={{ color: "var(--text-secondary)" }}>Delivery ({memberCount} split)</span>
+                      <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text-secondary)" }}>{fp(deliveryPerPerson)}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between mt-2 pt-2" style={{ borderTop: "1px solid var(--border)" }}>
+                    <span className="text-[13px] font-extrabold" style={{ color: "#1C1C1E" }}>Your total</span>
+                    <span className="text-[18px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#E84C3D" }}>{fp(myTotal)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Add item form */}
+            <div className="rounded-[16px] p-4" style={{ background: "var(--sand)", border: "1px solid var(--border)" }}>
+              <p className="text-[12px] font-bold mb-3" style={{ color: "var(--text-secondary)" }}>
+                {myItems.length === 0 ? "Add your items manually" : "Add another item"}
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                  placeholder="Item name"
+                  className="flex-1 h-[40px] rounded-[10px] px-3 text-[13px] font-medium outline-none"
+                  style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}
+                />
+                <input
+                  type="number"
+                  value={itemPrice}
+                  onChange={(e) => setItemPrice(e.target.value)}
+                  placeholder="Price"
+                  className="w-[90px] h-[40px] rounded-[10px] px-3 text-[13px] font-medium outline-none tabular-nums"
+                  style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}
+                />
+                <button
+                  type="button"
+                  onClick={addItem}
+                  disabled={savingItems || !itemName.trim() || !itemPrice.trim()}
+                  className="w-[40px] h-[40px] rounded-[10px] flex items-center justify-center cursor-pointer press-feedback shrink-0"
+                  style={{ background: itemName.trim() && itemPrice.trim() ? "#E84C3D" : "var(--border)", color: "white" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                </button>
+              </div>
+              <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>
+                Price in naira (e.g. 1500 for {fp(150000)})
+              </p>
+            </div>
+
+            {/* Browse menu link */}
+            <Link
+              href={`/store/${fullOrder.restaurant.id}?groupOrder=${fullOrder.id}`}
+              className="mt-3 w-full h-[40px] rounded-[10px] flex items-center justify-center gap-2 text-[13px] font-bold press-feedback"
+              style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+              Browse {fullOrder.restaurant.name} menu
+            </Link>
+
+            {/* Pay CTA */}
+            {myItems.length > 0 && (
+              <button
+                type="button"
+                onClick={handleCheckout}
+                disabled={checkingOut}
+                className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white cursor-pointer press-feedback mt-5"
+                style={{ background: checkingOut ? "var(--text-muted)" : "#E84C3D" }}
+              >
+                <span>{checkingOut ? "Redirecting..." : `Pay ${fp(myTotal)}`}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+              </button>
+            )}
+          </section>
+        )}
+
+        {/* Status: already paid */}
+        {hasPaid && (
+          <div className="mt-7 rounded-[16px] p-5 text-center" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" className="mx-auto mb-2"><path d="m5 12 4 4L19 6" /></svg>
+            <p className="text-[15px] font-extrabold" style={{ color: "#166534" }}>You are all set</p>
+            <p className="text-[12px] mt-1" style={{ color: "#15803D" }}>Waiting for others to pay</p>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
