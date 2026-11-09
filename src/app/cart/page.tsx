@@ -29,6 +29,51 @@ export default function CartPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [poolData, setPoolData] = useState<{ officeOrderCount: number; meals: Record<string, { poolPrice: number; basePrice: number; savings: number }> }>({ officeOrderCount: 0, meals: {} });
   const [creditBalance, setCreditBalance] = useState(0);
+  const [deliveryPref, setDeliveryPref] = useState<{ option: "pickup" | "delivery"; lat: number; lng: number; fee: number } | null>(null);
+  const [realDeliveryFee, setRealDeliveryFee] = useState<number | null>(null);
+  const [deliveryToggle, setDeliveryToggle] = useState<"pickup" | "delivery">("pickup");
+
+  // Load delivery preference from product page
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("chopdrop-delivery-pref");
+      if (stored) {
+        const pref = JSON.parse(stored);
+        setDeliveryPref(pref);
+        setDeliveryToggle(pref.option || "pickup");
+      }
+    } catch {}
+  }, []);
+
+  // Fetch real delivery estimate from API when delivery is selected
+  useEffect(() => {
+    if (deliveryToggle !== "delivery" || cart.items.length === 0) {
+      setRealDeliveryFee(null);
+      return;
+    }
+    // Get user coordinates from delivery pref or customer profile
+    let lat: number | undefined;
+    let lng: number | undefined;
+    if (deliveryPref?.lat && deliveryPref?.lng) {
+      lat = deliveryPref.lat;
+      lng = deliveryPref.lng;
+    } else {
+      try {
+        const stored = localStorage.getItem("chopdrop-customer");
+        if (stored) {
+          const p = JSON.parse(stored);
+          if (p.latitude && p.longitude) { lat = p.latitude; lng = p.longitude; }
+        }
+      } catch {}
+    }
+    if (!lat || !lng) return;
+    // Use first cart item's product ID
+    const productId = cart.items[0].dailyMenuId.replace("instant-", "");
+    fetch(`/api/delivery-estimate?productId=${productId}&lat=${lat}&lng=${lng}`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setRealDeliveryFee(d.data.fullFee); })
+      .catch(() => {});
+  }, [deliveryToggle, cart.items, deliveryPref]);
 
   useEffect(() => {
     const profile = getCustomerProfile();
@@ -72,8 +117,9 @@ export default function CartPage() {
       .catch(() => {});
   }, []);
 
-  const EXPRESS_FEE = 120000;
-  const deliveryFee = fulfillment === "delivery" ? (isFirstOrder ? 0 : EXPRESS_FEE) : 0;
+  const deliveryFee = deliveryToggle === "delivery"
+    ? (realDeliveryFee !== null ? realDeliveryFee : (deliveryPref?.fee || 0))
+    : 0;
   // Service charge: ₦150 per pack (15000 kobo per pack)
   const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
   const serviceFee = packCount * 15000;
@@ -109,7 +155,21 @@ export default function CartPage() {
     try {
       // Use instant order API for solo purchases
       const items = cart.items.map((i) => ({ productId: i.dailyMenuId, quantity: i.quantity, price: i.price }));
-      const res = await fetch("/api/orders/instant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items }) });
+      const payload: Record<string, unknown> = { items, deliveryOption: deliveryToggle };
+      if (deliveryToggle === "delivery" && deliveryPref?.lat && deliveryPref?.lng) {
+        payload.lat = deliveryPref.lat;
+        payload.lng = deliveryPref.lng;
+      } else if (deliveryToggle === "delivery") {
+        // Fallback: try customer profile coordinates
+        try {
+          const stored = localStorage.getItem("chopdrop-customer");
+          if (stored) {
+            const p = JSON.parse(stored);
+            if (p.latitude && p.longitude) { payload.lat = p.latitude; payload.lng = p.longitude; }
+          }
+        } catch {}
+      }
+      const res = await fetch("/api/orders/instant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const data = await res.json();
       if (!data.success) { setError(data.error || "Something went wrong"); setLoading(false); return; }
       if (data.data.authorizationUrl) { cart.clearCart(); window.location.href = data.data.authorizationUrl; }
@@ -242,6 +302,38 @@ export default function CartPage() {
               </a>
             </section>
           )}
+
+          {/* Delivery toggle */}
+          <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-2" style={{ color: "var(--text-muted)" }}>Fulfillment</p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setDeliveryToggle("pickup")}
+                className="flex-1 h-[42px] rounded-[12px] flex items-center justify-center text-[13px] font-bold cursor-pointer transition-all"
+                style={{
+                  background: deliveryToggle === "pickup" ? "var(--card)" : "transparent",
+                  border: deliveryToggle === "pickup" ? "1.5px solid var(--charcoal, #2D2A26)" : "1.5px solid var(--border)",
+                  color: deliveryToggle === "pickup" ? "var(--text)" : "var(--text-muted)",
+                }}>
+                Pickup (free)
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeliveryToggle("delivery")}
+                className="flex-1 h-[42px] rounded-[12px] flex items-center justify-center text-[13px] font-bold cursor-pointer transition-all"
+                style={{
+                  background: deliveryToggle === "delivery" ? "var(--card)" : "transparent",
+                  border: deliveryToggle === "delivery" ? "1.5px solid var(--charcoal, #2D2A26)" : "1.5px solid var(--border)",
+                  color: deliveryToggle === "delivery" ? "var(--text)" : "var(--text-muted)",
+                }}>
+                Delivery {deliveryFee > 0 ? `(${formatNaira(deliveryFee)})` : ""}
+              </button>
+            </div>
+            {deliveryToggle === "delivery" && deliveryFee === 0 && !deliveryPref && (
+              <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>Set your location on a product page for delivery estimates</p>
+            )}
+          </section>
 
           {/* Order summary — transparent breakdown */}
           <section className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>

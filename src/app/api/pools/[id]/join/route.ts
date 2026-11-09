@@ -44,19 +44,21 @@ export async function POST(
     return NextResponse.json({ success: false, error: "Pool is already full" }, { status: 400 });
   }
 
-  // Calculate delivery fee for non-food pools (food uses batch delivery)
+  // Calculate delivery fee — always when user provides coordinates
   let deliveryFee = 0;
-  const isFood = pool.product.category === "Food";
+  let fullDeliveryFee = 0;
   const storeLat = pool.product.vendor.latitude;
   const storeLng = pool.product.vendor.longitude;
 
-  if (!isFood && lat && lng && storeLat && storeLng) {
+  if (lat && lng && storeLat && storeLng) {
     let tiers: DeliveryTier[] = DEFAULT_TIERS;
     try {
       const setting = await prisma.setting.findUnique({ where: { key: "delivery-fee-tiers" } });
       if (setting?.value && Array.isArray(setting.value)) tiers = setting.value as unknown as DeliveryTier[];
     } catch { /* use defaults */ }
-    deliveryFee = calculateDeliveryFee(storeLat, storeLng, lat, lng, tiers).fee;
+    fullDeliveryFee = calculateDeliveryFee(storeLat, storeLng, lat, lng, tiers).fee;
+    // Subsidize: split full fee across pool's minimum size
+    deliveryFee = Math.round(fullDeliveryFee / pool.product.minPoolSize);
   }
 
   // Add member + check if pool is now filled
@@ -97,7 +99,9 @@ export async function POST(
       unitPrice: pool.product.groupPrice,
       totalAmount: pool.product.groupPrice * quantity,
       deliveryFee,
-      deliveryFeeFormatted: deliveryFee > 0 ? `₦${(deliveryFee / 100).toLocaleString()}` : "Free (batch delivery)",
+      fullDeliveryFee,
+      subsidizedFee: deliveryFee,
+      deliveryFeeFormatted: deliveryFee > 0 ? `₦${(deliveryFee / 100).toLocaleString()}` : "Free (pickup)",
       message: result.filled
         ? `Pool filled! All ${pool.minSize} people pay ${pool.product.groupPrice} for ${pool.product.name}`
         : `Joined! ${result.memberCount}/${pool.minSize} — ${pool.minSize - result.memberCount} more needed`,

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
 import { initializeTransaction } from "@/lib/paystack";
+import { calculateDeliveryFee, DEFAULT_TIERS } from "@/lib/delivery-fee";
+import type { DeliveryTier } from "@/lib/delivery-fee";
 
 // POST /api/orders/instant — solo order for a product (not pool)
 export async function POST(request: NextRequest) {
@@ -13,7 +15,12 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
 
   const body = await request.json();
-  const { items } = body as { items: Array<{ productId: string; quantity: number; price: number }> };
+  const { items, deliveryOption, lat, lng } = body as {
+    items: Array<{ productId: string; quantity: number; price: number }>;
+    deliveryOption?: "pickup" | "delivery";
+    lat?: number;
+    lng?: number;
+  };
 
   if (!items || items.length === 0) {
     return NextResponse.json({ success: false, error: "No items" }, { status: 400 });
@@ -28,12 +35,32 @@ export async function POST(request: NextRequest) {
 
   // Verify product exists (check Product table, then Meal table)
   let productName = "Order";
-  const product = await prisma.product.findUnique({ where: { id: primaryProductId }, select: { name: true } });
+  const product = await prisma.product.findUnique({
+    where: { id: primaryProductId },
+    select: { name: true, vendorId: true },
+  });
   if (product) {
     productName = product.name;
   } else {
     const meal = await prisma.meal.findUnique({ where: { id: primaryProductId }, select: { name: true } });
     if (meal) productName = meal.name;
+  }
+
+  // Calculate delivery fee
+  let deliveryFee = 0;
+  if (deliveryOption === "delivery" && lat && lng && product) {
+    const vendor = await prisma.restaurant.findUnique({
+      where: { id: product.vendorId },
+      select: { latitude: true, longitude: true },
+    });
+    if (vendor?.latitude && vendor?.longitude) {
+      let tiers: DeliveryTier[] = DEFAULT_TIERS;
+      try {
+        const setting = await prisma.setting.findUnique({ where: { key: "delivery-fee-tiers" } });
+        if (setting?.value && Array.isArray(setting.value)) tiers = setting.value as unknown as DeliveryTier[];
+      } catch { /* use defaults */ }
+      deliveryFee = calculateDeliveryFee(vendor.latitude, vendor.longitude, lat, lng, tiers).fee;
+    }
   }
 
   // Generate order code
@@ -50,7 +77,7 @@ export async function POST(request: NextRequest) {
   // Initialize Paystack
   const paystack = await initializeTransaction({
     email,
-    amount: totalAmount + serviceFee,
+    amount: totalAmount + serviceFee + deliveryFee,
     reference,
     callbackUrl,
   });
@@ -68,6 +95,7 @@ export async function POST(request: NextRequest) {
       quantity: items.reduce((sum, i) => sum + i.quantity, 0),
       unitPrice: items[0].price,
       totalAmount,
+      deliveryFee,
       serviceFee,
       paymentRef: reference,
     },
@@ -79,7 +107,8 @@ export async function POST(request: NextRequest) {
       orderCode,
       authorizationUrl: paystack.data.authorization_url,
       reference,
-      amount: totalAmount + serviceFee,
+      amount: totalAmount + serviceFee + deliveryFee,
+      deliveryFee,
       productName,
     },
   });

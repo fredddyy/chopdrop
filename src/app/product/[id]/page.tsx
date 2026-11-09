@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
-import { calculateDeliveryFee } from "@/lib/delivery-fee";
 
 interface ProductData {
   id: string; name: string; description: string | null; imageUrl: string | null;
@@ -44,6 +43,9 @@ export default function ProductDetailPage() {
   const [joining, setJoining] = useState(false);
   const [sharePrompt, setSharePrompt] = useState<{ url: string; name: string } | null>(null);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number; address?: string } | null>(null);
+  const [deliveryOption, setDeliveryOption] = useState<"pickup" | "delivery">("pickup");
+  const [deliveryEstimate, setDeliveryEstimate] = useState<{ fullFee: number; subsidizedFee: number; distanceKm: number; walkMinutes: number } | null>(null);
+  const [estimateLoading, setEstimateLoading] = useState(false);
   // Joined pool state: null = not joined, or status string
   const [joinedStatus, setJoinedStatus] = useState<"filling" | "preparing" | "ready" | "collected" | null>(null);
   const [joinedPrice, setJoinedPrice] = useState(0);
@@ -85,6 +87,19 @@ export default function ProductDetailPage() {
       }
     } catch {}
   }, [id]);
+
+  // Fetch delivery estimate when delivery is selected
+  useEffect(() => {
+    if (deliveryOption !== "delivery" || !userCoords || !id) return;
+    setEstimateLoading(true);
+    const ctrl = new AbortController();
+    fetch(`/api/delivery-estimate?productId=${id}&lat=${userCoords.lat}&lng=${userCoords.lng}`, { signal: ctrl.signal })
+      .then(r => r.json())
+      .then(d => { if (d.success) setDeliveryEstimate(d.data); })
+      .catch(() => {})
+      .finally(() => { if (!ctrl.signal.aborted) setEstimateLoading(false); });
+    return () => ctrl.abort();
+  }, [deliveryOption, userCoords, id]);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -137,6 +152,19 @@ export default function ProductDetailPage() {
   function addSolo() {
     if (!product) return;
     cart.addItem({ dailyMenuId: `instant-${product.id}`, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantName: product.vendor.name, price: product.retailPrice });
+    // Store delivery preference for cart page
+    if (deliveryOption === "delivery" && userCoords) {
+      try {
+        localStorage.setItem("chopdrop-delivery-pref", JSON.stringify({
+          option: deliveryOption,
+          lat: userCoords.lat,
+          lng: userCoords.lng,
+          fee: deliveryEstimate?.fullFee || 0,
+        }));
+      } catch {}
+    } else {
+      try { localStorage.removeItem("chopdrop-delivery-pref"); } catch {}
+    }
     router.push("/cart");
   }
 
@@ -149,7 +177,7 @@ export default function ProductDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           quantity,
-          ...(userCoords ? { lat: userCoords.lat, lng: userCoords.lng, deliveryAddress: userCoords.address } : {}),
+          ...(deliveryOption === "delivery" && userCoords ? { lat: userCoords.lat, lng: userCoords.lng, deliveryAddress: userCoords.address } : {}),
         }),
       });
       const data = await res.json();
@@ -652,6 +680,58 @@ export default function ProductDetailPage() {
       {product.description && (
         <div className="px-5 mt-5">
           <p className="text-[14px] leading-[145%]" style={{ color: "var(--text-muted)" }}>{product.description}</p>
+        </div>
+      )}
+
+      {/* ── Delivery toggle ── */}
+      {!joinedStatus && (
+        <div className="px-5 mt-5">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-2" style={{ color: "var(--text-muted)" }}>Fulfillment</p>
+          {userCoords ? (
+            <>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDeliveryOption("pickup")}
+                  className="flex-1 h-[42px] rounded-[12px] flex items-center justify-center text-[13px] font-bold cursor-pointer transition-all"
+                  style={{
+                    background: deliveryOption === "pickup" ? "var(--card)" : "transparent",
+                    border: deliveryOption === "pickup" ? "1.5px solid var(--charcoal)" : "1.5px solid var(--border)",
+                    color: deliveryOption === "pickup" ? "var(--charcoal)" : "var(--text-muted)",
+                  }}>
+                  Pickup (free)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeliveryOption("delivery")}
+                  className="flex-1 h-[42px] rounded-[12px] flex items-center justify-center text-[13px] font-bold cursor-pointer transition-all"
+                  style={{
+                    background: deliveryOption === "delivery" ? "var(--card)" : "transparent",
+                    border: deliveryOption === "delivery" ? "1.5px solid var(--charcoal)" : "1.5px solid var(--border)",
+                    color: deliveryOption === "delivery" ? "var(--charcoal)" : "var(--text-muted)",
+                  }}>
+                  {estimateLoading ? "..." : deliveryEstimate ? `Delivery (${fp(deliveryEstimate.fullFee)})` : "Delivery"}
+                </button>
+              </div>
+              {deliveryOption === "delivery" && deliveryEstimate && (
+                <div className="mt-2 flex flex-col gap-1">
+                  {hasPoolPricing && (
+                    <p className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>
+                      {fp(deliveryEstimate.subsidizedFee)} split across pool
+                    </p>
+                  )}
+                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                    {deliveryEstimate.distanceKm}km away · {deliveryEstimate.walkMinutes} min walk
+                  </p>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex items-center gap-2 p-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>Pickup only · Set location for delivery option</span>
+            </div>
+          )}
         </div>
       )}
 
