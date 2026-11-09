@@ -26,7 +26,7 @@ function poolState(minSize: number) {
   return { joined: 0, spotsLeft: minSize, hours: 6, fillPct: 0 };
 }
 
-const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
+const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 
 export default function StorePage() {
   const { id } = useParams<{ id: string }>();
@@ -101,7 +101,7 @@ export default function StorePage() {
     return (
       <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
         <div className="py-20 text-center px-8">
-          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "#17271F" }}>Couldn&apos;t load store</h2>
+          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "#1C1C1E" }}>Couldn&apos;t load store</h2>
           <button type="button" onClick={() => router.push("/discover")} className="text-[14px] font-bold mt-3 cursor-pointer" style={{ color: "var(--coral)" }}>Back to Discover</button>
         </div>
         <BottomNav />
@@ -165,7 +165,7 @@ export default function StorePage() {
         </button>
         <div className="text-center">
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Campus Kitchens</p>
-          <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>A kitchen your people trust</p>
+          <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>A kitchen your people trust</p>
         </div>
         <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
@@ -178,18 +178,18 @@ export default function StorePage() {
           {store.name.split(" ").map((w) => w[0]).join("").slice(0, 2)}
         </div>
         <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{store.name}</h1>
+          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{store.name}</h1>
           <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
         </div>
       </div>
 
       {/* ── Rating + pools badges ── */}
       <div className="px-5 mt-3 flex items-center gap-2 flex-wrap">
-        <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "var(--sand)", color: "#17271F" }}>
+        <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "var(--sand)", color: "#1C1C1E" }}>
           <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="inline-block -mt-px mr-1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
           4.9 · 128 reviews
         </span>
-        <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "var(--sand)", color: "#17271F" }}>
+        <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "var(--sand)", color: "#1C1C1E" }}>
           {store.products.length} pools completed
         </span>
       </div>
@@ -199,11 +199,11 @@ export default function StorePage() {
       {featured && featuredFill && (
         <section className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Chop together first</h3>
-            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--lime)", color: "#17271F" }}>1 live pool</span>
+            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Chop together first</h3>
+            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--lime)", color: "#1C1C1E" }}>1 live pool</span>
           </div>
 
-          <Link href={`/product/${featured.id}`} className="block rounded-[22px] overflow-hidden press-feedback" style={{ background: "#17271F" }}>
+          <Link href={`/product/${featured.id}`} className="block rounded-[22px] overflow-hidden press-feedback" style={{ background: "#1C1C1E" }}>
             {/* Image — no badges on it */}
             {featured.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -242,7 +242,7 @@ export default function StorePage() {
               <div className="flex items-center gap-2 mt-3">
                 <div className="flex -space-x-2">
                   {Array.from({ length: Math.min(featuredFill.joined, 3) }).map((_, j) => (
-                    <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
+                    <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #1C1C1E" }}>
                       {String.fromCharCode(65 + j)}
                     </div>
                   ))}
@@ -263,7 +263,7 @@ export default function StorePage() {
 
       {/* ═══ THE FULL MENU ═══ */}
       <section className="px-5 mt-8">
-        <h2 className="text-[24px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>The full menu</h2>
+        <h2 className="text-[24px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>The full menu</h2>
         <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Want a better price? Request a pool. Ordering one plate is always the full individual price.</p>
 
         {/* Category pills */}
@@ -271,7 +271,7 @@ export default function StorePage() {
           {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab) => (
             <button key={tab} type="button" onClick={() => setActiveTab(tab)}
               className="h-[25px] px-3 rounded-full text-[11px] font-bold whitespace-nowrap cursor-pointer shrink-0"
-              style={{ background: currentTab === tab ? "#17271F" : "var(--sand)", color: currentTab === tab ? "white" : "var(--text-secondary)" }}
+              style={{ background: currentTab === tab ? "#1C1C1E" : "var(--sand)", color: currentTab === tab ? "white" : "var(--text-secondary)" }}
             >{tab}</button>
           ))}
         </div>
@@ -307,17 +307,17 @@ export default function StorePage() {
                             )}
                           </Link>
                           <Link href={`/product/${item.id}`} className="flex-1 min-w-0 press-feedback">
-                            <h4 className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#17271F" }}>{item.name}</h4>
+                            <h4 className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#1C1C1E" }}>{item.name}</h4>
                             <div className="flex items-baseline gap-1.5 mt-0.5">
                               <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fp(item.retailPrice)}</span>
                               {hasPool && (
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "var(--lime)", color: "#17271F" }}>-{sav}%</span>
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "var(--lime)", color: "#1C1C1E" }}>-{sav}%</span>
                               )}
                             </div>
                           </Link>
                           {/* Request pool */}
                           <Link href={`/product/${item.id}`} className="w-[32px] h-[32px] rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "var(--sand)" }}>
-                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#17271F" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
+                            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#1C1C1E" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
                           </Link>
                           {/* Add to cart / stepper */}
                           {inCart > 0 ? (
@@ -325,9 +325,9 @@ export default function StorePage() {
                               <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
                                 className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
                                 style={{ background: "var(--sand)" }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                               </button>
-                              <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "#17271F" }}>{inCart}</span>
+                              <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "#1C1C1E" }}>{inCart}</span>
                               <button type="button" onClick={() => addToPlate(item, store.name)}
                                 className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
                                 style={{ background: "var(--coral)" }}>
@@ -368,9 +368,9 @@ export default function StorePage() {
                           )}
                           {/* Name + description + price */}
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#17271F" }}>{item.name}</h4>
+                            <h4 className="text-[14px] font-bold leading-[135%] truncate" style={{ color: "#1C1C1E" }}>{item.name}</h4>
                             {item.description && <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{item.description}</p>}
-                            <p className="text-[14px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{fp(item.retailPrice)}</p>
+                            <p className="text-[14px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{fp(item.retailPrice)}</p>
                           </div>
                           {/* + / stepper */}
                           {inCart > 0 ? (
@@ -378,9 +378,9 @@ export default function StorePage() {
                               <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
                                 className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
                                 style={{ background: "var(--sand)" }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#17271F" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                               </button>
-                              <span className="w-[28px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "#17271F" }}>{inCart}</span>
+                              <span className="w-[28px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "#1C1C1E" }}>{inCart}</span>
                               <button type="button" onClick={() => addToPlate(item, store.name)}
                                 className="w-[32px] h-[32px] rounded-full flex items-center justify-center cursor-pointer press-feedback"
                                 style={{ background: "var(--coral)" }}>

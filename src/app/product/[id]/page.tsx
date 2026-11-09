@@ -17,7 +17,7 @@ interface ProductData {
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
 // Avatar colors for pool member initials
-const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
+const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 
 interface PoolData {
   id: string;
@@ -337,25 +337,25 @@ export default function ProductDetailPage() {
           <div />
           <div className="text-center">
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Student · You&apos;re on the list</p>
-            <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>You&apos;re in!</p>
+            <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>You&apos;re in!</p>
           </div>
           <div />
         </div>
 
         {/* Celebration */}
         <div className="text-center px-5 mt-6 celebrate">
-          <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ background: "var(--emerald-soft)" }}>
+          <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center" style={{ background: "#F0FDF4" }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="3" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
           </div>
-          <h1 className="text-[28px] font-extrabold mt-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>✓ You&apos;re in!</h1>
+          <h1 className="text-[28px] font-extrabold mt-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>✓ You&apos;re in!</h1>
           <p className="text-[14px] mt-2" style={{ color: "var(--text-muted)" }}>{product.name} · {fp(joinedPrice || product.groupPrice)} paid</p>
-          <p className="text-[13px] font-bold" style={{ color: "#17271F" }}>{memberCount}/{poolSize} joined · {spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left</p>
+          <p className="text-[13px] font-bold" style={{ color: "#1C1C1E" }}>{memberCount}/{poolSize} joined · {spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left</p>
           <p className="text-[11px] mt-1" style={{ color: "var(--emerald)" }}>Automatic refund guarantee</p>
         </div>
 
         {/* Progress — spots left inside dark card */}
         <div className="px-5 mt-5">
-          <div className="rounded-[22px] p-4" style={{ background: "#17271F" }}>
+          <div className="rounded-[22px] p-4" style={{ background: "#1C1C1E" }}>
             <div className="flex items-center justify-between text-[12px] font-extrabold">
               <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `0/${poolSize} plates claimed`}</span>
               <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
@@ -370,7 +370,7 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-2.5 mt-2.5">
                 <div className="flex -space-x-1.5">
                   {Array.from({ length: Math.min(3, memberCount) }).map((_, j) => (
-                    <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
+                    <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2px solid #1C1C1E" }}>
                       {["F", "T", "D", "A", "C"][j] || String.fromCharCode(65 + j)}
                     </div>
                   ))}
@@ -391,11 +391,11 @@ export default function ProductDetailPage() {
                 <img src={product.imageUrl} alt={product.name} className="w-[56px] h-[56px] rounded-[10px] object-cover shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-bold leading-[130%]" style={{ color: "#17271F" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} to fill it 😭</p>
+                <p className="text-[14px] font-bold leading-[130%]" style={{ color: "#1C1C1E" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} to fill it 😭</p>
                 <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>{product.name} · {product.vendor.name}</p>
               </div>
             </div>
-            <p className="text-[13px] font-extrabold mt-2.5" style={{ color: "#17271F" }}>{product.name} · {fp(product.groupPrice)} · {memberCount}/{poolSize} in!</p>
+            <p className="text-[13px] font-extrabold mt-2.5" style={{ color: "#1C1C1E" }}>{product.name} · {fp(product.groupPrice)} · {memberCount}/{poolSize} in!</p>
             <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>We need {spotsLeft} more {spotsLeft === 1 ? "person" : "people"} or the pool expires and nobody eats 😭. Share now!</p>
             <p className="text-[11px] mt-1" style={{ color: "var(--emerald)" }}>chopdrop.ng/p/{product.name.toLowerCase().replace(/\s+/g, "-").slice(0, 12)}</p>
           </div>
@@ -443,7 +443,7 @@ export default function ProductDetailPage() {
         </button>
         <div className="text-center">
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Student · {hasPoolPricing ? "Pool" : "Food"}</p>
-          <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+          <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             {hasPoolPricing ? "One good lunch. Your people." : product.name}
           </p>
         </div>
@@ -463,7 +463,7 @@ export default function ProductDetailPage() {
           )}
           {hasPoolPricing && (
             <div className="absolute top-3 left-3">
-              <span className="text-[10px] font-extrabold uppercase tracking-wide rounded-full" style={{ background: "var(--lime)", color: "#17271F", padding: "6px 12px" }}>
+              <span className="text-[10px] font-extrabold uppercase tracking-wide rounded-full" style={{ background: "var(--lime)", color: "#1C1C1E", padding: "6px 12px" }}>
                 {savings}% less together
               </span>
             </div>
@@ -471,11 +471,11 @@ export default function ProductDetailPage() {
         </div>
         {/* Badges below image */}
         <div className="flex items-center gap-2 mt-2">
-          <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: hasPoolPricing ? "var(--lime)" : "var(--sand)", color: "#17271F" }}>
+          <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: hasPoolPricing ? "var(--lime)" : "var(--sand)", color: "#1C1C1E" }}>
             {hasPoolPricing ? "Pool deal" : "No active pool"}
           </span>
-          <span className="text-[11px] font-bold flex items-center gap-1" style={{ color: "#17271F" }}>
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="#17271F" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+          <span className="text-[11px] font-bold flex items-center gap-1" style={{ color: "#1C1C1E" }}>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="#1C1C1E" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
             4.9 (128)
           </span>
         </div>
@@ -483,11 +483,11 @@ export default function ProductDetailPage() {
 
       {/* ── Title + Vendor ── */}
       <div className="px-5 mt-5">
-        <h1 className="text-[28px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#17271F" }}>{product.name}</h1>
+        <h1 className="text-[28px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#1C1C1E" }}>{product.name}</h1>
         <div className="flex items-center justify-between mt-1.5">
           <p className="text-[14px] font-semibold" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{product.vendor.name}</p>
-          <span className="text-[14px] font-bold flex items-center gap-1" style={{ color: "#17271F" }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="#17271F" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+          <span className="text-[14px] font-bold flex items-center gap-1" style={{ color: "#1C1C1E" }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="#1C1C1E" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
             4.9 (128)
           </span>
         </div>
@@ -519,14 +519,14 @@ export default function ProductDetailPage() {
       {joinedStatus === "filling" && hasPoolPricing && (
         <div className="px-5 mt-4">
           <div className="rounded-[22px] overflow-hidden p-4" style={{ background: "var(--emerald-soft)" }}>
-            <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>You&apos;re in! {pool ? `${pool.memberCount} of ${pool.minSize}` : `${memberCount} of ${product.minPoolSize}`} needed</p>
+            <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E" }}>You&apos;re in! {pool ? `${pool.memberCount} of ${pool.minSize}` : `${memberCount} of ${product.minPoolSize}`} needed</p>
             <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
               {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} more person and everyone eats.` : "More people needed and everyone eats."}
             </p>
             {/* You joined */}
             <div className="mt-3 flex items-center gap-2">
               <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[0] }}>{(userName || "Y").charAt(0)}</div>
-              <span className="text-[11px] font-bold" style={{ color: "#17271F" }}>{userName || "You"} (you)</span>
+              <span className="text-[11px] font-bold" style={{ color: "#1C1C1E" }}>{userName || "You"} (you)</span>
             </div>
             {pool && pool.memberCount > 1 && (
               <div className="mt-2 flex items-center gap-2">
@@ -547,7 +547,7 @@ export default function ProductDetailPage() {
       {/* ── Pool progress / Demand signal ── */}
       <div className="px-5 mt-5">
         {!hasPoolPricing && (
-          <div className="rounded-[22px] overflow-hidden p-5 mb-4" style={{ background: "#17271F" }}>
+          <div className="rounded-[22px] overflow-hidden p-5 mb-4" style={{ background: "#1C1C1E" }}>
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>Let&apos;s make it cheaper together</p>
             <p className="text-[24px] font-extrabold text-white mt-2 leading-[120%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>12 people want this pool.</p>
             <div className="flex items-center justify-between mt-2">
@@ -567,7 +567,7 @@ export default function ProductDetailPage() {
             </p>
           </div>
         )}
-        <div className="rounded-[22px] overflow-hidden" style={{ background: "#17271F" }}>
+        <div className="rounded-[22px] overflow-hidden" style={{ background: "#1C1C1E" }}>
           <div className="p-4">
             {/* Progress text */}
             <div className="flex items-center justify-between text-[12px] font-extrabold">
@@ -587,7 +587,7 @@ export default function ProductDetailPage() {
                 <div className="flex items-center gap-2.5">
                   <div className="flex -space-x-2">
                     {Array.from({ length: Math.min(pool.memberCount, 3) }).map((_, j) => (
-                      <div key={j} className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2.5px solid #17271F" }}>
+                      <div key={j} className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2.5px solid #1C1C1E" }}>
                         {j === 0 ? pool.creatorName.charAt(0) : String.fromCharCode(65 + j)}
                       </div>
                     ))}
@@ -596,7 +596,7 @@ export default function ProductDetailPage() {
                 </div>
                 {/* Live join feed */}
                 <div className="flex items-center gap-2 mt-2.5">
-                  <div className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[9px] font-bold" style={{ background: "var(--lime)", color: "#17271F" }}>
+                  <div className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[9px] font-bold" style={{ background: "var(--lime)", color: "#1C1C1E" }}>
                     {pool.creatorName.charAt(0)}
                   </div>
                   <span className="text-[11px]" style={{ color: "var(--subdued)" }}>{pool.creatorName} {pool.memberCount > 1 ? `+${pool.memberCount - 1} friend${pool.memberCount > 2 ? "s" : ""} joined` : "joined"} 1 min ago</span>
@@ -613,7 +613,7 @@ export default function ProductDetailPage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[15px] font-bold" style={{ color: "#17271F" }}>Jaja Hostel Reception</p>
+          <p className="text-[15px] font-bold" style={{ color: "#1C1C1E" }}>Jaja Hostel Reception</p>
           <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>About 2 min walk · Pickup, not delivery</p>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
@@ -622,7 +622,7 @@ export default function ProductDetailPage() {
       {/* ── Refund deadline (joined only) ── */}
       {joinedStatus === "filling" && hasPoolPricing && (
         <div className="px-5 mt-4">
-          <p className="text-[14px] font-bold leading-[150%]" style={{ color: "#17271F" }}>
+          <p className="text-[14px] font-bold leading-[150%]" style={{ color: "#1C1C1E" }}>
             If the pool doesn&apos;t fill by {new Date(Date.now() + minutesLeft * 60000).toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit", hour12: true })}, everyone gets refunded.
           </p>
         </div>
@@ -643,8 +643,8 @@ export default function ProductDetailPage() {
       {/* ── No pool: request one ── */}
       {!hasPoolPricing && (
         <div className="px-5 mt-5 p-4 rounded-[16px]" style={{ background: "var(--lime)" }}>
-          <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>No pool yet for this item</p>
-          <p className="text-[12px] mt-1" style={{ color: "#17271F", opacity: 0.7 }}>Request a pool and we&apos;ll notify {product.vendor.name} when enough people want it. Add to your plate in the meantime.</p>
+          <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E" }}>No pool yet for this item</p>
+          <p className="text-[12px] mt-1" style={{ color: "#1C1C1E", opacity: 0.7 }}>Request a pool and we&apos;ll notify {product.vendor.name} when enough people want it. Add to your plate in the meantime.</p>
         </div>
       )}
 
@@ -680,7 +680,7 @@ export default function ProductDetailPage() {
           {/* ── JOINED: preparing ── */}
           {joinedStatus === "preparing" && (
             <div className="text-center">
-              <p className="text-[14px] font-bold" style={{ color: "#17271F" }}>Pool filled! Preparing now...</p>
+              <p className="text-[14px] font-bold" style={{ color: "#1C1C1E" }}>Pool filled! Preparing now...</p>
               <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>{fp(joinedPrice || product.groupPrice)} paid · {product.vendor.name} is cooking</p>
               <p className="text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>We&apos;ll notify you when it&apos;s ready</p>
             </div>
@@ -706,7 +706,7 @@ export default function ProductDetailPage() {
               <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>{fp(joinedPrice || product.groupPrice)} paid · Saved {fp(product.retailPrice - product.groupPrice)}</p>
               <div className="flex gap-2 mt-3 justify-center">
                 <button className="h-[42px] px-5 rounded-full text-[13px] font-bold cursor-pointer press-feedback" style={{ background: "var(--coral)", color: "white" }}>Leave a Review</button>
-                <Link href="/discover" className="h-[42px] px-5 rounded-full text-[13px] font-bold inline-flex items-center press-feedback" style={{ background: "var(--sand)", color: "#17271F" }}>Reorder</Link>
+                <Link href="/discover" className="h-[42px] px-5 rounded-full text-[13px] font-bold inline-flex items-center press-feedback" style={{ background: "var(--sand)", color: "#1C1C1E" }}>Reorder</Link>
               </div>
             </div>
           )}
@@ -722,7 +722,7 @@ export default function ProductDetailPage() {
               </button>
               <button type="button" onClick={addSolo}
                 className="w-full h-[48px] rounded-full flex items-center justify-between px-6 mt-2 text-[14px] font-bold cursor-pointer press-feedback"
-                style={{ background: "var(--card)", color: "#17271F", border: "1px solid var(--border)" }}>
+                style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}>
                 <span>or order solo at {fp(product.retailPrice)}</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
               </button>
@@ -740,7 +740,7 @@ export default function ProductDetailPage() {
               </button>
               <button type="button" onClick={addSolo}
                 className="w-full h-[40px] rounded-full flex items-center justify-center text-[12px] font-bold mt-2 cursor-pointer press-feedback"
-                style={{ background: "var(--sand)", color: "#17271F" }}>
+                style={{ background: "var(--sand)", color: "#1C1C1E" }}>
                 Add to plate — {fp(product.retailPrice)}
               </button>
             </>

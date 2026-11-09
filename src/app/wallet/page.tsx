@@ -41,7 +41,7 @@ export default function WalletPage() {
         </button>
         <div className="text-center">
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Me · Wallet</p>
-          <p className="text-[14px] font-extrabold" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your next chop has backup</p>
+          <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your next chop has backup</p>
         </div>
         <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
@@ -50,8 +50,8 @@ export default function WalletPage() {
 
       {/* ── Balance card — dark ── */}
       <div className="px-5 mt-5">
-        <div className="rounded-[22px] p-5" style={{ background: "linear-gradient(135deg, #0B6623 0%, #064016 100%)" }}>
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--lime)" }}>Available store credit</p>
+        <div className="rounded-[22px] p-5" style={{ background: "#1C1C1E" }}>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Available store credit</p>
           <p className="text-[44px] font-extrabold tabular-nums leading-none mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "white" }}>{fp(balance)}</p>
           <p className="text-[13px] mt-2" style={{ color: "var(--subdued)" }}>Earned on campus. Spent on food.</p>
           <p className="text-[11px] mt-1" style={{ color: "var(--subdued)", opacity: 0.7 }}>Meal credit, not cash. Use it on ChopDrop meals.</p>
@@ -69,7 +69,7 @@ export default function WalletPage() {
         <div className="flex items-start gap-2.5 p-3.5 rounded-[14px]" style={{ background: "var(--emerald-soft)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" /></svg>
           <div>
-            <p className="text-[12px] font-bold" style={{ color: "#17271F" }}>Points ≠ credit</p>
+            <p className="text-[12px] font-bold" style={{ color: "#1C1C1E" }}>Points ≠ credit</p>
             <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>Points live in Fun rewards. Only converted rewards appear here as spendable naira credit.</p>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function WalletPage() {
       {/* ── Credit history ── */}
       <div className="px-5 mt-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Credit history</h2>
+          <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Credit history</h2>
           <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>All activity</span>
         </div>
 
@@ -91,10 +91,10 @@ export default function WalletPage() {
                   <HistoryIcon type={item.iconType} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-bold" style={{ color: "#17271F" }}>{item.label}</p>
+                  <p className="text-[13px] font-bold" style={{ color: "#1C1C1E" }}>{item.label}</p>
                   <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{item.date}</p>
                 </div>
-                <span className="text-[14px] font-extrabold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: item.positive ? "var(--emerald)" : "#17271F" }}>
+                <span className="text-[14px] font-extrabold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: item.positive ? "var(--emerald)" : "#1C1C1E" }}>
                   {item.positive ? "+" : ""}{fp(item.amount)}
                 </span>
               </div>
@@ -108,18 +108,18 @@ export default function WalletPage() {
         <div className="p-4 rounded-[22px] flex flex-col gap-2" style={{ background: "var(--card)" }}>
           <div className="flex justify-between text-[13px]" style={{ color: "var(--text-muted)" }}>
             <span>Opening balance · 30 Oct</span>
-            <span className="font-bold" style={{ color: "#17271F" }}>{fp(0)}</span>
+            <span className="font-bold" style={{ color: "#1C1C1E" }}>{fp(0)}</span>
           </div>
           <div className="flex justify-between text-[13px]" style={{ color: "var(--text-muted)" }}>
             <span>Credit earned</span>
-            <span className="font-bold" style={{ color: "#17271F" }}>{fp(earned)}</span>
+            <span className="font-bold" style={{ color: "#1C1C1E" }}>{fp(earned)}</span>
           </div>
           <div className="flex justify-between text-[13px]" style={{ color: "var(--text-muted)" }}>
             <span>Credit spent</span>
-            <span className="font-bold" style={{ color: "#17271F" }}>−{fp(spent)}</span>
+            <span className="font-bold" style={{ color: "#1C1C1E" }}>−{fp(spent)}</span>
           </div>
           <div className="h-px mt-1 mb-1" style={{ background: "var(--border)" }} />
-          <div className="flex justify-between text-[15px] font-extrabold" style={{ color: "#17271F" }}>
+          <div className="flex justify-between text-[15px] font-extrabold" style={{ color: "#1C1C1E" }}>
             <span>Available balance</span>
             <span className="tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(balance)}</span>
           </div>
@@ -131,7 +131,7 @@ export default function WalletPage() {
 
       {/* ── CTA ── */}
       <div className="px-5 mt-6 mb-4">
-        <Link href="/rewards" className="w-full h-[50px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold press-feedback" style={{ background: "var(--card)", color: "#17271F", border: "1px solid var(--border)" }}>
+        <Link href="/rewards" className="w-full h-[50px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold press-feedback" style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}>
           <span>Explore Fun rewards</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="8" width="18" height="13" rx="2" /><path d="M12 8V2M2 12h20M7 2h10" /></svg>
         </Link>

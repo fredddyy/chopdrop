@@ -43,7 +43,7 @@ export default function OrdersPage() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Student · Activity</p>
-            <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>My Activity</span>
+            <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>My Activity</span>
           </div>
         </div>
         <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
@@ -59,7 +59,7 @@ export default function OrdersPage() {
         ] as const).map(([key, label]) => (
           <button key={key} type="button" onClick={() => setTab(key as Tab)}
             className="flex-1 h-[40px] text-[13px] font-bold cursor-pointer rounded-full"
-            style={{ background: tab === key ? "#17271F" : "transparent", color: tab === key ? "white" : "var(--text-muted)" }}>
+            style={{ background: tab === key ? "#1C1C1E" : "transparent", color: tab === key ? "white" : "var(--text-muted)" }}>
             {label}
           </button>
         ))}
@@ -79,7 +79,7 @@ export default function OrdersPage() {
               <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
               </div>
-              <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>No active orders</h3>
+              <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>No active orders</h3>
               <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Join a pool or order solo — your active orders will appear here.</p>
               <Link href="/discover" className="h-[40px] px-5 rounded-full text-[13px] font-bold text-white inline-flex items-center mt-4 press-feedback" style={{ background: "var(--coral)" }}>Browse deals</Link>
             </div>
@@ -109,15 +109,15 @@ export default function OrdersPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>{pool.product.name}</h4>
+                        <h4 className="text-[17px] font-extrabold leading-[145%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{pool.product.name}</h4>
                         <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{pool.product.vendor?.name || "Restaurant"} · ★ 4.9</p>
-                        <p className="text-[20px] font-extrabold tabular-nums mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#17271F" }}>{fp(pool.product.groupPrice)}</p>
+                        <p className="text-[20px] font-extrabold tabular-nums mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "#1C1C1E" }}>{fp(pool.product.groupPrice)}</p>
                       </div>
                     </div>
                     {/* Filling progress */}
                     {pool.status === "OPEN" && (
                       <>
-                        <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#17271F" }}>
+                        <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#1C1C1E" }}>
                           <span>Filling — {pool.memberCount}/{pool.minSize}</span>
                           <span style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m left` : `${minsLeft}m left`}</span>
                         </div>
@@ -155,7 +155,7 @@ export default function OrdersPage() {
               <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-4" style={{ background: "var(--sand)" }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
               </div>
-              <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>No past orders yet</h3>
+              <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>No past orders yet</h3>
               <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Completed and refunded orders will show here.</p>
             </div>
           ) : (
@@ -172,8 +172,8 @@ export default function OrdersPage() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-[14px] font-bold truncate" style={{ color: "#17271F" }}>{pool.product.name}</h4>
-                      <p className="text-[13px] font-extrabold tabular-nums" style={{ color: "#17271F" }}>{fp(pool.product.groupPrice)}</p>
+                      <h4 className="text-[14px] font-bold truncate" style={{ color: "#1C1C1E" }}>{pool.product.name}</h4>
+                      <p className="text-[13px] font-extrabold tabular-nums" style={{ color: "#1C1C1E" }}>{fp(pool.product.groupPrice)}</p>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block" style={{
                         background: pool.status === "COMPLETED" ? "var(--emerald-soft)" : pool.status === "EXPIRED" ? "var(--coral-soft)" : "var(--sand)",
                         color: pool.status === "COMPLETED" ? "var(--emerald)" : pool.status === "EXPIRED" ? "var(--coral)" : "var(--text-muted)",

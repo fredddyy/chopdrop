@@ -2,25 +2,25 @@
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop v12 — Deep Green + Orange ── */
-  /* Trust green for actions, warm orange for prices. Clean white base. */
+  /* ── ChopDrop v13 — Coral Red + Charcoal ── */
+  /* One vibrant coral accent on clean white + charcoal. DoorDash energy. */
   --bg: #FFFFFF;
   --card: #FFFFFF;
   --border: #E5E7EB;
-  --coral: #0B6623;
-  --coral-soft: #E6F2EB;
-  --coral-track: #E6F2EB;
-  --coral-ink: #064016;
-  --coral-dark: #08521C;
-  --emerald: #16A34A;
-  --emerald-soft: #ECFDF5;
-  --lime: #ECFDF5;
-  --gold: #E8652B;
-  --dark: #1A1A1A;
-  --text: #1A1A1A;
+  --coral: #E84C3D;
+  --coral-soft: #FEF2F0;
+  --coral-track: #FEF2F0;
+  --coral-ink: #991B1B;
+  --coral-dark: #DC2626;
+  --emerald: #22C55E;
+  --emerald-soft: #F0FDF4;
+  --lime: #F0FDF4;
+  --gold: #E84C3D;
+  --dark: #1C1C1E;
+  --text: #1C1C1E;
   --text-secondary: #6B7280;
   --text-muted: #9CA3AF;
-  --sand: #F5F5F0;
+  --sand: #F8F8F6;
   --subdued: #9CA3AF;
 
   /* Legacy compat */
@@ -30,10 +30,10 @@
   --paper: var(--card);
   --line: var(--border);
   --green: var(--emerald);
-  --green-soft: #ECFDF5;
-  --lime: #ECFDF5;
+  --green-soft: #F0FDF4;
+  --lime: #F0FDF4;
   --amber: var(--gold);
-  --amber-soft: #FFF1E6;
+  --amber-soft: #FEF2F0;
   --red-soft: #FEF2F2;
   --background: var(--bg);
   --charcoal: var(--text);

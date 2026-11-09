@@ -52,7 +52,7 @@ function PoolImage({ src, alt }: { src: string | null; alt: string }) {
 }
 
 
-const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
+const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 const AREA_SUGGESTIONS = ["Victoria Island", "Lekki", "Ikeja", "Yaba", "Marina", "Surulere", "Ikoyi", "Ajah", "Gbagada", "Maryland", "Magodo", "Festac", "Apapa"];
 
 // Real pool state from API data
@@ -194,7 +194,7 @@ export default function DiscoverPage() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
             <div>
               <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Discover</p>
-              <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#17271F", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+              <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 Chop<span style={{ color: "var(--coral)" }}>Drop</span>
               </span>
             </div>
@@ -217,14 +217,14 @@ export default function DiscoverPage() {
             type="button"
             onClick={() => setAreaOpen(!areaOpen)}
             className="flex items-center gap-1.5 h-[30px] px-3.5 rounded-full text-[11px] font-bold cursor-pointer"
-            style={{ background: "#17271F", color: "white" }}
+            style={{ background: "#1C1C1E", color: "white" }}
           >
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" /></svg>
             {userArea || "UNILAG"} · {userAddress?.split(",")[0] || "Set location"}
           </button>
-          <Link href="/rewards" className="flex items-center gap-1 h-[30px] px-3 rounded-full text-[11px] font-bold" style={{ background: "#FFF1E6", color: "#E8652B" }}>
+          <Link href="/rewards" className="flex items-center gap-1 h-[30px] px-3 rounded-full text-[11px] font-bold" style={{ background: "#1C1C1E", color: "white" }}>
             280 pts
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E8652B" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" /><path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" /></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" /><path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" /></svg>
           </Link>
         </div>
 
@@ -283,7 +283,7 @@ export default function DiscoverPage() {
         <div>
           {/* ── Hero Greeting — Bricolage Grotesque, Figma specs ── */}
           <div className="px-5 pt-5 pb-2">
-            <h1 className="font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: "34px", lineHeight: "108%", letterSpacing: "-0.8px", color: "#17271F" }}>
+            <h1 className="font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: "34px", lineHeight: "108%", letterSpacing: "-0.8px", color: "#1C1C1E" }}>
               {activeCategory === "Food" ? "Oya, what\u2019s for lunch?" : activeCategory === "Electronics" ? "Oya, what\u2019s the gadget?" : activeCategory === "Fashion" ? "Oya, what\u2019s the drip?" : "Oya, what do you need?"}
             </h1>
             <p className="text-[13px] mt-1.5" style={{ color: "var(--text-muted)" }}>
@@ -302,7 +302,7 @@ export default function DiscoverPage() {
               <button
                 key={cat.key} type="button" onClick={() => setActiveCategory(cat.key)}
                 className="h-[34px] px-4 rounded-full text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5"
-                style={{ background: activeCategory === cat.key ? "#17271F" : "var(--sand)", color: activeCategory === cat.key ? "white" : "var(--text-secondary)", transition: "background 200ms, color 200ms" }}
+                style={{ background: activeCategory === cat.key ? "#1C1C1E" : "var(--sand)", color: activeCategory === cat.key ? "white" : "var(--text-secondary)", transition: "background 200ms, color 200ms" }}
               >{cat.icon}{cat.label}</button>
             ))}
           </div>
@@ -327,7 +327,7 @@ export default function DiscoverPage() {
           {/* ── Section header ── */}
           {sortedPools.length > 0 && (
             <div className="px-5 mt-5 mb-2 flex items-center justify-between">
-              <h3 className="text-[21px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Almost full. Don&apos;t dull.</h3>
+              <h3 className="text-[21px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Almost full. Don&apos;t dull.</h3>
               <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length} live</span>
             </div>
           )}
@@ -341,7 +341,7 @@ export default function DiscoverPage() {
               <Link
                 href={`/product/${featured.id}`}
                 className="mx-5 block rounded-[22px] overflow-hidden press-feedback card-enter card-enter-1"
-                style={{ background: "linear-gradient(135deg, #0B6623 0%, #064016 100%)" }}
+                style={{ background: "#1C1C1E" }}
               >
                 {/* Badges + Food image */}
                 <div className="relative">
@@ -351,11 +351,11 @@ export default function DiscoverPage() {
                   )}
                   <div className="absolute top-3 left-3 flex gap-2">
                     {isHot && (
-                      <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "var(--lime)", color: "#17271F", padding: "6px 10px" }}>
+                      <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "var(--lime)", color: "#1C1C1E", padding: "6px 10px" }}>
                         Only {featured.fill.spotsLeft} spot{featured.fill.spotsLeft !== 1 ? "s" : ""}
                       </span>
                     )}
-                    <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "#FFE9DD", color: "#17271F", padding: "6px 10px" }}>
+                    <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "#FFE9DD", color: "#1C1C1E", padding: "6px 10px" }}>
                       Save {sav}%
                     </span>
                   </div>
@@ -394,7 +394,7 @@ export default function DiscoverPage() {
                     <div className="flex items-center gap-2 mt-3">
                       <div className="flex -space-x-1.5">
                         {Array.from({ length: Math.min(featured.fill.joined, 3) }).map((_, i) => (
-                          <div key={i} className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length], border: "2px solid #17271F" }}>
+                          <div key={i} className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length], border: "2px solid #1C1C1E" }}>
                             {String.fromCharCode(65 + ((featured.id.charCodeAt(i) + i) % 26))}
                           </div>
                         ))}
@@ -411,7 +411,7 @@ export default function DiscoverPage() {
           {sortedPools.length > 1 && (
             <div className="mt-5">
               <div className="px-5 flex items-center justify-between mb-3">
-                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Filling fast</h3>
+                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Filling fast</h3>
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length - 1} more</span>
               </div>
               <div className="overflow-x-auto hide-scrollbar">
@@ -429,19 +429,19 @@ export default function DiscoverPage() {
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                         )}
                         <div className="absolute top-2.5 left-2.5">
-                          <span className="text-[9px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: p.fill.spotsLeft <= 2 ? "var(--coral)" : "var(--lime)", color: p.fill.spotsLeft <= 2 ? "white" : "#17271F" }}>
+                          <span className="text-[9px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: p.fill.spotsLeft <= 2 ? "var(--coral)" : "var(--lime)", color: p.fill.spotsLeft <= 2 ? "white" : "#1C1C1E" }}>
                             {p.fill.spotsLeft <= 2 ? `${p.fill.spotsLeft} left!` : `${p.fill.fillPct}% full`}
                           </span>
                         </div>
                       </div>
                       <div className="p-3">
-                        <h4 className="text-[14px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
+                        <h4 className="text-[14px] font-bold truncate" style={{ color: "#1C1C1E" }}>{p.name}</h4>
                         <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
                         <div className="flex items-baseline gap-1.5 mt-1.5">
                           <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fmt(p.groupPrice)}</span>
                           <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                         </div>
-                        <div className="flex items-center justify-between text-[11px] font-extrabold mt-2" style={{ color: "#17271F" }}>
+                        <div className="flex items-center justify-between text-[11px] font-extrabold mt-2" style={{ color: "#1C1C1E" }}>
                           <span>{p.fill.joined > 0 ? `${p.fill.joined}/${p.minPoolSize} in` : `${p.minPoolSize} spots`}</span>
                           <span style={{ color: "var(--gold)" }}>Save {Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100)}%</span>
                         </div>
@@ -469,10 +469,10 @@ export default function DiscoverPage() {
               className="w-full flex items-center gap-3 p-4 rounded-[16px] min-h-[56px] press-feedback cursor-pointer text-left"
               style={{ background: "var(--lime)" }}
             >
-              <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="#17271F" strokeWidth="1.4" strokeLinecap="round" className="shrink-0"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
+              <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="#1C1C1E" strokeWidth="1.4" strokeLinecap="round" className="shrink-0"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
               <div>
-                <p className="text-[14px] font-extrabold" style={{ color: "#17271F" }}>Craving something else?</p>
-                <p className="text-[12px] font-semibold" style={{ color: "#17271F", opacity: 0.7 }}>Tell us what {activeCategory.toLowerCase()} you want near you</p>
+                <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E" }}>Craving something else?</p>
+                <p className="text-[12px] font-semibold" style={{ color: "#1C1C1E", opacity: 0.7 }}>Tell us what {activeCategory.toLowerCase()} you want near you</p>
               </div>
             </button>
           </div>
@@ -481,7 +481,7 @@ export default function DiscoverPage() {
           {filteredStores.length > 0 && (
             <section className="mt-6">
               <div className="px-5 flex items-center justify-between mb-3">
-                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>
+                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>
                   {activeCategory === "Food" ? "Top kitchens" : "Top stores"}{userArea ? ` near ${userArea}` : ""}
                 </h3>
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{filteredStores.length} stores</span>
@@ -500,7 +500,7 @@ export default function DiscoverPage() {
                           </div>
                         )}
                       </div>
-                      <h4 className="text-[13px] font-bold mt-2 truncate" style={{ color: "#17271F" }}>{store.name}</h4>
+                      <h4 className="text-[13px] font-bold mt-2 truncate" style={{ color: "#1C1C1E" }}>{store.name}</h4>
                       <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate} · {store.orderCount}+ orders</p>
                       {store.bestSaving > 0 && (
                         <span className="text-[10px] font-bold inline-block mt-0.5" style={{ color: "var(--gold)" }}>Up to {store.bestSaving}% off</span>
@@ -516,7 +516,7 @@ export default function DiscoverPage() {
           {sortedPools.length > 8 && (
             <div className="px-5 mt-6">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>More deals</h3>
+                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>More deals</h3>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {sortedPools.slice(8).map((p) => (
@@ -528,7 +528,7 @@ export default function DiscoverPage() {
                       )}
                     </div>
                     <div className="p-2.5">
-                      <h4 className="text-[12px] font-bold truncate" style={{ color: "#17271F" }}>{p.name}</h4>
+                      <h4 className="text-[12px] font-bold truncate" style={{ color: "#1C1C1E" }}>{p.name}</h4>
                       <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
                       <div className="flex items-baseline gap-1.5 mt-1">
                         <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fmt(p.groupPrice)}</span>
