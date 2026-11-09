@@ -1058,6 +1058,21 @@ export default function ProductDetailPage() {
                   <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>{product.name}</span>
                   <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{fp(product.groupPrice)}</span>
                 </div>
+                {/* Quantity stepper */}
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Quantity</span>
+                  <div className="flex items-center gap-1">
+                    <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity"
+                      className="w-8 h-8 rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                    </button>
+                    <span className="w-8 text-center text-[15px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{quantity}</span>
+                    <button type="button" onClick={() => setQuantity(Math.min(product.maxQuantity || 10, quantity + 1))} aria-label="Increase quantity"
+                      className="w-8 h-8 rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--coral)" }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                    </button>
+                  </div>
+                </div>
                 {pool && memberCount > 0 && (
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Pool status</span>
@@ -1067,11 +1082,18 @@ export default function ProductDetailPage() {
                 <div className="h-px my-2" style={{ background: "var(--border)" }} />
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>You pay</span>
-                  <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(product.groupPrice)}</span>
+                  <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(product.groupPrice * quantity)}</span>
                 </div>
-                <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
-                  Solo price is {fp(product.retailPrice)} — you save {fp(savedAmount)}
-                </p>
+                {quantity > 1 && (
+                  <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
+                    {quantity} × {fp(product.groupPrice)} · Save {fp(savedAmount * quantity)} vs solo
+                  </p>
+                )}
+                {quantity === 1 && (
+                  <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
+                    Solo price is {fp(product.retailPrice)} — you save {fp(savedAmount)}
+                  </p>
+                )}
               </div>
 
               {/* Refund guarantee */}
@@ -1097,7 +1119,7 @@ export default function ProductDetailPage() {
                 className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-5 disabled:opacity-50"
                 style={{ background: "var(--coral)" }}
               >
-                {joining ? "Processing\u2026" : `Pay ${fp(product.groupPrice)}`}
+                {joining ? "Processing\u2026" : `Pay ${fp(product.groupPrice * quantity)}`}
               </button>
 
               <button type="button" onClick={() => setConfirmSheet(null)} className="w-full h-[44px] flex items-center justify-center text-[13px] font-bold press-feedback mt-2" style={{ color: "var(--text-muted)" }}>
