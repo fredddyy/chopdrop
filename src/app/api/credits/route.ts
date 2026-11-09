@@ -11,7 +11,7 @@ import { verify } from "jsonwebtoken";
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("auth-token")?.value;
+    const token = cookieStore.get("chopdrop-user-token")?.value;
     if (!token) {
       return NextResponse.json({ success: true, data: { balance: 0, transactions: [] } });
     }
