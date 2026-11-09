@@ -204,7 +204,7 @@ export default function OpsOverviewPage() {
   const week = metrics?.week;
 
   return (
-    <div className="max-w-5xl">
+    <div>
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>
