@@ -618,18 +618,54 @@ export default function ProductDetailPage() {
         {joinedStatus !== "expired" && (
         <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--dark)" }}>
           <div className="p-4">
-            {/* Progress text */}
-            <div className="flex items-center justify-between text-[12px] font-extrabold">
-              <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `0/${poolSize} plates claimed`}</span>
-              <span style={{ color: isPoolExpired ? "var(--coral)" : "var(--lime)" }}>{isPoolExpired ? "Expired" : `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left`}</span>
-            </div>
-            {/* Progress bar */}
-            <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
-              <div className="h-full" style={{ width: `${fillPct}%`, background: isPoolExpired ? "var(--coral)" : "var(--lime)", borderRadius: "9px" }} />
-            </div>
-            <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-              {isPoolExpired ? "This pool has expired." : memberCount === 0 ? "Be first to jump in." : spotsLeft === 1 ? "One more plate to unlock it." : `${spotsLeft} more to unlock it.`}
-            </h3>
+            {/* ── Active pool: show real countdown ── */}
+            {pool && !isPoolExpired && (
+              <>
+                <div className="flex items-center justify-between text-[12px] font-extrabold">
+                  <span className="text-white">{memberCount}/{poolSize} plates claimed</span>
+                  <span style={{ color: "var(--lime)" }}>{minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`}</span>
+                </div>
+                <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+                  <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
+                </div>
+                <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  {spotsLeft === 1 ? "One more plate to unlock it." : `${spotsLeft} more to unlock it.`}
+                </h3>
+              </>
+            )}
+            {/* ── Expired pool ── */}
+            {pool && isPoolExpired && (
+              <>
+                <div className="flex items-center justify-between text-[12px] font-extrabold">
+                  <span className="text-white">{memberCount}/{poolSize} plates claimed</span>
+                  <span style={{ color: "var(--coral)" }}>Expired</span>
+                </div>
+                <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+                  <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--coral)", borderRadius: "9px" }} />
+                </div>
+                <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  This pool has expired.
+                </h3>
+              </>
+            )}
+            {/* ── No pool yet: explain what happens when you start one ── */}
+            {!pool && (
+              <>
+                <div className="flex items-center justify-between text-[12px] font-extrabold">
+                  <span className="text-white">{poolSize} people needed</span>
+                  <span style={{ color: "var(--lime)" }}>6h window</span>
+                </div>
+                <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
+                  <div className="h-full" style={{ width: "0%", borderRadius: "9px" }} />
+                </div>
+                <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  Be the first to start it.
+                </h3>
+                <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>
+                  You pay now, then share. Pool runs for 6 hours. If it fills, food is made. If not, full refund.
+                </p>
+              </>
+            )}
             {/* Avatar social proof + join feed */}
             {pool && pool.memberCount >= 1 && (
               <div className="mt-3">
