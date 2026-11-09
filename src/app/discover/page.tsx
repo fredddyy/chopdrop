@@ -339,7 +339,8 @@ export default function DiscoverPage() {
 
           {/* ═══ FEATURED POOL CARD — dark hero, ChopChop style ═══ */}
           {sortedPools.length > 0 && (() => {
-            const featured = sortedPools[0];
+            const topDeals = sortedPools.slice(0, Math.min(3, sortedPools.length));
+            const featured = topDeals[Math.floor(Date.now() / 86400000) % topDeals.length];
             const sav = Math.round(((featured.retailPrice - featured.groupPrice) / featured.retailPrice) * 100);
             const isHot = featured.fill.spotsLeft <= 3;
             return (
