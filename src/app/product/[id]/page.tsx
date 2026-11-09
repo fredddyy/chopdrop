@@ -612,7 +612,9 @@ export default function ProductDetailPage() {
             </p>
           </div>
         )}
-        <div className="rounded-[22px] overflow-hidden" style={{ background: "#1C1C1E" }}>
+        {/* Hide dark card when user already joined + expired (they see refund CTA instead) */}
+        {joinedStatus !== "expired" && (
+        <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--dark)" }}>
           <div className="p-4">
             {/* Progress text */}
             <div className="flex items-center justify-between text-[12px] font-extrabold">
@@ -650,6 +652,7 @@ export default function ProductDetailPage() {
             )}
           </div>
         </div>
+        )}
       </div>
 
       {/* ── Pickup location ── */}
