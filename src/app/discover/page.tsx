@@ -74,6 +74,8 @@ export default function DiscoverPage() {
   const [areaOpen, setAreaOpen] = useState(false);
   const [areaInput, setAreaInput] = useState("");
   const [locating, setLocating] = useState(false);
+  const [userLat, setUserLat] = useState(0);
+  const [userLng, setUserLng] = useState(0);
   const cart = useCart();
 
   // Read profile on mount
@@ -85,6 +87,8 @@ export default function DiscoverPage() {
         if (p.areaName) setUserArea(p.areaName);
         if (p.deliveryAddress) setUserAddress(p.deliveryAddress);
         if (p.name) setUserName(p.name);
+        if (p.latitude) setUserLat(p.latitude);
+        if (p.longitude) setUserLng(p.longitude);
       }
     } catch {}
   }, []);
@@ -134,14 +138,14 @@ export default function DiscoverPage() {
     const ctrl = new AbortController();
     fetchData(ctrl.signal);
     return () => ctrl.abort();
-  }, [activeCategory]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeCategory, userLat, userLng]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchData(signal?: AbortSignal) {
     setLoading(true);
     setError(false);
     try {
       const [storesResult, productsResult] = await Promise.allSettled([
-        fetch(`/api/stores?category=${activeCategory}`, { signal }).then((r) => r.json()),
+        fetch(`/api/stores?category=${activeCategory}${userLat ? `&lat=${userLat}&lng=${userLng}` : ""}`, { signal }).then((r) => r.json()),
         fetch(`/api/products?category=${activeCategory}&limit=20`, { signal }).then((r) => r.json()),
       ]);
       if (storesResult.status === "fulfilled" && storesResult.value.success) {

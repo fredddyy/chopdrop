@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { haversineKm } from "@/lib/delivery-fee";
 
-// GET /api/stores?category=Food
+// GET /api/stores?category=Food&lat=6.5&lng=3.3
 export async function GET(request: NextRequest) {
   const category = request.nextUrl.searchParams.get("category") || undefined;
+  const userLat = parseFloat(request.nextUrl.searchParams.get("lat") || "0");
+  const userLng = parseFloat(request.nextUrl.searchParams.get("lng") || "0");
+  const hasLocation = userLat !== 0 && userLng !== 0;
 
   // Include stores that have products OR meals (old restaurants have meals only)
   const where: Record<string, unknown> = {
@@ -36,6 +40,8 @@ export async function GET(request: NextRequest) {
       imageUrl: true,
       bannerUrl: true,
       sortOrder: true,
+      latitude: true,
+      longitude: true,
       products: {
         where: { isActive: true },
         orderBy: { sortOrder: "asc" },
@@ -120,6 +126,12 @@ export async function GET(request: NextRequest) {
     const ratingBase = [0, 4.8, 4.5, 4.9, 4.3, 4.7][s.sortOrder % 6] || 4.5;
     const orderBase = [0, 124, 89, 203, 47, 156][s.sortOrder % 6] || 50;
 
+    // Distance from user
+    const distanceKm = hasLocation && s.latitude && s.longitude
+      ? haversineKm(s.latitude, s.longitude, userLat, userLng)
+      : null;
+    const walkMinutes = distanceKm !== null ? Math.round(distanceKm * 12) : null; // ~5km/h walking
+
     return {
       id: s.id,
       name: s.name,
@@ -134,11 +146,18 @@ export async function GET(request: NextRequest) {
       lowestGroupPrice,
       bestDealName: bestDeal?.name ?? null,
       topItems,
-      deliveryEstimate: [null, "20–35 min", "25–40 min", "30–45 min", "35–50 min"][s.sortOrder % 5] || "30–45 min",
+      distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
+      walkMinutes,
+      deliveryEstimate: walkMinutes !== null ? `${walkMinutes} min walk` : ([null, "20–35 min", "25–40 min", "30–45 min", "35–50 min"][s.sortOrder % 5] || "30–45 min"),
       rating: ratingBase,
       orderCount: orderBase,
     };
   });
+
+  // Sort by distance if user has location, otherwise by sortOrder
+  if (hasLocation) {
+    data.sort((a, b) => (a.distanceKm ?? 999) - (b.distanceKm ?? 999));
+  }
 
   const allCategories = await prisma.product.findMany({
     where: { isActive: true },
