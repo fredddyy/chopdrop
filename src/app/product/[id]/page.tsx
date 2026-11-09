@@ -56,6 +56,7 @@ export default function ProductDetailPage() {
   const [userName, setUserName] = useState("");
   const [expiredPoolId, setExpiredPoolId] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [poolTimerHours, setPoolTimerHours] = useState(2);
   const cart = useCart();
 
   // Read user coordinates + joined pool status from localStorage
@@ -109,12 +110,16 @@ export default function ProductDetailPage() {
     setLoading(true);
     setError(false);
 
-    // Fetch product + active pools + user's memberships in parallel
+    // Fetch product + active pools + user's memberships + pool timer in parallel
     Promise.allSettled([
       fetch(`/api/products/${id}`, { signal: ctrl.signal }).then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); }),
       fetch(`/api/pools?productId=${id}`, { signal: ctrl.signal }).then(r => r.ok ? r.json() : null),
       fetch(`/api/pools?mine=true`, { signal: ctrl.signal }).then(r => r.ok ? r.json() : null),
-    ]).then(([productResult, poolsResult, myPoolsResult]) => {
+      fetch(`/api/settings/pool-timer`, { signal: ctrl.signal }).then(r => r.ok ? r.json() : null),
+    ]).then(([productResult, poolsResult, myPoolsResult, timerResult]) => {
+      if (timerResult.status === "fulfilled" && timerResult.value?.success) {
+        setPoolTimerHours(timerResult.value.data.hours);
+      }
       if (productResult.status === "fulfilled" && productResult.value.success) {
         setProduct(productResult.value.data);
       } else if (productResult.status === "rejected" && (productResult.reason as Error).name !== "AbortError") {
@@ -663,10 +668,10 @@ export default function ProductDetailPage() {
                     {poolSize > 5 && <span className="text-[11px]" style={{ color: "var(--subdued)" }}>+{poolSize - 5}</span>}
                   </div>
                   <h3 className="text-[18px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                    {poolSize} people, one pool.
+                    {poolSize} people, {poolTimerHours}h window.
                   </h3>
-                  <p className="text-[12px] mt-1.5 leading-[150%] max-w-[260px] mx-auto" style={{ color: "var(--subdued)" }}>
-                    Start it, share the link, and wait for {poolSize} people to join. Everyone eats at the pool price. Doesn&apos;t fill? Full refund.
+                  <p className="text-[12px] mt-1.5 leading-[150%] max-w-[280px] mx-auto" style={{ color: "var(--subdued)" }}>
+                    Start it, share the link. Pool runs for {poolTimerHours} hour{poolTimerHours !== 1 ? "s" : ""}. If {poolSize} people join, everyone eats at the pool price. Doesn&apos;t fill? Full refund.
                   </p>
                 </div>
               </>
