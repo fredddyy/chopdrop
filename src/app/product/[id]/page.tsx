@@ -655,17 +655,13 @@ export default function ProductDetailPage() {
         )}
       </div>
 
-      {/* ── Pickup location ── */}
-      <div className="px-5 mt-4 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+      {/* Pickup location — show vendor address when available */}
+      {product.vendor.address && (
+        <div className="px-5 mt-4 flex items-center gap-3">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+          <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Pickup at {product.vendor.name} · {product.vendor.address}</p>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[15px] font-bold" style={{ color: "#1C1C1E" }}>Pickup location</p>
-          <p className="text-[12px]" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>Pickup nearby · Not delivery</p>
-        </div>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-      </div>
+      )}
 
       {/* ── Refund deadline (joined only) ── */}
       {joinedStatus === "filling" && hasPoolPricing && (
