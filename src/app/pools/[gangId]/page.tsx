@@ -2,11 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 
-const AVATAR_COLORS = ["#17271F", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
+function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
-type Tab = "pools" | "members" | "activity";
+const AVATAR_COLORS = ["#1C1C1E", "#E84C3D", "#22C55E", "#D4A43A", "#6366F1"];
+
+type Tab = "orders" | "members" | "activity";
+
+interface GroupOrder {
+  id: string;
+  restaurantName: string;
+  status: string;
+  deadline: string;
+  memberCount: number;
+  deliveryAddress: string;
+  deliveryFee: number;
+  inviteCode: string;
+}
 
 interface GangData {
   id: string;
@@ -22,14 +36,19 @@ export default function GangDetailPage() {
   const { gangId } = useParams<{ gangId: string }>();
   const router = useRouter();
   const [gang, setGang] = useState<GangData | null>(null);
+  const [groupOrders, setGroupOrders] = useState<GroupOrder[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<Tab>("activity");
+  const [tab, setTab] = useState<Tab>("orders");
 
   useEffect(() => {
-    fetch(`/api/gangs/${gangId}`)
-      .then((r) => r.json())
-      .then((d) => { if (d.success) setGang(d.data); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch(`/api/gangs/${gangId}`).then((r) => r.json()),
+      fetch(`/api/group-orders?gangId=${gangId}`).then((r) => r.ok ? r.json() : { success: false }),
+    ]).then(([gangData, ordersData]) => {
+      if (gangData.success) setGang(gangData.data);
+      if (ordersData.success) setGroupOrders(ordersData.data || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, [gangId]);
 
   if (loading) {
@@ -156,11 +175,11 @@ export default function GangDetailPage() {
 
       {/* ── Tabs ── */}
       <div className="px-5 mt-5 flex">
-        {(["pools", "members", "activity"] as Tab[]).map((t) => (
+        {(["orders", "members", "activity"] as Tab[]).map((t) => (
           <button key={t} type="button" onClick={() => setTab(t)}
             className="flex-1 h-[40px] text-[13px] font-bold cursor-pointer rounded-full"
-            style={{ background: tab === t ? "#17271F" : "transparent", color: tab === t ? "white" : "var(--text-muted)" }}>
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+            style={{ background: tab === t ? "#1C1C1E" : "transparent", color: tab === t ? "white" : "var(--text-muted)" }}>
+            {t === "orders" ? "Orders" : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -169,9 +188,9 @@ export default function GangDetailPage() {
       {tab === "activity" && (
         <>
           <div className="px-5 mt-4">
-            <div className="p-4 rounded-[22px]" style={{ background: "var(--lime)" }}>
-              <p className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#17271F" }}>Good food travels fast.</p>
-              <p className="text-[12px] mt-0.5" style={{ color: "#17271F", opacity: 0.6 }}>{gang.members.length} member{gang.members.length !== 1 ? "s" : ""} in this gang</p>
+            <div className="p-4 rounded-[22px]" style={{ background: "#1C1C1E" }}>
+              <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Good food travels fast.</p>
+              <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{gang.members.length} member{gang.members.length !== 1 ? "s" : ""} · {groupOrders.filter(o => o.status === "OPEN").length} active order{groupOrders.filter(o => o.status === "OPEN").length !== 1 ? "s" : ""}</p>
             </div>
           </div>
 
@@ -208,11 +227,52 @@ export default function GangDetailPage() {
         </>
       )}
 
-      {/* ── Pools tab ── */}
-      {tab === "pools" && (
-        <div className="px-5 mt-8 text-center">
-          <p className="text-[14px]" style={{ color: "var(--text-muted)" }}>No active gang pools. Start one from a vendor page.</p>
-          <a href="/discover" className="mt-3 text-[13px] font-bold inline-block" style={{ color: "var(--coral)" }}>Browse deals →</a>
+      {/* ── Orders tab — group orders + pool deals ── */}
+      {tab === "orders" && (
+        <div className="px-5 mt-4">
+          {/* Start group order CTA */}
+          <Link href={`/group/create?gang=${gangId}`}
+            className="flex items-center gap-3 p-4 rounded-[22px] press-feedback mb-4" style={{ background: "#1C1C1E" }}>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral)" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+            </div>
+            <div>
+              <p className="text-[14px] font-bold text-white">Order together</p>
+              <p className="text-[11px]" style={{ color: "var(--subdued)" }}>Pick a restaurant, everyone adds their items, split delivery</p>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" className="shrink-0 ml-auto"><path d="m9 18 6-6-6-6" /></svg>
+          </Link>
+
+          {/* Active group orders */}
+          {groupOrders.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Active orders</h3>
+              {groupOrders.map((order) => {
+                const minsLeft = Math.max(0, Math.round((new Date(order.deadline).getTime() - Date.now()) / 60000));
+                const isOpen = order.status === "OPEN";
+                return (
+                  <Link key={order.id} href={`/group/${order.inviteCode}`} className="p-4 rounded-[22px] press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: isOpen ? "#FEF2F0" : "var(--sand)", color: isOpen ? "var(--coral)" : "var(--text-muted)" }}>
+                        {isOpen ? "Open · Ordering" : order.status}
+                      </span>
+                      {isOpen && <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft}m left`}</span>}
+                    </div>
+                    <h4 className="text-[15px] font-bold" style={{ color: "#1C1C1E" }}>{order.restaurantName}</h4>
+                    <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{order.memberCount} people · {order.deliveryAddress}</p>
+                    {order.deliveryFee > 0 && (
+                      <p className="text-[11px] mt-1" style={{ color: "var(--emerald)" }}>Delivery {fp(order.deliveryFee)} split {order.memberCount} ways = {fp(Math.round(order.deliveryFee / Math.max(1, order.memberCount)))} each</p>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No active group orders. Start one above — your gang will be notified.</p>
+              <Link href="/discover" className="mt-3 text-[13px] font-bold inline-block" style={{ color: "var(--coral)" }}>Or browse pool deals →</Link>
+            </div>
+          )}
         </div>
       )}
 
