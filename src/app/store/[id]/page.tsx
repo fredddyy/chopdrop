@@ -207,9 +207,14 @@ export default function StorePage() {
 
       {/* ── Vendor profile ── */}
       <div className="px-5 mt-5 flex items-center gap-4">
-        <div className="w-14 h-14 rounded-full flex items-center justify-center text-[18px] font-extrabold shrink-0" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>
-          {store.name.split(" ").map((w) => w[0]).join("").slice(0, 2)}
-        </div>
+        {store.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={store.imageUrl} alt={store.name} className="w-14 h-14 rounded-full object-cover shrink-0" />
+        ) : (
+          <div className="w-14 h-14 rounded-full flex items-center justify-center text-[18px] font-extrabold shrink-0" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>
+            {store.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2)}
+          </div>
+        )}
         <div>
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{store.name}</h1>
           <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
