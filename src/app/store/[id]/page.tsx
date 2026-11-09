@@ -156,7 +156,7 @@ export default function StorePage() {
   }
 
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+    <main className="flex-1 max-w-[480px] mx-auto w-full pb-40" style={{ background: "var(--bg)" }}>
 
       {/* ── Header ── */}
       <div className="px-5 pt-4 flex items-center justify-between">

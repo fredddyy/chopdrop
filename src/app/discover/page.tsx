@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/bottom-nav";
 interface Store {
   id: string;
   name: string;
+  imageUrl: string | null;
   heroImage: string | null;
   productCount: number;
   topItems: string[];
@@ -495,9 +496,9 @@ export default function DiscoverPage() {
                   {filteredStores.map((store, idx) => (
                     <Link key={store.id} href={`/store/${store.id}`} className={`shrink-0 w-[160px] press-feedback card-enter card-enter-${(idx % 8) + 1}`} style={{ scrollSnapAlign: "start" }}>
                       <div className="w-[160px] h-[160px] rounded-[18px] overflow-hidden" style={{ background: "var(--sand)" }}>
-                        {store.heroImage ? (
+                        {(store.imageUrl || store.heroImage) ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={store.heroImage} alt={store.name} className="w-full h-full object-cover" loading="lazy" />
+                          <img src={store.imageUrl || store.heroImage || ""} alt={store.name} className="w-full h-full object-cover" loading="lazy" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
@@ -538,7 +539,7 @@ export default function DiscoverPage() {
                         <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fmt(p.groupPrice)}</span>
                         <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                       </div>
-                      <p className="text-[10px] font-bold mt-1" style={{ color: "var(--text-muted)" }}>{p.fill.spotsLeft} spot{p.fill.spotsLeft !== 1 ? "s" : ""} left · {p.minPoolSize} needed</p>
+                      <p className="text-[10px] font-bold mt-1" style={{ color: "var(--text-muted)" }}>{p.fill.joined > 0 ? `${p.fill.joined} joined · ${p.fill.spotsLeft} left` : `${p.minPoolSize} people needed`}</p>
                     </div>
                   </Link>
                 ))}
