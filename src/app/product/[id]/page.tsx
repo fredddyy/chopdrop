@@ -372,7 +372,8 @@ export default function ProductDetailPage() {
   // Show pool variant when product has group pricing, even without a real Pool record
   const hasPoolPricing = savings > 0;
   const fillPct = pool ? Math.round((pool.memberCount / pool.minSize) * 100) : 0;
-  const minutesLeft = pool ? Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 60000)) : 180;
+  const minutesLeft = pool ? Math.max(0, Math.round((new Date(pool.deadline).getTime() - Date.now()) / 60000)) : 0;
+  const isPoolExpired = pool ? minutesLeft <= 0 : false;
   const memberCount = pool ? pool.memberCount : 0;
   const poolSize = pool ? pool.minSize : product.minPoolSize;
   const spotsLeft = poolSize - memberCount;
@@ -616,14 +617,14 @@ export default function ProductDetailPage() {
             {/* Progress text */}
             <div className="flex items-center justify-between text-[12px] font-extrabold">
               <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `0/${poolSize} plates claimed`}</span>
-              <span style={{ color: "var(--lime)" }}>{timeLeft > 0 ? `${Math.floor(timeLeft / 60)}h ${String(timeLeft % 60).padStart(2, "0")}m left` : "Expired"}</span>
+              <span style={{ color: isPoolExpired ? "var(--coral)" : "var(--lime)" }}>{isPoolExpired ? "Expired" : `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left`}</span>
             </div>
             {/* Progress bar */}
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
-              <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
+              <div className="h-full" style={{ width: `${fillPct}%`, background: isPoolExpired ? "var(--coral)" : "var(--lime)", borderRadius: "9px" }} />
             </div>
             <h3 className="text-[18px] font-extrabold text-white mt-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-              {memberCount === 0 ? "Be first to jump in." : spotsLeft === 1 ? "One more plate to unlock it." : `${spotsLeft} more to unlock it.`}
+              {isPoolExpired ? "This pool has expired." : memberCount === 0 ? "Be first to jump in." : spotsLeft === 1 ? "One more plate to unlock it." : `${spotsLeft} more to unlock it.`}
             </h3>
             {/* Avatar social proof + join feed */}
             {pool && pool.memberCount >= 1 && (
@@ -837,23 +838,29 @@ export default function ProductDetailPage() {
           {!joinedStatus && hasPoolPricing && (
             <>
               {/* Pool status scoreboard — visible at decision point */}
-              {pool && memberCount > 0 && (
+              {pool && !isPoolExpired && memberCount > 0 && (
                 <div className="flex items-center justify-between mb-2 text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>
                   <span style={{ color: "var(--emerald)" }}>{memberCount}/{poolSize} joined</span>
                   <span>{minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`}</span>
                 </div>
               )}
+              {/* Expired pool notice */}
+              {isPoolExpired && (
+                <p className="text-[11px] font-bold mb-2 text-center" style={{ color: "var(--coral)" }}>
+                  Previous pool expired. Start a fresh one below.
+                </p>
+              )}
               {/* Pool confidence — reduce risk for first-timers */}
-              {!pool && (
+              {!pool && !isPoolExpired && (
                 <p className="text-[11px] font-bold mb-2 text-center" style={{ color: "var(--emerald)" }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="inline -mt-px mr-1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
                   {poolSize <= 5 ? `Only ${poolSize} people needed. Pools this size usually fill fast.` : `${poolSize} people needed. Start it and share to your gang.`}
                 </p>
               )}
-              <button type="button" onClick={() => setConfirmSheet(pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
+              <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
                 className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
                 style={{ background: "var(--coral)" }}>
-                <span>{joining ? "Joining\u2026" : pool ? `Join Pool \u2014 ${fp(product.groupPrice)}` : `Start Pool \u2014 ${fp(product.groupPrice)}`}</span>
+                <span>{joining ? "Joining\u2026" : isPoolExpired ? `Start New Pool \u2014 ${fp(product.groupPrice)}` : pool ? `Join Pool \u2014 ${fp(product.groupPrice)}` : `Start Pool \u2014 ${fp(product.groupPrice)}`}</span>
                 <span className="text-[12px] font-bold opacity-80">Save {savings}%</span>
               </button>
               {/* Pre-payment share — Pinduoduo viral loop */}
