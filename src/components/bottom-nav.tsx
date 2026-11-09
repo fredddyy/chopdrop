@@ -19,7 +19,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden" style={{ background: "rgba(255,249,241,0.95)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden" style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
       <div className="max-w-lg mx-auto grid grid-cols-5 py-2 px-4">
         {links.map((link) => {
           const active = link.match

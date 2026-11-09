@@ -2,26 +2,26 @@
 @import "tailwindcss";
 
 :root {
-  /* ── ChopDrop v10 — Premium social commerce ── */
-  /* Warm cream + deep terracotta + forest. Restrained, editorial, trustworthy. */
-  --bg: #FFF9F1;
+  /* ── ChopDrop v12 — Deep Green + Orange ── */
+  /* Trust green for actions, warm orange for prices. Clean white base. */
+  --bg: #FFFFFF;
   --card: #FFFFFF;
-  --border: #E8E2D8;
-  --coral: #C4572A;
-  --coral-soft: #FAE8E0;
-  --coral-track: #FAE8E0;
-  --coral-ink: #7A3218;
-  --coral-dark: #A8471F;
-  --emerald: #2D6B4F;
-  --emerald-soft: #EAF0E8;
-  --lime: #D4DFC7;
-  --gold: #E8C065;
-  --dark: #1A2B21;
-  --text: #1A2B21;
-  --text-secondary: #6B756B;
-  --text-muted: #818A81;
-  --sand: #F0EADc;
-  --subdued: #A8B5A7;
+  --border: #E5E7EB;
+  --coral: #0B6623;
+  --coral-soft: #E6F2EB;
+  --coral-track: #E6F2EB;
+  --coral-ink: #064016;
+  --coral-dark: #08521C;
+  --emerald: #16A34A;
+  --emerald-soft: #ECFDF5;
+  --lime: #ECFDF5;
+  --gold: #E8652B;
+  --dark: #1A1A1A;
+  --text: #1A1A1A;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --sand: #F5F5F0;
+  --subdued: #9CA3AF;
 
   /* Legacy compat */
   --ink: var(--text);
@@ -30,11 +30,11 @@
   --paper: var(--card);
   --line: var(--border);
   --green: var(--emerald);
-  --green-soft: #E8F1E7;
-  --lime: #D4DFC7;
+  --green-soft: #ECFDF5;
+  --lime: #ECFDF5;
   --amber: var(--gold);
-  --amber-soft: #fff1c9;
-  --red-soft: #fee7e1;
+  --amber-soft: #FFF1E6;
+  --red-soft: #FEF2F2;
   --background: var(--bg);
   --charcoal: var(--text);
   --secondary: var(--text-secondary);
