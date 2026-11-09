@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     );
 
   const body = await request.json();
-  const { name, emoji, motto, campus, whatsappLink } = body;
+  const { name, emoji, motto, campus, deliveryAddress, whatsappLink } = body;
 
   if (!name || typeof name !== "string" || name.trim().length === 0) {
     return NextResponse.json(
@@ -96,6 +96,7 @@ export async function POST(request: NextRequest) {
         emoji: emoji || "🍛",
         motto: motto || null,
         campus: campus || null,
+        deliveryAddress: deliveryAddress || null,
         whatsappLink: whatsappLink || null,
         creatorId: user.id,
         inviteCode,

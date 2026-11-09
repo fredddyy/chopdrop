@@ -12,6 +12,7 @@ export default function CreateGangPage() {
   const [gangName, setGangName] = useState("");
   const [motto, setMotto] = useState("");
   const [campus, setCampus] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [waLink, setWaLink] = useState("");
 
   return (
@@ -113,6 +114,20 @@ export default function CreateGangPage() {
           </div>
         </div>
 
+        {/* ── Delivery address ── */}
+        <div className="mt-5">
+          <label className="text-[12px] font-bold block mb-1.5" style={{ color: "#17271F" }}>Delivery address</label>
+          <input
+            type="text"
+            value={deliveryAddress}
+            onChange={(e) => setDeliveryAddress(e.target.value)}
+            placeholder="e.g. 14 Mobolaji Bank-Anthony Way, Ikeja"
+            className="w-full h-[48px] px-4 rounded-[12px] text-[14px] font-medium outline-none"
+            style={{ background: "var(--card)", color: "#17271F", border: "1px solid var(--border)" }}
+          />
+          <p className="text-[11px] mt-1.5" style={{ color: "var(--text-muted)" }}>Where food gets delivered. Pre-fills for every group order.</p>
+        </div>
+
         {/* ── WhatsApp group ── */}
         <div className="mt-5">
           <div className="p-4 rounded-[22px]" style={{ background: "var(--emerald-soft)" }}>
@@ -154,7 +169,7 @@ export default function CreateGangPage() {
               const res = await fetch("/api/gangs", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: gangName.trim(), emoji: EMOJIS[selectedEmoji], motto: motto.trim() || undefined, campus: campus || undefined, whatsappLink: waLink.trim() || undefined }),
+                body: JSON.stringify({ name: gangName.trim(), emoji: EMOJIS[selectedEmoji], motto: motto.trim() || undefined, campus: campus || undefined, deliveryAddress: deliveryAddress.trim() || undefined, whatsappLink: waLink.trim() || undefined }),
               });
               const data = await res.json();
               if (data.success) { router.push(`/pools/${data.data.id}`); }

@@ -555,16 +555,17 @@ enum DealStatus {
 // ═══════════════════════════════════════
 
 model Gang {
-  id           String   @id @default(cuid())
-  name         String
-  emoji        String   @default("🍛")
-  motto        String?
-  campus       String?
-  whatsappLink String?
-  creatorId    String
-  inviteCode   String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String   @id @default(cuid())
+  name            String
+  emoji           String   @default("🍛")
+  motto           String?
+  campus          String?
+  deliveryAddress String?
+  whatsappLink    String?
+  creatorId       String
+  inviteCode      String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   creator     User         @relation("GangCreator", fields: [creatorId], references: [id])
   members     GangMember[]

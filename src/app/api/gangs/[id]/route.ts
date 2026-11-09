@@ -52,6 +52,7 @@ export async function GET(
       emoji: gang.emoji,
       motto: gang.motto,
       campus: gang.campus,
+      deliveryAddress: gang.deliveryAddress,
       whatsappLink: gang.whatsappLink,
       inviteCode: gang.inviteCode,
       creatorName: gang.creator.firstName,
