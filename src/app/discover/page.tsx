@@ -29,7 +29,7 @@ interface PoolProduct {
   groupPrice: number;
   minPoolSize: number;
   poolMemberCount: number;
-  vendor: { name: string };
+  vendor: { name: string; imageUrl?: string | null };
 }
 
 function fmt(kobo: number): string {
@@ -389,7 +389,15 @@ export default function DiscoverPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h4 className="text-[23px] font-extrabold leading-[145%] text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{featured.name}</h4>
-                      <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{featured.vendor.name} · <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" className="inline-block -mt-px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> 4.9</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        {featured.vendor.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={featured.vendor.imageUrl} alt="" className="w-[16px] h-[16px] rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="w-[16px] h-[16px] rounded-full shrink-0 flex items-center justify-center text-[8px] font-bold text-white" style={{ background: "var(--coral)" }}>{featured.vendor.name.charAt(0)}</div>
+                        )}
+                        <p className="text-[12px]" style={{ color: "var(--subdued)" }}>{featured.vendor.name}</p>
+                      </div>
                     </div>
                     <div className="text-right shrink-0">
                       <span className="text-[32px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--gold)" }}>{fmt(featured.groupPrice)}</span>
@@ -460,7 +468,15 @@ export default function DiscoverPage() {
                       </div>
                       <div className="p-3">
                         <h4 className="text-[14px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                        <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          {p.vendor.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={p.vendor.imageUrl} alt="" className="w-[14px] h-[14px] rounded-full object-cover shrink-0" />
+                          ) : (
+                            <div className="w-[14px] h-[14px] rounded-full shrink-0 flex items-center justify-center text-[7px] font-bold text-white" style={{ background: "var(--text-muted)" }}>{p.vendor.name.charAt(0)}</div>
+                          )}
+                          <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                        </div>
                         <div className="flex items-baseline gap-1.5 mt-1.5">
                           <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fmt(p.groupPrice)}</span>
                           <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
@@ -553,7 +569,15 @@ export default function DiscoverPage() {
                     </div>
                     <div className="p-2.5">
                       <h4 className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</h4>
-                      <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        {p.vendor.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.vendor.imageUrl} alt="" className="w-[12px] h-[12px] rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="w-[12px] h-[12px] rounded-full shrink-0 flex items-center justify-center text-[6px] font-bold text-white" style={{ background: "var(--text-muted)" }}>{p.vendor.name.charAt(0)}</div>
+                        )}
+                        <p className="text-[10px] truncate" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                      </div>
                       <div className="flex items-baseline gap-1.5 mt-1">
                         <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fmt(p.groupPrice)}</span>
                         <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
