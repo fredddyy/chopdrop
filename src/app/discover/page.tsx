@@ -242,7 +242,7 @@ export default function DiscoverPage() {
             {userArea || "Your area"} · {userAddress?.split(",")[0] || "Set location"}
           </button>
           <Link href="/rewards" aria-label="Rewards" className="flex items-center gap-1 h-[30px] px-3 rounded-full text-[11px] font-bold" style={{ background: "var(--dark)", color: "white" }}>
-            {creditBalance > 0 ? fmt(creditBalance) : "Rewards"}
+            {fmt(creditBalance)}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" /><path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" /></svg>
           </Link>
         </div>
