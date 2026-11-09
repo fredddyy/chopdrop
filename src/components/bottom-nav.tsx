@@ -19,11 +19,14 @@ export function BottomNav() {
   ];
 
   const isCartPage = pathname === "/cart";
+  const isProductPage = pathname.startsWith("/product/");
+  const isStorePage = pathname.startsWith("/store/");
+  const hideCartBar = isCartPage || isProductPage || isStorePage;
 
   return (
     <>
-      {/* Floating cart bar — shows on all pages when cart has items */}
-      {cart.totalItems > 0 && !isCartPage && (
+      {/* Floating cart bar — hidden on pages with their own sticky CTA */}
+      {cart.totalItems > 0 && !hideCartBar && (
         <Link href="/cart" className="fixed bottom-[60px] left-4 right-4 z-50 md:hidden max-w-[480px] mx-auto">
           <div className="h-[48px] rounded-full flex items-center justify-between px-5 press-feedback" style={{ background: "#1C1C1E" }}>
             <div className="flex items-center gap-2">
