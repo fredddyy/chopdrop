@@ -47,12 +47,14 @@ export default function ProductDetailPage() {
   const [deliveryEstimate, setDeliveryEstimate] = useState<{ fullFee: number; subsidizedFee: number; distanceKm: number; walkMinutes: number } | null>(null);
   const [estimateLoading, setEstimateLoading] = useState(false);
   // Joined pool state: null = not joined, or status string
-  const [joinedStatus, setJoinedStatus] = useState<"filling" | "preparing" | "ready" | "collected" | null>(null);
+  const [joinedStatus, setJoinedStatus] = useState<"filling" | "preparing" | "ready" | "collected" | "expired" | null>(null);
   const [joinedPrice, setJoinedPrice] = useState(0);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [leavingPool, setLeavingPool] = useState(false);
   const [justPaid, setJustPaid] = useState(false);
   const [userName, setUserName] = useState("");
+  const [expiredPoolId, setExpiredPoolId] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
   const cart = useCart();
 
   // Read user coordinates + joined pool status from localStorage
@@ -125,11 +127,16 @@ export default function ProductDetailPage() {
         const myPool = myPoolsResult.value.data.find((p: { product: { id: string }; status: string; myPaymentStatus: string }) => p.product.id === id);
         if (myPool) {
           const price = myPool.product.groupPrice || 0;
-          const status = myPool.status === "FILLED" ? "preparing" : "filling";
-          setJoinedStatus(status as "filling" | "preparing");
-          setJoinedPrice(price);
-          // Sync localStorage so it stays consistent
-          markJoined(id, price, status as "filling" | "preparing");
+          if (myPool.status === "EXPIRED" || myPool.status === "CANCELLED") {
+            setJoinedStatus("expired");
+            setJoinedPrice(price);
+            setExpiredPoolId(myPool.id);
+          } else {
+            const status = myPool.status === "FILLED" ? "preparing" : "filling";
+            setJoinedStatus(status);
+            setJoinedPrice(price);
+            markJoined(id, price, status as "filling" | "preparing");
+          }
         }
       }
       if (!ctrl.signal.aborted) setLoading(false);
@@ -137,6 +144,19 @@ export default function ProductDetailPage() {
 
     return () => ctrl.abort();
   }, [id, retryKey]);
+
+  useEffect(() => {
+    const activePool = pools.length > 0 ? pools[0] : null;
+    if (!activePool) return;
+    const deadline = new Date(activePool.deadline).getTime();
+    const update = () => {
+      const remaining = Math.max(0, Math.round((deadline - Date.now()) / 60000));
+      setTimeLeft(remaining);
+    };
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, [pools]);
 
   function markJoined(productId: string, price: number, status: "filling" | "preparing" | "ready" | "collected" = "filling") {
     try {
@@ -386,7 +406,7 @@ export default function ProductDetailPage() {
           <div className="rounded-[22px] p-4" style={{ background: "#1C1C1E" }}>
             <div className="flex items-center justify-between text-[12px] font-extrabold">
               <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `0/${poolSize} plates claimed`}</span>
-              <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
+              <span style={{ color: "var(--lime)" }}>{timeLeft > 0 ? `${Math.floor(timeLeft / 60)}h ${String(timeLeft % 60).padStart(2, "0")}m left` : "Expired"}</span>
             </div>
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
               <div className="h-full" style={{ width: `${fillPct}%`, background: "var(--lime)", borderRadius: "9px" }} />
@@ -543,6 +563,13 @@ export default function ProductDetailPage() {
         </div>
       )}
 
+      {/* ── Description ── */}
+      {product.description && (
+        <div className="px-5 mt-3">
+          <p className="text-[14px] leading-[145%]" style={{ color: "var(--text-muted)" }}>{product.description}</p>
+        </div>
+      )}
+
       {/* ── Joined: green progress card ── */}
       {joinedStatus === "filling" && hasPoolPricing && (
         <div className="px-5 mt-4">
@@ -600,7 +627,7 @@ export default function ProductDetailPage() {
             {/* Progress text */}
             <div className="flex items-center justify-between text-[12px] font-extrabold">
               <span className="text-white">{memberCount > 0 ? `${memberCount}/${poolSize} plates claimed` : `0/${poolSize} plates claimed`}</span>
-              <span style={{ color: "var(--lime)" }}>{minutesLeft > 0 ? `${Math.floor(minutesLeft / 60)}h ${String(minutesLeft % 60).padStart(2, "0")}m left` : "Starting"}</span>
+              <span style={{ color: "var(--lime)" }}>{timeLeft > 0 ? `${Math.floor(timeLeft / 60)}h ${String(timeLeft % 60).padStart(2, "0")}m left` : "Expired"}</span>
             </div>
             {/* Progress bar */}
             <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
@@ -651,7 +678,7 @@ export default function ProductDetailPage() {
       {joinedStatus === "filling" && hasPoolPricing && (
         <div className="px-5 mt-4">
           <p className="text-[14px] font-bold leading-[150%]" style={{ color: "#1C1C1E" }}>
-            If the pool doesn&apos;t fill by {new Date(Date.now() + minutesLeft * 60000).toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit", hour12: true })}, everyone gets refunded.
+            If the pool doesn&apos;t fill by {pool ? new Date(pool.deadline).toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit", hour12: true }) : "the deadline"}, everyone gets refunded.
           </p>
         </div>
       )}
@@ -673,13 +700,6 @@ export default function ProductDetailPage() {
         <div className="px-5 mt-5 p-4 rounded-[16px]" style={{ background: "var(--lime)" }}>
           <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E" }}>No pool yet for this item</p>
           <p className="text-[12px] mt-1" style={{ color: "#1C1C1E", opacity: 0.7 }}>Request a pool and we&apos;ll notify {product.vendor.name} when enough people want it. Add to your plate in the meantime.</p>
-        </div>
-      )}
-
-      {/* ── Description ── */}
-      {product.description && (
-        <div className="px-5 mt-5">
-          <p className="text-[14px] leading-[145%]" style={{ color: "var(--text-muted)" }}>{product.description}</p>
         </div>
       )}
 
@@ -789,6 +809,40 @@ export default function ProductDetailPage() {
                 <Link href="/discover" className="h-[42px] px-5 rounded-full text-[13px] font-bold inline-flex items-center press-feedback" style={{ background: "var(--sand)", color: "#1C1C1E" }}>Reorder</Link>
               </div>
             </div>
+          )}
+
+          {/* ── EXPIRED: prompt refund or solo ── */}
+          {joinedStatus === "expired" && (
+            <>
+              <div className="text-center mb-3">
+                <p className="text-[14px] font-bold" style={{ color: "#E84C3D" }}>This pool didn&apos;t fill.</p>
+                <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Your payment is on hold. Choose what to do:</p>
+              </div>
+              <button type="button"
+                className="w-full h-[48px] rounded-full flex items-center justify-center text-[14px] font-bold text-white cursor-pointer press-feedback"
+                style={{ background: "var(--coral)" }}
+                onClick={async () => {
+                  if (!expiredPoolId) return;
+                  try {
+                    await fetch(`/api/pools/${expiredPoolId}/leave`, { method: "POST" });
+                    try {
+                      const stored = localStorage.getItem("chopdrop-joined-pools");
+                      if (stored) { const j = JSON.parse(stored); delete j[id]; localStorage.setItem("chopdrop-joined-pools", JSON.stringify(j)); }
+                    } catch {}
+                    setJoinedStatus(null);
+                    setJoinedPrice(0);
+                    setExpiredPoolId(null);
+                  } catch {}
+                }}>
+                Get refund to wallet
+              </button>
+              <button type="button" onClick={addSolo}
+                className="w-full h-[44px] rounded-full flex items-center justify-between px-6 mt-2 text-[13px] font-bold cursor-pointer press-feedback"
+                style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}>
+                <span>Order solo at {fp(product.retailPrice)}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+              </button>
+            </>
           )}
 
           {/* ── NOT JOINED: pool pricing ── */}
