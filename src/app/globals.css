@@ -3,26 +3,26 @@
 /* v13.1 — force deploy with all pending changes */
 
 :root {
-  /* ── ChopDrop v13 — Coral Red + Charcoal ── */
-  /* One vibrant coral accent on clean white + charcoal. DoorDash energy. */
-  --bg: #FFFFFF;
+  /* ── ChopDrop v14 — Warm Editorial Realism ── */
+  /* Terracotta accent on warm cream. Lagos energy, not clinical white. */
+  --bg: #FAF7F2;
   --card: #FFFFFF;
-  --border: #E5E7EB;
-  --coral: #E84C3D;
+  --border: #E8E2DA;
+  --coral: #C4572A;
   --coral-soft: #FEF2F0;
   --coral-track: #FEF2F0;
-  --coral-ink: #991B1B;
-  --coral-dark: #DC2626;
-  --emerald: #22C55E;
+  --coral-ink: #8B3A1A;
+  --coral-dark: #A8471F;
+  --emerald: #1A7D4B;
   --emerald-soft: #F0FDF4;
   --lime: #F0FDF4;
-  --gold: #E84C3D;
+  --gold: #D4A24E;
   --dark: #1C1C1E;
-  --text: #1C1C1E;
-  --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
-  --sand: #F8F8F6;
-  --subdued: #9CA3AF;
+  --text: #2D2A26;
+  --text-secondary: #6B6560;
+  --text-muted: #9C9590;
+  --sand: #F0EBE4;
+  --subdued: #9C9590;
 
   /* Legacy compat */
   --ink: var(--text);
