@@ -18,7 +18,22 @@ export function BottomNav() {
     { href: "/account", label: "Me", icon: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z", count: 0 },
   ];
 
+  const isCartPage = pathname === "/cart";
+
   return (
+    <>
+      {/* Floating cart bar — shows on all pages when cart has items */}
+      {cart.totalItems > 0 && !isCartPage && (
+        <Link href="/cart" className="fixed bottom-[60px] left-4 right-4 z-50 md:hidden max-w-[480px] mx-auto">
+          <div className="h-[48px] rounded-full flex items-center justify-between px-5 press-feedback" style={{ background: "#1C1C1E" }}>
+            <div className="flex items-center gap-2">
+              <span className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: "var(--coral)", color: "white" }}>{cart.totalItems}</span>
+              <span className="text-[13px] font-bold text-white">View plate</span>
+            </div>
+            <span className="text-[14px] font-extrabold text-white tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(cart.subtotal)}</span>
+          </div>
+        </Link>
+      )}
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden" style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
       <div className="max-w-lg mx-auto grid grid-cols-5 py-2 px-4">
         {links.map((link) => {
@@ -58,5 +73,6 @@ export function BottomNav() {
       </div>
       <div className="h-[env(safe-area-inset-bottom)]" />
     </nav>
+    </>
   );
 }
