@@ -22,6 +22,7 @@ export async function POST(
     include: {
       groupOrder: {
         select: {
+          inviteCode: true,
           deliveryFee: true,
           restaurantId: true,
           restaurant: { select: { name: true } },
@@ -48,7 +49,7 @@ export async function POST(
   const email = dbUser?.email || `${dbUser?.phone || "user"}@chopdrop.ng`;
 
   const origin = request.headers.get("origin") || "https://chopdrop-app.vercel.app";
-  const callbackUrl = `${origin}/group-orders/${id}?reference=${reference}`;
+  const callbackUrl = `${origin}/group/${member.groupOrder.inviteCode}?reference=${reference}`;
 
   const paystack = await initializeTransaction({
     email,
