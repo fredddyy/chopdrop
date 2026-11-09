@@ -554,14 +554,13 @@ export default function ProductDetailPage() {
               <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>solo</p>
             </div>
           </div>
-          <p className="text-[13px] font-bold mt-2" style={{ color: "var(--emerald)" }}>
-            Keep {fp(savedAmount)} for yourself — enough for {savedAmount >= 50000 ? "a full drink" : savedAmount >= 30000 ? "a snack" : "extra sides"}.
+          <p className="text-[12px] font-bold mt-1.5 flex items-center gap-3" style={{ color: "var(--emerald)" }}>
+            Save {fp(savedAmount)}
+            <span className="flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+              Refundable
+            </span>
           </p>
-          {/* Refund badge — inline with price, not buried below fold */}
-          <div className="flex items-center gap-1.5 mt-2">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Full refund if pool doesn&apos;t fill</span>
-          </div>
         </div>
       ) : (
         <div className="px-5 mt-4">
