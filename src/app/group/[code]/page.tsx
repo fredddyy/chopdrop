@@ -243,21 +243,28 @@ function GroupOrderInner() {
 
   // Verify payment if returning from Paystack
   useEffect(() => {
-    if (!paymentReference || !fullOrder) return;
-    setVerifyingPayment(true);
-    fetch(`/api/group-orders/${fullOrder.id}`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.success) {
+    if (!paymentReference || !fullOrder || !currentUserId) return;
+    let done = false;
+    async function verify() {
+      setVerifyingPayment(true);
+      try {
+        // Call verify endpoint to confirm payment with Paystack and update DB
+        await fetch(`/api/group-orders/${fullOrder!.id}/verify?reference=${paymentReference}`);
+        // Re-fetch order to get updated payment status
+        const res = await fetch(`/api/group-orders/${fullOrder!.id}`);
+        const d = await res.json();
+        if (!done && d.success) {
           setFullOrder(d.data);
           const me = d.data.members.find((m: Member) => m.userId === currentUserId);
           if (me?.paymentStatus === "SUCCESS") {
             setPaymentConfirmed(true);
           }
         }
-        setVerifyingPayment(false);
-      })
-      .catch(() => setVerifyingPayment(false));
+      } catch { /* network error */ }
+      if (!done) setVerifyingPayment(false);
+    }
+    verify();
+    return () => { done = true; };
   }, [paymentReference, fullOrder?.id, currentUserId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync myItems from fullOrder once we know the current user

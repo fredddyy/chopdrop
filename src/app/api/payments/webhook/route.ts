@@ -18,6 +18,8 @@ export async function POST(request: NextRequest) {
     // Route by payment reference prefix
     if (reference.startsWith("pool_")) {
       await handlePoolPayment(reference, amount);
+    } else if (reference.startsWith("go_")) {
+      await handleGroupOrderPayment(reference, amount);
     } else if (reference.startsWith("instant_")) {
       await handleInstantOrderPayment(reference, amount);
     } else {
@@ -26,6 +28,29 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ status: "ok" });
+}
+
+// Handle group order member payments
+async function handleGroupOrderPayment(reference: string, amount: number) {
+  const member = await prisma.groupOrderMember.findFirst({
+    where: { paymentRef: reference },
+  });
+
+  if (!member || member.paymentStatus === "SUCCESS") return;
+
+  const expectedAmount = member.subtotal + member.deliveryShare;
+  if (amount !== expectedAmount) {
+    await prisma.groupOrderMember.update({
+      where: { id: member.id },
+      data: { paymentStatus: "FAILED" },
+    });
+    return;
+  }
+
+  await prisma.groupOrderMember.update({
+    where: { id: member.id },
+    data: { paymentStatus: "SUCCESS", paidAt: new Date() },
+  });
 }
 
 // Handle pool member payments
