@@ -136,12 +136,12 @@ function ConfirmationContent() {
   if (!order) {
     return (
       <main className="flex-1 flex flex-col items-center justify-center min-h-svh px-5" style={{ background: "var(--bg)" }}>
-        <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: "#FEF2F2" }}>
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--coral-soft)" }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
         </div>
         <h1 className="text-[20px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Order not found</h1>
         <p className="text-[14px] mb-5" style={{ color: "var(--text-muted)" }}>This order may have expired</p>
-        <Link href="/menu" className="h-11 px-6 rounded-[12px] text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Back to menu</Link>
+        <Link href="/discover" className="h-11 px-6 rounded-[12px] text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Back to menu</Link>
       </main>
     );
   }
@@ -152,7 +152,7 @@ function ConfirmationContent() {
   const dropTime = order.timeSlot.startTime;
 
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+    <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
       {/* Celebration header — dark */}
       <div className="pt-10 pb-8 text-center" style={{ background: isConfirmed ? "var(--dark)" : "var(--bg)" }}>
@@ -202,7 +202,7 @@ function ConfirmationContent() {
           </>
         ) : (
           <>
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "#FEF2F2" }}>
+            <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "var(--coral-soft)" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12" /></svg>
             </div>
             <h1 className="text-[22px] font-extrabold" style={{ color: "var(--text)" }}>Payment failed</h1>
@@ -215,7 +215,7 @@ function ConfirmationContent() {
 
         {/* Collection code — THE dominant element */}
         {isConfirmed && (
-          <div className="rounded-[20px] p-6 text-center" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="rounded-[16px] p-6 text-center" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <p className="text-[12px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Your collection code</p>
             <p className="text-[42px] font-extrabold tracking-[0.05em] leading-none tabular-nums" style={{ color: "var(--text)" }}>{order.orderCode}</p>
             <p className="text-[13px] font-medium mt-3" style={{ color: "var(--emerald)" }}>
@@ -264,7 +264,7 @@ function ConfirmationContent() {
             { label: isOffice ? "At reception" : order.fulfillmentType === "DELIVERY" ? "At your door" : "Ready for pickup", sub: isOffice ? order.office!.collectionPoint : order.fulfillmentType === "DELIVERY" ? order.deliveryAddress || "Your address" : "Collect with your code" },
           ];
           return (
-            <div className="rounded-[20px] p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="rounded-[16px] p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <div className="space-y-0">
                 {steps.map((s, i) => {
                   const isDone = i <= currentStep;
@@ -305,7 +305,7 @@ function ConfirmationContent() {
         })()}
 
         {/* What you ordered — food photo + details */}
-        <div className="rounded-[20px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+        <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
           {order.meal.imageUrl && (
             <div className="h-[130px] overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -319,7 +319,7 @@ function ConfirmationContent() {
                 <h3 className="text-[16px] font-bold mt-0.5" style={{ color: "var(--text)" }}>{cleanName(order.meal.name)}</h3>
               </div>
               <span className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full" style={{
-                background: isConfirmed ? "rgba(13,159,95,0.1)" : isPending ? "rgba(212,162,78,0.15)" : "#FEF2F2",
+                background: isConfirmed ? "var(--emerald-soft)" : isPending ? "var(--sand)" : "var(--coral-soft)",
                 color: isConfirmed ? "var(--emerald)" : isPending ? "var(--gold)" : "var(--coral)",
               }}>{isConfirmed ? "Confirmed" : isPending ? "Pending" : "Failed"}</span>
             </div>
@@ -360,25 +360,25 @@ function ConfirmationContent() {
 
         {/* Rating — only when order is delivered */}
         {isConfirmed && order.status === "COMPLETED" && !ratingSubmitted && (
-          <div className="rounded-[20px] p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="rounded-[16px] p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             {ratingScore === 0 ? (
               <>
                 <h3 className="text-[16px] font-bold text-center mb-1" style={{ color: "var(--text)" }}>How was your meal?</h3>
                 <p className="text-[13px] text-center mb-4" style={{ color: "var(--text-muted)" }}>{order.restaurant.name}</p>
                 <div className="flex justify-center gap-2">
                   {[
-                    { emoji: "😞", label: "Bad", score: 1 },
-                    { emoji: "😕", label: "Meh", score: 2 },
-                    { emoji: "🙂", label: "OK", score: 3 },
-                    { emoji: "😋", label: "Good", score: 4 },
-                    { emoji: "🤩", label: "Great", score: 5 },
+                    { color: "var(--coral)", label: "Bad", score: 1 },
+                    { color: "var(--gold)", label: "Meh", score: 2 },
+                    { color: "var(--text-muted)", label: "OK", score: 3 },
+                    { color: "var(--emerald)", label: "Good", score: 4 },
+                    { color: "var(--emerald)", label: "Great", score: 5 },
                   ].map((r) => (
-                    <button key={r.score} type="button" onClick={() => handleRate(r.score)}
-                      className="flex flex-col items-center gap-1 cursor-pointer active:scale-90 transition-transform">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-[22px]" style={{ background: "var(--sand)" }}>
-                        {r.emoji}
+                    <button key={r.score} type="button" onClick={() => handleRate(r.score)} aria-label={`Rate ${r.label}`}
+                      className="flex flex-col items-center gap-1 press-feedback">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-[18px] font-extrabold text-white" style={{ background: r.color }}>
+                        {r.score}
                       </div>
-                      <span className="text-[10px] font-semibold" style={{ color: "var(--text-muted)" }}>{r.label}</span>
+                      <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>{r.label}</span>
                     </button>
                   ))}
                 </div>
@@ -390,8 +390,8 @@ function ConfirmationContent() {
                   {["Portion too small", "Food was cold", "Didn't taste good", "Wrong order", "Arrived late", "Something else"].map((issue) => (
                     <button key={issue} type="button" onClick={() => toggleIssue(issue)}
                       className="w-full text-left px-4 py-3 rounded-[12px] text-[14px] font-medium cursor-pointer transition-colors"
-                      style={{ background: ratingIssues.includes(issue) ? "rgba(232,96,76,0.1)" : "var(--sand)", color: ratingIssues.includes(issue) ? "var(--coral)" : "var(--text-secondary)", border: ratingIssues.includes(issue) ? "1px solid rgba(232,96,76,0.2)" : "1px solid transparent" }}>
-                      {ratingIssues.includes(issue) ? "✓ " : ""}{issue}
+                      style={{ background: ratingIssues.includes(issue) ? "var(--coral-soft)" : "var(--sand)", color: ratingIssues.includes(issue) ? "var(--coral)" : "var(--text-secondary)", border: ratingIssues.includes(issue) ? "1px solid var(--coral-soft)" : "1px solid transparent" }}>
+                      {issue}
                     </button>
                   ))}
                 </div>
@@ -404,7 +404,7 @@ function ConfirmationContent() {
         )}
 
         {ratingSubmitted && (
-          <div className="rounded-[14px] p-4 text-center" style={{ background: "rgba(13,159,95,0.08)" }}>
+          <div className="rounded-[14px] p-4 text-center" style={{ background: "var(--emerald-soft)" }}>
             <span className="text-[14px] font-semibold" style={{ color: "var(--emerald)" }}>Thanks for the feedback!</span>
           </div>
         )}
@@ -415,14 +415,14 @@ function ConfirmationContent() {
             Track order
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
           </Link>
-          <Link href="/menu" className="flex-1 h-12 rounded-[12px] text-[15px] font-bold flex items-center justify-center active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
+          <Link href="/discover" className="flex-1 h-12 rounded-[12px] text-[15px] font-bold flex items-center justify-center active:scale-[0.97] transition-transform" style={{ background: "var(--sand)", color: "var(--text)" }}>
             Order more
           </Link>
         </div>
 
         {/* Office connect — only for non-connected users */}
         {!officeConnected && isConfirmed && (
-          <div className="rounded-[20px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <h3 className="text-[15px] font-bold mb-1" style={{ color: "var(--text)" }}>Want free delivery next time?</h3>
             <p className="text-[13px] mb-3" style={{ color: "var(--text-secondary)" }}>Connect your group code</p>
             {officeConnectError && <p className="text-[12px] mb-2" style={{ color: "var(--coral)" }}>{officeConnectError}</p>}
@@ -434,7 +434,7 @@ function ConfirmationContent() {
         )}
 
         {officeConnected && (
-          <div className="rounded-[14px] p-3 flex items-center gap-2" style={{ background: "rgba(13,159,95,0.08)" }}>
+          <div className="rounded-[14px] p-3 flex items-center gap-2" style={{ background: "var(--emerald-soft)" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
             <span className="text-[13px] font-semibold" style={{ color: "var(--emerald)" }}>Group connected — free delivery next time</span>
           </div>
@@ -442,7 +442,7 @@ function ConfirmationContent() {
 
         {/* Pool credits note */}
         {isConfirmed && (
-          <div className="rounded-[14px] p-3 flex items-start gap-2.5" style={{ background: "rgba(13,159,95,0.08)" }}>
+          <div className="rounded-[14px] p-3 flex items-start gap-2.5" style={{ background: "var(--emerald-soft)" }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
             <p className="text-[13px]" style={{ color: "var(--emerald)" }}>
               Pool credits will be applied automatically when the pool settles
@@ -451,8 +451,8 @@ function ConfirmationContent() {
         )}
 
         {/* Share */}
-        <button type="button" onClick={handleShare} className="w-full rounded-[20px] p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all text-left" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: shareCopied ? "rgba(13,159,95,0.1)" : "rgba(232,96,76,0.1)" }}>
+        <button type="button" onClick={handleShare} className="w-full rounded-[16px] p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all text-left" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: shareCopied ? "rgba(13,159,95,0.1)" : "var(--coral-soft)" }}>
             {shareCopied ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
             ) : (
