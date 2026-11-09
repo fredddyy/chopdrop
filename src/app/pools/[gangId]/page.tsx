@@ -29,7 +29,7 @@ interface GangData {
   motto: string | null;
   campus: string | null;
   inviteCode: string;
-  members: Array<{ id: string; role: string; joinedAt: string; user: { firstName: string } }>;
+  members: Array<{ id: string; role: string; joinedAt: string; firstName: string; user?: { firstName: string } }>;
 }
 
 export default function GangDetailPage() {
@@ -205,11 +205,11 @@ export default function GangDetailPage() {
                 {gang.members.slice(0, 5).map((member, i) => (
                   <div key={member.id} className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white shrink-0" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
-                      {member.user.firstName.charAt(0)}
+                      {(member.firstName || member.user?.firstName || "?").charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[14px] leading-[145%]" style={{ color: "#17271F" }}>
-                        <span className="font-bold">{member.user.firstName}</span> {member.role === "ADMIN" ? "created the gang." : "joined the gang."}
+                        <span className="font-bold">{(member.firstName || member.user?.firstName || "?")}</span> {member.role === "ADMIN" ? "created the gang." : "joined the gang."}
                       </p>
                       <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{new Date(member.joinedAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}</p>
                     </div>
@@ -285,9 +285,9 @@ export default function GangDetailPage() {
                 {i > 0 && <div className="mx-5 h-px" style={{ background: "var(--border)" }} />}
                 <div className="flex items-center gap-3 px-5 py-3.5">
                   <div className="w-9 h-9 rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
-                    {member.user.firstName.charAt(0)}
+                    {(member.firstName || member.user?.firstName || "?").charAt(0)}
                   </div>
-                  <span className="text-[14px] font-medium" style={{ color: "#17271F" }}>{member.user.firstName}{member.role === "ADMIN" ? " (Admin)" : ""}</span>
+                  <span className="text-[14px] font-medium" style={{ color: "#17271F" }}>{(member.firstName || member.user?.firstName || "?")}{member.role === "ADMIN" ? " (Admin)" : ""}</span>
                   {member.role === "ADMIN" && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full ml-auto" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>Creator</span>
                   )}
