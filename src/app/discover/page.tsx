@@ -426,10 +426,15 @@ export default function DiscoverPage() {
                       <p className="text-[13px] line-through tabular-nums mt-0.5" style={{ color: "var(--subdued)" }}>{fmt(featured.retailPrice)}</p>
                     </div>
                   </div>
-                  {/* Progress */}
+                  {/* Progress + countdown */}
                   <div className="mt-3 flex items-center justify-between text-[11px] font-bold" style={{ color: "white" }}>
                     <span>{featured.fill.joined > 0 ? `${featured.fill.joined}/${featured.minPoolSize} ${activeCategory === "Food" ? "plates claimed" : "spots filled"}` : `${featured.minPoolSize} spots · Be first to join`}</span>
-                    <span style={{ color: "var(--lime)" }}>Save {sav}%</span>
+                    {featured.poolDeadline ? (() => {
+                      const mins = Math.max(0, Math.round((new Date(featured.poolDeadline).getTime() - Date.now()) / 60000));
+                      return <span style={{ color: featured.isFlashDeal ? "var(--coral)" : "var(--lime)" }}>{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m left` : `${mins}m left`}</span>;
+                    })() : (
+                      <span style={{ color: "var(--lime)" }}>Save {sav}%</span>
+                    )}
                   </div>
                   <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
                     <div className="h-full" style={{
