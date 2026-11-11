@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const orders = await prisma.groupOrder.findMany({
       where: { gangId },
       include: {
-        restaurant: { select: { name: true, groupTiers: true } },
+        restaurant: { select: { name: true, imageUrl: true, groupTiers: true } },
         coordinator: { select: { firstName: true } },
         members: { select: { id: true, paymentStatus: true } },
       },
@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
       return {
         id: o.id,
         restaurantName: o.restaurant.name,
+        restaurantImage: o.restaurant.imageUrl,
         coordinatorName: o.coordinator.firstName,
         memberCount: o.members.length,
         paidMemberCount: paidCount,

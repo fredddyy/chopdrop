@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
+import { useDialog } from "@/components/dialog";
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
@@ -14,6 +15,7 @@ type Tab = "orders" | "members" | "activity";
 interface GroupOrder {
   id: string;
   restaurantName: string;
+  restaurantImage?: string | null;
   status: string;
   deadline: string;
   memberCount: number;
@@ -38,6 +40,7 @@ interface GangData {
 export default function GangDetailPage() {
   const { gangId } = useParams<{ gangId: string }>();
   const router = useRouter();
+  const dialog = useDialog();
   const [gang, setGang] = useState<GangData | null>(null);
   const [groupOrders, setGroupOrders] = useState<GroupOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -340,7 +343,17 @@ export default function GangDetailPage() {
                         )}
                       </div>
                       {/* Restaurant + details */}
-                      <h4 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isAccepting ? "white" : "var(--text)" }}>{order.restaurantName}</h4>
+                      <div className="flex items-center gap-3">
+                        {order.restaurantImage ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={order.restaurantImage} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-[14px] font-bold shrink-0" style={{ background: isAccepting ? "rgba(255,255,255,0.1)" : "var(--sand)", color: isAccepting ? "white" : "var(--text-muted)" }}>
+                            {order.restaurantName.charAt(0)}
+                          </div>
+                        )}
+                        <h4 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isAccepting ? "white" : "var(--text)" }}>{order.restaurantName}</h4>
+                      </div>
                       <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: isAccepting ? "var(--subdued)" : "var(--text-muted)" }}>
                         <span className="flex items-center gap-1">
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
@@ -438,21 +451,20 @@ export default function GangDetailPage() {
             type="button"
             className="mt-6 text-[12px] font-bold press-feedback"
             style={{ color: "var(--text-muted)" }}
-            onClick={async () => {
-              if (!confirm(`Leave ${gang.name}? You can rejoin anytime.`)) return;
-              try {
-                const res = await fetch(`/api/gangs/${gangId}/leave`, { method: "POST" });
-                const d = await res.json();
-                if (d.success) {
-                  router.push("/pools");
-                } else {
-                  alert(d.error || "Couldn\u2019t leave gang");
-                }
-              } catch {
-                alert("Network error");
-              }
-            }}
-          >
+            onClick={() => dialog.showConfirm({
+              title: `Leave ${gang.name}?`,
+              message: "You can rejoin anytime.",
+              confirmLabel: "Leave",
+              destructive: true,
+              onConfirm: async () => {
+                try {
+                  const res = await fetch(`/api/gangs/${gangId}/leave`, { method: "POST" });
+                  const d = await res.json();
+                  if (d.success) { router.push("/pools"); }
+                  else { dialog.showAlert(d.error || "Couldn\u2019t leave gang"); }
+                } catch { dialog.showAlert("Network error"); }
+              },
+            })}>
             Leave gang
           </button>
         </div>

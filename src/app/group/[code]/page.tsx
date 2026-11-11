@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
+import { useDialog } from "@/components/dialog";
 
 interface InviteData {
   id: string;
@@ -102,6 +103,7 @@ function GroupOrderInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const paymentReference = searchParams.get("reference");
+  const dialog = useDialog();
 
   const [invite, setInvite] = useState<InviteData | null>(null);
   const [fullOrder, setFullOrder] = useState<FullOrder | null>(null);
@@ -700,8 +702,8 @@ function GroupOrderInner() {
                       await fetchFull(fullOrder.id);
                     } else if (res.status === 401) {
                       router.push(`/auth?returnTo=/group/${code}`);
-                    } else { alert(d.error || "Couldn\u2019t join"); }
-                  } catch { alert("Network error"); }
+                    } else { dialog.showAlert(d.error || "Couldn\u2019t join"); }
+                  } catch { dialog.showAlert("Network error"); }
                   setJoining(false);
                 }}
                 className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback disabled:opacity-50"
@@ -828,30 +830,40 @@ function GroupOrderInner() {
               {/* Coordinator: cancel if no one paid */}
               {isCoord && !hasPaidMembers && (
                 <button type="button" className="mt-4 text-[12px] font-bold press-feedback block" style={{ color: "var(--text-muted)" }}
-                  onClick={async () => {
-                    if (!confirm("Cancel this group order?")) return;
-                    try {
-                      const res = await fetch(`/api/group-orders/${fullOrder.id}/cancel`, { method: "POST" });
-                      const d = await res.json();
-                      if (d.success) { router.push("/pools"); }
-                      else { alert(d.error || "Couldn\u2019t cancel"); }
-                    } catch { alert("Network error"); }
-                  }}>
+                  onClick={() => dialog.showConfirm({
+                    title: "Cancel this group order?",
+                    message: "No one has paid yet. The order will be removed.",
+                    confirmLabel: "Cancel order",
+                    destructive: true,
+                    onConfirm: async () => {
+                      try {
+                        const res = await fetch(`/api/group-orders/${fullOrder.id}/cancel`, { method: "POST" });
+                        const d = await res.json();
+                        if (d.success) { router.push("/pools"); }
+                        else { dialog.showAlert(d.error || "Couldn\u2019t cancel"); }
+                      } catch { dialog.showAlert("Network error"); }
+                    },
+                  })}>
                   Cancel this order
                 </button>
               )}
               {/* Non-coordinator: leave if not paid */}
               {!isCoord && !iHavePaid && (
                 <button type="button" className="mt-4 text-[12px] font-bold press-feedback block" style={{ color: "var(--text-muted)" }}
-                  onClick={async () => {
-                    if (!confirm("Leave this group order?")) return;
-                    try {
-                      const res = await fetch(`/api/group-orders/${fullOrder.id}/leave`, { method: "POST" });
-                      const d = await res.json();
-                      if (d.success) { router.push("/pools"); }
-                      else { alert(d.error || "Couldn\u2019t leave"); }
-                    } catch { alert("Network error"); }
-                  }}>
+                  onClick={() => dialog.showConfirm({
+                    title: "Leave this group order?",
+                    message: "You can rejoin anytime before the deadline.",
+                    confirmLabel: "Leave",
+                    destructive: true,
+                    onConfirm: async () => {
+                      try {
+                        const res = await fetch(`/api/group-orders/${fullOrder.id}/leave`, { method: "POST" });
+                        const d = await res.json();
+                        if (d.success) { router.push("/pools"); }
+                        else { dialog.showAlert(d.error || "Couldn\u2019t leave"); }
+                      } catch { dialog.showAlert("Network error"); }
+                    },
+                  })}>
                   Leave this order
                 </button>
               )}

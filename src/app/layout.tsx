@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { CartProvider } from "@/lib/cart";
+import { DialogProvider } from "@/components/dialog";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -44,7 +45,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body className="min-h-full flex flex-col">
-        <CartProvider>{children}</CartProvider>
+        <CartProvider><DialogProvider>{children}</DialogProvider></CartProvider>
         <script
           dangerouslySetInnerHTML={{
             __html: `if("serviceWorker"in navigator){navigator.serviceWorker.register("/sw.js")}`,
