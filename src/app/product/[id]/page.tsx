@@ -143,6 +143,17 @@ export default function ProductDetailPage() {
             setJoinedPrice(price);
             markJoined(id, price, status as "filling" | "preparing");
           }
+        } else {
+          // Server says not in any pool — clear stale localStorage
+          try {
+            const stored = localStorage.getItem("chopdrop-joined-pools");
+            if (stored) {
+              const joined = JSON.parse(stored);
+              if (joined[id]) { delete joined[id]; localStorage.setItem("chopdrop-joined-pools", JSON.stringify(joined)); }
+            }
+          } catch {}
+          setJoinedStatus(null);
+          setJoinedPrice(0);
         }
       }
       if (!ctrl.signal.aborted) setLoading(false);
