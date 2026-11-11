@@ -49,7 +49,7 @@ function Calc() {
           <div className="text-[56px] lg:text-[72px] font-extrabold text-white leading-none tabular-nums">{n}</div>
         </div>
         <div className="text-right">
-          <div className="text-[15px] text-white/40 mb-1">Price per plate</div>
+          <div className="text-[15px] text-white/40 mb-1">Price per item</div>
           <div className="text-[36px] lg:text-[48px] font-extrabold leading-none tabular-nums" style={{ color: pct > 0 ? "var(--emerald)" : "white" }}>
             ₦{price.toLocaleString()}
           </div>
@@ -133,8 +133,8 @@ export default function Home() {
       <div className="fixed bottom-0 inset-x-0 z-50 lg:hidden backdrop-blur-lg" style={{ background: "rgba(250,247,242,0.95)", borderTop: "1px solid var(--border)" }}>
         <div className="flex items-center justify-between px-5 h-16">
           <div>
-            <div className="text-[12px] text-[var(--text-muted)]">From</div>
-            <div className="text-[16px] font-bold text-[var(--emerald)]">₦1,400/plate</div>
+            <div className="text-[12px] text-[var(--text-muted)]">Save</div>
+            <div className="text-[16px] font-bold text-[var(--emerald)]">Up to 30% off</div>
           </div>
           <a href="/discover" className="bg-[var(--coral)] text-white font-bold text-[15px] h-11 px-7 inline-flex items-center rounded-[12px] active:scale-[0.97] transition-transform">
             Browse Deals
@@ -186,15 +186,15 @@ export default function Home() {
             <div className="lg:col-span-6" style={{ animation: "fu .6s ease .1s both" }}>
               <div className="rounded-[24px] overflow-hidden relative aspect-[4/3]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={HERO} alt="Nigerian jollof rice — the lunch everyone orders" className="w-full h-full object-cover" />
+                <img src={HERO} alt="Group buying deals on ChopDrop" className="w-full h-full object-cover" />
                 <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="flex gap-2 mb-2">
                     <div className="bg-[var(--emerald)] text-white text-[12px] font-bold px-3 py-1.5 rounded-full">₦0 delivery</div>
                     <div className="bg-white text-[var(--text)] text-[12px] font-bold px-3 py-1.5 rounded-full">Up to 30% back</div>
                   </div>
-                  <div className="text-white text-[20px] font-extrabold leading-tight">Jollof Rice & Chicken</div>
-                  <div className="text-white/70 text-[13px] mt-0.5">The Place · Admiralty Way</div>
+                  <div className="text-white text-[20px] font-extrabold leading-tight">Group deals, real savings</div>
+                  <div className="text-white/70 text-[13px] mt-0.5">Food, gadgets, fashion, groceries</div>
                 </div>
               </div>
             </div>
@@ -285,12 +285,12 @@ export default function Home() {
               {
                 color: "var(--coral)", icon: (
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                   </svg>
                 ),
-                stat: "2", statLabel: "daily pools",
-                t: "Breakfast by 9AM. Lunch by noon.",
-                d: "Breakfast orders: 6–8AM, arrives before 9. Lunch orders: 9–10:30AM, arrives before 12. Order in the window, food shows up on time.",
+                stat: "30%", statLabel: "max discount",
+                t: "Share the link, price drops.",
+                d: "Start a group on any product. Share via WhatsApp. As more people join, the price drops for everyone. You keep saving.",
               },
               {
                 color: "var(--gold)", icon: (
@@ -326,16 +326,16 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════ */}
       {/*  5. FOOD GALLERY — desire machine                    */}
       {/* ═══════════════════════════════════════════════════ */}
-      <section className="py-12 overflow-hidden" aria-label="Popular meals">
+      <section className="py-12 overflow-hidden" aria-label="Trending deals">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-8 mb-8">
           <R>
             <div className="flex items-end justify-between">
               <div>
-                <h3 className="text-[clamp(22px,3.5vw,32px)] font-extrabold text-[var(--text)]">Popular in Lagos</h3>
-                <p className="text-[15px] text-[var(--text-muted)] mt-1">Real vendors. Real prices. Pool pricing applied.</p>
+                <h3 className="text-[clamp(22px,3.5vw,32px)] font-extrabold text-[var(--text)]">Trending deals</h3>
+                <p className="text-[15px] text-[var(--text-muted)] mt-1">Real vendors. Real prices. Group pricing applied.</p>
               </div>
-              <a href="/menu" className="hidden sm:inline-flex items-center gap-1 text-[14px] font-semibold text-[var(--coral)] hover:text-[var(--coral-dark)] transition-colors">
-                See full menu
+              <a href="/discover" className="hidden sm:inline-flex items-center gap-1 text-[14px] font-semibold text-[var(--coral)] hover:text-[var(--coral-dark)] transition-colors">
+                Browse all deals
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6"/></svg>
               </a>
             </div>
@@ -424,7 +424,7 @@ export default function Home() {
             { q: "Is it really free?", a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for guaranteed orders." },
             { q: "What if the group doesn\u2019t fill?", a: "Full refund. Every kobo back. You only pay the group price when enough people join." },
             { q: "What can I buy?", a: "Food, electronics, fashion, groceries. Anything our partner stores sell. New stores join every week." },
-            { q: "What stores are available?", a: "Vetted local vendors near you. The Place, Kilimanjaro, Mama Tola\u2019s, and more. Have a favourite? We\u2019ll onboard them." },
+            { q: "What stores are available?", a: "Vetted local vendors near you across food, electronics, fashion, and more. New sellers join every week. Have a favourite? We\u2019ll onboard them." },
             { q: "How does payment work?", a: "Everyone pays via card or bank transfer through Paystack. No collecting cash. No chasing anyone." },
           ].map((item, i) => (
             <R key={i} d={i * 30}>

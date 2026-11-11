@@ -70,8 +70,8 @@ export default function CreateGangPage() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
           </button>
           <div className="text-center">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Gangs</p>
-            <p className="text-[14px] font-extrabold" style={{ color: "var(--text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Start a food crew</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Groups</p>
+            <p className="text-[14px] font-extrabold" style={{ color: "var(--text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Start a group</p>
           </div>
           <div className="w-11" />
         </div>
@@ -79,10 +79,10 @@ export default function CreateGangPage() {
         {/* ── Hero ── */}
         <div className="mt-7">
           <h1 className="text-[32px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--text)" }}>
-            Same gang.<br />Better chop.
+            Better together.<br />Better prices.
           </h1>
           <p className="text-[14px] mt-2 leading-[145%]" style={{ color: "var(--text-muted)" }}>
-            Order together, save together. More people in your gang means cheaper plates for everyone.
+            Buy together, save together. More people in your group means lower prices for everyone.
           </p>
         </div>
 
@@ -105,12 +105,12 @@ export default function CreateGangPage() {
 
         {/* ── Section: Identity ── */}
         <div className="mt-8">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-4" style={{ color: "var(--coral)" }}>Your gang&apos;s identity</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-4" style={{ color: "var(--coral)" }}>Your group&apos;s identity</p>
 
-          {/* Gang name (required) */}
+          {/* Group name (required) */}
           <div>
             <label htmlFor="gang-name" className="text-[12px] font-bold block mb-1.5" style={{ color: "var(--text)" }}>
-              Gang name <span style={{ color: "var(--coral)" }}>*</span>
+              Group name <span style={{ color: "var(--coral)" }}>*</span>
             </label>
             <input
               id="gang-name"
@@ -269,7 +269,7 @@ export default function CreateGangPage() {
 
         {/* ── Note ── */}
         <p className="text-[12px] mt-5 leading-[155%]" style={{ color: "var(--text-muted)" }}>
-          You&apos;ll be the gang admin. After creating, share your link or invite via WhatsApp.
+          You&apos;ll be the group admin. After creating, share your link or invite via WhatsApp.
         </p>
 
         {/* ── CTA — architectural, not pill ── */}
@@ -280,7 +280,7 @@ export default function CreateGangPage() {
           className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback disabled:opacity-50 mt-4"
           style={{ background: "var(--coral)", transition: "opacity 150ms ease-out" }}
         >
-          <span>{creating ? "Creating\u2026" : `Create ${gangName.trim() || "gang"}`}</span>
+          <span>{creating ? "Creating\u2026" : `Create ${gangName.trim() || "group"}`}</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
         </button>
 

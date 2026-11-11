@@ -64,7 +64,7 @@ export default function WalletPage() {
         </button>
         <div className="text-center">
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Wallet</p>
-          <p className="text-[14px] font-extrabold" style={{ color: "var(--text)", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your meal credit</p>
+          <p className="text-[14px] font-extrabold" style={{ color: "var(--text)", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your store credit</p>
         </div>
         <div className="w-11" />
       </div>
@@ -78,7 +78,7 @@ export default function WalletPage() {
           ) : (
             <p className="text-[44px] font-extrabold tabular-nums leading-none mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "white" }}>{fp(balance)}</p>
           )}
-          <p className="text-[12px] mt-2" style={{ color: "var(--subdued)" }}>Meal credit, not cash. Applied automatically at checkout.</p>
+          <p className="text-[12px] mt-2" style={{ color: "var(--subdued)" }}>Store credit, not cash. Applied automatically at checkout.</p>
         </div>
       </div>
 

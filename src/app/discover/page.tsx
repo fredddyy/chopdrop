@@ -227,7 +227,7 @@ export default function DiscoverPage() {
           <div className="flex items-center gap-2">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Discover</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Home</p>
               <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "var(--text)", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 Chop<span style={{ color: "var(--coral)" }}>Drop</span>
               </span>
@@ -318,10 +318,10 @@ export default function DiscoverPage() {
           {/* ── Hero Greeting — Bricolage Grotesque, Figma specs ── */}
           <div className="px-5 pt-5 pb-2">
             <h1 className="font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: "34px", lineHeight: "108%", letterSpacing: "-0.8px", color: "var(--text)" }}>
-              {activeCategory === "Food" ? "Oya, what\u2019s for lunch?" : activeCategory === "Electronics" ? "Oya, what\u2019s the gadget?" : activeCategory === "Fashion" ? "Oya, what\u2019s the drip?" : "Oya, what do you need?"}
+              {activeCategory === "Food" ? "Deals dropping now" : activeCategory === "Electronics" ? "Group buy, pay less" : activeCategory === "Fashion" ? "Better prices together" : "Pool together, pay less"}
             </h1>
             <p className="text-[14px] font-semibold mt-1.5" style={{ color: "var(--text-secondary)" }}>
-              {activeCategory === "Food" ? "More people ordering = cheaper plates. Up to 30% off." : activeCategory === "Fashion" ? "Better drip, better price. Together." : "Pool together, pay less. Up to 30% off."}
+              {activeCategory === "Food" ? "More people join, everyone's price drops. Up to 30% off." : activeCategory === "Fashion" ? "Better style, better price. Together." : "More people join, everyone saves. Up to 30% off."}
             </p>
           </div>
 
@@ -428,7 +428,7 @@ export default function DiscoverPage() {
                   </div>
                   {/* Progress + countdown */}
                   <div className="mt-3 flex items-center justify-between text-[11px] font-bold" style={{ color: "white" }}>
-                    <span>{featured.fill.joined > 0 ? `${featured.fill.joined}/${featured.minPoolSize} ${activeCategory === "Food" ? "plates claimed" : "spots filled"}` : `${featured.minPoolSize} spots · Be first to join`}</span>
+                    <span>{featured.fill.joined > 0 ? `${featured.fill.joined}/${featured.minPoolSize} spots filled` : `${featured.minPoolSize} spots · Be first to join`}</span>
                     {featured.poolDeadline ? (() => {
                       const mins = Math.max(0, Math.round((new Date(featured.poolDeadline).getTime() - Date.now()) / 60000));
                       return <span style={{ color: featured.isFlashDeal ? "var(--coral)" : "var(--lime)" }}>{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m left` : `${mins}m left`}</span>;
@@ -567,7 +567,7 @@ export default function DiscoverPage() {
             <section className="mt-6">
               <div className="px-5 flex items-center justify-between mb-3">
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                  {activeCategory === "Food" ? "Top kitchens" : "Top stores"}{userArea ? ` near ${userArea}` : ""}
+                  Top sellers{userArea ? ` near ${userArea}` : ""}
                 </h3>
                 <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{filteredStores.length} stores</span>
               </div>

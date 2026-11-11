@@ -159,7 +159,7 @@ export default function AccountPage() {
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Your earned value</p>
           <p className="text-[36px] font-extrabold tabular-nums leading-none mt-2 text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>{fp(totalSaved)} saved</p>
           <p className="text-[14px] font-bold mt-2 text-white">Same appetite. Smarter spending.</p>
-          <p className="text-[11px] mt-1" style={{ color: "var(--subdued)" }}>Food discounts compared with individual prices. Your wallet credit is separate.</p>
+          <p className="text-[11px] mt-1" style={{ color: "var(--subdued)" }}>Group discounts compared with individual prices. Your wallet credit is separate.</p>
         </div>
       </div>
 
@@ -183,7 +183,7 @@ export default function AccountPage() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /></svg>
           <div className="flex-1 min-w-0">
             <p className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{fp(walletBalance)}</p>
-            <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Wallet · Store credit for your next chop</p>
+            <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Wallet · Store credit for your next order</p>
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
         </Link>
@@ -212,9 +212,9 @@ export default function AccountPage() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
           </button>
           {[
-            { label: "My orders", sub: "Track a plate or revisit a receipt", href: "/orders" },
+            { label: "My activity", sub: "Track orders and pool history", href: "/orders" },
             { label: "Bring your people", sub: "Referrals · Share your link", href: "/pools" },
-            { label: "Fun rewards", sub: "Daily scratch, streak and points", href: "/rewards" },
+            { label: "Rewards", sub: "Daily scratch, streak and points", href: "/rewards" },
           ].map((item, i) => (
             <div key={item.label}>
               <div className="mx-5 h-px" style={{ background: "#E6E4D9" }} />

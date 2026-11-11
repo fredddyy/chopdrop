@@ -11,10 +11,10 @@ export function BottomNav() {
   const cart = useCart();
 
   const links = [
-    { href: "/discover", label: "Discover", icon: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5", match: ["/discover", "/menu", "/product"], count: 0 },
-    { href: "/pools", label: "Gangs", icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75", count: 0 },
-    { href: "/orders", label: "Orders", icon: "M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2", count: cart.totalItems },
-    { href: "/rewards", label: "Rewards", icon: "M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z", count: 0 },
+    { href: "/discover", label: "Home", icon: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5", match: ["/discover", "/menu", "/product"], count: 0 },
+    { href: "/search", label: "Search", icon: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35", match: ["/search"], count: 0 },
+    { href: "/pools", label: "Groups", icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75", count: 0 },
+    { href: "/orders", label: "Activity", icon: "M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2", count: cart.totalItems },
     { href: "/account", label: "Me", icon: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z", count: 0 },
   ];
 
@@ -31,7 +31,7 @@ export function BottomNav() {
           <div className="h-[48px] rounded-full flex items-center justify-between px-5 press-feedback" style={{ background: "#1C1C1E" }}>
             <div className="flex items-center gap-2">
               <span className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: "var(--coral)", color: "white" }}>{cart.totalItems}</span>
-              <span className="text-[13px] font-bold text-white">View plate</span>
+              <span className="text-[13px] font-bold text-white">View cart</span>
             </div>
             <span className="text-[14px] font-extrabold text-white tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(cart.subtotal)}</span>
           </div>

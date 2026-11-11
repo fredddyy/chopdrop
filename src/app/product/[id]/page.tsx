@@ -632,7 +632,7 @@ export default function ProductDetailPage() {
             {pool && !isPoolExpired && (
               <>
                 <div className="flex items-center justify-between text-[12px] font-extrabold">
-                  <span className="text-white">{memberCount}/{poolSize} plates claimed</span>
+                  <span className="text-white">{memberCount}/{poolSize} spots filled</span>
                   <span style={{ color: "var(--lime)" }}>{minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`}</span>
                 </div>
                 <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
@@ -647,7 +647,7 @@ export default function ProductDetailPage() {
             {pool && isPoolExpired && (
               <>
                 <div className="flex items-center justify-between text-[12px] font-extrabold">
-                  <span className="text-white">{memberCount}/{poolSize} plates claimed</span>
+                  <span className="text-white">{memberCount}/{poolSize} spots filled</span>
                   <span style={{ color: "var(--coral)" }}>Expired</span>
                 </div>
                 <div className="mt-2 h-[7px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
@@ -937,7 +937,7 @@ export default function ProductDetailPage() {
               {!pool && !isPoolExpired && (
                 <p className="text-[11px] font-bold mb-2 text-center" style={{ color: "var(--emerald)" }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="inline -mt-px mr-1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                  {poolSize <= 5 ? `Only ${poolSize} people needed. Pools this size usually fill fast.` : `${poolSize} people needed. Start it and share to your gang.`}
+                  {poolSize <= 5 ? `Only ${poolSize} people needed. Pools this size usually fill fast.` : `${poolSize} people needed. Start it and share with your group.`}
                 </p>
               )}
               <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}

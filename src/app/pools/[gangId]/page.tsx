@@ -128,12 +128,12 @@ export default function GangDetailPage() {
           </button>
         </div>
         <div className="py-16 text-center px-8">
-          <h2 className="text-[17px] font-extrabold" style={{ color: "var(--text)" }}>{error ? "Couldn\u2019t load gang" : "Gang not found"}</h2>
-          <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>{error ? "Check your connection and try again." : "This gang may not exist yet or the link is invalid."}</p>
+          <h2 className="text-[17px] font-extrabold" style={{ color: "var(--text)" }}>{error ? "Couldn\u2019t load group" : "Group not found"}</h2>
+          <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>{error ? "Check your connection and try again." : "This group may not exist yet or the link is invalid."}</p>
           {error ? (
             <button type="button" onClick={fetchData} className="h-[44px] px-5 rounded-full text-[13px] font-bold text-white mt-4 press-feedback" style={{ background: "var(--coral)" }}>Try again</button>
           ) : (
-            <button type="button" onClick={() => router.push("/pools")} className="h-[44px] px-5 rounded-full text-[13px] font-bold text-white mt-4 press-feedback" style={{ background: "var(--coral)" }}>Back to Gangs</button>
+            <button type="button" onClick={() => router.push("/pools")} className="h-[44px] px-5 rounded-full text-[13px] font-bold text-white mt-4 press-feedback" style={{ background: "var(--coral)" }}>Back to Groups</button>
           )}
         </div>
         <BottomNav />

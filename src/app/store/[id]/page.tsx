@@ -251,7 +251,7 @@ export default function StorePage() {
         return (
           <div className="px-5 mt-5">
             <div className="rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2" style={{ color: "var(--emerald)" }}>Gang group discount</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2" style={{ color: "var(--emerald)" }}>Group discount</p>
               <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Order together, save more</p>
               <div className="flex gap-2 mt-3">
                 {tiers.map((t) => (
@@ -262,17 +262,17 @@ export default function StorePage() {
                   </div>
                 ))}
               </div>
-              <p className="text-[11px] mt-3" style={{ color: "var(--subdued)" }}>Start a gang group order. Everyone pays full price upfront. After the deadline, your discount is credited back to your wallet.</p>
+              <p className="text-[11px] mt-3" style={{ color: "var(--subdued)" }}>Start a group order. Everyone pays full price upfront. After the deadline, your discount is credited back to your wallet.</p>
             </div>
           </div>
         );
       })()}
 
-      {/* ═══ CHOP TOGETHER — real pool data, hidden when expired ═══ */}
+      {/* ═══ GROUP DEALS — real pool data, hidden when expired ═══ */}
       {featured && (hasLivePool || featuredSav > 0) && (
         <section className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Chop together first</h3>
+            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Group deals</h3>
             {hasLivePool && (
               <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
                 {livePools.length} live pool{livePools.length !== 1 ? "s" : ""}

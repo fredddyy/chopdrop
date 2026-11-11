@@ -89,7 +89,7 @@ function ScratchCard({ canScratch, todayPrize, onClaim }: { canScratch: boolean;
         </div>
         <div className="rounded-[16px] p-6 text-center" style={{ background: "rgba(255,255,255,0.5)" }}>
           <p className="text-[44px] font-extrabold tabular-nums leading-none celebrate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "#1C1C1E" }}>{fp(displayPrize)}</p>
-          <p className="text-[14px] font-bold mt-2" style={{ color: "#1C1C1E" }}>Meal credit added!</p>
+          <p className="text-[14px] font-bold mt-2" style={{ color: "#1C1C1E" }}>Store credit added!</p>
         </div>
         <p className="text-[12px] mt-3 leading-[155%]" style={{ color: "#1C1C1E", opacity: 0.7 }}>
           Added to your wallet. Scratch again tomorrow.
@@ -103,7 +103,7 @@ function ScratchCard({ canScratch, todayPrize, onClaim }: { canScratch: boolean;
     return (
       <div className="p-5 rounded-[22px]" style={{ background: "#F8F8F6" }}>
         <p className="text-[12px] font-extrabold uppercase tracking-wide" style={{ color: "#1C1C1E" }}>Daily Scratch</p>
-        <p className="text-[13px] mt-2" style={{ color: "#1C1C1E", opacity: 0.7 }}>Log in to scratch and win meal credit.</p>
+        <p className="text-[13px] mt-2" style={{ color: "#1C1C1E", opacity: 0.7 }}>Log in to scratch and win store credit.</p>
       </div>
     );
   }
@@ -125,7 +125,7 @@ function ScratchCard({ canScratch, todayPrize, onClaim }: { canScratch: boolean;
           onTouchStart={() => setScratch(true)} onTouchEnd={() => setScratch(false)} onTouchMove={handleMove} />
       </div>
       <p className="text-[12px] mt-3 leading-[155%]" style={{ color: "#1C1C1E", opacity: 0.6 }}>
-        Scratch to reveal your prize. Win up to {fp(50000)} meal credit.
+        Scratch to reveal your prize. Win up to {fp(50000)} store credit.
       </p>
     </div>
   );
@@ -269,11 +269,11 @@ export default function RewardsPage() {
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Your little wins add up</p>
             <p className="text-[40px] font-extrabold tabular-nums leading-none text-white mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px" }}>{loading ? "—" : points}</p>
-            <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>Chop points · {poolsJoined} pools joined</p>
+            <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>Points · {poolsJoined} pools joined</p>
           </div>
           <div className="text-right">
             <p className="text-[28px] font-extrabold tabular-nums leading-none text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-1px" }}>{loading ? "—" : fp(walletBalance)}</p>
-            <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>meal credit</p>
+            <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>store credit</p>
           </div>
         </div>
       </div>
@@ -346,7 +346,7 @@ export default function RewardsPage() {
       {/* ── Footer ── */}
       <div className="px-5 mt-6 mb-4">
         <p className="text-[11px] leading-[155%]" style={{ color: "var(--text-muted)" }}>
-          Meal credit applies at checkout. Points and credit are separate balances; credit isn&apos;t cash.
+          Store credit applies at checkout. Points and credit are separate balances; credit isn&apos;t cash.
         </p>
       </div>
 
