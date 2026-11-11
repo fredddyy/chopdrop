@@ -676,7 +676,7 @@ export default function ProductDetailPage() {
                     {poolSize} people, {poolTimerHours}h window.
                   </h3>
                   <p className="text-[12px] mt-1.5 leading-[150%] max-w-[280px] mx-auto" style={{ color: "var(--subdued)" }}>
-                    Start it, share the link. Pool runs for {poolTimerHours} hour{poolTimerHours !== 1 ? "s" : ""}. If {poolSize} people join, everyone eats at the pool price. Doesn&apos;t fill? Full refund.
+                    Pool runs for {poolTimerHours} hour{poolTimerHours !== 1 ? "s" : ""}. When {poolSize} people join, everyone pays the pool price. Sharing helps it fill faster — but others can find it too. Doesn&apos;t fill? Full refund.
                   </p>
                 </div>
               </>
