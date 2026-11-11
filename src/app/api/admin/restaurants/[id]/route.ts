@@ -17,6 +17,8 @@ export async function PATCH(
   if (body.bannerUrl !== undefined) data.bannerUrl = body.bannerUrl;
   if (body.sortOrder !== undefined) data.sortOrder = body.sortOrder;
   if (body.isActive !== undefined) data.isActive = body.isActive;
+  if (body.latitude !== undefined) data.latitude = body.latitude;
+  if (body.longitude !== undefined) data.longitude = body.longitude;
   if (body.groupTiers !== undefined) data.groupTiers = body.groupTiers;
 
   const restaurant = await prisma.restaurant.update({
