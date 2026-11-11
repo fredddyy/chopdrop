@@ -32,6 +32,8 @@ interface Member {
   paymentStatus: string;
 }
 
+interface GroupTier { min: number; discount: number; }
+
 interface FullOrder {
   id: string;
   inviteCode: string;
@@ -39,9 +41,14 @@ interface FullOrder {
   deadline: string;
   deliveryAddress: string;
   deliveryFee: number;
+  settled?: boolean;
   restaurant: { id: string; name: string; imageUrl: string | null };
   coordinator: { id: string; firstName: string };
   members: Member[];
+  groupTiers?: GroupTier[];
+  paidMemberCount?: number;
+  currentDiscount?: number;
+  nextTier?: GroupTier | null;
 }
 
 interface MenuItem {
@@ -675,8 +682,34 @@ function GroupOrderInner() {
           Invite more people
         </a>
 
+        {/* -- Tier progress -- */}
+        {fullOrder.groupTiers && fullOrder.groupTiers.length > 0 && (
+          <div className="mt-6 rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--emerald)" }}>Group discount</p>
+              {(fullOrder.currentDiscount || 0) > 0 && (
+                <span className="text-[12px] font-extrabold" style={{ color: "var(--emerald)" }}>{fullOrder.currentDiscount}% off reached</span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              {fullOrder.groupTiers.map((t) => {
+                const reached = (fullOrder.paidMemberCount || 0) >= t.min;
+                return (
+                  <div key={t.min} className="flex-1 rounded-[8px] py-2 text-center" style={{ background: reached ? "rgba(13,159,95,0.15)" : "rgba(255,255,255,0.06)", border: reached ? "1px solid var(--emerald)" : "1px solid rgba(255,255,255,0.06)" }}>
+                    <p className="text-[14px] font-extrabold tabular-nums" style={{ color: reached ? "var(--emerald)" : "white" }}>{t.min}+</p>
+                    <p className="text-[10px]" style={{ color: reached ? "var(--emerald)" : "var(--subdued)" }}>{t.discount}% off</p>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-[11px] mt-2" style={{ color: "var(--subdued)" }}>
+              {fullOrder.paidMemberCount || 0} paid · {fullOrder.nextTier ? `${fullOrder.nextTier.min - (fullOrder.paidMemberCount || 0)} more for ${fullOrder.nextTier.discount}% off` : (fullOrder.currentDiscount || 0) > 0 ? "Top tier reached!" : "Get 3+ people to unlock discounts"}
+            </p>
+          </div>
+        )}
+
         {/* -- Members -- */}
-        <section className="mt-7">
+        <section className="mt-5">
           <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
             Members ({memberCount})
           </h2>

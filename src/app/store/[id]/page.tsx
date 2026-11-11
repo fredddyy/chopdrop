@@ -15,9 +15,16 @@ interface Product {
 interface StoreDetail {
   id: string; name: string; address: string; phone: string;
   imageUrl: string | null; bannerUrl: string | null;
+  groupTiers?: unknown;
   categories: string[]; products: Product[];
   combos: Array<{ id: string; name: string; description: string | null; imageUrl: string | null; price: number; originalPrice: number | null }>;
   menuCategories: Array<{ id: string; name: string; items: Array<{ id: string; name: string; description: string | null; imageUrl: string | null; price: number }> }>;
+}
+
+interface GroupTier { min: number; discount: number; }
+function parseStoreTiers(raw: unknown): GroupTier[] {
+  if (!raw || !Array.isArray(raw)) return [];
+  return raw.filter((t): t is GroupTier => typeof t === "object" && t !== null && typeof t.min === "number" && typeof t.discount === "number" && t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min);
 }
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
@@ -236,6 +243,30 @@ export default function StorePage() {
         </Link>
       </div>
 
+
+      {/* ═══ GROUP DISCOUNT TIERS — if restaurant has them ═══ */}
+      {(() => {
+        const tiers = parseStoreTiers(store.groupTiers);
+        if (tiers.length === 0) return null;
+        return (
+          <div className="px-5 mt-5">
+            <div className="rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2" style={{ color: "var(--emerald)" }}>Gang group discount</p>
+              <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Order together, save more</p>
+              <div className="flex gap-2 mt-3">
+                {tiers.map((t) => (
+                  <div key={t.min} className="flex-1 rounded-[10px] py-2 text-center" style={{ background: "rgba(255,255,255,0.08)" }}>
+                    <p className="text-[16px] font-extrabold text-white tabular-nums">{t.min}+</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: "var(--subdued)" }}>people</p>
+                    <p className="text-[12px] font-extrabold mt-1" style={{ color: "var(--emerald)" }}>{t.discount}% off</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[11px] mt-3" style={{ color: "var(--subdued)" }}>Start a gang group order. Everyone pays full price upfront. After the deadline, your discount is credited back to your wallet.</p>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ═══ CHOP TOGETHER — real pool data, hidden when expired ═══ */}
       {featured && (hasLivePool || featuredSav > 0) && (
