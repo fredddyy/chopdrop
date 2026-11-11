@@ -586,10 +586,10 @@ export default function ProductDetailPage() {
           <div className="rounded-[22px] overflow-hidden p-4" style={{ background: "var(--emerald-soft)" }}>
             <p className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>You&apos;re in! {Math.max(pool ? pool.memberCount : memberCount, 1)} of {pool ? pool.minSize : product.minPoolSize} needed</p>
             <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
-              {Math.max((pool ? pool.minSize : product.minPoolSize) - Math.max(pool ? pool.memberCount : memberCount, 1), 0)} more {Math.max((pool ? pool.minSize : product.minPoolSize) - Math.max(pool ? pool.memberCount : memberCount, 1), 0) === 1 ? "person" : "people"} and everyone eats.
-            </p>
-            <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
-              {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} more person and everyone eats.` : "More people needed and everyone eats."}
+              {(() => {
+                const left = Math.max((pool ? pool.minSize : product.minPoolSize) - Math.max(pool ? pool.memberCount : memberCount, 1), 0);
+                return left > 0 ? `${left} more ${left === 1 ? "person" : "people"} and everyone eats.` : "Pool is full!";
+              })()}
             </p>
             {/* You + others */}
             <div className="mt-3 flex items-center gap-2">
