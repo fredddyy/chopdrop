@@ -573,7 +573,7 @@ export default function ProductDetailPage() {
       {joinedStatus === "filling" && hasPoolPricing && (
         <div className="px-5 mt-4">
           <div className="rounded-[22px] overflow-hidden p-4" style={{ background: "var(--emerald-soft)" }}>
-            <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E" }}>You&apos;re in! {pool ? `${pool.memberCount} of ${pool.minSize}` : `${memberCount} of ${product.minPoolSize}`} needed</p>
+            <p className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>You&apos;re in! {Math.max(pool ? pool.memberCount : memberCount, 1)} of {pool ? pool.minSize : product.minPoolSize} needed</p>
             <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
               {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} more person and everyone eats.` : "More people needed and everyone eats."}
             </p>
