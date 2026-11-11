@@ -50,6 +50,12 @@ export interface DeliveryFeeResult {
  * Calculate delivery fee from store to user based on GPS coordinates.
  * Pass custom tiers from DB, or falls back to DEFAULT_TIERS.
  */
+/** Lagos road-distance multiplier — roads are ~40% longer than straight line */
+const ROAD_MULTIPLIER = 1.4;
+
+/** Minimum delivery fee in kobo — riders won't move for less */
+const MIN_DELIVERY_FEE = 50000; // ₦500
+
 export function calculateDeliveryFee(
   storeLat: number,
   storeLng: number,
@@ -57,12 +63,35 @@ export function calculateDeliveryFee(
   userLng: number,
   tiers?: DeliveryTier[],
 ): DeliveryFeeResult {
-  const distanceKm = haversineKm(storeLat, storeLng, userLat, userLng);
+  const straightLine = haversineKm(storeLat, storeLng, userLat, userLng);
+  const distanceKm = straightLine * ROAD_MULTIPLIER;
   const t = (tiers && tiers.length > 0 ? tiers : DEFAULT_TIERS).sort((a, b) => a.maxKm - b.maxKm);
   const tier = t.find((x) => distanceKm <= x.maxKm) ?? t[t.length - 1];
+  const fee = Math.max(tier.fee, MIN_DELIVERY_FEE);
   return {
     distanceKm: Math.round(distanceKm * 10) / 10,
-    fee: tier.fee,
-    feeNaira: tier.fee / 100,
+    fee,
+    feeNaira: fee / 100,
   };
+}
+
+/** Centralized tier loader — avoids duplicate DB reads across routes */
+export async function loadDeliveryTiers(prisma: { setting: { findUnique: (args: { where: { key: string } }) => Promise<{ value: unknown } | null> } }): Promise<DeliveryTier[]> {
+  try {
+    const setting = await prisma.setting.findUnique({ where: { key: "delivery-fee-tiers" } });
+    if (setting?.value && Array.isArray(setting.value)) return setting.value as unknown as DeliveryTier[];
+  } catch {}
+  return DEFAULT_TIERS;
+}
+
+/** All-in-one: load tiers from DB + calculate fee */
+export async function calculateDeliveryFeeAsync(
+  storeLat: number,
+  storeLng: number,
+  userLat: number,
+  userLng: number,
+  prisma: { setting: { findUnique: (args: { where: { key: string } }) => Promise<{ value: unknown } | null> } },
+): Promise<DeliveryFeeResult> {
+  const tiers = await loadDeliveryTiers(prisma);
+  return calculateDeliveryFee(storeLat, storeLng, userLat, userLng, tiers);
 }

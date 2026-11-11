@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
-import { calculateDeliveryFee, DEFAULT_TIERS } from "@/lib/delivery-fee";
-import type { DeliveryTier } from "@/lib/delivery-fee";
+import { calculateDeliveryFeeAsync } from "@/lib/delivery-fee";
 
 // POST /api/pools/:id/join — join an existing pool
 export async function POST(
@@ -44,21 +43,18 @@ export async function POST(
     return NextResponse.json({ success: false, error: "Pool is already full" }, { status: 400 });
   }
 
-  // Calculate delivery fee — always when user provides coordinates
+  // Calculate delivery fee using centralized loader
   let deliveryFee = 0;
   let fullDeliveryFee = 0;
   const storeLat = pool.product.vendor.latitude;
   const storeLng = pool.product.vendor.longitude;
 
   if (lat && lng && storeLat && storeLng) {
-    let tiers: DeliveryTier[] = DEFAULT_TIERS;
-    try {
-      const setting = await prisma.setting.findUnique({ where: { key: "delivery-fee-tiers" } });
-      if (setting?.value && Array.isArray(setting.value)) tiers = setting.value as unknown as DeliveryTier[];
-    } catch { /* use defaults */ }
-    fullDeliveryFee = calculateDeliveryFee(storeLat, storeLng, lat, lng, tiers).fee;
-    // Subsidize: split full fee across pool's minimum size
-    deliveryFee = Math.round(fullDeliveryFee / pool.product.minPoolSize);
+    const result = await calculateDeliveryFeeAsync(storeLat, storeLng, lat, lng, prisma);
+    fullDeliveryFee = result.fee;
+    // Count existing delivery members + this new one
+    const deliveryMemberCount = pool.members.filter((m: { deliveryFee: number }) => m.deliveryFee > 0).length + 1;
+    deliveryFee = Math.round(fullDeliveryFee / Math.max(deliveryMemberCount, 1));
   }
 
   // Add member + check if pool is now filled

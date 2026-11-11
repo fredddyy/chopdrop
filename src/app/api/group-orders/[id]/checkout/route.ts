@@ -26,7 +26,7 @@ export async function POST(
           deliveryFee: true,
           restaurantId: true,
           restaurant: { select: { name: true } },
-          members: { select: { id: true } },
+          members: { select: { id: true, fulfillmentType: true } },
         },
       },
     },
@@ -36,9 +36,12 @@ export async function POST(
   if (member.paymentStatus === "SUCCESS") return NextResponse.json({ success: false, error: "Already paid" }, { status: 400 });
   if (member.subtotal <= 0) return NextResponse.json({ success: false, error: "Add items before checkout" }, { status: 400 });
 
-  // Calculate delivery share: total delivery fee split evenly among members
-  const memberCount = member.groupOrder.members.length;
-  const deliveryShare = memberCount > 0 ? Math.round(member.groupOrder.deliveryFee / memberCount) : 0;
+  // Calculate delivery share: only delivery-requesting members pay
+  const deliveryMembers = member.groupOrder.members.filter((m: { fulfillmentType: string }) => m.fulfillmentType === "DELIVERY");
+  const isDeliveryMember = member.fulfillmentType === "DELIVERY";
+  const deliveryShare = isDeliveryMember && deliveryMembers.length > 0
+    ? Math.round(member.groupOrder.deliveryFee / deliveryMembers.length)
+    : 0;
   const total = member.subtotal + deliveryShare;
 
   // Generate unique payment reference

@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
-import { calculateDeliveryFee, DEFAULT_TIERS } from "@/lib/delivery-fee";
-import type { DeliveryTier } from "@/lib/delivery-fee";
+import { calculateDeliveryFeeAsync } from "@/lib/delivery-fee";
 import crypto from "crypto";
 import { parseGroupTiers, getGroupDiscount } from "@/lib/group-tier-pricing";
 
@@ -117,12 +116,8 @@ export async function POST(request: NextRequest) {
   const storeLng = restaurant.longitude;
 
   if (deliveryLat && deliveryLng && storeLat && storeLng) {
-    let tiers: DeliveryTier[] = DEFAULT_TIERS;
-    try {
-      const setting = await prisma.setting.findUnique({ where: { key: "delivery-fee-tiers" } });
-      if (setting?.value && Array.isArray(setting.value)) tiers = setting.value as unknown as DeliveryTier[];
-    } catch { /* use defaults */ }
-    deliveryFee = calculateDeliveryFee(storeLat, storeLng, deliveryLat, deliveryLng, tiers).fee;
+    const result = await calculateDeliveryFeeAsync(storeLat, storeLng, deliveryLat, deliveryLng, prisma);
+    deliveryFee = result.fee;
   }
 
   const result = await prisma.$transaction(async (tx) => {

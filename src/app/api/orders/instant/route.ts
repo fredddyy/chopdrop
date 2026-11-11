@@ -3,8 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
 import { initializeTransaction } from "@/lib/paystack";
-import { calculateDeliveryFee, DEFAULT_TIERS } from "@/lib/delivery-fee";
-import type { DeliveryTier } from "@/lib/delivery-fee";
+import { calculateDeliveryFeeAsync } from "@/lib/delivery-fee";
 
 // POST /api/orders/instant — solo order for a product (not pool)
 export async function POST(request: NextRequest) {
@@ -46,7 +45,7 @@ export async function POST(request: NextRequest) {
     if (meal) productName = meal.name;
   }
 
-  // Calculate delivery fee
+  // Calculate delivery fee using centralized loader
   let deliveryFee = 0;
   if (deliveryOption === "delivery" && lat && lng && product) {
     const vendor = await prisma.restaurant.findUnique({
@@ -54,12 +53,8 @@ export async function POST(request: NextRequest) {
       select: { latitude: true, longitude: true },
     });
     if (vendor?.latitude && vendor?.longitude) {
-      let tiers: DeliveryTier[] = DEFAULT_TIERS;
-      try {
-        const setting = await prisma.setting.findUnique({ where: { key: "delivery-fee-tiers" } });
-        if (setting?.value && Array.isArray(setting.value)) tiers = setting.value as unknown as DeliveryTier[];
-      } catch { /* use defaults */ }
-      deliveryFee = calculateDeliveryFee(vendor.latitude, vendor.longitude, lat, lng, tiers).fee;
+      const result = await calculateDeliveryFeeAsync(vendor.latitude, vendor.longitude, lat, lng, prisma);
+      deliveryFee = result.fee;
     }
   }
 
@@ -86,7 +81,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Payment initialization failed" }, { status: 500 });
   }
 
-  // Create InstantOrder record
+  // Create InstantOrder record — including delivery address + fulfillment type
   await prisma.instantOrder.create({
     data: {
       orderCode,
@@ -95,6 +90,10 @@ export async function POST(request: NextRequest) {
       quantity: items.reduce((sum, i) => sum + i.quantity, 0),
       unitPrice: items[0].price,
       totalAmount,
+      fulfillmentType: deliveryOption === "delivery" ? "DELIVERY" : "PICKUP",
+      deliveryAddress: deliveryOption === "delivery" && lat && lng ? `${lat},${lng}` : null,
+      deliveryLat: deliveryOption === "delivery" ? lat || null : null,
+      deliveryLng: deliveryOption === "delivery" ? lng || null : null,
       deliveryFee,
       serviceFee,
       paymentRef: reference,

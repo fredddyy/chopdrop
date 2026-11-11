@@ -426,6 +426,9 @@ model InstantOrder {
   unitPrice       Int                              // kobo — retail price at time of purchase
   totalAmount     Int                              // kobo
   deliveryAddress String?
+  deliveryLat     Float?
+  deliveryLng     Float?
+  fulfillmentType String        @default("PICKUP") // PICKUP | DELIVERY
   deliveryFee     Int           @default(0)        // kobo
   serviceFee      Int           @default(0)        // kobo
   paymentRef      String?       @unique
@@ -613,16 +616,18 @@ model GroupOrder {
 }
 
 model GroupOrderMember {
-  id            String        @id @default(cuid())
-  groupOrderId  String
-  userId        String
-  items         Json          @default("[]")
-  subtotal      Int           @default(0)
-  deliveryShare Int           @default(0)
-  paymentRef    String?       @unique
-  paymentStatus PaymentStatus @default(PENDING)
-  paidAt        DateTime?
-  createdAt     DateTime      @default(now())
+  id              String        @id @default(cuid())
+  groupOrderId    String
+  userId          String
+  items           Json          @default("[]")
+  subtotal        Int           @default(0)
+  deliveryShare   Int           @default(0)
+  fulfillmentType String        @default("PICKUP") // PICKUP | DELIVERY
+  deliveryAddress String?
+  paymentRef      String?       @unique
+  paymentStatus   PaymentStatus @default(PENDING)
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
 
   groupOrder GroupOrder @relation(fields: [groupOrderId], references: [id])
   user       User       @relation(fields: [userId], references: [id])
