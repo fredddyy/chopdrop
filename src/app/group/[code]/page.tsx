@@ -239,24 +239,13 @@ function GroupOrderInner() {
             // Check if current user is actually a member
             const meRes = await fetch("/api/auth/me");
             const meData = meRes.ok ? await meRes.json() : null;
+            if (meData?.success && !cancelled) setCurrentUserId(meData.data.id);
             const myId = meData?.success ? meData.data.id : null;
             const isActualMember = myId && fullData.data.members.some((m: { userId: string }) => m.userId === myId);
             if (isActualMember) {
               setIsMember(true);
-            } else if (myId && invData.data.status === "OPEN") {
-              // Auto-join if authenticated and order is still open
-              const joinRes = await fetch(`/api/group-orders/${invData.data.id}/join`, { method: "POST" });
-              const joinData = await joinRes.json();
-              if (joinData.success) {
-                // Refresh full order to get updated members
-                const refreshRes = await fetch(`/api/group-orders/${invData.data.id}`);
-                const refreshData = refreshRes.ok ? await refreshRes.json() : null;
-                if (refreshData?.success && !cancelled) setFullOrder(refreshData.data);
-                setIsMember(true);
-              } else if (joinData.error === "You already joined this group order") {
-                setIsMember(true);
-              }
             }
+            // Don't auto-join — let user see the order first and decide
           }
         }
       } catch {
@@ -620,7 +609,111 @@ function GroupOrderInner() {
     );
   }
 
-  // -- State B: Member view --
+  // -- State B1: Can see the order but not a member — show preview + join button --
+  if (fullOrder && !isMember) {
+    const previewDeadlinePassed = new Date(fullOrder.deadline).getTime() < Date.now();
+    const canJoin = fullOrder.status === "OPEN" && !previewDeadlinePassed && currentUserId;
+    return (
+      <main className="flex-1 max-w-[428px] mx-auto w-full min-h-screen pb-24" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-4 pb-10">
+          <button type="button" onClick={() => router.back()} aria-label="Go back" className="w-11 h-11 rounded-full flex items-center justify-center press-feedback mb-4" style={{ background: "var(--sand)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+
+          {/* Restaurant header */}
+          <div className="flex items-center gap-4">
+            {fullOrder.restaurant.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={fullOrder.restaurant.imageUrl} alt={fullOrder.restaurant.name} className="w-14 h-14 rounded-full object-cover shrink-0" />
+            )}
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Group Order</p>
+              <h1 className="text-[22px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fullOrder.restaurant.name}</h1>
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: canJoin ? "var(--emerald-soft)" : "var(--sand)", color: canJoin ? "var(--emerald)" : "var(--text-muted)" }}>
+              {canJoin ? "Accepting orders" : previewDeadlinePassed ? "Deadline passed" : fullOrder.status}
+            </span>
+            {canJoin && (
+              <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>{timeLeft(fullOrder.deadline)}</span>
+            )}
+          </div>
+
+          {/* Delivery address */}
+          <div className="flex items-start gap-2 mt-3">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="mt-0.5 shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+            <p className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{fullOrder.deliveryAddress}</p>
+          </div>
+
+          {/* Members preview */}
+          <div className="mt-5">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
+              {fullOrder.members.length} member{fullOrder.members.length !== 1 ? "s" : ""} so far
+            </p>
+            <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              {fullOrder.members.map((m, i) => (
+                <div key={m.id}>
+                  {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: m.userId === fullOrder.coordinator.id ? "var(--coral)" : "var(--dark)" }}>
+                      {m.firstName.charAt(0)}
+                    </div>
+                    <span className="text-[14px] font-medium" style={{ color: "var(--text)" }}>
+                      {m.firstName}{m.userId === fullOrder.coordinator.id ? " (organiser)" : ""}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Join CTA */}
+          {canJoin ? (
+            <button
+              type="button"
+              disabled={joining}
+              onClick={async () => {
+                setJoining(true);
+                try {
+                  const res = await fetch(`/api/group-orders/${fullOrder.id}/join`, { method: "POST" });
+                  const d = await res.json();
+                  if (d.success || d.error === "You already joined this group order") {
+                    setIsMember(true);
+                    await fetchFull(fullOrder.id);
+                  } else if (res.status === 401) {
+                    router.push(`/auth?returnTo=/group/${code}`);
+                  } else {
+                    alert(d.error || "Couldn\u2019t join");
+                  }
+                } catch { alert("Network error"); }
+                setJoining(false);
+              }}
+              className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-6 disabled:opacity-50"
+              style={{ background: "var(--coral)" }}
+            >
+              {joining ? "Joining\u2026" : "Join this order"}
+            </button>
+          ) : !currentUserId ? (
+            <a href={`/auth?returnTo=/group/${code}`}
+              className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-6"
+              style={{ background: "var(--coral)" }}>
+              Sign up to join
+            </a>
+          ) : (
+            <p className="text-[13px] text-center mt-6" style={{ color: "var(--text-muted)" }}>
+              {previewDeadlinePassed ? "This order\u2019s deadline has passed." : "This order is no longer accepting members."}
+            </p>
+          )}
+        </div>
+        <BottomNav />
+      </main>
+    );
+  }
+
+  // -- State B2: Member view --
   if (!fullOrder) return null;
 
   const deadlinePassed = new Date(fullOrder.deadline).getTime() < Date.now();
