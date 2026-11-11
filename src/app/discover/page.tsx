@@ -422,17 +422,17 @@ export default function DiscoverPage() {
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                     {userArea ? `${userArea} pickup` : "Pickup nearby"}
                   </div>
-                  {/* Social proof — avatar circles */}
-                  {featured.fill.joined >= 2 && (
+                  {/* Social proof — member count */}
+                  {featured.fill.joined >= 1 && (
                     <div className="flex items-center gap-2 mt-3">
                       <div className="flex -space-x-1.5">
                         {Array.from({ length: Math.min(featured.fill.joined, 3) }).map((_, i) => (
-                          <div key={i} className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length], border: "2px solid var(--dark)" }}>
-                            {String.fromCharCode(65 + ((featured.id.charCodeAt(i) + i) % 26))}
+                          <div key={i} className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length], border: "2px solid var(--dark)" }}>
+                            {i + 1}
                           </div>
                         ))}
                       </div>
-                      <span className="text-[11px]" style={{ color: "var(--subdued)" }}>{featured.fill.joined} people are in</span>
+                      <span className="text-[11px]" style={{ color: "var(--subdued)" }}>{featured.fill.joined} {featured.fill.joined === 1 ? "person is" : "people are"} in</span>
                     </div>
                   )}
                 </div>

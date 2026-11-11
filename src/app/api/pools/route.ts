@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
 
     const data = pools.map((p) => ({
       id: p.id,
+      productId: p.productId,
       name: p.name,
       areaName: p.areaName,
       status: p.status,
