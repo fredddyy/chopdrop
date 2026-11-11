@@ -32,6 +32,10 @@ interface PoolProduct {
   poolDeadline: string | null;
   vendor: { name: string; imageUrl?: string | null };
   poolMemberNames?: string[];
+  poolLastJoinedName?: string | null;
+  poolLastJoinedAt?: string | null;
+  isFlashDeal?: boolean;
+  flashPrice?: number | null;
 }
 
 function fmt(kobo: number): string {
@@ -155,6 +159,12 @@ export default function DiscoverPage() {
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [activeCategory, userLat, userLng]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // 30-second polling for live FOMO updates
+  useEffect(() => {
+    const interval = setInterval(() => { if (document.visibilityState === "visible" && !loading) fetchData(); }, 30000);
+    return () => clearInterval(interval);
+  }, [activeCategory, userLat, userLng, loading]); // eslint-disable-line react-hooks/exhaustive-deps
+
   async function fetchData(signal?: AbortSignal) {
     setLoading(true);
     setError(false);
@@ -198,8 +208,9 @@ export default function DiscoverPage() {
     ...p,
     fill: poolState(p.minPoolSize, p.poolMemberCount || 0),
   })).sort((a, b) => {
-    // Sort by fill rate (most full first) — pools about to fill show first
-    // Then by savings as tiebreaker
+    // Flash deals first, then by fill rate, then by savings
+    if (a.isFlashDeal && !b.isFlashDeal) return -1;
+    if (!a.isFlashDeal && b.isFlashDeal) return 1;
     if (b.fill.fillPct !== a.fill.fillPct) return b.fill.fillPct - a.fill.fillPct;
     const savA = ((a.retailPrice - a.groupPrice) / a.retailPrice);
     const savB = ((b.retailPrice - b.groupPrice) / b.retailPrice);
@@ -378,7 +389,12 @@ export default function DiscoverPage() {
                     </div>
                   )}
                   <div className="absolute top-3 left-3 flex gap-2">
-                    {isHot && (
+                    {featured.isFlashDeal && (
+                      <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "var(--coral)", color: "white", padding: "6px 10px" }}>
+                        Flash deal
+                      </span>
+                    )}
+                    {isHot && !featured.isFlashDeal && (
                       <span className="text-[10px] font-extrabold rounded-full uppercase tracking-wide" style={{ background: "var(--lime)", color: "var(--text)", padding: "6px 10px" }}>
                         Only {featured.fill.spotsLeft} spot{featured.fill.spotsLeft !== 1 ? "s" : ""}
                       </span>
@@ -438,6 +454,18 @@ export default function DiscoverPage() {
                       <span className="text-[11px]" style={{ color: "var(--subdued)" }}>{featured.fill.joined} {featured.fill.joined === 1 ? "person is" : "people are"} in</span>
                     </div>
                   )}
+                  {/* FOMO: recent join */}
+                  {featured.poolLastJoinedName && featured.poolLastJoinedAt && (() => {
+                    const agoMs = Date.now() - new Date(featured.poolLastJoinedAt).getTime();
+                    const agoMin = Math.round(agoMs / 60000);
+                    if (agoMin > 30) return null;
+                    return (
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--emerald)", animation: "pulse 2s ease-in-out infinite" }} />
+                        <span className="text-[11px]" style={{ color: "var(--emerald)" }}>{featured.poolLastJoinedName} joined {agoMin <= 1 ? "just now" : `${agoMin}m ago`}</span>
+                      </div>
+                    );
+                  })()}
                 </div>
               </Link>
             );

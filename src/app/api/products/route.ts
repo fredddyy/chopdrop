@@ -46,15 +46,23 @@ export async function GET(request: NextRequest) {
     where: { productId: { in: productIds }, status: "OPEN", deadline: { gt: new Date() } },
     select: {
       productId: true, _count: { select: { members: true } }, minSize: true, deadline: true,
-      members: { select: { user: { select: { firstName: true } } }, take: 3, orderBy: { createdAt: "asc" } },
+      isFlashDeal: true, flashPrice: true,
+      members: { select: { user: { select: { firstName: true } }, createdAt: true }, take: 3, orderBy: { createdAt: "desc" } },
     },
   });
-  const poolMap = new Map(pools.map(p => [p.productId, {
-    memberCount: p._count.members,
-    minSize: p.minSize,
-    deadline: p.deadline,
-    memberNames: p.members.map(m => m.user.firstName),
-  }]));
+  const poolMap = new Map(pools.map(p => {
+    const mostRecent = p.members[0]; // ordered desc, so first is newest
+    return [p.productId, {
+      memberCount: p._count.members,
+      minSize: p.minSize,
+      deadline: p.deadline,
+      memberNames: p.members.map(m => m.user.firstName),
+      lastJoinedName: mostRecent?.user.firstName || null,
+      lastJoinedAt: mostRecent?.createdAt?.toISOString() || null,
+      isFlashDeal: p.isFlashDeal,
+      flashPrice: p.flashPrice,
+    }];
+  }));
 
   const enriched = products.map(p => {
     const poolData = poolMap.get(p.id);
@@ -64,6 +72,12 @@ export async function GET(request: NextRequest) {
       minPoolSize: poolData?.minSize || p.minPoolSize,
       poolDeadline: poolData?.deadline?.toISOString() || null,
       poolMemberNames: poolData?.memberNames || [],
+      poolLastJoinedName: poolData?.lastJoinedName || null,
+      poolLastJoinedAt: poolData?.lastJoinedAt || null,
+      isFlashDeal: poolData?.isFlashDeal || false,
+      flashPrice: poolData?.flashPrice || null,
+      // Override groupPrice if flash deal
+      groupPrice: poolData?.isFlashDeal && poolData.flashPrice ? poolData.flashPrice : p.groupPrice,
     };
   });
 

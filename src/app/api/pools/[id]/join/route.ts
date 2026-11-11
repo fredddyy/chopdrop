@@ -57,6 +57,9 @@ export async function POST(
     deliveryFee = Math.round(fullDeliveryFee / Math.max(deliveryMemberCount, 1));
   }
 
+  // Use flash price if this is a flash deal, otherwise group price
+  const effectivePrice = pool.isFlashDeal && pool.flashPrice ? pool.flashPrice : pool.product.groupPrice;
+
   // Add member + check if pool is now filled
   const result = await prisma.$transaction(async (tx) => {
     const member = await tx.poolMember.create({
@@ -64,8 +67,8 @@ export async function POST(
         poolId: id,
         userId: user.id,
         quantity,
-        unitPrice: pool.product.groupPrice,
-        totalAmount: pool.product.groupPrice * quantity,
+        unitPrice: effectivePrice,
+        totalAmount: effectivePrice * quantity,
         deliveryAddress: deliveryAddress || null,
         deliveryLat: lat || null,
         deliveryLng: lng || null,
@@ -92,8 +95,8 @@ export async function POST(
       poolId: id,
       memberCount: result.memberCount,
       filled: result.filled,
-      unitPrice: pool.product.groupPrice,
-      totalAmount: pool.product.groupPrice * quantity,
+      unitPrice: effectivePrice,
+      totalAmount: effectivePrice * quantity,
       deliveryFee,
       fullDeliveryFee,
       subsidizedFee: deliveryFee,

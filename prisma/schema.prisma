@@ -473,6 +473,8 @@ model Pool {
   status      PoolStatus @default(OPEN)
   minSize     Int        // copied from product.minPoolSize at creation
   deadline    DateTime   // when the pool expires
+  isFlashDeal Boolean    @default(false)
+  flashPrice  Int?       // kobo — admin-set flash price, overrides groupPrice
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
