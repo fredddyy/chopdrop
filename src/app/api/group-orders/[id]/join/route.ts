@@ -36,6 +36,18 @@ export async function POST(
     },
   });
 
+  // Auto-add to gang if this group order is linked to one
+  if (groupOrder.gangId) {
+    const existingGangMember = await prisma.gangMember.findUnique({
+      where: { gangId_userId: { gangId: groupOrder.gangId, userId: user.id } },
+    });
+    if (!existingGangMember) {
+      await prisma.gangMember.create({
+        data: { gangId: groupOrder.gangId, userId: user.id, role: "MEMBER" },
+      }).catch(() => {}); // silently skip if unique constraint race
+    }
+  }
+
   return NextResponse.json({
     success: true,
     data: {
