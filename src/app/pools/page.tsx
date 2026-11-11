@@ -24,6 +24,7 @@ export default function GangsPage() {
   const [inviteLink, setInviteLink] = useState("");
   const [joining, setJoining] = useState(false);
   const [joinError, setJoinError] = useState("");
+  const [flashDeal, setFlashDeal] = useState<{ productName: string; flashPrice: number; retailPrice: number; minSize: number; memberCount: number; deadline: string; productId: string } | null>(null);
 
   const fetchGangs = useCallback(() => {
     setLoading(true);
@@ -39,6 +40,16 @@ export default function GangsPage() {
   }, []);
 
   useEffect(() => { fetchGangs(); }, [fetchGangs]);
+
+  // Fetch active flash deal
+  useEffect(() => {
+    fetch("/api/products?category=Food&limit=20").then(r => r.json()).then(d => {
+      if (d.success) {
+        const flash = d.data.find((p: { isFlashDeal?: boolean; poolDeadline?: string }) => p.isFlashDeal && p.poolDeadline && new Date(p.poolDeadline) > new Date());
+        if (flash) setFlashDeal({ productName: flash.name, flashPrice: flash.groupPrice, retailPrice: flash.retailPrice, minSize: flash.minPoolSize, memberCount: flash.poolMemberCount, deadline: flash.poolDeadline, productId: flash.id });
+      }
+    }).catch(() => {});
+  }, []);
 
   async function handleJoinInvite() {
     const link = inviteLink.trim();
@@ -95,6 +106,32 @@ export default function GangsPage() {
           More people in your gang = cheaper plates for everyone.
         </p>
       </div>
+
+      {/* ── Flash deal teaser ── */}
+      {flashDeal && (() => {
+        const fp = (k: number) => "\u20A6" + (k / 100).toLocaleString();
+        const mins = Math.max(0, Math.round((new Date(flashDeal.deadline).getTime() - Date.now()) / 60000));
+        const sav = Math.round(((flashDeal.retailPrice - flashDeal.flashPrice) / flashDeal.retailPrice) * 100);
+        return (
+          <Link href={`/product/${flashDeal.productId}`} className="mx-5 mt-5 block rounded-[16px] p-4 press-feedback" style={{ background: "var(--coral)" }}>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[9px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded text-white" style={{ background: "rgba(255,255,255,0.2)" }}>Flash deal</span>
+                  <span className="text-[11px] font-extrabold text-white">{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m left`}</span>
+                </div>
+                <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{flashDeal.productName}</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.7)" }}>{flashDeal.memberCount}/{flashDeal.minSize} joined</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-[22px] font-extrabold text-white tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(flashDeal.flashPrice)}</p>
+                <p className="text-[11px] line-through" style={{ color: "rgba(255,255,255,0.5)" }}>{fp(flashDeal.retailPrice)}</p>
+                <p className="text-[10px] font-bold mt-0.5 text-white">{sav}% off</p>
+              </div>
+            </div>
+          </Link>
+        );
+      })()}
 
       {/* ── Content ── */}
       {loading ? (
