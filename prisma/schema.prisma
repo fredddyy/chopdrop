@@ -25,6 +25,7 @@ model User {
   office            Office?            @relation(fields: [officeId], references: [id])
   orders            Order[]
   instantOrders     InstantOrder[]
+  demandRequests    DemandRequest[]    @relation("DemandRequests")
   walletId          String?
   wallet            CreditWallet?      @relation(fields: [walletId], references: [id])
   pushSubscriptions PushSubscription[]
@@ -412,9 +413,10 @@ model Product {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  vendor        Restaurant     @relation(fields: [vendorId], references: [id])
-  instantOrders InstantOrder[]
-  pools         Pool[]
+  vendor         Restaurant      @relation(fields: [vendorId], references: [id])
+  instantOrders  InstantOrder[]
+  pools          Pool[]
+  demandRequests DemandRequest[]
 }
 
 model InstantOrder {
@@ -439,6 +441,23 @@ model InstantOrder {
 
   product Product @relation(fields: [productId], references: [id])
   user    User    @relation(fields: [userId], references: [id])
+}
+
+// ═══════════════════════════════════════
+// DEMAND REQUESTS — Pre-pool interest signals
+// ═══════════════════════════════════════
+
+model DemandRequest {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  areaName  String?
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+  user    User    @relation("DemandRequests", fields: [userId], references: [id])
+
+  @@unique([productId, userId])
 }
 
 // ═══════════════════════════════════════
