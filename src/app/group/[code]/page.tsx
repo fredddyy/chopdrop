@@ -710,6 +710,34 @@ function GroupOrderInner() {
           Invite more people
         </a>
 
+        {/* -- Cancel order (coordinator only, while still open) -- */}
+        {currentUserId === fullOrder.coordinator.id && isStillAccepting && (
+          <button
+            type="button"
+            className="mt-4 text-[12px] font-bold press-feedback block"
+            style={{ color: "var(--text-muted)" }}
+            onClick={async () => {
+              const paidCount = fullOrder.members.filter(m => m.paymentStatus === "SUCCESS").length;
+              const msg = paidCount > 0
+                ? `Cancel this order? ${paidCount} paid member${paidCount !== 1 ? "s" : ""} will be refunded to their wallet.`
+                : "Cancel this group order?";
+              if (!confirm(msg)) return;
+              try {
+                const res = await fetch(`/api/group-orders/${fullOrder.id}/cancel`, { method: "POST" });
+                const d = await res.json();
+                if (d.success) {
+                  alert(d.data.message);
+                  router.push("/pools");
+                } else {
+                  alert(d.error || "Couldn\u2019t cancel");
+                }
+              } catch { alert("Network error"); }
+            }}
+          >
+            Cancel this order
+          </button>
+        )}
+
         {/* -- Tier progress -- */}
         {fullOrder.groupTiers && fullOrder.groupTiers.length > 0 && (
           <div className="mt-6 rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
