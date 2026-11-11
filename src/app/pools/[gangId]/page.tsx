@@ -32,7 +32,7 @@ interface GangData {
   campus: string | null;
   deliveryAddress: string | null;
   inviteCode: string;
-  members: Array<{ id: string; role: string; joinedAt: string; firstName: string; user?: { firstName: string } }>;
+  members: Array<{ id: string; userId: string; role: string; joinedAt: string; firstName: string; user?: { firstName: string } }>;
 }
 
 export default function GangDetailPage() {
@@ -44,6 +44,12 @@ export default function GangDetailPage() {
   const [error, setError] = useState(false);
   const [tab, setTab] = useState<Tab>("orders");
   const [copied, setCopied] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [joining, setJoining] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/me").then(r => r.json()).then(d => { if (d.success) setCurrentUserId(d.data.id); }).catch(() => {});
+  }, []);
 
   const fetchData = useCallback(() => {
     setLoading(true);
@@ -60,6 +66,24 @@ export default function GangDetailPage() {
   }, [gangId]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  // null = still loading auth, true = member, false = not member or not logged in
+  const isMember = gang ? (currentUserId ? gang.members.some(m => m.userId === currentUserId) : false) : null;
+  const isLoggedIn = currentUserId !== null;
+
+  async function handleJoinGang() {
+    setJoining(true);
+    try {
+      const res = await fetch(`/api/gangs/${gangId}/join`, { method: "POST" });
+      const d = await res.json();
+      if (d.success) {
+        fetchData(); // Refresh to show updated member list
+      } else if (d.error === "Not authenticated") {
+        router.push(`/auth?returnTo=/pools/${gangId}`);
+      }
+    } catch {}
+    setJoining(false);
+  }
 
   if (loading) {
     return (
@@ -121,6 +145,86 @@ export default function GangDetailPage() {
   const initial = gang.emoji?.length === 1 && /[A-Za-z]/.test(gang.emoji)
     ? gang.emoji.toUpperCase()
     : gang.name.charAt(0).toUpperCase();
+
+  // ── Not a member — show join screen ──
+  if (isMember === false) {
+    return (
+      <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-4">
+          <button type="button" onClick={() => router.back()} aria-label="Go back" className="w-11 h-11 rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--sand)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+        </div>
+
+        {/* Gang intro card */}
+        <div className="px-5 mt-6">
+          <div className="rounded-[16px] p-6 text-center" style={{ background: "var(--dark)" }}>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center text-[28px] font-extrabold text-white mx-auto mb-4" style={{ background: faceColor }}>
+              {initial}
+            </div>
+            <h1 className="text-[24px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{gang.name}</h1>
+            {gang.motto && <p className="text-[13px] mt-1" style={{ color: "var(--subdued)" }}>&ldquo;{gang.motto}&rdquo;</p>}
+            <p className="text-[13px] mt-2" style={{ color: "var(--subdued)" }}>
+              {gang.members.length} member{gang.members.length !== 1 ? "s" : ""}{gang.campus ? ` · ${gang.campus}` : ""}
+            </p>
+
+            {/* Member avatars */}
+            <div className="flex items-center justify-center gap-1 mt-4">
+              <div className="flex -space-x-2">
+                {gang.members.slice(0, 5).map((m, i) => (
+                  <div key={m.id} className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: FACE_COLORS[i % FACE_COLORS.length], border: "2px solid var(--dark)" }}>
+                    {(m.firstName || m.user?.firstName || "?").charAt(0)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Why join */}
+        <div className="px-5 mt-5 space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald-soft)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+            </div>
+            <div>
+              <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Order together</p>
+              <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>Pick a restaurant, everyone adds their items, split delivery.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald-soft)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            </div>
+            <div>
+              <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Save more together</p>
+              <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>3+ people ordering = group discounts on every meal.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Join CTA */}
+        <div className="px-5 mt-6">
+          {isLoggedIn ? (
+            <button type="button" onClick={handleJoinGang} disabled={joining}
+              className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback disabled:opacity-50"
+              style={{ background: "var(--coral)" }}>
+              {joining ? "Joining\u2026" : `Join ${gang.name}`}
+            </button>
+          ) : (
+            <a href={`/auth?returnTo=/pools/${gangId}`}
+              className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback"
+              style={{ background: "var(--coral)" }}>
+              Sign up to join
+            </a>
+          )}
+          <p className="text-[11px] text-center mt-3" style={{ color: "var(--text-muted)" }}>Free to join. {isLoggedIn ? "You can leave anytime." : "Takes 30 seconds."}</p>
+        </div>
+
+        <BottomNav />
+      </main>
+    );
+  }
 
   return (
     <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
