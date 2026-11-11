@@ -177,51 +177,52 @@ export default function GangsPage() {
         </div>
       )}
 
-      {/* ── Join via invite ── */}
+      {/* ── How it works — dark card with tiers ── */}
       <div className="px-5 mt-6">
-        <div className="p-4 rounded-[16px]" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-          <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Got an invite?</h3>
-          <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>Paste a gang link from your friends.</p>
-          <div className="mt-3 flex gap-2">
-            <input
-              type="url"
-              placeholder="Paste invite link"
-              value={inviteLink}
-              onChange={(e) => { setInviteLink(e.target.value); setJoinError(""); }}
-              onKeyDown={(e) => { if (e.key === "Enter") handleJoinInvite(); }}
-              aria-label="Gang invite link"
-              className="flex-1 h-[44px] px-3.5 rounded-[12px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] min-w-0"
-              style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }}
-            />
-            <button
-              type="button"
-              onClick={handleJoinInvite}
-              disabled={!inviteLink.trim() || joining}
-              className="h-[44px] px-4 rounded-full text-[13px] font-bold text-white press-feedback disabled:opacity-50 shrink-0"
-              style={{ background: "var(--coral)" }}
-            >
-              {joining ? "Joining\u2026" : "Join"}
-            </button>
+        <div className="rounded-[16px] p-5" style={{ background: "var(--dark)" }}>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--emerald)" }}>How gangs save</p>
+          <p className="text-[16px] font-extrabold text-white mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>More people ordering = bigger discount</p>
+          <div className="flex gap-2 mt-3">
+            {[
+              { n: "3+", save: "10%" },
+              { n: "5+", save: "20%" },
+              { n: "10+", save: "30%" },
+            ].map((tier) => (
+              <div key={tier.n} className="flex-1 rounded-[10px] py-2.5 text-center" style={{ background: "rgba(255,255,255,0.08)" }}>
+                <p className="text-[16px] font-extrabold tabular-nums leading-none text-white">{tier.n}</p>
+                <p className="text-[10px] mt-0.5" style={{ color: "var(--subdued)" }}>people</p>
+                <p className="text-[11px] font-extrabold mt-0.5" style={{ color: "var(--emerald)" }}>{tier.save} off</p>
+              </div>
+            ))}
           </div>
-          {joinError && <p className="text-[11px] font-bold mt-2" style={{ color: "var(--coral)" }}>{joinError}</p>}
+          <p className="text-[11px] mt-3" style={{ color: "var(--subdued)" }}>Everyone pays full price upfront. Discount credited back after the order closes.</p>
         </div>
       </div>
 
-      {/* ── Value hook ── */}
+      {/* ── Join via invite — compact ── */}
       <div className="px-5 mt-5 mb-4">
         <div className="flex gap-2">
-          {[
-            { n: "3+", save: "10% off" },
-            { n: "5+", save: "20% off" },
-            { n: "10+", save: "30% off" },
-          ].map((tier) => (
-            <div key={tier.n} className="flex-1 rounded-[12px] py-2.5 text-center" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{tier.n}</p>
-              <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>people</p>
-              <p className="text-[11px] font-extrabold mt-0.5" style={{ color: "var(--emerald)" }}>{tier.save}</p>
-            </div>
-          ))}
+          <input
+            type="url"
+            placeholder="Paste a gang invite link"
+            value={inviteLink}
+            onChange={(e) => { setInviteLink(e.target.value); setJoinError(""); }}
+            onKeyDown={(e) => { if (e.key === "Enter") handleJoinInvite(); }}
+            aria-label="Gang invite link"
+            className="flex-1 h-[44px] px-3.5 rounded-[12px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] min-w-0"
+            style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
+          />
+          <button
+            type="button"
+            onClick={handleJoinInvite}
+            disabled={!inviteLink.trim() || joining}
+            className="h-[44px] px-4 rounded-full text-[13px] font-bold text-white press-feedback disabled:opacity-50 shrink-0"
+            style={{ background: "var(--dark)" }}
+          >
+            {joining ? "Joining\u2026" : "Join"}
+          </button>
         </div>
+        {joinError && <p className="text-[11px] font-bold mt-2" style={{ color: "var(--coral)" }}>{joinError}</p>}
       </div>
 
       <BottomNav />
