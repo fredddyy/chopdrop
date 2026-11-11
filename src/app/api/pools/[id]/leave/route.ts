@@ -27,9 +27,9 @@ export async function POST(
     return NextResponse.json({ success: false, error: "You are not a member of this pool" }, { status: 404 });
   }
 
-  // Check if pool is expired — always allow refund for expired pools
-  const pool = await prisma.pool.findUnique({ where: { id }, select: { status: true } });
-  const isExpired = pool?.status === "EXPIRED" || pool?.status === "CANCELLED";
+  // Check if pool is expired — always allow refund for expired/past-deadline pools
+  const pool = await prisma.pool.findUnique({ where: { id }, select: { status: true, deadline: true } });
+  const isExpired = pool?.status === "EXPIRED" || pool?.status === "CANCELLED" || (pool?.deadline && pool.deadline < new Date());
 
   // Check refund window (30 minutes from join time) — skip for expired pools
   if (!isExpired) {
