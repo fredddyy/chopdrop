@@ -241,7 +241,7 @@ export default function CartPage() {
                         {!packContainer && (
                           <div className="py-2.5 flex items-center gap-1.5" style={{ borderTop: packItems.length > 0 ? "1px solid var(--border)" : "none" }}>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
-                            <span className="text-[12px] font-semibold" style={{ color: "var(--coral)" }}>No pack selected — add a pack size</span>
+                            <span className="text-[12px] font-semibold" style={{ color: "var(--coral)" }}>No pack selected. Add a pack size</span>
                           </div>
                         )}
                       </div>

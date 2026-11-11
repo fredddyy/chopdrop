@@ -436,7 +436,7 @@ function ConfirmationContent() {
         {officeConnected && (
           <div className="rounded-[14px] p-3 flex items-center gap-2" style={{ background: "var(--emerald-soft)" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
-            <span className="text-[13px] font-semibold" style={{ color: "var(--emerald)" }}>Group connected — free delivery next time</span>
+            <span className="text-[13px] font-semibold" style={{ color: "var(--emerald)" }}>Group connected. Free delivery next time</span>
           </div>
         )}
 

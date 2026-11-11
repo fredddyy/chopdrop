@@ -256,7 +256,7 @@ export default function Home() {
         <div className="max-w-[800px] mx-auto px-5 lg:px-8">
           <R>
             <h2 className="text-[clamp(26px,4vw,40px)] font-extrabold text-[var(--text)] tracking-[-0.02em] mb-3">The more people join, the better everyone&apos;s price</h2>
-            <p className="text-[17px] text-[var(--text-secondary)] leading-relaxed mb-10">Slide to see your group savings. Everyone gets the final price — even if you joined first.</p>
+            <p className="text-[17px] text-[var(--text-secondary)] leading-relaxed mb-10">Slide to see your group savings. Everyone gets the final price, even if you joined first.</p>
           </R>
           <R d={80}><Calc /></R>
         </div>
@@ -423,8 +423,8 @@ export default function Home() {
           {[
             { q: "Is it really free?", a: "Yes. No subscription, no hidden fees. Vendors pay a small commission for guaranteed orders." },
             { q: "What if the group doesn\u2019t fill?", a: "Full refund. Every kobo back. You only pay the group price when enough people join." },
-            { q: "What can I buy?", a: "Food, electronics, fashion, groceries — anything our partner stores sell. New stores join every week." },
-            { q: "What stores are available?", a: "Vetted local vendors near you — The Place, Kilimanjaro, Mama Tola\u2019s, and more. Have a favourite? We\u2019ll onboard them." },
+            { q: "What can I buy?", a: "Food, electronics, fashion, groceries. Anything our partner stores sell. New stores join every week." },
+            { q: "What stores are available?", a: "Vetted local vendors near you. The Place, Kilimanjaro, Mama Tola\u2019s, and more. Have a favourite? We\u2019ll onboard them." },
             { q: "How does payment work?", a: "Everyone pays via card or bank transfer through Paystack. No collecting cash. No chasing anyone." },
           ].map((item, i) => (
             <R key={i} d={i * 30}>

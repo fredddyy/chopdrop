@@ -224,7 +224,7 @@ const steps = [
     icon: "truck" as IconName,
     number: "03",
     title: "₦0 Delivery for Groups",
-    copy: "When your group orders together, delivery is free — one trip, no hassle.",
+    copy: "When your group orders together, delivery is free. One trip, no hassle.",
   },
   {
     icon: "copy" as IconName,

@@ -337,7 +337,7 @@ export default function RewardsPage() {
               </div>
             ))}
           </div>
-          <button className="mt-4 text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }} onClick={() => { if (navigator.share) navigator.share({ title: "ChopDrop", text: "Join me on ChopDrop — pool orders and save!", url: window.location.origin }); }}>
+          <button className="mt-4 text-[13px] font-bold cursor-pointer" style={{ color: "var(--coral)" }} onClick={() => { if (navigator.share) navigator.share({ title: "ChopDrop", text: "Join me on ChopDrop. Pool orders and save!", url: window.location.origin }); }}>
             Invite a friend · Earn ₦200 credit →
           </button>
         </div>

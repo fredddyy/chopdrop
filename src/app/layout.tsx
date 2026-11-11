@@ -4,12 +4,12 @@ import { DialogProvider } from "@/components/dialog";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ChopDrop — Pool Together, Pay Less",
+  title: "ChopDrop · Pool Together, Pay Less",
   description:
-    "Join group buys with people nearby and save 15-35%. More people join, everyone pays less. Food, electronics, fashion, groceries — all cheaper together.",
+    "Join group buys with people nearby and save 15-35%. More people join, everyone pays less. Food, electronics, fashion, groceries. All cheaper together.",
   manifest: "/manifest.json",
   openGraph: {
-    title: "ChopDrop — Pool Together, Pay Less",
+    title: "ChopDrop · Pool Together, Pay Less",
     description: "Pool orders with people nearby. More people = lower prices for everyone.",
     url: "https://chopdrop-app.vercel.app",
     siteName: "ChopDrop",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ChopDrop — Pool Together, Pay Less",
+    title: "ChopDrop · Pool Together, Pay Less",
     description: "Pool orders with people nearby. More people = lower prices for everyone.",
   },
   appleWebApp: {

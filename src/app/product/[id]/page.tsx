@@ -676,7 +676,7 @@ export default function ProductDetailPage() {
                     {poolSize} people, {poolTimerHours}h window.
                   </h3>
                   <p className="text-[12px] mt-1.5 leading-[150%] max-w-[280px] mx-auto" style={{ color: "var(--subdued)" }}>
-                    Pool runs for {poolTimerHours} hour{poolTimerHours !== 1 ? "s" : ""}. When {poolSize} people join, everyone pays the pool price. Sharing helps it fill faster — but others can find it too. Doesn&apos;t fill? Full refund.
+                    Pool runs for {poolTimerHours} hour{poolTimerHours !== 1 ? "s" : ""}. When {poolSize} people join, everyone pays the pool price. Sharing helps it fill faster, but others can find it too. Doesn&apos;t fill? Full refund.
                   </p>
                 </div>
               </>
@@ -807,7 +807,7 @@ export default function ProductDetailPage() {
                 className="w-full h-[54px] rounded-full flex items-center justify-center gap-2 px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
                 style={{ background: "var(--coral)" }}
                 onClick={() => { if (navigator.share) navigator.share({ title: `Join my ChopDrop pool!`, text: `${product.name} for ${fp(product.groupPrice)}. We need more people or the pool expires and nobody eats! Join: ${window.location.href}`, url: window.location.href }).catch(() => {}); }}>
-                Share to WhatsApp — Fill It
+                Share to fill it
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
               </button>
               <button type="button" onClick={() => setLeaveOpen(true)} className="text-[12px] font-semibold mt-3 mx-auto block cursor-pointer" style={{ color: "var(--text-muted)" }}>
@@ -862,7 +862,7 @@ export default function ProductDetailPage() {
                 </div>
                 <p className="text-[16px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Pool didn&apos;t fill this time</p>
                 <p className="text-[13px] mt-1" style={{ color: "var(--subdued)" }}>
-                  Not enough people joined before the deadline. Your {fp(joinedPrice || product.groupPrice)} is safe — choose what to do next.
+                  Not enough people joined before the deadline. Your {fp(joinedPrice || product.groupPrice)} is safe. Choose what to do next.
                 </p>
               </div>
 
@@ -980,7 +980,7 @@ export default function ProductDetailPage() {
               <button type="button" onClick={addSolo}
                 className="w-full h-[40px] rounded-full flex items-center justify-center text-[12px] font-bold mt-2 cursor-pointer press-feedback"
                 style={{ background: "var(--sand)", color: "#1C1C1E" }}>
-                Add to plate — {fp(product.retailPrice)}
+                Add to plate · {fp(product.retailPrice)}
               </button>
             </>
           )}

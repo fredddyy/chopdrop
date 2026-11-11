@@ -167,7 +167,7 @@ export default function GangsPage() {
           <div className="p-5 rounded-[16px]" style={{ background: "#1C1C1E" }}>
             <h3 className="text-[18px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Start your crew.</h3>
             <p className="text-[13px] mt-1 leading-[155%]" style={{ color: "var(--subdued)" }}>
-              Friends, neighbours, colleagues — your regular food crew. Order together, split delivery, save up to 30%.
+              Friends, neighbours, colleagues. Your regular food crew. Order together, split delivery, save up to 30%.
             </p>
             <Link href="/pools/create" className="mt-4 h-[50px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
               <span>Create a gang</span>

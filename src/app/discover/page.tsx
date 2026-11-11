@@ -310,7 +310,7 @@ export default function DiscoverPage() {
               {activeCategory === "Food" ? "Oya, what\u2019s for lunch?" : activeCategory === "Electronics" ? "Oya, what\u2019s the gadget?" : activeCategory === "Fashion" ? "Oya, what\u2019s the drip?" : "Oya, what do you need?"}
             </h1>
             <p className="text-[14px] font-semibold mt-1.5" style={{ color: "var(--text-secondary)" }}>
-              {activeCategory === "Food" ? "More people ordering = cheaper plates. Up to 30% off." : activeCategory === "Fashion" ? "Better drip, better price — together." : "Pool together, pay less. Up to 30% off."}
+              {activeCategory === "Food" ? "More people ordering = cheaper plates. Up to 30% off." : activeCategory === "Fashion" ? "Better drip, better price. Together." : "Pool together, pay less. Up to 30% off."}
             </p>
           </div>
 

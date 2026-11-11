@@ -241,7 +241,7 @@ export default function CreateGangPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Link a WhatsApp group</p>
-                <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Optional — so members can find the chat</p>
+                <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Optional. So members can find the chat</p>
               </div>
             </div>
             <input

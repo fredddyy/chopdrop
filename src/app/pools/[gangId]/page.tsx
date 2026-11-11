@@ -408,7 +408,7 @@ export default function GangDetailPage() {
           {/* Empty */}
           {groupOrders.length === 0 && (
             <div className="text-center py-8">
-              <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No orders yet. Start one above — your gang will be notified.</p>
+              <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>No orders yet. Start one above and your gang will be notified.</p>
               <Link href="/discover" className="mt-3 text-[13px] font-bold inline-block" style={{ color: "var(--coral)" }}>Or browse deals →</Link>
             </div>
           )}

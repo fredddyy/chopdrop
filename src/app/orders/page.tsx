@@ -101,7 +101,7 @@ export default function OrdersPage() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" /></svg>
               </div>
               <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>No active orders</h3>
-              <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Join a pool or order solo — your active orders will appear here.</p>
+              <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Join a pool or order solo. Your active orders will appear here.</p>
               <Link href="/discover" className="h-[40px] px-5 rounded-full text-[13px] font-bold text-white inline-flex items-center mt-4 press-feedback" style={{ background: "var(--coral)" }}>Browse deals</Link>
             </div>
           ) : (
@@ -139,7 +139,7 @@ export default function OrdersPage() {
                     {pool.status === "OPEN" && (
                       <>
                         <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold" style={{ color: "#1C1C1E" }}>
-                          <span>Filling — {pool.memberCount}/{pool.minSize}</span>
+                          <span>Filling · {pool.memberCount}/{pool.minSize}</span>
                           <span style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m left` : `${minsLeft}m left`}</span>
                         </div>
                         <div className="mt-1.5 h-[7px] overflow-hidden" style={{ background: "var(--sand)", borderRadius: "9px" }}>
