@@ -536,7 +536,11 @@ function GroupOrderInner() {
 
   // -- State A: Not a member --
   if (!isMember && invite) {
-    const st = STATUS_LABELS[invite.status] || STATUS_LABELS.OPEN;
+    const inviteDeadlinePassed = new Date(invite.deadline).getTime() < Date.now();
+    const inviteAccepting = invite.status === "OPEN" && !inviteDeadlinePassed;
+    const st = inviteDeadlinePassed && invite.status === "OPEN"
+      ? { label: "Deadline passed", color: "var(--text-muted)", bg: "var(--sand)" }
+      : STATUS_LABELS[invite.status] || STATUS_LABELS.OPEN;
     return (
       <main className="flex-1 max-w-[480px] mx-auto w-full min-h-screen" style={{ background: "var(--bg)" }}>
         <div className="px-5 pt-4 pb-10">
@@ -584,9 +588,9 @@ function GroupOrderInner() {
           <button
             type="button"
             onClick={handleJoin}
-            disabled={joining || invite.status !== "OPEN"}
+            disabled={joining || !inviteAccepting}
             className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white cursor-pointer press-feedback mt-6"
-            style={{ background: invite.status !== "OPEN" ? "var(--text-muted)" : "#E84C3D" }}
+            style={{ background: !inviteAccepting ? "var(--text-muted)" : "var(--coral)" }}
           >
             {joining ? "Joining..." : "Join this group order"}
           </button>
@@ -599,7 +603,11 @@ function GroupOrderInner() {
   // -- State B: Member view --
   if (!fullOrder) return null;
 
-  const st = STATUS_LABELS[fullOrder.status] || STATUS_LABELS.OPEN;
+  const deadlinePassed = new Date(fullOrder.deadline).getTime() < Date.now();
+  const isStillAccepting = fullOrder.status === "OPEN" && !deadlinePassed;
+  const st = deadlinePassed && fullOrder.status === "OPEN"
+    ? { label: "Deadline passed", color: "var(--text-muted)", bg: "var(--sand)" }
+    : STATUS_LABELS[fullOrder.status] || STATUS_LABELS.OPEN;
   const memberCount = fullOrder.members.length;
   const deliveryPerPerson = memberCount > 0 ? Math.round(fullOrder.deliveryFee / memberCount) : 0;
   const mySubtotal = myItems.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -657,7 +665,7 @@ function GroupOrderInner() {
           <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: st.bg, color: st.color }}>
             {st.label}
           </span>
-          {fullOrder.status === "OPEN" && (
+          {isStillAccepting && (
             <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>
               {timeLeft(fullOrder.deadline)}
             </span>
@@ -757,7 +765,7 @@ function GroupOrderInner() {
         </section>
 
         {/* -- My items section -- */}
-        {fullOrder.status === "OPEN" && (
+        {isStillAccepting && (
           <section className="mt-7">
             <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
               Your items

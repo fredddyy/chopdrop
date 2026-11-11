@@ -17,6 +17,8 @@ interface GroupOrder {
   status: string;
   deadline: string;
   memberCount: number;
+  paidMemberCount?: number;
+  currentDiscount?: number;
   deliveryAddress: string;
   deliveryFee: number;
   inviteCode: string;
@@ -212,18 +214,26 @@ export default function GangDetailPage() {
               <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Active orders</p>
               {activeOrders.map((order) => {
                 const minsLeft = Math.max(0, Math.round((new Date(order.deadline).getTime() - Date.now()) / 60000));
-                const isOpen = order.status === "OPEN";
+                const deadlinePassed = new Date(order.deadline).getTime() < Date.now();
+                const isAccepting = order.status === "OPEN" && !deadlinePassed;
+                const isClosed = deadlinePassed || order.status !== "OPEN";
+                const statusLabel = isAccepting ? "Ordering now" : deadlinePassed ? "Deadline passed" : order.status;
+                const statusColor = isAccepting ? "var(--emerald)" : "var(--text-muted)";
+                const statusBg = isAccepting ? "var(--emerald-soft)" : "var(--sand)";
                 return (
                   <Link key={order.id} href={`/group/${order.inviteCode}`} className="p-4 rounded-[16px] press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: isOpen ? "var(--coral-soft)" : "var(--sand)", color: isOpen ? "var(--coral)" : "var(--text-muted)" }}>
-                        {isOpen ? "Open · Ordering" : order.status}
+                      <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: statusBg, color: statusColor }}>
+                        {statusLabel}
                       </span>
-                      {isOpen && <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft}m left`}</span>}
+                      {isAccepting && <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft}m left`}</span>}
+                      {isClosed && order.paidMemberCount != null && order.currentDiscount != null && order.currentDiscount > 0 && (
+                        <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>{order.currentDiscount}% off · {order.paidMemberCount} paid</span>
+                      )}
                     </div>
                     <h4 className="text-[16px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{order.restaurantName}</h4>
                     <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{order.memberCount} people · {order.deliveryAddress}</p>
-                    {order.deliveryFee > 0 && (
+                    {order.deliveryFee > 0 && isAccepting && (
                       <p className="text-[11px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>Delivery {fp(order.deliveryFee)} split {order.memberCount} ways = {fp(Math.round(order.deliveryFee / Math.max(1, order.memberCount)))} each</p>
                     )}
                   </Link>
