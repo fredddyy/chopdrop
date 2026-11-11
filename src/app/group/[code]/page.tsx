@@ -764,8 +764,8 @@ function GroupOrderInner() {
           </div>
         </section>
 
-        {/* -- My items section -- */}
-        {isStillAccepting && (
+        {/* -- My items section — editable only before payment -- */}
+        {isStillAccepting && !hasPaid && (
           <section className="mt-7">
             <h2 className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>
               Your items
@@ -925,18 +925,42 @@ function GroupOrderInner() {
           </section>
         )}
 
-        {/* Status: already paid */}
+        {/* Status: already paid — show locked order summary */}
         {hasPaid && (
-          <div className="mt-7 rounded-[16px] p-5 text-center" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" className="mx-auto mb-2"><path d="m5 12 4 4L19 6" /></svg>
-            <p className="text-[15px] font-extrabold" style={{ color: "#166534" }}>You are all set</p>
-            <p className="text-[12px] mt-1" style={{ color: "#15803D" }}>Waiting for others to pay</p>
-          </div>
+          <section className="mt-7">
+            <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              {/* Paid header */}
+              <div className="px-4 py-3 flex items-center justify-between" style={{ background: "var(--emerald-soft)" }}>
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
+                  <span className="text-[13px] font-extrabold" style={{ color: "var(--emerald)" }}>Paid</span>
+                </div>
+                <span className="text-[13px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>{fp(myTotal)}</span>
+              </div>
+              {/* Items (read-only) */}
+              {myItems.length > 0 && (
+                <div className="px-4">
+                  {myItems.map((item, i) => (
+                    <div key={item.productId}>
+                      {i > 0 && <div className="h-px" style={{ background: "var(--border)" }} />}
+                      <div className="flex items-center justify-between py-3">
+                        <span className="text-[13px]" style={{ color: "var(--text)" }}>{item.name}{item.quantity > 1 ? ` ×${item.quantity}` : ""}</span>
+                        <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text)" }}>{fp(item.price * item.quantity)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <p className="text-[12px] text-center mt-3" style={{ color: "var(--text-muted)" }}>
+              Your order is locked. Waiting for others to join.
+            </p>
+          </section>
         )}
       </div>
 
       {/* ── Sticky pay bar ── */}
-      {fullOrder.status === "OPEN" && myItems.length > 0 && !hasPaid && (
+      {isStillAccepting && myItems.length > 0 && !hasPaid && (
         <div className="fixed bottom-[72px] left-0 right-0 z-30 px-5 pb-3 pt-3" style={{ background: "linear-gradient(transparent, var(--bg) 8px)" }}>
           <div className="max-w-[480px] mx-auto">
             <button
