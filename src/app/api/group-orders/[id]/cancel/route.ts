@@ -31,48 +31,23 @@ export async function POST(
     return NextResponse.json({ success: false, error: `Order is already ${groupOrder.status.toLowerCase()}` }, { status: 400 });
   }
 
-  // Check if anyone has paid — refund to wallet
+  // Block cancel if anyone has paid
   const paidMembers = groupOrder.members.filter(m => m.paymentStatus === "SUCCESS");
+  if (paidMembers.length > 0) {
+    return NextResponse.json({
+      success: false,
+      error: `Can't cancel — ${paidMembers.length} member${paidMembers.length !== 1 ? "s have" : " has"} already paid.`,
+    }, { status: 400 });
+  }
 
-  await prisma.$transaction(async (tx) => {
-    // Refund each paid member to wallet
-    for (const member of paidMembers) {
-      if (member.subtotal <= 0) continue;
-
-      let wallet = await tx.creditWallet.findUnique({ where: { userId: member.userId } });
-      if (!wallet) {
-        wallet = await tx.creditWallet.create({ data: { userId: member.userId, balance: 0 } });
-      }
-
-      await tx.creditWallet.update({
-        where: { id: wallet.id },
-        data: { balance: { increment: member.subtotal } },
-      });
-
-      await tx.creditTransaction.create({
-        data: {
-          walletId: wallet.id,
-          amount: member.subtotal,
-          type: "POOL_REFUND",
-          description: "Group order cancelled by organiser",
-        },
-      });
-    }
-
-    // Mark order as cancelled
-    await tx.groupOrder.update({
-      where: { id },
-      data: { status: "CANCELLED" },
-    });
+  // No one paid — safe to cancel
+  await prisma.groupOrder.update({
+    where: { id },
+    data: { status: "CANCELLED" },
   });
 
   return NextResponse.json({
     success: true,
-    data: {
-      refunded: paidMembers.length,
-      message: paidMembers.length > 0
-        ? `Order cancelled. ${paidMembers.length} member${paidMembers.length !== 1 ? "s" : ""} refunded to wallet.`
-        : "Order cancelled.",
-    },
+    data: { message: "Order cancelled." },
   });
 }
