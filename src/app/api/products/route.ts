@@ -44,9 +44,17 @@ export async function GET(request: NextRequest) {
   const productIds = products.map(p => p.id);
   const pools = await prisma.pool.findMany({
     where: { productId: { in: productIds }, status: "OPEN" },
-    select: { productId: true, _count: { select: { members: true } }, minSize: true, deadline: true },
+    select: {
+      productId: true, _count: { select: { members: true } }, minSize: true, deadline: true,
+      members: { select: { user: { select: { firstName: true } } }, take: 3, orderBy: { createdAt: "asc" } },
+    },
   });
-  const poolMap = new Map(pools.map(p => [p.productId, { memberCount: p._count.members, minSize: p.minSize, deadline: p.deadline }]));
+  const poolMap = new Map(pools.map(p => [p.productId, {
+    memberCount: p._count.members,
+    minSize: p.minSize,
+    deadline: p.deadline,
+    memberNames: p.members.map(m => m.user.firstName),
+  }]));
 
   const enriched = products.map(p => {
     const poolData = poolMap.get(p.id);
@@ -55,6 +63,7 @@ export async function GET(request: NextRequest) {
       poolMemberCount: poolData?.memberCount || 0,
       minPoolSize: poolData?.minSize || p.minPoolSize,
       poolDeadline: poolData?.deadline?.toISOString() || null,
+      poolMemberNames: poolData?.memberNames || [],
     };
   });
 

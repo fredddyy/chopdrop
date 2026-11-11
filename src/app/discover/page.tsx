@@ -31,6 +31,7 @@ interface PoolProduct {
   poolMemberCount: number;
   poolDeadline: string | null;
   vendor: { name: string; imageUrl?: string | null };
+  poolMemberNames?: string[];
 }
 
 function fmt(kobo: number): string {
@@ -422,13 +423,13 @@ export default function DiscoverPage() {
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                     {userArea ? `${userArea} pickup` : "Pickup nearby"}
                   </div>
-                  {/* Social proof — member count */}
+                  {/* Social proof — real member initials */}
                   {featured.fill.joined >= 1 && (
                     <div className="flex items-center gap-2 mt-3">
                       <div className="flex -space-x-1.5">
-                        {Array.from({ length: Math.min(featured.fill.joined, 3) }).map((_, i) => (
+                        {(featured.poolMemberNames || []).slice(0, 3).map((name, i) => (
                           <div key={i} className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length], border: "2px solid var(--dark)" }}>
-                            {i + 1}
+                            {name.charAt(0)}
                           </div>
                         ))}
                       </div>
