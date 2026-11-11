@@ -126,22 +126,36 @@ export default function GangsPage() {
                 <Link
                   key={gang.id}
                   href={`/pools/${gang.id}`}
-                  className={`flex items-center gap-3 p-3.5 rounded-[16px] press-feedback card-enter card-enter-${i + 1}`}
+                  className={`rounded-[16px] p-4 press-feedback card-enter card-enter-${i + 1}`}
                   style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                 >
-                  <div className="w-11 h-11 rounded-full flex items-center justify-center text-[16px] font-extrabold text-white shrink-0" style={{ background: faceColor }}>
-                    {initial}
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-[18px] font-extrabold text-white shrink-0" style={{ background: faceColor }}>
+                      {initial}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-[16px] font-extrabold truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{gang.name}</h4>
+                        {gang.myRole === "ADMIN" && (
+                          <span className="text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>Admin</span>
+                        )}
+                      </div>
+                      <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                        {gang.memberCount} member{gang.memberCount !== 1 ? "s" : ""}{gang.campus ? ` \u00B7 ${gang.campus}` : ""}
+                      </p>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-[15px] font-bold truncate" style={{ color: "var(--text)" }}>{gang.name}</h4>
-                    <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                      {gang.memberCount} member{gang.memberCount !== 1 ? "s" : ""}{gang.campus ? ` \u00B7 ${gang.campus}` : ""}
-                    </p>
+                  {/* Quick action hint */}
+                  <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+                    <div className="flex-1 flex items-center gap-1.5">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                      <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Order together</span>
+                    </div>
+                    {gang.memberCount >= 3 && (
+                      <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>Discount eligible</span>
+                    )}
                   </div>
-                  {gang.myRole === "ADMIN" && (
-                    <span className="text-[9px] font-extrabold uppercase tracking-wide shrink-0" style={{ color: "var(--coral)" }}>Admin</span>
-                  )}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
                 </Link>
               );
             })}
