@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
   // Attach real pool member counts
   const productIds = products.map(p => p.id);
   const pools = await prisma.pool.findMany({
-    where: { productId: { in: productIds }, status: "OPEN" },
+    where: { productId: { in: productIds }, status: "OPEN", deadline: { gt: new Date() } },
     select: {
       productId: true, _count: { select: { members: true } }, minSize: true, deadline: true,
       members: { select: { user: { select: { firstName: true } } }, take: 3, orderBy: { createdAt: "asc" } },
