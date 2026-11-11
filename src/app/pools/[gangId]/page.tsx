@@ -316,29 +316,57 @@ export default function GangDetailPage() {
           {activeOrders.length > 0 && (
             <div className="flex flex-col gap-3 mb-4">
               <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Active orders</p>
-              {activeOrders.map((order) => {
+              {activeOrders.map((order, idx) => {
                 const minsLeft = Math.max(0, Math.round((new Date(order.deadline).getTime() - Date.now()) / 60000));
                 const deadlinePassed = new Date(order.deadline).getTime() < Date.now();
                 const isAccepting = order.status === "OPEN" && !deadlinePassed;
-                const isClosed = deadlinePassed || order.status !== "OPEN";
-                const statusLabel = isAccepting ? "Ordering now" : deadlinePassed ? "Deadline passed" : order.status;
-                const statusColor = isAccepting ? "var(--emerald)" : "var(--text-muted)";
-                const statusBg = isAccepting ? "var(--emerald-soft)" : "var(--sand)";
                 return (
-                  <Link key={order.id} href={`/group/${order.inviteCode}`} className="p-4 rounded-[16px] press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-full" style={{ background: statusBg, color: statusColor }}>
-                        {statusLabel}
-                      </span>
-                      {isAccepting && <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft}m left`}</span>}
-                      {isClosed && order.paidMemberCount != null && order.currentDiscount != null && order.currentDiscount > 0 && (
-                        <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>{order.currentDiscount}% off · {order.paidMemberCount} paid</span>
+                  <Link key={order.id} href={`/group/${order.inviteCode}`}
+                    className={`rounded-[16px] overflow-hidden press-feedback card-enter card-enter-${idx + 1}`}
+                    style={{ background: isAccepting ? "var(--dark)" : "var(--card)", border: isAccepting ? "none" : "1px solid var(--border)" }}>
+                    <div className="p-4">
+                      {/* Status row */}
+                      <div className="flex items-center justify-between mb-2.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full" style={{ background: isAccepting ? "var(--emerald)" : "var(--text-muted)" }} />
+                          <span className="text-[11px] font-bold" style={{ color: isAccepting ? "var(--emerald)" : "var(--text-muted)" }}>
+                            {isAccepting ? "Ordering now" : deadlinePassed ? "Closed" : order.status}
+                          </span>
+                        </div>
+                        {isAccepting && (
+                          <span className="text-[12px] font-extrabold tabular-nums" style={{ color: isAccepting ? "var(--coral)" : "var(--text-muted)" }}>
+                            {minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft}m`}
+                          </span>
+                        )}
+                      </div>
+                      {/* Restaurant + details */}
+                      <h4 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isAccepting ? "white" : "var(--text)" }}>{order.restaurantName}</h4>
+                      <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: isAccepting ? "var(--subdued)" : "var(--text-muted)" }}>
+                        <span className="flex items-center gap-1">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+                          {order.memberCount} {order.memberCount === 1 ? "person" : "people"}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                          {order.deliveryAddress.split(",")[0]}
+                        </span>
+                      </div>
+                      {/* Tier badge */}
+                      {order.currentDiscount != null && order.currentDiscount > 0 && (
+                        <div className="mt-2">
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded" style={{ background: "rgba(26,125,75,0.15)", color: "var(--emerald)" }}>
+                            {order.currentDiscount}% group discount · {order.paidMemberCount} paid
+                          </span>
+                        </div>
                       )}
                     </div>
-                    <h4 className="text-[16px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{order.restaurantName}</h4>
-                    <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{order.memberCount} people · {order.deliveryAddress}</p>
-                    {order.deliveryFee > 0 && isAccepting && (
-                      <p className="text-[11px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>Delivery {fp(order.deliveryFee)} split {order.memberCount} ways = {fp(Math.round(order.deliveryFee / Math.max(1, order.memberCount)))} each</p>
+                    {/* Join prompt for accepting orders */}
+                    {isAccepting && (
+                      <div className="px-4 pb-3">
+                        <div className="h-[36px] rounded-full flex items-center justify-center text-[12px] font-bold" style={{ background: "var(--coral)", color: "white" }}>
+                          Add your items →
+                        </div>
+                      </div>
                     )}
                   </Link>
                 );
