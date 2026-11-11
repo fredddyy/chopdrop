@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/auth";
+import { getUserFromCookie } from "@/lib/user-auth";
 import { calculateDeliveryFeeAsync } from "@/lib/delivery-fee";
 import crypto from "crypto";
 import { parseGroupTiers, getGroupDiscount } from "@/lib/group-tier-pricing";
@@ -12,11 +11,8 @@ export async function GET(request: NextRequest) {
   const mine = request.nextUrl.searchParams.get("mine");
   const gangId = request.nextUrl.searchParams.get("gangId");
 
-  const cookieStore = await cookies();
-  const token = cookieStore.get("chopdrop-user-token")?.value;
-  if (!token) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  const user = verifyToken(token);
-  if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
+  const user = await getUserFromCookie();
+  if (!user) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
 
   // Filter by gang — show all group orders linked to this gang
   if (gangId) {
@@ -89,11 +85,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/group-orders — create a new group order
 export async function POST(request: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("chopdrop-user-token")?.value;
-  if (!token) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  const user = verifyToken(token);
-  if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
+  const user = await getUserFromCookie();
+  if (!user) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
 
   const body = await request.json();
   const { restaurantId, deliveryAddress, deliveryLat, deliveryLng, deadline, gang: gangId } = body;
