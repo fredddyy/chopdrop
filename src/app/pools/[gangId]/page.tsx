@@ -404,6 +404,29 @@ export default function GangDetailPage() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM20 8v6M23 11h-6" /></svg>
             Invite people
           </button>
+
+          {/* Leave gang */}
+          <button
+            type="button"
+            className="mt-6 text-[12px] font-bold press-feedback"
+            style={{ color: "var(--text-muted)" }}
+            onClick={async () => {
+              if (!confirm(`Leave ${gang.name}? You can rejoin anytime.`)) return;
+              try {
+                const res = await fetch(`/api/gangs/${gangId}/leave`, { method: "POST" });
+                const d = await res.json();
+                if (d.success) {
+                  router.push("/pools");
+                } else {
+                  alert(d.error || "Couldn\u2019t leave gang");
+                }
+              } catch {
+                alert("Network error");
+              }
+            }}
+          >
+            Leave gang
+          </button>
         </div>
       )}
 
