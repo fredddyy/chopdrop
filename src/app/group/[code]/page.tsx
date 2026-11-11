@@ -236,7 +236,27 @@ function GroupOrderInner() {
           const fullData = await fullRes.json();
           if (fullData.success && !cancelled) {
             setFullOrder(fullData.data);
-            setIsMember(true);
+            // Check if current user is actually a member
+            const meRes = await fetch("/api/auth/me");
+            const meData = meRes.ok ? await meRes.json() : null;
+            const myId = meData?.success ? meData.data.id : null;
+            const isActualMember = myId && fullData.data.members.some((m: { userId: string }) => m.userId === myId);
+            if (isActualMember) {
+              setIsMember(true);
+            } else if (myId && invData.data.status === "OPEN") {
+              // Auto-join if authenticated and order is still open
+              const joinRes = await fetch(`/api/group-orders/${invData.data.id}/join`, { method: "POST" });
+              const joinData = await joinRes.json();
+              if (joinData.success) {
+                // Refresh full order to get updated members
+                const refreshRes = await fetch(`/api/group-orders/${invData.data.id}`);
+                const refreshData = refreshRes.ok ? await refreshRes.json() : null;
+                if (refreshData?.success && !cancelled) setFullOrder(refreshData.data);
+                setIsMember(true);
+              } else if (joinData.error === "You already joined this group order") {
+                setIsMember(true);
+              }
+            }
           }
         }
       } catch {
