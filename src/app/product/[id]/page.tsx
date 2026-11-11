@@ -133,7 +133,8 @@ export default function ProductDetailPage() {
         const myPool = myPoolsResult.value.data.find((p: { product: { id: string }; status: string; myPaymentStatus: string }) => p.product.id === id);
         if (myPool) {
           const price = myPool.product.groupPrice || 0;
-          if (myPool.status === "EXPIRED" || myPool.status === "CANCELLED") {
+          const poolDeadlinePassed = myPool.deadline ? new Date(myPool.deadline).getTime() < Date.now() : false;
+          if (myPool.status === "EXPIRED" || myPool.status === "CANCELLED" || (myPool.status === "OPEN" && poolDeadlinePassed)) {
             setJoinedStatus("expired");
             setJoinedPrice(price);
             setExpiredPoolId(myPool.id);
