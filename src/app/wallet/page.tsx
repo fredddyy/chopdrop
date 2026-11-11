@@ -1,139 +1,152 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
-// Sample credit history — will be replaced with API data
-const HISTORY = [
-  { iconType: "scratch", label: "Daily scratch win", date: "5 Nov · Today's revealed reward", amount: 10000, positive: true },
-  { iconType: "star", label: "Review reward conversion", date: "3 Nov · Points converted to credit", amount: 6000, positive: true },
-  { iconType: "cart", label: "Credit used at checkout", date: "2 Nov · Order CC-EW-102", amount: -35000, positive: false },
-  { iconType: "scratch", label: "Daily scratch wins", date: "1 Nov · Earlier scratch rewards", amount: 20000, positive: true },
-  { iconType: "gift", label: "Referral bonuses", date: "31 Oct–5 Nov · 5 friends × ₦200", amount: 100000, positive: true },
-];
+interface Transaction {
+  id: string;
+  amount: number;
+  type: string;
+  description: string | null;
+  createdAt: string;
+}
 
-function HistoryIcon({ type }: { type: string }) {
+function txIcon(type: string) {
   const stroke = "var(--emerald)";
-  if (type === "scratch") return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>;
-  if (type === "star") return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>;
-  if (type === "cart") return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>;
-  if (type === "gift") return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></svg>;
+  if (type === "SCRATCH_WIN") return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>;
+  if (type === "POOL_REFUND" || type === "GROUP_DISCOUNT") return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>;
+  if (type === "APPLIED") return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>;
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /></svg>;
+}
+
+function txLabel(type: string): string {
+  if (type === "SCRATCH_WIN") return "Scratch card win";
+  if (type === "POOL_REFUND") return "Pool refund";
+  if (type === "GROUP_DISCOUNT") return "Group order discount";
+  if (type === "APPLIED") return "Credit used at checkout";
+  if (type === "MANUAL") return "Manual credit";
+  return type;
 }
 
 export default function WalletPage() {
   const router = useRouter();
+  const [balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const balance = 101000; // kobo — ₦1,010
-  const earned = 136000;
-  const spent = 35000;
+  useEffect(() => {
+    fetch("/api/credits")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.data) {
+          setBalance(d.data.balance);
+          setTransactions(d.data.transactions || []);
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const earned = transactions.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const spent = transactions.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
 
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+    <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
       {/* ── Header ── */}
       <div className="px-5 pt-4 flex items-center justify-between">
-        <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
+        <button type="button" onClick={() => router.back()} aria-label="Go back" className="w-11 h-11 rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--sand)" }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Me · Wallet</p>
-          <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your next chop has backup</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Wallet</p>
+          <p className="text-[14px] font-extrabold" style={{ color: "var(--text)", fontFamily: "'Bricolage Grotesque', sans-serif" }}>Your meal credit</p>
         </div>
-        <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
-        </button>
+        <div className="w-11" />
       </div>
 
-      {/* ── Balance card — dark ── */}
+      {/* ── Balance card ── */}
       <div className="px-5 mt-5">
-        <div className="rounded-[22px] p-5" style={{ background: "#1C1C1E" }}>
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "#E84C3D" }}>Available store credit</p>
-          <p className="text-[44px] font-extrabold tabular-nums leading-none mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "white" }}>{fp(balance)}</p>
-          <p className="text-[13px] mt-2" style={{ color: "var(--subdued)" }}>Earned locally. Spent on food.</p>
-          <p className="text-[11px] mt-1" style={{ color: "var(--subdued)", opacity: 0.7 }}>Meal credit, not cash. Use it on ChopDrop meals.</p>
-        </div>
-      </div>
-
-      {/* ── Info cards ── */}
-      <div className="px-5 mt-4 flex flex-col gap-2.5">
-        <div className="flex items-start gap-2.5 p-3.5 rounded-[14px]" style={{ background: "var(--emerald-soft)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="m5 12 4 4L19 6" /></svg>
-          <p className="text-[11px] leading-[155%]" style={{ color: "var(--emerald)" }}>
-            Your credit is automatically applied at checkout. Tap Remove there if you&apos;d rather save it for another meal.
-          </p>
-        </div>
-        <div className="flex items-start gap-2.5 p-3.5 rounded-[14px]" style={{ background: "var(--emerald-soft)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" /></svg>
-          <div>
-            <p className="text-[12px] font-bold" style={{ color: "#1C1C1E" }}>Points ≠ credit</p>
-            <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>Points live in Fun rewards. Only converted rewards appear here as spendable naira credit.</p>
-          </div>
+        <div className="rounded-[16px] p-5" style={{ background: "var(--dark)" }}>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)" }}>Available store credit</p>
+          {loading ? (
+            <div className="h-[44px] w-[140px] rounded-[8px] mt-2" style={{ background: "rgba(255,255,255,0.1)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          ) : (
+            <p className="text-[44px] font-extrabold tabular-nums leading-none mt-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "white" }}>{fp(balance)}</p>
+          )}
+          <p className="text-[12px] mt-2" style={{ color: "var(--subdued)" }}>Meal credit, not cash. Applied automatically at checkout.</p>
         </div>
       </div>
 
       {/* ── Credit history ── */}
       <div className="px-5 mt-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Credit history</h2>
-          <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>All activity</span>
-        </div>
+        <h2 className="text-[18px] font-extrabold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Credit history</h2>
 
-        <div className="rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
-          {HISTORY.map((item, i) => (
-            <div key={i}>
-              {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
-              <div className="flex items-center gap-3 px-4 py-3.5">
-                <div className="w-[36px] h-[36px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--emerald-soft)" }}>
-                  <HistoryIcon type={item.iconType} />
+        {loading ? (
+          <div className="space-y-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-[60px] rounded-[12px]" style={{ background: "var(--sand)", opacity: 0.7, animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 80}ms` }} />
+            ))}
+          </div>
+        ) : transactions.length === 0 ? (
+          <div className="py-10 text-center">
+            <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>No transactions yet</p>
+            <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Earn credit from scratch cards, pool refunds, and group discounts.</p>
+          </div>
+        ) : (
+          <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            {transactions.map((tx, i) => (
+              <div key={tx.id}>
+                {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
+                <div className="flex items-center gap-3 px-4 py-3.5">
+                  <div className="w-[36px] h-[36px] rounded-full flex items-center justify-center shrink-0" style={{ background: tx.amount > 0 ? "var(--emerald-soft)" : "var(--sand)" }}>
+                    {txIcon(tx.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{txLabel(tx.type)}</p>
+                    <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                      {tx.description || new Date(tx.createdAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}
+                    </p>
+                  </div>
+                  <span className="text-[14px] font-extrabold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: tx.amount > 0 ? "var(--emerald)" : "var(--text)" }}>
+                    {tx.amount > 0 ? "+" : ""}{fp(tx.amount)}
+                  </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-bold" style={{ color: "#1C1C1E" }}>{item.label}</p>
-                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{item.date}</p>
-                </div>
-                <span className="text-[14px] font-extrabold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: item.positive ? "var(--emerald)" : "#1C1C1E" }}>
-                  {item.positive ? "+" : ""}{fp(item.amount)}
-                </span>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── Summary ── */}
-      <div className="px-5 mt-6">
-        <div className="p-4 rounded-[22px] flex flex-col gap-2" style={{ background: "var(--card)" }}>
-          <div className="flex justify-between text-[13px]" style={{ color: "var(--text-muted)" }}>
-            <span>Opening balance · 30 Oct</span>
-            <span className="font-bold" style={{ color: "#1C1C1E" }}>{fp(0)}</span>
-          </div>
-          <div className="flex justify-between text-[13px]" style={{ color: "var(--text-muted)" }}>
-            <span>Credit earned</span>
-            <span className="font-bold" style={{ color: "#1C1C1E" }}>{fp(earned)}</span>
-          </div>
-          <div className="flex justify-between text-[13px]" style={{ color: "var(--text-muted)" }}>
-            <span>Credit spent</span>
-            <span className="font-bold" style={{ color: "#1C1C1E" }}>−{fp(spent)}</span>
-          </div>
-          <div className="h-px mt-1 mb-1" style={{ background: "var(--border)" }} />
-          <div className="flex justify-between text-[15px] font-extrabold" style={{ color: "#1C1C1E" }}>
-            <span>Available balance</span>
-            <span className="tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(balance)}</span>
+      {!loading && transactions.length > 0 && (
+        <div className="px-5 mt-5">
+          <div className="p-4 rounded-[16px]" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="flex justify-between text-[13px] mb-2">
+              <span style={{ color: "var(--text-muted)" }}>Total earned</span>
+              <span className="font-bold" style={{ color: "var(--emerald)" }}>+{fp(earned)}</span>
+            </div>
+            <div className="flex justify-between text-[13px] mb-2">
+              <span style={{ color: "var(--text-muted)" }}>Total spent</span>
+              <span className="font-bold" style={{ color: "var(--text)" }}>{spent > 0 ? `−${fp(spent)}` : fp(0)}</span>
+            </div>
+            <div className="h-px my-2" style={{ background: "var(--border)" }} />
+            <div className="flex justify-between text-[15px] font-extrabold">
+              <span style={{ color: "var(--text)" }}>Balance</span>
+              <span className="tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(balance)}</span>
+            </div>
           </div>
         </div>
-        <p className="text-[10px] mt-3 leading-[155%]" style={{ color: "var(--text-muted)" }}>
-          Food price discounts count toward savings in Me. Only credit posted in this history can be used to pay at checkout.
-        </p>
-      </div>
+      )}
 
       {/* ── CTA ── */}
-      <div className="px-5 mt-6 mb-4">
-        <Link href="/rewards" className="w-full h-[50px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold press-feedback" style={{ background: "var(--card)", color: "#1C1C1E", border: "1px solid var(--border)" }}>
-          <span>Explore Fun rewards</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="8" width="18" height="13" rx="2" /><path d="M12 8V2M2 12h20M7 2h10" /></svg>
+      <div className="px-5 mt-5 mb-4">
+        <Link href="/rewards" className="w-full h-[50px] rounded-full flex items-center justify-center text-[14px] font-bold press-feedback" style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
+          Earn more credit
         </Link>
       </div>
 
