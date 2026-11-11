@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { calculateDeliveryFee, DEFAULT_TIERS } from "@/lib/delivery-fee";
-import type { DeliveryTier } from "@/lib/delivery-fee";
+import { calculateDeliveryFeeAsync } from "@/lib/delivery-fee";
 
 // GET /api/delivery-estimate?productId=X&lat=Y&lng=Z
 export async function GET(request: NextRequest) {
@@ -17,7 +16,6 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Look up product -> vendor -> get vendor coordinates
   const product = await prisma.product.findUnique({
     where: { id: productId },
     select: {
@@ -37,26 +35,22 @@ export async function GET(request: NextRequest) {
   const storeLng = product.vendor.longitude;
 
   if (!storeLat || !storeLng) {
-    return NextResponse.json(
-      { success: false, error: "Vendor location not available" },
-      { status: 400 },
-    );
+    // Vendor has no GPS — return a default estimate instead of erroring
+    return NextResponse.json({
+      success: true,
+      data: {
+        fullFee: 100000, // ₦1,000 default
+        subsidizedFee: Math.round(100000 / product.minPoolSize),
+        distanceKm: 0,
+        walkMinutes: 0,
+        estimated: true,
+      },
+    });
   }
 
-  // Load custom tiers if available
-  let tiers: DeliveryTier[] = DEFAULT_TIERS;
-  try {
-    const setting = await prisma.setting.findUnique({ where: { key: "delivery-fee-tiers" } });
-    if (setting?.value && Array.isArray(setting.value)) {
-      tiers = setting.value as unknown as DeliveryTier[];
-    }
-  } catch { /* use defaults */ }
-
-  const result = calculateDeliveryFee(storeLat, storeLng, lat, lng, tiers);
+  const result = await calculateDeliveryFeeAsync(storeLat, storeLng, lat, lng, prisma);
   const fullFee = result.fee;
-  const subsidizedFee = Math.round(fullFee / product.minPoolSize);
-
-  // Estimate walk time: ~5 km/h average walking speed
+  const subsidizedFee = Math.round(fullFee / Math.max(product.minPoolSize, 1));
   const walkMinutes = Math.round((result.distanceKm / 5) * 60);
 
   return NextResponse.json({
@@ -66,6 +60,7 @@ export async function GET(request: NextRequest) {
       subsidizedFee,
       distanceKm: result.distanceKm,
       walkMinutes,
+      estimated: false,
     },
   });
 }
