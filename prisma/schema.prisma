@@ -80,10 +80,11 @@ model Restaurant {
   longitude Float?   // store GPS lng
   imageUrl  String?
   bannerUrl String?
-  sortOrder Int      @default(0)
-  zoneId    String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  sortOrder  Int      @default(0)
+  zoneId     String?
+  isActive   Boolean  @default(true)
+  groupTiers Json?    // [{min: 3, discount: 10}, {min: 5, discount: 20}, {min: 10, discount: 30}]
+  createdAt  DateTime @default(now())
 
   zone           Zone?          @relation(fields: [zoneId], references: [id])
   meals          Meal[]
@@ -601,6 +602,8 @@ model GroupOrder {
   deadline        DateTime
   status          GroupOrderStatus @default(OPEN)
   deliveryFee     Int              @default(0)
+  settled         Boolean          @default(false)
+  settledAt       DateTime?
   createdAt       DateTime         @default(now())
 
   restaurant  Restaurant        @relation(fields: [restaurantId], references: [id])

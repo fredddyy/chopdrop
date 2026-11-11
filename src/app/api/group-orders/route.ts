@@ -5,6 +5,7 @@ import { verifyToken } from "@/lib/auth";
 import { calculateDeliveryFee, DEFAULT_TIERS } from "@/lib/delivery-fee";
 import type { DeliveryTier } from "@/lib/delivery-fee";
 import crypto from "crypto";
+import { parseGroupTiers, getGroupDiscount } from "@/lib/group-tier-pricing";
 
 // GET /api/group-orders?mine=true — list user's group orders
 // GET /api/group-orders?gangId=xxx — list group orders for a gang
@@ -23,24 +24,31 @@ export async function GET(request: NextRequest) {
     const orders = await prisma.groupOrder.findMany({
       where: { gangId },
       include: {
-        restaurant: { select: { name: true } },
+        restaurant: { select: { name: true, groupTiers: true } },
         coordinator: { select: { firstName: true } },
-        members: { select: { id: true } },
+        members: { select: { id: true, paymentStatus: true } },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    const data = orders.map((o) => ({
-      id: o.id,
-      restaurantName: o.restaurant.name,
-      coordinatorName: o.coordinator.firstName,
-      memberCount: o.members.length,
-      status: o.status,
-      deadline: o.deadline,
-      deliveryAddress: o.deliveryAddress,
-      deliveryFee: o.deliveryFee,
-      inviteCode: o.inviteCode,
-    }));
+    const data = orders.map((o) => {
+      const paidCount = o.members.filter((m) => m.paymentStatus === "SUCCESS").length;
+      const tiers = parseGroupTiers(o.restaurant.groupTiers);
+      const { discount } = getGroupDiscount(tiers, paidCount);
+      return {
+        id: o.id,
+        restaurantName: o.restaurant.name,
+        coordinatorName: o.coordinator.firstName,
+        memberCount: o.members.length,
+        paidMemberCount: paidCount,
+        currentDiscount: discount,
+        status: o.status,
+        deadline: o.deadline,
+        deliveryAddress: o.deliveryAddress,
+        deliveryFee: o.deliveryFee,
+        inviteCode: o.inviteCode,
+      };
+    });
 
     return NextResponse.json({ success: true, data });
   }

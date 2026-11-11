@@ -8,15 +8,7 @@ export async function PATCH(
   const { id } = await params;
   const body = await request.json();
 
-  const data: {
-    name?: string;
-    address?: string;
-    phone?: string;
-    imageUrl?: string | null;
-    bannerUrl?: string | null;
-    sortOrder?: number;
-    isActive?: boolean;
-  } = {};
+  const data: Record<string, unknown> = {};
 
   if (body.name !== undefined) data.name = body.name;
   if (body.address !== undefined) data.address = body.address;
@@ -25,6 +17,7 @@ export async function PATCH(
   if (body.bannerUrl !== undefined) data.bannerUrl = body.bannerUrl;
   if (body.sortOrder !== undefined) data.sortOrder = body.sortOrder;
   if (body.isActive !== undefined) data.isActive = body.isActive;
+  if (body.groupTiers !== undefined) data.groupTiers = body.groupTiers;
 
   const restaurant = await prisma.restaurant.update({
     where: { id },

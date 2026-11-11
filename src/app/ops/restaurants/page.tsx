@@ -9,6 +9,7 @@ interface RestaurantData {
   phone: string;
   imageUrl: string | null;
   isActive: boolean;
+  groupTiers?: Array<{ min: number; discount: number }>;
 }
 
 interface FormState {
@@ -16,6 +17,7 @@ interface FormState {
   address: string;
   phone: string;
   imageUrl: string;
+  groupTiers: Array<{ min: number; discount: number }>;
 }
 
 const EMPTY_FORM: FormState = {
@@ -23,6 +25,7 @@ const EMPTY_FORM: FormState = {
   address: "",
   phone: "",
   imageUrl: "",
+  groupTiers: [],
 };
 
 export default function RestaurantsPage() {
@@ -61,6 +64,7 @@ export default function RestaurantsPage() {
       address: r.address,
       phone: r.phone,
       imageUrl: r.imageUrl || "",
+      groupTiers: Array.isArray(r.groupTiers) ? r.groupTiers : [],
     });
     setShowModal(true);
   }
@@ -68,11 +72,13 @@ export default function RestaurantsPage() {
   async function handleSave() {
     setSaving(true);
     try {
+      const validTiers = form.groupTiers.filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min);
       const payload = {
         name: form.name,
         address: form.address,
         phone: form.phone,
         imageUrl: form.imageUrl || null,
+        groupTiers: validTiers.length > 0 ? validTiers : null,
       };
 
       if (editId) {
@@ -305,6 +311,34 @@ export default function RestaurantsPage() {
                   placeholder="or paste URL..."
                 />
               </div>
+            </div>
+
+            {/* Group Discount Tiers */}
+            <div className="px-6 py-4 border-t border-[#E5E7EB]">
+              <label className="block text-xs font-medium text-[#6B7280] mb-2">Group Order Discount Tiers</label>
+              <p className="text-[11px] text-[#9CA3AF] mb-3">When X+ gang members order together, everyone gets Y% off. Discounts are settled after the order deadline.</p>
+              {form.groupTiers.map((tier, i) => (
+                <div key={i} className="flex items-center gap-2 mb-2">
+                  <input type="number" min={1} value={tier.min} onChange={(e) => {
+                    const updated = [...form.groupTiers];
+                    updated[i] = { ...updated[i], min: parseInt(e.target.value) || 0 };
+                    setForm({ ...form, groupTiers: updated });
+                  }} className="w-20 h-9 px-2 rounded-lg border border-[#E5E7EB] text-sm text-center" placeholder="Min" />
+                  <span className="text-xs text-[#9CA3AF]">people →</span>
+                  <input type="number" min={1} max={99} value={tier.discount} onChange={(e) => {
+                    const updated = [...form.groupTiers];
+                    updated[i] = { ...updated[i], discount: parseInt(e.target.value) || 0 };
+                    setForm({ ...form, groupTiers: updated });
+                  }} className="w-20 h-9 px-2 rounded-lg border border-[#E5E7EB] text-sm text-center" placeholder="%" />
+                  <span className="text-xs text-[#9CA3AF]">% off</span>
+                  <button type="button" onClick={() => {
+                    setForm({ ...form, groupTiers: form.groupTiers.filter((_, j) => j !== i) });
+                  }} className="text-[#E84C3D] text-xs font-bold ml-auto">Remove</button>
+                </div>
+              ))}
+              <button type="button" onClick={() => {
+                setForm({ ...form, groupTiers: [...form.groupTiers, { min: form.groupTiers.length === 0 ? 3 : (form.groupTiers[form.groupTiers.length - 1]?.min || 3) + 2, discount: form.groupTiers.length === 0 ? 10 : (form.groupTiers[form.groupTiers.length - 1]?.discount || 10) + 10 }] });
+              }} className="text-[13px] font-semibold text-[#E84C3D] mt-1">+ Add tier</button>
             </div>
 
             <div className="px-6 py-4 border-t border-[#E5E7EB] flex gap-3 justify-end">
