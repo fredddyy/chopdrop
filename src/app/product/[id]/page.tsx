@@ -586,25 +586,16 @@ export default function ProductDetailPage() {
           <div className="rounded-[22px] overflow-hidden p-4" style={{ background: "var(--emerald-soft)" }}>
             <p className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>You&apos;re in! {Math.max(pool ? pool.memberCount : memberCount, 1)} of {pool ? pool.minSize : product.minPoolSize} needed</p>
             <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
+              {Math.max((pool ? pool.minSize : product.minPoolSize) - Math.max(pool ? pool.memberCount : memberCount, 1), 0)} more {Math.max((pool ? pool.minSize : product.minPoolSize) - Math.max(pool ? pool.memberCount : memberCount, 1), 0) === 1 ? "person" : "people"} and everyone eats.
+            </p>
+            <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
               {pool && pool.spotsLeft <= 3 ? `${pool.spotsLeft} more person and everyone eats.` : "More people needed and everyone eats."}
             </p>
-            {/* You joined */}
+            {/* You + others */}
             <div className="mt-3 flex items-center gap-2">
-              <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: AVATAR_COLORS[0] }}>{(userName || "Y").charAt(0)}</div>
-              <span className="text-[11px] font-bold" style={{ color: "#1C1C1E" }}>{userName || "You"} (you)</span>
+              <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: "var(--coral)" }}>{(userName || "You").charAt(0)}</div>
+              <span className="text-[11px] font-bold" style={{ color: "var(--text)" }}>You{pool && pool.memberCount > 1 ? ` + ${pool.memberCount - 1} other${pool.memberCount > 2 ? "s" : ""}` : ""}</span>
             </div>
-            {pool && pool.memberCount > 1 && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex -space-x-1.5">
-                  {Array.from({ length: Math.min(pool.memberCount - 1, 3) }).map((_, j) => (
-                    <div key={j} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: AVATAR_COLORS[(j + 1) % AVATAR_COLORS.length] }}>
-                      {String.fromCharCode(70 + j)}
-                    </div>
-                  ))}
-                </div>
-                <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{pool.creatorName} + {pool.memberCount - 1} others in this pool</span>
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -689,26 +680,23 @@ export default function ProductDetailPage() {
                 </div>
               </>
             )}
-            {/* Avatar social proof + join feed */}
+            {/* Avatar social proof */}
             {pool && pool.memberCount >= 1 && (
-              <div className="mt-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex -space-x-2">
-                    {Array.from({ length: Math.min(pool.memberCount, 3) }).map((_, j) => (
-                      <div key={j} className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: AVATAR_COLORS[j % AVATAR_COLORS.length], border: "2.5px solid #1C1C1E" }}>
-                        {j === 0 ? pool.creatorName.charAt(0) : String.fromCharCode(65 + j)}
-                      </div>
-                    ))}
+              <div className="mt-3 flex items-center gap-2.5">
+                <div className="flex -space-x-2">
+                  {/* First avatar: You if joined, else creator */}
+                  <div className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: joinedStatus ? "var(--coral)" : AVATAR_COLORS[0], border: "2.5px solid var(--dark)" }}>
+                    {joinedStatus ? (userName || "You").charAt(0) : pool.creatorName.charAt(0)}
                   </div>
-                  <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>{pool.memberCount} {pool.memberCount === 1 ? "person is" : "people are"} in</span>
+                  {pool.memberCount > 1 && Array.from({ length: Math.min(pool.memberCount - 1, 2) }).map((_, j) => (
+                    <div key={j} className="w-[34px] h-[34px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: AVATAR_COLORS[(j + 1) % AVATAR_COLORS.length], border: "2.5px solid var(--dark)" }}>
+                      {joinedStatus ? pool.creatorName.charAt(0) : String.fromCharCode(65 + j)}
+                    </div>
+                  ))}
                 </div>
-                {/* Live join feed */}
-                <div className="flex items-center gap-2 mt-2.5">
-                  <div className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[9px] font-bold" style={{ background: "var(--lime)", color: "#1C1C1E" }}>
-                    {pool.creatorName.charAt(0)}
-                  </div>
-                  <span className="text-[11px]" style={{ color: "var(--subdued)" }}>{pool.creatorName} {pool.memberCount > 1 ? `+${pool.memberCount - 1} friend${pool.memberCount > 2 ? "s" : ""} joined` : "joined"} 1 min ago</span>
-                </div>
+                <span className="text-[11px] font-semibold" style={{ color: "var(--subdued)" }}>
+                  {joinedStatus ? `You + ${pool.memberCount - 1} other${pool.memberCount > 2 ? "s" : ""}` : `${pool.memberCount} ${pool.memberCount === 1 ? "person is" : "people are"} in`}
+                </span>
               </div>
             )}
           </div>
