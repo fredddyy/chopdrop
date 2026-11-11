@@ -198,7 +198,9 @@ export default function DiscoverPage() {
     ...p,
     fill: poolState(p.minPoolSize, p.poolMemberCount || 0),
   })).sort((a, b) => {
-    // Sort by savings percentage (best deals first)
+    // Sort by fill rate (most full first) — pools about to fill show first
+    // Then by savings as tiebreaker
+    if (b.fill.fillPct !== a.fill.fillPct) return b.fill.fillPct - a.fill.fillPct;
     const savA = ((a.retailPrice - a.groupPrice) / a.retailPrice);
     const savB = ((b.retailPrice - b.groupPrice) / b.retailPrice);
     return savB - savA;
