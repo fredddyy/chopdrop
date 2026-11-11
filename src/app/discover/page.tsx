@@ -29,6 +29,7 @@ interface PoolProduct {
   groupPrice: number;
   minPoolSize: number;
   poolMemberCount: number;
+  poolDeadline: string | null;
   vendor: { name: string; imageUrl?: string | null };
 }
 
@@ -485,9 +486,15 @@ export default function DiscoverPage() {
                           <span>{p.fill.joined > 0 ? `${p.fill.joined}/${p.minPoolSize} in` : `${p.minPoolSize} spots`}</span>
                           <span style={{ color: "var(--gold)" }}>Save {Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100)}%</span>
                         </div>
-                        <div className="flex items-center gap-1 mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                          {userArea ? `${userArea} pickup` : "Pickup nearby"}
+                        <div className="flex items-center justify-between mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
+                          <span className="flex items-center gap-1">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                            {userArea ? `${userArea}` : "Nearby"}
+                          </span>
+                          {p.poolDeadline && (() => {
+                            const mins = Math.max(0, Math.round((new Date(p.poolDeadline).getTime() - Date.now()) / 60000));
+                            return mins > 0 ? <span style={{ color: "var(--coral)" }}>{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m left`}</span> : null;
+                          })()}
                         </div>
                       </div>
                     </Link>
@@ -582,7 +589,13 @@ export default function DiscoverPage() {
                         <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--gold)" }}>{fmt(p.groupPrice)}</span>
                         <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                       </div>
-                      <p className="text-[10px] font-bold mt-1" style={{ color: "var(--text-muted)" }}>{p.fill.joined > 0 ? `${p.fill.joined} joined · ${p.fill.spotsLeft} left` : `${p.minPoolSize} people needed`}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>{p.fill.joined > 0 ? `${p.fill.joined} joined` : `${p.minPoolSize} needed`}</span>
+                        {p.poolDeadline && (() => {
+                          const mins = Math.max(0, Math.round((new Date(p.poolDeadline).getTime() - Date.now()) / 60000));
+                          return mins > 0 ? <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>{mins > 60 ? `${Math.floor(mins / 60)}h` : `${mins}m`}</span> : null;
+                        })()}
+                      </div>
                     </div>
                   </Link>
                 ))}

@@ -44,17 +44,17 @@ export async function GET(request: NextRequest) {
   const productIds = products.map(p => p.id);
   const pools = await prisma.pool.findMany({
     where: { productId: { in: productIds }, status: "OPEN" },
-    select: { productId: true, _count: { select: { members: true } }, minSize: true },
+    select: { productId: true, _count: { select: { members: true } }, minSize: true, deadline: true },
   });
-  const poolMap = new Map(pools.map(p => [p.productId, { memberCount: p._count.members, minSize: p.minSize }]));
+  const poolMap = new Map(pools.map(p => [p.productId, { memberCount: p._count.members, minSize: p.minSize, deadline: p.deadline }]));
 
   const enriched = products.map(p => {
     const poolData = poolMap.get(p.id);
     return {
       ...p,
       poolMemberCount: poolData?.memberCount || 0,
-      // Use the real pool's minSize when a pool exists, otherwise fall back to product default
       minPoolSize: poolData?.minSize || p.minPoolSize,
+      poolDeadline: poolData?.deadline?.toISOString() || null,
     };
   });
 
