@@ -374,9 +374,9 @@ function DiscoverContent() {
                   </Link>
                   {/* Fashion — tall */}
                   <Link href="/discover?category=Fashion" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#EC4899", height: "230px" }}>
-                    <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Fashion</span>
+                    <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>Fashion</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&q=80&fit=crop" alt="Fashion" className="absolute bottom-0 right-0 w-[75%] h-[70%] object-cover rounded-tl-[16px]" loading="lazy" />
+                    <img src="/categories/fashion.png" alt="Fashion" className="absolute object-contain pointer-events-none" style={{ width: "130%", height: "110%", bottom: "-10%", right: "-20%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.15))" }} loading="lazy" />
                   </Link>
                 </div>
               </div>
