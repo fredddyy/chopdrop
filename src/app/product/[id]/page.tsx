@@ -722,17 +722,7 @@ export default function ProductDetailPage() {
         </div>
       )}
 
-      {/* ── Trust assurance (pool only, not joined) ── */}
-      {hasPoolPricing && !joinedStatus && (
-        <div className="px-5 mt-4">
-          <div className="flex items-start gap-3 p-4 rounded-[16px]" style={{ background: "var(--emerald-soft)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-            <p className="text-[12px] leading-[160%]" style={{ color: "var(--emerald)" }}>
-              Pay {fp(product.groupPrice)} upfront to join the pool. If it doesn&apos;t fill, you&apos;re automatically refunded in full. We notify you when food is ready.
-            </p>
-          </div>
-        </div>
-      )}
+      {/* Trust assurance removed */}
 
       {/* ── No pool: request one ── */}
       {!hasPoolPricing && (
