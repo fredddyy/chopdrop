@@ -11,6 +11,7 @@ interface Store {
   name: string;
   imageUrl: string | null;
   heroImage: string | null;
+  bannerUrl: string | null;
   productCount: number;
   topItems: string[];
   deliveryEstimate: string;
@@ -590,58 +591,6 @@ function DiscoverContent() {
                 );
               })()}
 
-              {/* ── Trending now — horizontal scroll on home ── */}
-              {sortedPools.length > 0 && (
-                <div className="mt-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Trending now</h3>
-                    <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>{sortedPools.filter(p => !p.isFlashDeal).length} deals</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          {!inCategoryMode && sortedPools.length > 0 && (
-            <div className="overflow-x-auto hide-scrollbar">
-              <div className="flex gap-3 px-5 pb-2" style={{ width: "max-content" }}>
-                {sortedPools.filter(p => !p.isFlashDeal).slice(0, 8).map((p, idx) => {
-                  const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
-                  const spotsLeft = p.minPoolSize - p.fill.joined;
-                  const savingsAmount = p.retailPrice - p.groupPrice;
-                  const emptyCtas = [`Save ${fmt(savingsAmount)}`, `${sav}% off · ${spotsLeft} spots`, `${spotsLeft} spots`];
-                  return (
-                    <Link key={`home-${p.id}`} href={`/product/${p.id}`} className="shrink-0 w-[220px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-                      <div className="p-2 pb-0">
-                        <div className="h-[140px] relative rounded-[10px] overflow-hidden" style={{ background: "var(--sand)" }}>
-                          {p.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
-                          )}
-                          {sav >= 10 && (
-                            <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="p-2.5">
-                        <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
-                        <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                        <div className="flex items-baseline gap-1 mt-1.5">
-                          <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
-                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                        </div>
-                        <p className="text-[10px] font-bold mt-1" style={{ color: p.fill.joined > 0 ? "var(--emerald)" : "var(--text-muted)" }}>
-                          {p.fill.joined > 0 ? `${p.fill.joined} of ${p.minPoolSize} joined` : `${spotsLeft} spots open`}
-                        </p>
-                        <div className="mt-2 h-[30px] rounded-[8px] flex items-center justify-center text-[11px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                          {p.fill.joined > 0 ? `Join · ${spotsLeft} left` : emptyCtas[idx % emptyCtas.length]}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
             </div>
           )}
           {!inCategoryMode && (
@@ -713,7 +662,7 @@ function DiscoverContent() {
                             {/* Hero banner — 160px per design system */}
                             <div className="h-[160px] relative" style={{ background: "var(--sand)" }}>
                               {(store.heroImage || store.imageUrl) ? (
-                                <StoreHeroImg src={store.heroImage || store.imageUrl || ""} alt={store.name} fallback={store.name.charAt(0)} />
+                                <StoreHeroImg src={store.bannerUrl || store.imageUrl || ""} alt={store.name} fallback={store.name.charAt(0)} />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
                                   <span className="text-[36px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
@@ -730,7 +679,7 @@ function DiscoverContent() {
                                 </span>
                               )}
                               {/* Store logo overlay */}
-                              {store.imageUrl && store.heroImage && (
+                              {store.imageUrl && store.bannerUrl && (
                                 <div className="absolute bottom-2.5 left-2.5 w-[36px] h-[36px] rounded-[10px] overflow-hidden ring-2 ring-white" style={{ background: "var(--card)" }}>
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img src={store.imageUrl} alt={`${store.name} logo`} className="w-full h-full object-cover" loading="lazy" />
