@@ -77,7 +77,7 @@ function DiscoverContent() {
 
   const [stores, setStores] = useState<Store[]>([]);
   const [poolProducts, setPoolProducts] = useState<PoolProduct[]>([]);
-  const [activeCategory, setActiveCategory] = useState(categoryParam || "Food");
+  const [activeCategory, setActiveCategory] = useState(categoryParam || "All");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [subcategories, setSubcategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
