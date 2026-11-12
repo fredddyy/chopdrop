@@ -651,58 +651,77 @@ function DiscoverContent() {
                 );
               })()}
 
-              {/* ═══ TOP SELLERS — wide cards with hero banner + info ═══ */}
+              {/* ═══ TOP SELLERS — store activity cards ═══ */}
               {filteredStores.length > 0 && (
-                <section className="mt-2 -mx-5">
+                <section className="mt-2 -mx-5" role="region" aria-label="Top sellers">
                   <div className="px-5 flex items-center justify-between mb-3">
                     <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
                       Top sellers{userArea ? ` near ${userArea}` : ""}
                     </h3>
-                    <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>{filteredStores.length} stores</span>
+                    <Link href="/search" className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>See all</Link>
                   </div>
                   <div className="overflow-x-auto hide-scrollbar">
                     <div className="flex gap-3 px-5 pb-2 w-max">
-                      {filteredStores.map((store) => (
-                        <Link key={store.id} href={`/store/${store.id}`} className="shrink-0 w-[260px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-                          {/* Hero banner — uses heroImage or store image */}
-                          <div className="h-[120px] relative" style={{ background: "var(--sand)" }}>
-                            {(store.heroImage || store.imageUrl) ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={store.heroImage || store.imageUrl || ""} alt={store.name} className="w-full h-full object-cover" loading="lazy" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <span className="text-[32px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{store.name.charAt(0)}</span>
-                              </div>
-                            )}
-                            {store.bestSaving > 0 && (
-                              <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px] text-white" style={{ background: "var(--coral)" }}>
-                                Up to {store.bestSaving}% off
-                              </span>
-                            )}
-                            {/* Store logo overlay */}
-                            {store.imageUrl && store.heroImage && (
-                              <div className="absolute bottom-2.5 left-2.5 w-[36px] h-[36px] rounded-[10px] overflow-hidden ring-2 ring-white" style={{ background: "var(--card)" }}>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={store.imageUrl} alt="" className="w-full h-full object-cover" />
-                              </div>
-                            )}
-                          </div>
-                          {/* Info */}
-                          <div className="p-3">
-                            <h4 className="text-[14px] font-bold truncate" style={{ color: "var(--text)" }}>{store.name}</h4>
-                            <div className="flex items-center gap-1.5 mt-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
-                              <span>{store.deliveryEstimate}</span>
-                              {store.orderCount > 0 && <><span>·</span><span>{store.orderCount}+ orders</span></>}
-                              {store.rating > 0 && <><span>·</span><span style={{ color: "var(--emerald)" }}>★ {store.rating.toFixed(1)}</span></>}
+                      {filteredStores.map((store) => {
+                        const [imgErr, setImgErr] = useState(false);
+                        return (
+                          <Link key={store.id} href={`/store/${store.id}`} aria-label={`Visit ${store.name}`} className="shrink-0 w-[270px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                            {/* Hero banner — 160px per design system */}
+                            <div className="h-[160px] relative" style={{ background: "var(--sand)" }}>
+                              {!imgErr && (store.heroImage || store.imageUrl) ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={store.heroImage || store.imageUrl || ""} alt={store.name} className="w-full h-full object-cover" loading="lazy" onError={() => setImgErr(true)} />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                                  <span className="text-[36px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
+                                </div>
+                              )}
+                              {store.bestSaving > 0 && (
+                                <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px] text-white" style={{ background: "var(--coral)" }}>
+                                  Up to {store.bestSaving}% off
+                                </span>
+                              )}
+                              {store.orderCount > 0 && (
+                                <span className="absolute top-2.5 right-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px]" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>
+                                  {store.orderCount}+ orders
+                                </span>
+                              )}
+                              {/* Store logo overlay */}
+                              {store.imageUrl && store.heroImage && (
+                                <div className="absolute bottom-2.5 left-2.5 w-[36px] h-[36px] rounded-[10px] overflow-hidden ring-2 ring-white" style={{ background: "var(--card)" }}>
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={store.imageUrl} alt={`${store.name} logo`} className="w-full h-full object-cover" loading="lazy" />
+                                </div>
+                              )}
                             </div>
-                            {store.topItems.length > 0 && (
-                              <p className="text-[10px] mt-1 truncate" style={{ color: "var(--text-muted)" }}>
-                                {store.topItems.slice(0, 3).join(" · ")}
-                              </p>
-                            )}
-                          </div>
-                        </Link>
-                      ))}
+                            {/* Info — answers: what, how cheap, who's buying */}
+                            <div className="p-3">
+                              <h4 className="text-[14px] font-bold truncate" style={{ color: "var(--text)" }}>{store.name}</h4>
+                              {/* Price anchor */}
+                              {store.lowestGroupPrice > 0 && (
+                                <div className="flex items-baseline gap-1.5 mt-1">
+                                  <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>From</span>
+                                  <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(store.lowestGroupPrice)}</span>
+                                  {store.lowestPrice > store.lowestGroupPrice && (
+                                    <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(store.lowestPrice)}</span>
+                                  )}
+                                </div>
+                              )}
+                              {/* Metadata row */}
+                              <div className="flex items-center gap-1.5 mt-1.5 text-[11px] overflow-hidden" style={{ color: "var(--text-muted)" }}>
+                                <span className="shrink-0">{store.deliveryEstimate}</span>
+                                {store.rating > 0 && <><span>·</span><span className="shrink-0" style={{ color: "var(--emerald)" }}>★ {store.rating.toFixed(1)}</span></>}
+                              </div>
+                              {/* Best deal callout */}
+                              {store.bestDealName && (
+                                <p className="text-[11px] font-bold mt-1.5 truncate" style={{ color: "var(--coral)" }}>
+                                  Best deal: {store.bestDealName}
+                                </p>
+                              )}
+                            </div>
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 </section>
