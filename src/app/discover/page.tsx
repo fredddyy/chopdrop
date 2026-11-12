@@ -685,9 +685,6 @@ function DiscoverContent() {
                               <p className="text-[10px] font-bold mt-1" style={{ color: p.fill.joined > 0 ? "var(--emerald)" : "var(--text-muted)" }}>
                                 {p.fill.joined > 0 ? `${p.fill.joined} of ${p.minPoolSize} joined` : `${spotsLeft} spots open`}
                               </p>
-                              <div className="mt-2 h-[30px] rounded-[8px] flex items-center justify-center text-[11px] font-bold text-white" style={{ background: p.fill.fillPct >= 80 ? "#DC2626" : p.fill.joined > 0 ? "var(--emerald)" : "var(--coral)" }}>
-                                {p.fill.joined > 0 ? `Join · ${spotsLeft} left` : emptyCtas[idx % emptyCtas.length]}
-                              </div>
                             </div>
                           </Link>
                         );
