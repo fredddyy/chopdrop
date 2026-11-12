@@ -426,19 +426,23 @@ function DiscoverContent() {
               {/* ── Trending pools — 2-col product grid with social proof + join CTAs ── */}
               {sortedPools.length > 0 && (
                 <div className="mt-6">
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-1">
                     <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Trending now</h3>
-                    <Link href="/search" className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>See all</Link>
+                    <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>{sortedPools.filter(p => !p.isFlashDeal).length} deals</span>
                   </div>
+                  <p className="text-[12px] mb-3" style={{ color: "var(--text-muted)" }}>Deals across all categories. Join to unlock group prices.</p>
 
                   <div className="grid grid-cols-2 gap-3">
-                    {sortedPools.filter(p => !p.isFlashDeal).slice(0, 6).map((p) => {
+                    {sortedPools.filter(p => !p.isFlashDeal).slice(0, 6).map((p, idx) => {
                       const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
                       const spotsLeft = p.minPoolSize - p.fill.joined;
                       const memberNames = p.poolMemberNames || [];
                       const lastJoined = p.poolLastJoinedName;
                       const lastJoinedAt = p.poolLastJoinedAt;
                       const agoMin = lastJoinedAt ? Math.floor((Date.now() - new Date(lastJoinedAt).getTime()) / 60000) : 0;
+                      const savingsAmount = p.retailPrice - p.groupPrice;
+                      // Varied CTAs for empty pools
+                      const emptyCtas = [`Save ${fmt(savingsAmount)}`, `${sav}% off · ${spotsLeft} spots`, `${spotsLeft} spots · Join now`];
                       return (
                         <Link key={`grid-${p.id}`} href={`/product/${p.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
                           <div className="p-2 pb-0">
@@ -483,16 +487,13 @@ function DiscoverContent() {
                               <span className="text-[17px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
                               <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                             </div>
-                            {/* Fill bar */}
-                            <div className="flex items-center gap-1.5 mt-1.5">
-                              <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                                <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--emerald)" }} />
-                              </div>
-                              <span className="text-[9px] font-bold shrink-0" style={{ color: "var(--emerald)" }}>{p.fill.joined}/{p.minPoolSize}</span>
-                            </div>
+                            {/* Spots info */}
+                            <p className="text-[10px] font-bold mt-1.5" style={{ color: p.fill.joined > 0 ? "var(--emerald)" : "var(--text-muted)" }}>
+                              {p.fill.joined > 0 ? `${p.fill.joined} of ${p.minPoolSize} joined` : `${spotsLeft} spots open`}
+                            </p>
                             {/* Join CTA */}
-                            <div className="mt-2.5 h-[34px] rounded-[10px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                              {p.fill.joined > 0 ? `Join · ${spotsLeft} left` : "Be first · Get this price"}
+                            <div className="mt-2 h-[34px] rounded-[10px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                              {p.fill.joined > 0 ? `Join · ${spotsLeft} left` : emptyCtas[idx % emptyCtas.length]}
                             </div>
                           </div>
                         </Link>
