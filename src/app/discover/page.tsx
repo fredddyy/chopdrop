@@ -483,10 +483,15 @@ function DiscoverContent() {
                     {/* Overlapping avatars — visualize the group */}
                     <div className="flex items-center gap-2.5 mt-4">
                       <div className="flex -space-x-2.5">
-                        {["AO", "TM", "KA", "BE", "CU"].map((init, i) => (
-                          <div key={i} className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "#D4A24E", "#6366F1", "#EC4899"][i], border: "2px solid var(--dark)" }}>
-                            {init}
-                          </div>
+                        {[
+                          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
+                          "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&h=80&fit=crop&crop=face",
+                          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&crop=face",
+                          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face",
+                          "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&h=80&fit=crop&crop=face",
+                        ].map((src, i) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={i} src={src} alt="" className="w-8 h-8 rounded-full object-cover" style={{ border: "2px solid var(--dark)" }} loading="lazy" />
                         ))}
                       </div>
                       <p className="text-[11px] font-bold" style={{ color: "var(--subdued)" }}>3,000+ people saving together</p>
