@@ -368,9 +368,9 @@ function DiscoverContent() {
                 <div className="flex-1 flex flex-col gap-3">
                   {/* Groceries — short */}
                   <Link href="/discover?category=Groceries" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#1A7D4B", height: "180px" }}>
-                    <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Groceries</span>
+                    <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>Groceries</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=80&fit=crop" alt="Groceries" className="absolute bottom-0 right-0 w-[70%] h-[65%] object-cover rounded-tl-[16px]" loading="lazy" />
+                    <img src="/categories/groceries.png" alt="Groceries" className="absolute object-contain pointer-events-none" style={{ width: "130%", height: "110%", bottom: "-12%", right: "-20%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.2))" }} loading="lazy" />
                   </Link>
                   {/* Fashion — tall */}
                   <Link href="/discover?category=Fashion" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#EC4899", height: "230px" }}>
