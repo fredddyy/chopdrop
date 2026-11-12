@@ -56,7 +56,7 @@ Every UI component, page, and screen MUST follow the design system defined here 
 * **NO Gradients:** All UI fills must be solid and flat.
 * **NO Cool Grays:** Do not use #F5F5F5, #F8FAFC, or default Tailwind gray/slate scales.
 * **NO Monotonous Weights:** Contrast heavy bold typography with crisp regular weights.
-* **NO Pill-Shaped Buttons:** Keep action components architectural (12px border radius).
+* **Pill-Shaped Buttons Allowed:** Rounded-full pills are acceptable for filters, tags, and secondary actions. Primary CTA buttons use 12px border radius.
 * **NO Over-Badging:** Do not wrap every text in rounded capsules. Let typography work.
 * **NO Emoji Placeholders:** Never use 🍛, 🍗, or 🥤 as UI icons. Use photography or warm solid-color placeholders.
 * **NO Digital Timers:** Use conversational copy ("21 min left to order") not raw digits (00:21:40).

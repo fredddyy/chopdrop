@@ -239,8 +239,8 @@ function DiscoverContent() {
   return (
     <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* ── Header — ChopChop style ── */}
-      <header className="sticky top-0 z-40" style={{ background: "var(--bg)" }}>
+      {/* ── Header — home mode only ── */}
+      {!inCategoryMode && <header className="sticky top-0 z-40" style={{ background: "var(--bg)" }}>
         {/* Row 1: Label + Wordmark + Actions */}
         <div className="px-5 pt-3 pb-1.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -282,7 +282,27 @@ function DiscoverContent() {
         </div>
 
         {/* Category tabs removed — single feed for now */}
-      </header>
+      </header>}
+
+      {/* ── Category header — sticky, replaces home header ── */}
+      {inCategoryMode && (
+        <header className="sticky top-0 z-40 px-5 pt-3 pb-2" style={{ background: "var(--bg)" }}>
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={() => router.push("/discover")} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "var(--sand)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+            </button>
+            <h1 className="text-[20px] font-extrabold flex-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{activeCategory}</h1>
+            <Link href="/cart" aria-label="Cart" className="relative w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+              {cart.totalItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
+                  {cart.totalItems}
+                </span>
+              )}
+            </Link>
+          </div>
+        </header>
+      )}
 
       {/* ── Location panel ── */}
       {areaOpen && (
@@ -515,18 +535,9 @@ function DiscoverContent() {
             </div>
           )}
 
-          {/* ═══ CATEGORY MODE — back button + category header + filtered feed ═══ */}
+          {/* ═══ CATEGORY MODE — search + pills + grid ═══ */}
           {inCategoryMode && (
-            <div className="px-5 pt-3">
-              <div className="flex items-center gap-3 mb-3">
-                <button type="button" onClick={() => router.push("/discover")} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "var(--sand)" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-                <h1 className="text-[22px] font-extrabold flex-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{activeCategory}</h1>
-                <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-                </Link>
-              </div>
+            <div className="px-5 pt-2">
               {/* Scoped search */}
               <Link href={`/search?category=${activeCategory}`} className="mb-3 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
@@ -647,11 +658,23 @@ function DiscoverContent() {
                             <span className="text-[17px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
                             <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                           </div>
-                          <p className="text-[10px] font-bold mt-1" style={{ color: p.fill.joined > 0 ? "var(--emerald)" : "var(--text-muted)" }}>
-                            {p.fill.joined > 0 ? `${p.fill.joined} of ${p.minPoolSize} joined` : `${spotsLeft} spots open`}
-                          </p>
-                          <div className="mt-2 h-[34px] rounded-[10px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                            {p.fill.joined > 0 ? `Join · ${spotsLeft} left` : emptyCtas[idx % emptyCtas.length]}
+                          {/* Fill progress bar */}
+                          <div className="flex items-center gap-1.5 mt-1.5">
+                            <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                              <div className="h-full rounded-full transition-all" style={{ width: `${Math.max(p.fill.fillPct, 2)}%`, background: p.fill.fillPct >= 80 ? "var(--coral)" : "var(--emerald)" }} />
+                            </div>
+                            <span className="text-[9px] font-bold shrink-0" style={{ color: p.fill.joined > 0 ? "var(--emerald)" : "var(--text-muted)" }}>
+                              {p.fill.joined > 0 ? `${p.fill.joined}/${p.minPoolSize}` : `${spotsLeft} spots`}
+                            </span>
+                          </div>
+                          {/* Countdown timer */}
+                          {p.poolDeadline && (() => {
+                            const mins = Math.max(0, Math.round((new Date(p.poolDeadline).getTime() - Date.now()) / 60000));
+                            return mins > 0 ? <p className="text-[9px] font-bold mt-0.5" style={{ color: "var(--coral)" }}>{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m left` : `${mins}m left`}</p> : null;
+                          })()}
+                          {/* CTA — color reflects fill state */}
+                          <div className="mt-2 h-[34px] rounded-[10px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: p.fill.fillPct >= 80 ? "#DC2626" : p.fill.joined > 0 ? "var(--emerald)" : "var(--coral)" }}>
+                            {p.fill.joined > 0 ? (spotsLeft <= 2 ? `Last ${spotsLeft} spot${spotsLeft !== 1 ? "s" : ""}!` : `Join · ${spotsLeft} left`) : `Save ${fmt(savingsAmount)}`}
                           </div>
                         </div>
                       </Link>
