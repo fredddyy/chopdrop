@@ -724,10 +724,10 @@ function DiscoverContent() {
                                 <span className="shrink-0">{store.deliveryEstimate}</span>
                                 {store.rating > 0 && <><span>·</span><span className="shrink-0" style={{ color: "var(--emerald)" }}>★ {store.rating.toFixed(1)}</span></>}
                               </div>
-                              {/* Best deal callout */}
-                              {store.bestDealName && (
-                                <p className="text-[11px] font-bold mt-1.5 truncate" style={{ color: "var(--coral)" }}>
-                                  Best deal: {store.bestDealName}
+                              {/* Savings callout */}
+                              {store.bestSaving > 0 && (
+                                <p className="text-[11px] font-bold mt-1.5" style={{ color: "var(--coral)" }}>
+                                  Save up to {store.bestSaving}% on group deals
                                 </p>
                               )}
                             </div>

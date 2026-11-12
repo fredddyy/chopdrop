@@ -70,6 +70,41 @@ export async function GET(request: NextRequest) {
     orderBy: { sortOrder: "asc" },
   });
 
+  // Query real order counts per restaurant
+  const orderCounts = await prisma.order.groupBy({
+    by: ["dailyMenuId"],
+    where: { paymentStatus: "SUCCESS" },
+    _count: true,
+  });
+  // Map dailyMenu → restaurant via meal
+  const menuToRestaurant = new Map<string, string>();
+  const dailyMenus = await prisma.dailyMenu.findMany({
+    select: { id: true, meal: { select: { restaurantId: true } } },
+  });
+  for (const dm of dailyMenus) menuToRestaurant.set(dm.id, dm.meal.restaurantId);
+
+  const restaurantOrderCounts = new Map<string, number>();
+  for (const oc of orderCounts) {
+    const rid = menuToRestaurant.get(oc.dailyMenuId);
+    if (rid) restaurantOrderCounts.set(rid, (restaurantOrderCounts.get(rid) || 0) + oc._count);
+  }
+
+  // Also count group order members per restaurant
+  const groupOrderCounts = await prisma.groupOrderMember.groupBy({
+    by: ["groupOrderId"],
+    where: { paymentStatus: "SUCCESS" },
+    _count: true,
+  });
+  const goToRestaurant = new Map<string, string>();
+  const groupOrders = await prisma.groupOrder.findMany({
+    select: { id: true, restaurantId: true },
+  });
+  for (const go of groupOrders) goToRestaurant.set(go.id, go.restaurantId);
+  for (const gc of groupOrderCounts) {
+    const rid = goToRestaurant.get(gc.groupOrderId);
+    if (rid) restaurantOrderCounts.set(rid, (restaurantOrderCounts.get(rid) || 0) + gc._count);
+  }
+
   const data = stores.map((s) => {
     const relevant = (category && category !== "All")
       ? s.products.filter((p) => p.category === category)
@@ -96,14 +131,16 @@ export async function GET(request: NextRequest) {
     const cheapestMeal = s.meals.length > 0
       ? s.meals.reduce((min, m) => (m.price < min.price ? m : min))
       : null;
-    const lowestPrice = Math.min(
+    const rawLowestPrice = Math.min(
       cheapestProduct?.retailPrice ?? Infinity,
-      cheapestMeal?.price ?? Infinity,
+      cheapestMeal?.originalPrice ?? cheapestMeal?.price ?? Infinity,
     );
-    const lowestGroupPrice = Math.min(
+    const rawLowestGroupPrice = Math.min(
       cheapestProduct?.groupPrice ?? Infinity,
       cheapestMeal?.price ?? Infinity,
     );
+    const lowestPrice = rawLowestPrice === Infinity ? 0 : rawLowestPrice;
+    const lowestGroupPrice = rawLowestGroupPrice === Infinity ? 0 : rawLowestGroupPrice;
 
     // Hero image: products first, then meals, then banner
     const relevantImg = relevant.find((p) => p.imageUrl)?.imageUrl ?? null;
@@ -122,9 +159,9 @@ export async function GET(request: NextRequest) {
       ? relevant.slice(0, 3).map((p) => p.name.split(" ")[0])
       : s.meals.slice(0, 3).map((m) => m.name.split(" ")[0]);
 
-    // Social proof — simulated from product count until real order data exists
+    // Social proof
     const ratingBase = [0, 4.8, 4.5, 4.9, 4.3, 4.7][s.sortOrder % 6] || 4.5;
-    const orderBase = 0; // Real order count — will be populated from actual data
+    const orderBase = restaurantOrderCounts.get(s.id) || 0;
 
     // Distance from user
     const distanceKm = hasLocation && s.latitude && s.longitude
@@ -148,7 +185,7 @@ export async function GET(request: NextRequest) {
       topItems,
       distanceKm: distanceKm !== null ? Math.round(distanceKm * 10) / 10 : null,
       walkMinutes,
-      deliveryEstimate: walkMinutes !== null ? `${walkMinutes} min walk` : "Pickup nearby",
+      deliveryEstimate: walkMinutes !== null ? `${Math.max(10, Math.round(walkMinutes * 0.7))} min delivery` : "Pickup available",
       rating: ratingBase,
       orderCount: orderBase,
     };
