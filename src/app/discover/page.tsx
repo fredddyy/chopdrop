@@ -720,10 +720,11 @@ function DiscoverContent() {
                 </section>
               )}
 
-              {/* Section header */}
+              {/* Trending section header */}
               {sortedPools.length > 0 && (
                 <div className="flex items-center justify-between mb-3 mt-5">
-                  <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sortedPools.length} {activeCategory.toLowerCase()} deal{sortedPools.length !== 1 ? "s" : ""}</h3>
+                  <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Trending now</h3>
+                  <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>{sortedPools.length} deal{sortedPools.length !== 1 ? "s" : ""}</span>
                 </div>
               )}
 
