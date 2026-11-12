@@ -337,10 +337,11 @@ function DiscoverContent() {
         {/* Category tabs removed — single feed for now */}
       </header>}
 
-      {/* ── Category header — sticky, white ── */}
+      {/* ── Category header — sticky, integrated with search + pills ── */}
       {inCategoryMode && (
-        <header className="sticky top-0 z-40" style={{ background: "var(--bg)", borderBottom: "1px solid var(--border)" }}>
-          <div className="px-5 pt-3 pb-3 flex items-center gap-3">
+        <header className="sticky top-0 z-40" style={{ background: "var(--bg)" }}>
+          {/* Row 1: Nav */}
+          <div className="px-5 pt-3 pb-2 flex items-center gap-3">
             <button type="button" onClick={() => router.push("/discover")} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "var(--sand)" }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
             </button>
@@ -354,6 +355,38 @@ function DiscoverContent() {
               )}
             </Link>
           </div>
+          {/* Row 2: Search — integrated into header */}
+          <div className="px-5 pb-2">
+            <Link href={`/search?category=${activeCategory}`} className="flex items-center h-[38px] px-3.5 rounded-[10px] gap-2" style={{ background: "var(--sand)" }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+              <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search {activeCategory.toLowerCase()}...</span>
+            </Link>
+          </div>
+          {/* Row 3: Subcategory pills — part of the header bar */}
+          {subcategories.length > 0 && (
+            <div className="px-5 pb-2.5 flex gap-2 overflow-x-auto hide-scrollbar">
+              <button
+                type="button"
+                onClick={() => setActiveSubcategory(null)}
+                className="h-[30px] px-3 rounded-full text-[12px] font-bold whitespace-nowrap shrink-0"
+                style={{ background: !activeSubcategory ? "var(--dark)" : "transparent", color: !activeSubcategory ? "white" : "var(--text-secondary)", border: activeSubcategory ? "1px solid var(--border)" : "none" }}
+              >
+                All
+              </button>
+              {subcategories.map((sub) => (
+                <button
+                  key={sub}
+                  type="button"
+                  onClick={() => setActiveSubcategory(activeSubcategory === sub ? null : sub)}
+                  className="h-[30px] px-3 rounded-full text-[12px] font-bold whitespace-nowrap shrink-0"
+                  style={{ background: activeSubcategory === sub ? "var(--dark)" : "transparent", color: activeSubcategory === sub ? "white" : "var(--text-secondary)", border: activeSubcategory === sub ? "none" : "1px solid var(--border)" }}
+                >
+                  {sub}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="h-px" style={{ background: "var(--border)" }} />
         </header>
       )}
 
@@ -588,44 +621,9 @@ function DiscoverContent() {
             </div>
           )}
 
-          {/* ═══ CATEGORY MODE — search + pills + grid ═══ */}
+          {/* ═══ CATEGORY FEED — stores + product grid ═══ */}
           {inCategoryMode && (
-            <div className="px-5 pt-2">
-              {/* Scoped search */}
-              <Link href={`/search?category=${activeCategory}`} className="mb-3 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-                <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search {activeCategory.toLowerCase()}...</span>
-              </Link>
-              {/* Subcategory pills */}
-              {subcategories.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-                  <button
-                    type="button"
-                    onClick={() => setActiveSubcategory(null)}
-                    className="h-[32px] px-3.5 rounded-full text-[12px] font-bold whitespace-nowrap shrink-0"
-                    style={{ background: !activeSubcategory ? "var(--dark)" : "var(--card)", color: !activeSubcategory ? "white" : "var(--text-secondary)", border: activeSubcategory ? "1px solid var(--border)" : "none" }}
-                  >
-                    All
-                  </button>
-                  {subcategories.map((sub) => (
-                    <button
-                      key={sub}
-                      type="button"
-                      onClick={() => setActiveSubcategory(activeSubcategory === sub ? null : sub)}
-                      className="h-[32px] px-3.5 rounded-full text-[12px] font-bold whitespace-nowrap shrink-0"
-                      style={{ background: activeSubcategory === sub ? "var(--dark)" : "var(--card)", color: activeSubcategory === sub ? "white" : "var(--text-secondary)", border: activeSubcategory === sub ? "none" : "1px solid var(--border)" }}
-                    >
-                      {sub}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ═══ CATEGORY FEED — 2-column product grid with join CTAs ═══ */}
-          {inCategoryMode && (
-            <div className="px-5 mt-4">
+            <div className="px-5 mt-3">
               {/* Flash deal compact banner (if active in this category) */}
               {sortedPools.some(p => p.isFlashDeal) && (() => {
                 const flash = sortedPools.find(p => p.isFlashDeal)!;
