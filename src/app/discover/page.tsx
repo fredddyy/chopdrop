@@ -480,8 +480,19 @@ function DiscoverContent() {
                     <p className="text-[12px] mt-2 leading-[155%]" style={{ color: "var(--subdued)" }}>
                       Pick any product. Join a group. When enough people are in, everyone gets the group price. Didn&apos;t fill? Full refund. Zero risk.
                     </p>
-                    {/* Visual example */}
-                    <div className="mt-4 flex items-center gap-3">
+                    {/* Overlapping avatars — visualize the group */}
+                    <div className="flex items-center gap-2.5 mt-4">
+                      <div className="flex -space-x-2.5">
+                        {["AO", "TM", "KA", "BE", "CU"].map((init, i) => (
+                          <div key={i} className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "#D4A24E", "#6366F1", "#EC4899"][i], border: "2px solid var(--dark)" }}>
+                            {init}
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[11px] font-bold" style={{ color: "var(--subdued)" }}>3,000+ people saving together</p>
+                    </div>
+                    {/* Visual price comparison */}
+                    <div className="mt-3 flex items-center gap-3">
                       <div className="flex-1 rounded-[10px] p-2.5 text-center" style={{ background: "rgba(255,255,255,0.06)" }}>
                         <p className="text-[9px] uppercase tracking-wide" style={{ color: "var(--subdued)" }}>Solo price</p>
                         <p className="text-[18px] font-extrabold text-white tabular-nums mt-0.5 line-through" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", opacity: 0.5 }}>₦2,000</p>
