@@ -43,6 +43,21 @@ function fmt(kobo: number): string {
   return "\u20A6" + (kobo / 100).toLocaleString();
 }
 
+function StoreHeroImg({ src, alt, fallback }: { src: string; alt: string; fallback: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
+        <span className="text-[36px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{fallback}</span>
+      </div>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} className="w-full h-full object-cover" loading="lazy" onError={() => setFailed(true)} />
+  );
+}
+
 function PoolImage({ src, alt }: { src: string | null; alt: string }) {
   const [failed, setFailed] = useState(false);
   const handleError = useCallback(() => setFailed(true), []);
@@ -662,17 +677,14 @@ function DiscoverContent() {
                   </div>
                   <div className="overflow-x-auto hide-scrollbar">
                     <div className="flex gap-3 px-5 pb-2 w-max">
-                      {filteredStores.map((store) => {
-                        const [imgErr, setImgErr] = useState(false);
-                        return (
+                      {filteredStores.map((store) => (
                           <Link key={store.id} href={`/store/${store.id}`} aria-label={`Visit ${store.name}`} className="shrink-0 w-[270px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
                             {/* Hero banner — 160px per design system */}
                             <div className="h-[160px] relative" style={{ background: "var(--sand)" }}>
-                              {!imgErr && (store.heroImage || store.imageUrl) ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={store.heroImage || store.imageUrl || ""} alt={store.name} className="w-full h-full object-cover" loading="lazy" onError={() => setImgErr(true)} />
+                              {(store.heroImage || store.imageUrl) ? (
+                                <StoreHeroImg src={store.heroImage || store.imageUrl || ""} alt={store.name} fallback={store.name.charAt(0)} />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                                <div className="w-full h-full flex items-center justify-center">
                                   <span className="text-[36px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
                                 </div>
                               )}
@@ -720,8 +732,7 @@ function DiscoverContent() {
                               )}
                             </div>
                           </Link>
-                        );
-                      })}
+                      ))}
                     </div>
                   </div>
                 </section>
