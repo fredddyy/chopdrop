@@ -359,9 +359,9 @@ function DiscoverContent() {
                   </Link>
                   {/* Gadgets — short */}
                   <Link href="/discover?category=Electronics" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#6366F1", height: "180px" }}>
-                    <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Gadgets</span>
+                    <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>Gadgets</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&fit=crop" alt="Gadgets" className="absolute bottom-0 right-0 w-[70%] h-[65%] object-cover rounded-tl-[16px]" loading="lazy" />
+                    <img src="/categories/gadgets.png" alt="Gadgets" className="absolute object-contain pointer-events-none" style={{ width: "130%", height: "110%", bottom: "-15%", right: "-25%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.25))" }} loading="lazy" />
                   </Link>
                 </div>
                 {/* Right column */}
