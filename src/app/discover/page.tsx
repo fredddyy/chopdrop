@@ -347,49 +347,44 @@ function DiscoverContent() {
                 <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search for food, stores, deals...</span>
               </Link>
 
-              {/* Category cards — bold masonry, saturated backgrounds, hero photos */}
-              <div className="flex gap-2.5">
+              {/* Category cards — solid color surface, photo floats on top */}
+              <div className="flex gap-3">
                 {/* Left column */}
-                <div className="flex-1 flex flex-col gap-2.5">
+                <div className="flex-1 flex flex-col gap-3">
                   {/* Food — tall */}
-                  <Link href="/discover?category=Food" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#C4572A", height: "220px" }}>
+                  <Link href="/discover?category=Food" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#C4572A", height: "230px" }}>
+                    <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Food</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&q=80&fit=crop" alt="Food" className="absolute inset-0 w-full h-full object-cover opacity-70" loading="lazy" />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
-                    <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Food</span>
+                    <img src="https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&q=80&fit=crop" alt="Food" className="absolute bottom-0 right-0 w-[75%] h-[70%] object-cover rounded-tl-[16px]" loading="lazy" />
                   </Link>
                   {/* Gadgets — short */}
-                  <Link href="/discover?category=Electronics" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#6366F1", height: "170px" }}>
+                  <Link href="/discover?category=Electronics" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#6366F1", height: "180px" }}>
+                    <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Gadgets</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&fit=crop" alt="Gadgets" className="absolute inset-0 w-full h-full object-cover opacity-60" loading="lazy" />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
-                    <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Gadgets</span>
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&fit=crop" alt="Gadgets" className="absolute bottom-0 right-0 w-[70%] h-[65%] object-cover rounded-tl-[16px]" loading="lazy" />
                   </Link>
                 </div>
                 {/* Right column */}
-                <div className="flex-1 flex flex-col gap-2.5">
+                <div className="flex-1 flex flex-col gap-3">
                   {/* Groceries — short */}
-                  <Link href="/discover?category=Groceries" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#1A7D4B", height: "170px" }}>
+                  <Link href="/discover?category=Groceries" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#1A7D4B", height: "180px" }}>
+                    <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Groceries</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=80&fit=crop" alt="Groceries" className="absolute inset-0 w-full h-full object-cover opacity-60" loading="lazy" />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
-                    <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Groceries</span>
+                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=80&fit=crop" alt="Groceries" className="absolute bottom-0 right-0 w-[70%] h-[65%] object-cover rounded-tl-[16px]" loading="lazy" />
                   </Link>
                   {/* Fashion — tall */}
-                  <Link href="/discover?category=Fashion" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#EC4899", height: "220px" }}>
+                  <Link href="/discover?category=Fashion" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#EC4899", height: "230px" }}>
+                    <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Fashion</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&q=80&fit=crop" alt="Fashion" className="absolute inset-0 w-full h-full object-cover opacity-70" loading="lazy" />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
-                    <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Fashion</span>
+                    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&q=80&fit=crop" alt="Fashion" className="absolute bottom-0 right-0 w-[75%] h-[70%] object-cover rounded-tl-[16px]" loading="lazy" />
                   </Link>
                 </div>
               </div>
               {/* Home & Living — full width */}
-              <Link href="/discover?category=Home" className="relative overflow-hidden rounded-[20px] press-feedback mt-2.5 block" style={{ background: "#D4A24E", height: "130px" }}>
+              <Link href="/discover?category=Home" className="relative overflow-hidden rounded-[20px] press-feedback mt-3 block" style={{ background: "#D4A24E", height: "140px" }}>
+                <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Home & Living</span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop" alt="Home & Living" className="absolute inset-0 w-full h-full object-cover opacity-60" loading="lazy" />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.45) 0%, transparent 70%)" }} />
-                <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Home & Living</span>
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop" alt="Home & Living" className="absolute bottom-0 right-0 w-[55%] h-[85%] object-cover rounded-tl-[16px]" loading="lazy" />
               </Link>
 
               {/* ── How it works — compact explainer ── */}
