@@ -441,31 +441,33 @@ function DiscoverContent() {
                       const agoMin = lastJoinedAt ? Math.floor((Date.now() - new Date(lastJoinedAt).getTime()) / 60000) : 0;
                       return (
                         <Link key={`grid-${p.id}`} href={`/product/${p.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                          <div className="h-[120px] relative" style={{ background: "var(--sand)" }}>
-                            {p.imageUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
-                            )}
-                            {sav >= 10 && (
-                              <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
-                            )}
-                            {/* Member avatars on image */}
-                            {memberNames.length > 0 && (
-                              <div className="absolute bottom-2 left-2 flex -space-x-1.5">
-                                {memberNames.slice(0, 3).map((name, i) => (
-                                  <div key={i} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[8px] font-bold text-white ring-2 ring-white" style={{ background: ["var(--coral)", "var(--emerald)", "var(--gold)"][i % 3] }}>
-                                    {name.charAt(0)}
-                                  </div>
-                                ))}
-                                {p.fill.joined > 3 && (
-                                  <div className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold ring-2 ring-white" style={{ background: "var(--dark)", color: "white" }}>
-                                    +{p.fill.joined - 3}
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                          <div className="p-2 pb-0">
+                            <div className="h-[120px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                              {p.imageUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
+                              )}
+                              {sav >= 10 && (
+                                <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
+                              )}
+                              {/* Member avatars on image */}
+                              {memberNames.length > 0 && (
+                                <div className="absolute bottom-2 left-2 flex -space-x-1.5">
+                                  {memberNames.slice(0, 3).map((name, i) => (
+                                    <div key={i} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[8px] font-bold text-white ring-2 ring-white" style={{ background: ["var(--coral)", "var(--emerald)", "var(--gold)"][i % 3] }}>
+                                      {name.charAt(0)}
+                                    </div>
+                                  ))}
+                                  {p.fill.joined > 3 && (
+                                    <div className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold ring-2 ring-white" style={{ background: "var(--dark)", color: "white" }}>
+                                      +{p.fill.joined - 3}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
                           <div className="p-3">
                             <p className="text-[13px] font-bold truncate leading-tight" style={{ color: "var(--text)" }}>{p.name}</p>
