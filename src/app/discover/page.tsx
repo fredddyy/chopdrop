@@ -440,7 +440,7 @@ function DiscoverContent() {
                       const lastJoinedAt = p.poolLastJoinedAt;
                       const agoMin = lastJoinedAt ? Math.floor((Date.now() - new Date(lastJoinedAt).getTime()) / 60000) : 0;
                       return (
-                        <Link key={`grid-${p.id}`} href={`/product/${p.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                        <Link key={`grid-${p.id}`} href={`/product/${p.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
                           <div className="p-2 pb-0">
                             <div className="h-[120px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
                               {p.imageUrl ? (
