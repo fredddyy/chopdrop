@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/lib/cart";
@@ -83,6 +83,10 @@ function DiscoverContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
   const [userArea, setUserArea] = useState("");
   const [userAddress, setUserAddress] = useState("");
   const [userName, setUserName] = useState("");
@@ -187,7 +191,7 @@ function DiscoverContent() {
     try {
       const [storesResult, productsResult] = await Promise.allSettled([
         fetch(`/api/stores?category=${activeCategory}${userLat ? `&lat=${userLat}&lng=${userLng}` : ""}`, { signal }).then((r) => r.json()),
-        fetch(`/api/products?category=${activeCategory}${activeSubcategory ? `&subcategory=${activeSubcategory}` : ""}&limit=20`, { signal }).then((r) => r.json()),
+        fetch(`/api/products?category=${activeCategory}${activeSubcategory ? `&subcategory=${activeSubcategory}` : ""}&limit=20&page=1`, { signal }).then((r) => r.json()),
       ]);
       if (signal?.aborted) return;
       if (storesResult.status === "fulfilled" && storesResult.value.success) {
@@ -198,6 +202,9 @@ function DiscoverContent() {
           (p) => p.groupPrice < p.retailPrice && p.imageUrl,
         );
         setPoolProducts(withSavings);
+        setPage(1);
+        const meta = productsResult.value.meta;
+        setHasMore(meta ? meta.page < meta.totalPages : false);
         if (productsResult.value.subcategories) {
           setSubcategories(productsResult.value.subcategories);
         }
@@ -212,6 +219,37 @@ function DiscoverContent() {
     if (signal?.aborted) return;
     setLoading(false);
   }
+
+  // Infinite scroll — load more products
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore || !inCategoryMode) return;
+    const nextPage = page + 1;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(`/api/products?category=${activeCategory}${activeSubcategory ? `&subcategory=${activeSubcategory}` : ""}&limit=20&page=${nextPage}`);
+      const data = await res.json();
+      if (data.success && data.data.length > 0) {
+        const more = (data.data as PoolProduct[]).filter((p) => p.groupPrice < p.retailPrice && p.imageUrl);
+        setPoolProducts(prev => [...prev, ...more]);
+        setPage(nextPage);
+        const meta = data.meta;
+        setHasMore(meta ? meta.page < meta.totalPages : false);
+      } else {
+        setHasMore(false);
+      }
+    } catch { setHasMore(false); }
+    setLoadingMore(false);
+  }, [loadingMore, hasMore, inCategoryMode, page, activeCategory, activeSubcategory]);
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    if (!inCategoryMode || !loadMoreRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && hasMore && !loadingMore) loadMore();
+    }, { threshold: 0.1 });
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [inCategoryMode, hasMore, loadingMore, loadMore]);
 
   // Search filters
   const q = searchQuery.trim().toLowerCase();
@@ -620,7 +658,7 @@ function DiscoverContent() {
                 </div>
               )}
 
-              {/* 2-column product grid */}
+              {/* 2-column product grid with featured wide card every 6th */}
               {sortedPools.length > 0 && (
                 <div className="grid grid-cols-2 gap-3">
                   {sortedPools.map((p, idx) => {
@@ -631,11 +669,51 @@ function DiscoverContent() {
                     const lastJoinedAt = p.poolLastJoinedAt;
                     const agoMin = lastJoinedAt ? Math.floor((Date.now() - new Date(lastJoinedAt).getTime()) / 60000) : 0;
                     const savingsAmount = p.retailPrice - p.groupPrice;
-                    const emptyCtas = [`Save ${fmt(savingsAmount)}`, `${sav}% off · ${spotsLeft} spots`, `${spotsLeft} spots`];
+                    const isFeatured = idx > 0 && idx % 6 === 0;
+
+                    // ── Featured wide card (every 6th item) ──
+                    if (isFeatured) {
+                      return (
+                        <Link key={`cat-feat-${p.id}`} href={`/product/${p.id}`} className="col-span-2 rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--dark)", border: "1px solid var(--border)" }}>
+                          <div className="flex">
+                            <div className="w-[140px] h-[140px] shrink-0" style={{ background: "var(--sand)" }}>
+                              {p.imageUrl && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                              )}
+                            </div>
+                            <div className="flex-1 p-4 flex flex-col justify-between">
+                              <div>
+                                {sav >= 10 && <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white inline-block mb-1.5" style={{ background: "var(--emerald)" }}>{sav}% off</span>}
+                                <p className="text-[16px] font-extrabold text-white leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{p.name}</p>
+                                <p className="text-[11px] mt-0.5" style={{ color: "var(--subdued)" }}>{p.vendor.name}</p>
+                                {lastJoined && agoMin <= 30 && (
+                                  <p className="text-[10px] font-bold mt-1" style={{ color: "var(--emerald)" }}>{lastJoined} joined {agoMin <= 1 ? "just now" : `${agoMin}m ago`}</p>
+                                )}
+                              </div>
+                              <div>
+                                <div className="flex items-baseline gap-1.5">
+                                  <span className="text-[22px] font-extrabold tabular-nums text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fmt(p.groupPrice)}</span>
+                                  <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--subdued)" }}>{fmt(p.retailPrice)}</span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1.5">
+                                  <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.15)" }}>
+                                    <div className="h-full rounded-full" style={{ width: `${Math.max(p.fill.fillPct, 3)}%`, background: p.fill.fillPct >= 80 ? "var(--coral)" : "var(--emerald)" }} />
+                                  </div>
+                                  <span className="text-[10px] font-bold text-white shrink-0">{p.fill.joined > 0 ? `${p.fill.joined}/${p.minPoolSize}` : `${spotsLeft} spots`}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    }
+
+                    // ── Standard 2-col card ──
                     return (
                       <Link key={`cat-${p.id}`} href={`/product/${p.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
                         <div className="p-2 pb-0">
-                          <div className="h-[120px] relative rounded-[10px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                          <div className="h-[120px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
                             {p.imageUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
@@ -677,13 +755,8 @@ function DiscoverContent() {
                               {p.fill.joined > 0 ? `${p.fill.joined}/${p.minPoolSize}` : `${spotsLeft} spots`}
                             </span>
                           </div>
-                          {/* Countdown timer */}
-                          {p.poolDeadline && (() => {
-                            const mins = Math.max(0, Math.round((new Date(p.poolDeadline).getTime() - Date.now()) / 60000));
-                            return mins > 0 ? <p className="text-[9px] font-bold mt-0.5" style={{ color: "var(--coral)" }}>{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m left` : `${mins}m left`}</p> : null;
-                          })()}
                           {/* CTA — color reflects fill state */}
-                          <div className="mt-2 h-[34px] rounded-[10px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: p.fill.fillPct >= 80 ? "#DC2626" : p.fill.joined > 0 ? "var(--emerald)" : "var(--coral)" }}>
+                          <div className="mt-2 h-[34px] rounded-[12px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: p.fill.fillPct >= 80 ? "#DC2626" : p.fill.joined > 0 ? "var(--emerald)" : "var(--coral)" }}>
                             {p.fill.joined > 0 ? (spotsLeft <= 2 ? `Last ${spotsLeft} spot${spotsLeft !== 1 ? "s" : ""}!` : `Join · ${spotsLeft} left`) : `Save ${fmt(savingsAmount)}`}
                           </div>
                         </div>
@@ -691,6 +764,16 @@ function DiscoverContent() {
                     );
                   })}
                 </div>
+              )}
+
+              {/* Infinite scroll sentinel */}
+              {inCategoryMode && hasMore && (
+                <div ref={loadMoreRef} className="flex items-center justify-center py-6">
+                  {loadingMore && <div className="w-5 h-5 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />}
+                </div>
+              )}
+              {inCategoryMode && !hasMore && sortedPools.length > 20 && (
+                <p className="text-center text-[11px] py-4" style={{ color: "var(--text-muted)" }}>You&apos;ve seen all {activeCategory.toLowerCase()} deals</p>
               )}
             </div>
           )}
