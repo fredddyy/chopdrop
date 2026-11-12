@@ -442,12 +442,12 @@ function DiscoverContent() {
           )}
           {!inCategoryMode && sortedPools.length > 0 && (
             <div className="overflow-x-auto hide-scrollbar">
-              <div className="flex gap-3 px-5 pb-1" style={{ width: "max-content" }}>
+              <div className="flex gap-3 px-5 pb-2" style={{ width: "max-content" }}>
                 {sortedPools.slice(0, 6).map((p) => {
                   const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
                   return (
-                    <Link key={`home-${p.id}`} href={`/product/${p.id}`} className="shrink-0 w-[200px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                      <div className="h-[130px] relative" style={{ background: "var(--sand)" }}>
+                    <Link key={`home-${p.id}`} href={`/product/${p.id}`} className="shrink-0 w-[155px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                      <div className="h-[115px] relative" style={{ background: "var(--sand)" }}>
                         {p.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
@@ -458,21 +458,20 @@ function DiscoverContent() {
                           <span className="absolute top-2 right-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
                         )}
                       </div>
-                      <div className="p-3">
-                        <p className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
-                        <div className="flex items-center gap-1 mt-0.5">
-                          {p.vendor.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={p.vendor.imageUrl} alt="" className="w-[14px] h-[14px] rounded-full object-cover shrink-0" />
-                          ) : (
-                            <div className="w-[14px] h-[14px] rounded-full shrink-0 flex items-center justify-center text-[7px] font-bold text-white" style={{ background: "var(--text-muted)" }}>{p.vendor.name.charAt(0)}</div>
-                          )}
-                          <span className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</span>
-                          <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>{p.fill.joined}/{p.minPoolSize} joined</span>
+                      <div className="p-2.5">
+                        <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
+                        <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                        {/* Fill bar */}
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                            <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--emerald)" }} />
+                          </div>
+                          <span className="text-[9px] font-bold shrink-0" style={{ color: "var(--emerald)" }}>{p.fill.joined}/{p.minPoolSize}</span>
                         </div>
-                        <div className="flex items-baseline gap-1.5 mt-1.5">
-                          <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
-                          <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                        {/* Price */}
+                        <div className="flex items-baseline gap-1 mt-1.5">
+                          <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
+                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                         </div>
                       </div>
                     </Link>
