@@ -34,17 +34,24 @@ function SearchContent() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [exploreFeed, setExploreFeed] = useState<SearchProduct[]>([]);
+  const [exploreLoading, setExploreLoading] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // Load recent searches
+  // Load recent searches + explore feed on mount
   useEffect(() => {
     try {
       const stored = localStorage.getItem("chopdrop-recent-searches");
       if (stored) setRecentSearches(JSON.parse(stored));
     } catch {}
-    // Autofocus
     inputRef.current?.focus();
+    // Fetch explore feed — all categories, mixed
+    fetch("/api/products?category=All&limit=20")
+      .then(r => r.json())
+      .then(d => { if (d.success) setExploreFeed(d.data || []); })
+      .catch(() => {})
+      .finally(() => setExploreLoading(false));
   }, []);
 
   const doSearch = useCallback(async (q: string, cat: string) => {
@@ -168,49 +175,90 @@ function SearchContent() {
         </div>
       )}
 
-      {/* Trending + popular categories (show when no query and no recent) */}
-      {!query && !searched && recentSearches.length === 0 && (
-        <div className="px-5 mt-5">
-          {/* Trending searches */}
-          <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Trending on ChopDrop</p>
-          <div className="flex flex-col gap-0 mb-6">
-            {["Jollof rice", "Shawarma", "Airpods", "Rice 50kg", "Sneakers", "Blender", "Chicken"].map((term, i) => (
-              <button
-                key={term}
-                type="button"
-                onClick={() => { setQuery(term); saveSearch(term); }}
-                className="flex items-center gap-3 h-[44px] text-left press-feedback"
-              >
-                <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0" style={{ background: i < 3 ? "var(--coral)" : "var(--sand)", color: i < 3 ? "white" : "var(--text-muted)" }}>{i + 1}</span>
-                <span className="text-[14px] font-medium" style={{ color: "var(--text)" }}>{term}</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="ml-auto shrink-0"><path d="m9 18 6-6-6-6" /></svg>
-              </button>
-            ))}
-          </div>
-
-          {/* Quick category cards */}
-          <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Browse by category</p>
-          <div className="grid grid-cols-2 gap-2.5">
-            {[
-              { name: "Food", color: "#C4572A", bg: "#FEF2F0" },
-              { name: "Groceries", color: "#1A7D4B", bg: "#ECFDF5" },
-              { name: "Electronics", color: "#6366F1", bg: "#EEF2FF" },
-              { name: "Fashion", color: "#EC4899", bg: "#FDF2F8" },
-            ].map((cat) => (
-              <button
-                key={cat.name}
-                type="button"
-                onClick={() => { setActiveCategory(cat.name); setQuery(""); }}
-                className="h-[48px] rounded-[12px] flex items-center gap-2.5 px-3.5 press-feedback"
-                style={{ background: cat.bg }}
-              >
-                <div className="w-7 h-7 rounded-[8px] flex items-center justify-center" style={{ background: cat.color }}>
-                  <span className="text-[11px] font-bold text-white">{cat.name.charAt(0)}</span>
+      {/* Explore feed — masonry grid of live pools across all categories */}
+      {!query && !searched && (
+        <div className="px-5 mt-4">
+          <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Explore deals</p>
+          {exploreLoading ? (
+            <div className="flex gap-3">
+              {[0, 1].map(col => (
+                <div key={col} className="flex-1 flex flex-col gap-3">
+                  {[0, 1, 2].map(i => (
+                    <div key={i} className="rounded-[14px] overflow-hidden" style={{ height: `${130 + (i % 2) * 40}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${(col * 3 + i) * 80}ms` }} />
+                  ))}
                 </div>
-                <span className="text-[13px] font-bold" style={{ color: cat.color }}>{cat.name}</span>
-              </button>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : exploreFeed.length > 0 ? (
+            <div className="flex gap-3">
+              {/* Left column */}
+              <div className="flex-1 flex flex-col gap-3">
+                {exploreFeed.filter((_, i) => i % 2 === 0).map((p, i) => {
+                  const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
+                  const imgH = i % 3 === 0 ? 180 : i % 3 === 1 ? 140 : 160;
+                  return (
+                    <Link key={p.id} href={`/product/${p.id}`} className="rounded-[14px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                      <div className="relative" style={{ height: `${imgH}px`, background: "var(--sand)" }}>
+                        {p.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
+                        )}
+                        {sav >= 10 && (
+                          <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
+                        )}
+                        {p.poolMemberCount > 0 && (
+                          <span className="absolute bottom-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>{p.poolMemberCount}/{p.minPoolSize}</span>
+                        )}
+                      </div>
+                      <div className="p-2.5">
+                        <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
+                          {p.retailPrice > p.groupPrice && <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>}
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+              {/* Right column */}
+              <div className="flex-1 flex flex-col gap-3">
+                {exploreFeed.filter((_, i) => i % 2 === 1).map((p, i) => {
+                  const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
+                  const imgH = i % 3 === 0 ? 140 : i % 3 === 1 ? 180 : 150;
+                  return (
+                    <Link key={p.id} href={`/product/${p.id}`} className="rounded-[14px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                      <div className="relative" style={{ height: `${imgH}px`, background: "var(--sand)" }}>
+                        {p.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
+                        )}
+                        {sav >= 10 && (
+                          <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
+                        )}
+                        {p.poolMemberCount > 0 && (
+                          <span className="absolute bottom-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>{p.poolMemberCount}/{p.minPoolSize}</span>
+                        )}
+                      </div>
+                      <div className="p-2.5">
+                        <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
+                          {p.retailPrice > p.groupPrice && <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>}
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <p className="text-center text-[13px] py-8" style={{ color: "var(--text-muted)" }}>No deals available yet. Check back soon.</p>
+          )}
         </div>
       )}
 
