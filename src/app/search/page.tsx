@@ -94,91 +94,120 @@ function SearchContent() {
   return (
     <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* Search input */}
-      <div className="px-5 pt-4">
-        <div className="relative">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-          </svg>
-          <input
-            ref={inputRef}
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { saveSearch(query); doSearch(query, activeCategory); } }}
-            placeholder="Search products, stores, categories..."
-            className="w-full h-[48px] pl-11 pr-4 rounded-[14px] text-[14px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
-            style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => { setQuery(""); setResults([]); setSearched(false); inputRef.current?.focus(); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center"
-              style={{ background: "var(--sand)" }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="3" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
-            </button>
-          )}
+      {/* Search header — integrated input + pills */}
+      <div style={{ background: "var(--bg)" }}>
+        <div className="px-5 pt-4 pb-2">
+          <div className="relative">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            </svg>
+            <input
+              ref={inputRef}
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { saveSearch(query); doSearch(query, activeCategory); } }}
+              placeholder="What are you looking for?"
+              className="w-full h-[44px] pl-11 pr-4 rounded-[12px] text-[14px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
+              style={{ background: "var(--sand)", color: "var(--text)" }}
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => { setQuery(""); setResults([]); setSearched(false); inputRef.current?.focus(); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center"
+                style={{ background: "var(--border)" }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="3" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Category pills */}
+        <div className="px-5 pb-3 flex gap-2 overflow-x-auto hide-scrollbar">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setActiveCategory(cat)}
+              className="h-[30px] px-3.5 rounded-full text-[12px] font-bold whitespace-nowrap shrink-0 transition-colors"
+              style={{
+                background: activeCategory === cat ? "var(--dark)" : "transparent",
+                color: activeCategory === cat ? "white" : "var(--text-muted)",
+                border: activeCategory === cat ? "none" : "1px solid var(--border)",
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div className="h-px" style={{ background: "var(--border)" }} />
       </div>
 
-      {/* Category pills */}
-      <div className="px-5 mt-3 flex gap-2 overflow-x-auto scrollbar-hide">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => setActiveCategory(cat)}
-            className="h-[34px] px-4 rounded-full text-[12px] font-bold whitespace-nowrap shrink-0 transition-colors"
-            style={{
-              background: activeCategory === cat ? "#1C1C1E" : "var(--card)",
-              color: activeCategory === cat ? "white" : "var(--text-muted)",
-              border: activeCategory === cat ? "none" : "1px solid var(--border)",
-            }}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Recent searches (show when no query) */}
+      {/* Recent searches */}
       {!query && !searched && recentSearches.length > 0 && (
         <div className="px-5 mt-5">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.12em]" style={{ color: "var(--text-muted)" }}>Recent</p>
-            <button type="button" onClick={clearRecent} className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>Clear</button>
+          <div className="flex items-center justify-between mb-2.5">
+            <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Recent</p>
+            <button type="button" onClick={clearRecent} className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>Clear all</button>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-0">
             {recentSearches.map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => { setQuery(s); saveSearch(s); }}
-                className="h-[32px] px-3.5 rounded-full text-[12px] font-medium"
-                style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
+                className="flex items-center gap-3 h-[44px] text-left press-feedback"
               >
-                {s}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                <span className="text-[14px] font-medium" style={{ color: "var(--text)" }}>{s}</span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Trending searches (show when no query and no recent) */}
+      {/* Trending + popular categories (show when no query and no recent) */}
       {!query && !searched && recentSearches.length === 0 && (
-        <div className="px-5 mt-8">
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>Trending searches</p>
-          <div className="flex flex-wrap gap-2">
-            {["Jollof rice", "Shawarma", "Airpods", "Rice 50kg", "Sneakers", "Blender", "Chicken"].map((term) => (
+        <div className="px-5 mt-5">
+          {/* Trending searches */}
+          <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Trending on ChopDrop</p>
+          <div className="flex flex-col gap-0 mb-6">
+            {["Jollof rice", "Shawarma", "Airpods", "Rice 50kg", "Sneakers", "Blender", "Chicken"].map((term, i) => (
               <button
                 key={term}
                 type="button"
                 onClick={() => { setQuery(term); saveSearch(term); }}
-                className="h-[34px] px-4 rounded-full text-[12px] font-medium press-feedback"
-                style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
+                className="flex items-center gap-3 h-[44px] text-left press-feedback"
               >
-                {term}
+                <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0" style={{ background: i < 3 ? "var(--coral)" : "var(--sand)", color: i < 3 ? "white" : "var(--text-muted)" }}>{i + 1}</span>
+                <span className="text-[14px] font-medium" style={{ color: "var(--text)" }}>{term}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="ml-auto shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+              </button>
+            ))}
+          </div>
+
+          {/* Quick category cards */}
+          <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Browse by category</p>
+          <div className="grid grid-cols-2 gap-2.5">
+            {[
+              { name: "Food", color: "#C4572A", bg: "#FEF2F0" },
+              { name: "Groceries", color: "#1A7D4B", bg: "#ECFDF5" },
+              { name: "Electronics", color: "#6366F1", bg: "#EEF2FF" },
+              { name: "Fashion", color: "#EC4899", bg: "#FDF2F8" },
+            ].map((cat) => (
+              <button
+                key={cat.name}
+                type="button"
+                onClick={() => { setActiveCategory(cat.name); setQuery(""); }}
+                className="h-[48px] rounded-[12px] flex items-center gap-2.5 px-3.5 press-feedback"
+                style={{ background: cat.bg }}
+              >
+                <div className="w-7 h-7 rounded-[8px] flex items-center justify-center" style={{ background: cat.color }}>
+                  <span className="text-[11px] font-bold text-white">{cat.name.charAt(0)}</span>
+                </div>
+                <span className="text-[13px] font-bold" style={{ color: cat.color }}>{cat.name}</span>
               </button>
             ))}
           </div>
