@@ -384,7 +384,7 @@ function DiscoverContent() {
               <Link href="/discover?category=Home" className="relative overflow-hidden rounded-[20px] press-feedback mt-3 block" style={{ background: "#D4A24E", height: "140px" }}>
                 <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>Home &<br />Living</span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=400&q=80&fit=crop&bg=remove" alt="Home & Living" className="absolute object-cover pointer-events-none" style={{ width: "65%", height: "120%", bottom: "-10%", right: "-5%", borderRadius: "16px 0 0 0", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.15))" }} loading="lazy" />
+                <img src="/categories/home.png" alt="Home & Living" className="absolute object-contain pointer-events-none" style={{ width: "75%", height: "130%", bottom: "-20%", right: "-5%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.15))" }} loading="lazy" />
               </Link>
 
               {/* ── Flash deal banner (if active) ── */}
