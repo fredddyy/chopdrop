@@ -347,34 +347,50 @@ function DiscoverContent() {
                 <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search for food, stores, deals...</span>
               </Link>
 
-              {/* Category cards — large, 2x3 grid with product images */}
-              <div className="grid grid-cols-3 gap-2.5">
-                {[
-                  { key: "Food", label: "Food", bg: "#FEF2F0", color: "#C4572A", img: "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=200&q=80&fit=crop" },
-                  { key: "Groceries", label: "Groceries", bg: "#ECFDF5", color: "#1A7D4B", img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80&fit=crop" },
-                  { key: "Electronics", label: "Gadgets", bg: "#EEF2FF", color: "#6366F1", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&q=80&fit=crop" },
-                  { key: "Fashion", label: "Fashion", bg: "#FDF2F8", color: "#EC4899", img: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=200&q=80&fit=crop" },
-                  { key: "Home", label: "Home &\nLiving", bg: "#FFFBEB", color: "#D4A24E", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80&fit=crop" },
-                ].map((cat) => (
-                  <Link
-                    key={cat.key}
-                    href={`/discover?category=${cat.key}`}
-                    className="relative overflow-hidden rounded-[16px] press-feedback"
-                    style={{ background: cat.bg, aspectRatio: "1", border: "1px solid var(--border)" }}
-                  >
-                    <span className="absolute top-3 left-3 text-[13px] font-bold leading-tight whitespace-pre-line" style={{ color: cat.color }}>
-                      {cat.label}
-                    </span>
+              {/* Category cards — bold masonry, saturated backgrounds, hero photos */}
+              <div className="flex gap-2.5">
+                {/* Left column */}
+                <div className="flex-1 flex flex-col gap-2.5">
+                  {/* Food — tall */}
+                  <Link href="/discover?category=Food" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#C4572A", height: "220px" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={cat.img}
-                      alt={cat.label}
-                      className="absolute bottom-0 right-0 w-[55%] h-[55%] object-cover rounded-tl-[12px]"
-                      loading="lazy"
-                    />
+                    <img src="https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&q=80&fit=crop" alt="Food" className="absolute inset-0 w-full h-full object-cover opacity-70" loading="lazy" />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
+                    <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Food</span>
                   </Link>
-                ))}
+                  {/* Gadgets — short */}
+                  <Link href="/discover?category=Electronics" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#6366F1", height: "170px" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&fit=crop" alt="Gadgets" className="absolute inset-0 w-full h-full object-cover opacity-60" loading="lazy" />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
+                    <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Gadgets</span>
+                  </Link>
+                </div>
+                {/* Right column */}
+                <div className="flex-1 flex flex-col gap-2.5">
+                  {/* Groceries — short */}
+                  <Link href="/discover?category=Groceries" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#1A7D4B", height: "170px" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=80&fit=crop" alt="Groceries" className="absolute inset-0 w-full h-full object-cover opacity-60" loading="lazy" />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
+                    <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Groceries</span>
+                  </Link>
+                  {/* Fashion — tall */}
+                  <Link href="/discover?category=Fashion" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#EC4899", height: "220px" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&q=80&fit=crop" alt="Fashion" className="absolute inset-0 w-full h-full object-cover opacity-70" loading="lazy" />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
+                    <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Fashion</span>
+                  </Link>
+                </div>
               </div>
+              {/* Home & Living — full width */}
+              <Link href="/discover?category=Home" className="relative overflow-hidden rounded-[20px] press-feedback mt-2.5 block" style={{ background: "#D4A24E", height: "130px" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop" alt="Home & Living" className="absolute inset-0 w-full h-full object-cover opacity-60" loading="lazy" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.45) 0%, transparent 70%)" }} />
+                <span className="absolute bottom-3.5 left-4 text-[22px] font-extrabold text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Home & Living</span>
+              </Link>
 
               {/* ── How it works — compact explainer ── */}
               <div className="mt-6 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
