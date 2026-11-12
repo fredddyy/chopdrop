@@ -78,6 +78,8 @@ function DiscoverContent() {
   const [stores, setStores] = useState<Store[]>([]);
   const [poolProducts, setPoolProducts] = useState<PoolProduct[]>([]);
   const [activeCategory, setActiveCategory] = useState(categoryParam || "Food");
+  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+  const [subcategories, setSubcategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -94,7 +96,10 @@ function DiscoverContent() {
 
   // Sync category from URL param
   useEffect(() => {
-    if (categoryParam) setActiveCategory(categoryParam);
+    if (categoryParam) {
+      setActiveCategory(categoryParam);
+      setActiveSubcategory(null);
+    }
   }, [categoryParam]);
 
   // Read profile on mount
@@ -159,7 +164,7 @@ function DiscoverContent() {
     const ctrl = new AbortController();
     fetchData(ctrl.signal);
     return () => ctrl.abort();
-  }, [activeCategory, userLat, userLng]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeCategory, activeSubcategory, userLat, userLng]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Re-fetch when user navigates back (pool joins won't reflect otherwise)
   useEffect(() => {
@@ -182,7 +187,7 @@ function DiscoverContent() {
     try {
       const [storesResult, productsResult] = await Promise.allSettled([
         fetch(`/api/stores?category=${activeCategory}${userLat ? `&lat=${userLat}&lng=${userLng}` : ""}`, { signal }).then((r) => r.json()),
-        fetch(`/api/products?category=${activeCategory}&limit=20`, { signal }).then((r) => r.json()),
+        fetch(`/api/products?category=${activeCategory}${activeSubcategory ? `&subcategory=${activeSubcategory}` : ""}&limit=20`, { signal }).then((r) => r.json()),
       ]);
       if (signal?.aborted) return;
       if (storesResult.status === "fulfilled" && storesResult.value.success) {
@@ -193,6 +198,9 @@ function DiscoverContent() {
           (p) => p.groupPrice < p.retailPrice && p.imageUrl,
         );
         setPoolProducts(withSavings);
+        if (productsResult.value.subcategories) {
+          setSubcategories(productsResult.value.subcategories);
+        }
       }
       if (storesResult.status === "rejected" && productsResult.status === "rejected") {
         setError(true);
@@ -385,13 +393,40 @@ function DiscoverContent() {
                 <button type="button" onClick={() => router.push("/discover")} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "var(--sand)" }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
                 </button>
-                <h1 className="text-[22px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{activeCategory}</h1>
+                <h1 className="text-[22px] font-extrabold flex-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{activeCategory}</h1>
+                <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                </Link>
               </div>
-              {/* Scoped search — links to /search with category preset */}
+              {/* Scoped search */}
               <Link href={`/search?category=${activeCategory}`} className="mb-3 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                 <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search {activeCategory.toLowerCase()}...</span>
               </Link>
+              {/* Subcategory pills */}
+              {subcategories.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSubcategory(null)}
+                    className="h-[32px] px-3.5 rounded-full text-[12px] font-bold whitespace-nowrap shrink-0"
+                    style={{ background: !activeSubcategory ? "var(--dark)" : "var(--card)", color: !activeSubcategory ? "white" : "var(--text-secondary)", border: activeSubcategory ? "1px solid var(--border)" : "none" }}
+                  >
+                    All
+                  </button>
+                  {subcategories.map((sub) => (
+                    <button
+                      key={sub}
+                      type="button"
+                      onClick={() => setActiveSubcategory(activeSubcategory === sub ? null : sub)}
+                      className="h-[32px] px-3.5 rounded-full text-[12px] font-bold whitespace-nowrap shrink-0"
+                      style={{ background: activeSubcategory === sub ? "var(--dark)" : "var(--card)", color: activeSubcategory === sub ? "white" : "var(--text-secondary)", border: activeSubcategory === sub ? "none" : "1px solid var(--border)" }}
+                    >
+                      {sub}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

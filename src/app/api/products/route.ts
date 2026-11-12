@@ -10,8 +10,11 @@ export async function GET(request: NextRequest) {
   const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit")) || 20));
   const skip = (page - 1) * limit;
 
+  const subcategory = searchParams.get("subcategory") || undefined;
+
   const where: Record<string, unknown> = { isActive: true, vendor: { isActive: true } };
   if (category && category !== "All") where.category = category;
+  if (subcategory) where.subcategory = subcategory;
   if (search) {
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },
@@ -33,12 +36,21 @@ export async function GET(request: NextRequest) {
     prisma.product.count({ where }),
   ]);
 
-  // Get distinct categories for filter bar
-  const categories = await prisma.product.findMany({
-    where: { isActive: true },
-    select: { category: true },
-    distinct: ["category"],
-  });
+  // Get distinct categories and subcategories for filter bar
+  const [categories, subcategories] = await Promise.all([
+    prisma.product.findMany({
+      where: { isActive: true },
+      select: { category: true },
+      distinct: ["category"],
+    }),
+    category && category !== "All"
+      ? prisma.product.findMany({
+          where: { isActive: true, category, subcategory: { not: null } },
+          select: { subcategory: true },
+          distinct: ["subcategory"],
+        })
+      : Promise.resolve([]),
+  ]);
 
   // Attach real pool member counts
   const productIds = products.map(p => p.id);
@@ -86,5 +98,6 @@ export async function GET(request: NextRequest) {
     data: enriched,
     meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     categories: categories.map(c => c.category),
+    subcategories: (subcategories as { subcategory: string | null }[]).map(s => s.subcategory).filter(Boolean),
   });
 }
