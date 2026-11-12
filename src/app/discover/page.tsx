@@ -377,12 +377,93 @@ function DiscoverContent() {
                 ))}
               </div>
 
-              {/* Popular near you — show top pools on home */}
+              {/* ── How it works — compact explainer ── */}
+              <div className="mt-6 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-2.5" style={{ color: "var(--emerald)" }}>How ChopDrop works</p>
+                <div className="flex gap-3">
+                  {[
+                    { step: "1", label: "Pick a deal", sub: "Choose a category" },
+                    { step: "2", label: "Join the pool", sub: "More people = lower price" },
+                    { step: "3", label: "Everyone saves", sub: "Didn't fill? Full refund" },
+                  ].map((s) => (
+                    <div key={s.step} className="flex-1 text-center">
+                      <div className="w-8 h-8 rounded-full mx-auto flex items-center justify-center text-[12px] font-extrabold text-white mb-1.5" style={{ background: "var(--emerald)" }}>{s.step}</div>
+                      <p className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{s.label}</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{s.sub}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Flash deal banner (if active) ── */}
+              {sortedPools.filter(p => p.isFlashDeal).length > 0 && (() => {
+                const flash = sortedPools.find(p => p.isFlashDeal)!;
+                const sav = Math.round(((flash.retailPrice - flash.groupPrice) / flash.retailPrice) * 100);
+                const mins = flash.poolDeadline ? Math.max(0, Math.round((new Date(flash.poolDeadline).getTime() - Date.now()) / 60000)) : 0;
+                return (
+                  <Link href={`/product/${flash.id}`} className="mt-4 block rounded-[16px] p-4 press-feedback" style={{ background: "var(--coral)" }}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[9px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded text-white" style={{ background: "rgba(255,255,255,0.2)" }}>Flash deal</span>
+                      {mins > 0 && <span className="text-[11px] font-extrabold text-white">{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m left`}</span>}
+                    </div>
+                    <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{flash.name}</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.7)" }}>{flash.fill.joined}/{flash.minPoolSize} joined</p>
+                      <div className="text-right">
+                        <span className="text-[18px] font-extrabold text-white tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fmt(flash.groupPrice)}</span>
+                        <span className="text-[11px] line-through ml-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>{fmt(flash.retailPrice)}</span>
+                        <span className="text-[10px] font-bold ml-1 text-white">{sav}% off</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })()}
+
+              {/* ── Live activity — social proof ── */}
               {sortedPools.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Popular near you</h3>
+                <div className="mt-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Filling now</h3>
+                    <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length} live</span>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {sortedPools.slice(0, 3).map((p) => (
+                      <Link key={`home-${p.id}`} href={`/product/${p.id}`} className="flex items-center gap-3 p-3 rounded-[14px] press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                        <div className="w-[48px] h-[48px] rounded-[10px] shrink-0 overflow-hidden" style={{ background: "var(--sand)" }}>
+                          {p.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{p.name.charAt(0)}</div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <span className="text-[15px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
+                            <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>{p.fill.joined}/{p.minPoolSize}</p>
+                          <div className="w-[40px] h-[4px] rounded-full mt-1 overflow-hidden" style={{ background: "var(--sand)" }}>
+                            <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--emerald)" }} />
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
+
+              {/* ── Invite friends CTA ── */}
+              <div className="mt-5 mb-4 rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
+                <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Invite friends, save more</p>
+                <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>Share your group link on WhatsApp. More people join, everyone pays less.</p>
+                <Link href="/pools" className="mt-3 h-[40px] rounded-[12px] flex items-center justify-center text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+                  Start a group
+                </Link>
+              </div>
             </div>
           )}
 
@@ -430,8 +511,8 @@ function DiscoverContent() {
             </div>
           )}
 
-          {/* ── Section header ── */}
-          {sortedPools.length > 0 && (
+          {/* ═══ CATEGORY FEED — only shows inside a category ═══ */}
+          {inCategoryMode && sortedPools.length > 0 && (
             <div className="px-5 mt-5 mb-2 flex items-center justify-between">
               <h3 className="text-[21px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Almost full. Don&apos;t dull.</h3>
               <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{sortedPools.length} live</span>
@@ -439,7 +520,7 @@ function DiscoverContent() {
           )}
 
           {/* ═══ FEATURED POOL CARD — dark hero, ChopChop style ═══ */}
-          {sortedPools.length > 0 && (() => {
+          {inCategoryMode && sortedPools.length > 0 && (() => {
             const topDeals = sortedPools.slice(0, Math.min(3, sortedPools.length));
             // Flash deals always get featured. Otherwise rotate daily.
             const flashDeal = topDeals.find(d => d.isFlashDeal);
@@ -551,7 +632,7 @@ function DiscoverContent() {
           })()}
 
           {/* ═══ FILLING FAST — horizontal swipe carousel ═══ */}
-          {sortedPools.length > 1 && (
+          {inCategoryMode && sortedPools.length > 1 && (
             <div className="mt-5">
               <div className="px-5 flex items-center justify-between mb-3">
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Filling fast</h3>
@@ -615,7 +696,7 @@ function DiscoverContent() {
           )}
 
           {/* ── Demand signal — section breaker ── */}
-          <div className="px-5 mt-6">
+          {inCategoryMode && <div className="px-5 mt-6">
             <button
               type="button"
               onClick={() => {
@@ -632,10 +713,10 @@ function DiscoverContent() {
                 <p className="text-[12px] font-semibold" style={{ color: "var(--text)", opacity: 0.7 }}>Tell us what {activeCategory.toLowerCase()} you want near you</p>
               </div>
             </button>
-          </div>
+          </div>}
 
-          {/* ═══ TOP KITCHENS — horizontal image cards ═══ */}
-          {filteredStores.length > 0 && (
+          {/* ═══ TOP SELLERS — horizontal image cards ═══ */}
+          {inCategoryMode && filteredStores.length > 0 && (
             <section className="mt-6">
               <div className="px-5 flex items-center justify-between mb-3">
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
@@ -670,7 +751,7 @@ function DiscoverContent() {
           )}
 
           {/* ═══ MORE DEALS — 2-column grid for remaining pools ═══ */}
-          {sortedPools.length > 8 && (
+          {inCategoryMode && sortedPools.length > 8 && (
             <div className="px-5 mt-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>More deals</h3>
@@ -714,7 +795,7 @@ function DiscoverContent() {
           )}
 
           {/* ── Empty state — actionable ── */}
-          {filteredStores.length === 0 && sortedPools.length === 0 && (
+          {inCategoryMode && filteredStores.length === 0 && sortedPools.length === 0 && (
             <div className="py-16 text-center px-8">
               <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>
                 {searchQuery ? `Nothing for "${searchQuery}"` : "No deals yet"}
