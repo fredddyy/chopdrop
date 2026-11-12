@@ -411,77 +411,102 @@ function DiscoverContent() {
                 const sav = Math.round(((flash.retailPrice - flash.groupPrice) / flash.retailPrice) * 100);
                 const mins = flash.poolDeadline ? Math.max(0, Math.round((new Date(flash.poolDeadline).getTime() - Date.now()) / 60000)) : 0;
                 return (
-                  <Link href={`/product/${flash.id}`} className="mt-4 block rounded-[16px] p-4 press-feedback" style={{ background: "var(--coral)" }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[9px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded text-white" style={{ background: "rgba(255,255,255,0.2)" }}>Flash deal</span>
-                      {mins > 0 && <span className="text-[11px] font-extrabold text-white">{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m left`}</span>}
-                    </div>
-                    <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{flash.name}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.7)" }}>{flash.fill.joined}/{flash.minPoolSize} joined</p>
-                      <div className="text-right">
-                        <span className="text-[18px] font-extrabold text-white tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fmt(flash.groupPrice)}</span>
-                        <span className="text-[11px] line-through ml-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>{fmt(flash.retailPrice)}</span>
-                        <span className="text-[10px] font-bold ml-1 text-white">{sav}% off</span>
+                  <Link href={`/product/${flash.id}`} className="mt-5 block rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--coral)" }}>
+                    <div className="flex">
+                      <div className="flex-1 p-4">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="text-[9px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded text-white" style={{ background: "rgba(255,255,255,0.2)" }}>Flash deal</span>
+                          {mins > 0 && <span className="text-[11px] font-extrabold text-white">{mins > 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m left`}</span>}
+                        </div>
+                        <p className="text-[16px] font-extrabold text-white leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{flash.name}</p>
+                        <div className="flex items-baseline gap-1.5 mt-1.5">
+                          <span className="text-[20px] font-extrabold text-white tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fmt(flash.groupPrice)}</span>
+                          <span className="text-[11px] line-through" style={{ color: "rgba(255,255,255,0.5)" }}>{fmt(flash.retailPrice)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.2)" }}>
+                            <div className="h-full rounded-full" style={{ width: `${flash.fill.fillPct}%`, background: "white" }} />
+                          </div>
+                          <span className="text-[10px] font-bold text-white shrink-0">{flash.fill.joined}/{flash.minPoolSize}</span>
+                        </div>
                       </div>
+                      {flash.imageUrl && (
+                        <div className="w-[100px] shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={flash.imageUrl} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      )}
                     </div>
                   </Link>
                 );
               })()}
 
-              {/* ── Filling now — horizontal scroll cards (Places style) ── */}
+              {/* ── Trending pools — 2-col product grid with join CTAs ── */}
               {sortedPools.length > 0 && (
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Filling now</h3>
-                    <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>See all</span>
+                    <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Trending pools</h3>
+                    {sortedPools.length > 4 && (
+                      <Link href="/discover?category=Food" className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>See all</Link>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    {sortedPools.filter(p => !p.isFlashDeal).slice(0, 6).map((p) => {
+                      const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
+                      const spotsLeft = p.minPoolSize - p.fill.joined;
+                      return (
+                        <Link key={`grid-${p.id}`} href={`/product/${p.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                          <div className="h-[120px] relative" style={{ background: "var(--sand)" }}>
+                            {p.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
+                            )}
+                            {sav >= 10 && (
+                              <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
+                            )}
+                          </div>
+                          <div className="p-3">
+                            <p className="text-[13px] font-bold truncate leading-tight" style={{ color: "var(--text)" }}>{p.name}</p>
+                            <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                            {/* Price row */}
+                            <div className="flex items-baseline gap-1 mt-2">
+                              <span className="text-[17px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
+                              <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
+                            </div>
+                            {/* Fill bar */}
+                            <div className="flex items-center gap-1.5 mt-2">
+                              <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                                <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--emerald)" }} />
+                              </div>
+                              <span className="text-[9px] font-bold shrink-0" style={{ color: "var(--emerald)" }}>{p.fill.joined}/{p.minPoolSize}</span>
+                            </div>
+                            {/* Join CTA */}
+                            <div className="mt-2.5 h-[34px] rounded-[10px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                              {p.fill.joined > 0 ? `Join · ${spotsLeft} left` : "Start pool"}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               )}
-            </div>
-          )}
-          {!inCategoryMode && sortedPools.length > 0 && (
-            <div className="overflow-x-auto hide-scrollbar">
-              <div className="flex gap-3 px-5 pb-2" style={{ width: "max-content" }}>
-                {sortedPools.slice(0, 6).map((p) => {
-                  const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
-                  return (
-                    <Link key={`home-${p.id}`} href={`/product/${p.id}`} className="shrink-0 w-[155px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                      <div className="h-[115px] relative" style={{ background: "var(--sand)" }}>
-                        {p.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
-                        )}
-                        {sav >= 10 && (
-                          <span className="absolute top-2 right-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
-                        )}
-                      </div>
-                      <div className="p-2.5">
-                        <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
-                        <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
-                        {/* Fill bar */}
-                        <div className="flex items-center gap-1.5 mt-1.5">
-                          <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                            <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--emerald)" }} />
-                          </div>
-                          <span className="text-[9px] font-bold shrink-0" style={{ color: "var(--emerald)" }}>{p.fill.joined}/{p.minPoolSize}</span>
-                        </div>
-                        {/* Price */}
-                        <div className="flex items-baseline gap-1 mt-1.5">
-                          <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
-                          <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          {!inCategoryMode && (
-            <div className="px-5">
+
+              {/* ── Live activity counter ── */}
+              {sortedPools.length > 0 && (
+                <div className="mt-5 flex items-center justify-center gap-2 py-3 rounded-[12px]" style={{ background: "var(--sand)" }}>
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--emerald)" }} />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ background: "var(--emerald)" }} />
+                  </span>
+                  <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>
+                    {sortedPools.reduce((s, p) => s + p.fill.joined, 0)} people buying right now
+                  </span>
+                </div>
+              )}
 
               {/* ── Invite friends CTA ── */}
               <div className="mt-5 mb-4 rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
