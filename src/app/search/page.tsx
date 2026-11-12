@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { BottomNav } from "@/components/bottom-nav";
 
 interface SearchProduct {
@@ -24,9 +25,11 @@ function fmt(kobo: number): string {
   return "\u20A6" + (kobo / 100).toLocaleString();
 }
 
-export default function SearchPage() {
+function SearchContent() {
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category") || "All";
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [results, setResults] = useState<SearchProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -275,5 +278,20 @@ export default function SearchPage() {
 
       <BottomNav />
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        <div className="flex items-center justify-center py-32">
+          <div className="w-6 h-6 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
+        </div>
+        <BottomNav />
+      </main>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

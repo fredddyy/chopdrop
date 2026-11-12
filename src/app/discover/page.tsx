@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
 
@@ -68,10 +69,15 @@ function poolState(minSize: number, memberCount: number) {
   return { joined, spotsLeft: minSize - joined, fillPct: minSize > 0 ? Math.round((joined / minSize) * 100) : 0 };
 }
 
-export default function DiscoverPage() {
+function DiscoverContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  const inCategoryMode = !!categoryParam;
+
   const [stores, setStores] = useState<Store[]>([]);
   const [poolProducts, setPoolProducts] = useState<PoolProduct[]>([]);
-  const [activeCategory, setActiveCategory] = useState("Food");
+  const [activeCategory, setActiveCategory] = useState(categoryParam || "Food");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -85,6 +91,11 @@ export default function DiscoverPage() {
   const [userLng, setUserLng] = useState(0);
   const [creditBalance, setCreditBalance] = useState(0);
   const cart = useCart();
+
+  // Sync category from URL param
+  useEffect(() => {
+    if (categoryParam) setActiveCategory(categoryParam);
+  }, [categoryParam]);
 
   // Read profile on mount
   useEffect(() => {
@@ -315,58 +326,74 @@ export default function DiscoverPage() {
         </div>
       ) : (
         <div>
-          {/* ── Category grid — primary entry point (Zepto/Blinkit style) ── */}
-          <div className="px-5 pt-4">
-            <h1 className="text-[22px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--text)" }}>
-              Buy together. Pay less.
-            </h1>
+          {/* ═══ HOME MODE — category grid entry point ═══ */}
+          {!inCategoryMode && (
+            <div className="px-5 pt-4">
+              <h1 className="text-[22px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--text)" }}>
+                Buy together. Pay less.
+              </h1>
 
-            {/* Search — tappable link to /search */}
-            <Link href="/search" className="mt-3 mb-4 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-              <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search for food, stores, deals...</span>
-            </Link>
+              {/* Search — tappable link to /search */}
+              <Link href="/search" className="mt-3 mb-4 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search for food, stores, deals...</span>
+              </Link>
 
-            {/* 2x4 category grid */}
-            <div className="grid grid-cols-4 gap-x-3 gap-y-4">
-              {[
-                { key: "Food", label: "Food", color: "#C4572A", bg: "#FEF2F0", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#C4572A" strokeWidth="1.6"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" stroke="#C4572A" strokeWidth="1.6"/><path d="M6 1v3M10 1v3M14 1v3" stroke="#C4572A" strokeWidth="1.6"/></svg> },
-                { key: "Groceries", label: "Groceries", color: "#1A7D4B", bg: "#ECFDF5", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A7D4B" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },
-                { key: "Electronics", label: "Gadgets", color: "#6366F1", bg: "#EEF2FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg> },
-                { key: "Fashion", label: "Fashion", color: "#EC4899", bg: "#FDF2F8", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EC4899" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6.3 2h11.4L22 8l-10 14L2 8z"/></svg> },
-                { key: "Home", label: "Home", color: "#D4A24E", bg: "#FFFBEB", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A24E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
-                { key: "Health", label: "Health", color: "#0EA5E9", bg: "#F0F9FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
-                { key: "Beauty", label: "Beauty", color: "#A855F7", bg: "#FAF5FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A855F7" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
-                { key: "More", label: "More", color: "#6B7280", bg: "#F3F4F6", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> },
-              ].map((cat) => {
-                const isActive = activeCategory === cat.key;
-                return (
-                  <button
+              {/* 2x4 category grid */}
+              <div className="grid grid-cols-4 gap-x-3 gap-y-4">
+                {[
+                  { key: "Food", label: "Food", color: "#C4572A", bg: "#FEF2F0", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#C4572A" strokeWidth="1.6"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" stroke="#C4572A" strokeWidth="1.6"/><path d="M6 1v3M10 1v3M14 1v3" stroke="#C4572A" strokeWidth="1.6"/></svg> },
+                  { key: "Groceries", label: "Groceries", color: "#1A7D4B", bg: "#ECFDF5", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A7D4B" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },
+                  { key: "Electronics", label: "Gadgets", color: "#6366F1", bg: "#EEF2FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg> },
+                  { key: "Fashion", label: "Fashion", color: "#EC4899", bg: "#FDF2F8", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EC4899" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6.3 2h11.4L22 8l-10 14L2 8z"/></svg> },
+                  { key: "Home", label: "Home", color: "#D4A24E", bg: "#FFFBEB", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A24E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
+                  { key: "Health", label: "Health", color: "#0EA5E9", bg: "#F0F9FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
+                  { key: "Beauty", label: "Beauty", color: "#A855F7", bg: "#FAF5FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A855F7" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+                  { key: "More", label: "More", color: "#6B7280", bg: "#F3F4F6", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> },
+                ].map((cat) => (
+                  <Link
                     key={cat.key}
-                    type="button"
-                    onClick={() => { if (cat.key === "More") { window.location.href = "/search"; return; } setActiveCategory(cat.key); }}
+                    href={cat.key === "More" ? "/search" : `/discover?category=${cat.key}`}
                     className="flex flex-col items-center gap-1.5 press-feedback"
                   >
                     <div
-                      className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center transition-all"
-                      style={{
-                        background: isActive ? cat.color : cat.bg,
-                        border: isActive ? "none" : "1px solid transparent",
-                        transform: isActive ? "scale(1.05)" : "scale(1)",
-                      }}
+                      className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center"
+                      style={{ background: cat.bg }}
                     >
-                      <div style={isActive ? { filter: "brightness(0) invert(1)" } : undefined}>
                       {cat.icon}
                     </div>
-                    </div>
-                    <span className="text-[11px] font-semibold" style={{ color: isActive ? cat.color : "var(--text-secondary)" }}>
+                    <span className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>
                       {cat.label}
                     </span>
-                  </button>
-                );
-              })}
+                  </Link>
+                ))}
+              </div>
+
+              {/* Popular near you — show top pools on home */}
+              {sortedPools.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-[17px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Popular near you</h3>
+                </div>
+              )}
             </div>
-          </div>
+          )}
+
+          {/* ═══ CATEGORY MODE — back button + category header + filtered feed ═══ */}
+          {inCategoryMode && (
+            <div className="px-5 pt-3">
+              <div className="flex items-center gap-3 mb-3">
+                <button type="button" onClick={() => router.push("/discover")} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "var(--sand)" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <h1 className="text-[22px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{activeCategory}</h1>
+              </div>
+              {/* Scoped search — links to /search with category preset */}
+              <Link href={`/search?category=${activeCategory}`} className="mb-3 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search {activeCategory.toLowerCase()}...</span>
+              </Link>
+            </div>
+          )}
 
           {/* ── Section header ── */}
           {sortedPools.length > 0 && (
@@ -672,5 +699,20 @@ export default function DiscoverPage() {
 
       <BottomNav />
     </main>
+  );
+}
+
+export default function DiscoverPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
+        <div className="flex items-center justify-center py-32">
+          <div className="w-6 h-6 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
+        </div>
+        <BottomNav />
+      </main>
+    }>
+      <DiscoverContent />
+    </Suspense>
   );
 }
