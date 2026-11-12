@@ -162,30 +162,20 @@ export default function SearchPage() {
         </div>
       )}
 
-      {/* Trending categories (show when no query and no recent) */}
+      {/* Trending searches (show when no query and no recent) */}
       {!query && !searched && recentSearches.length === 0 && (
         <div className="px-5 mt-8">
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-4" style={{ color: "var(--text-muted)" }}>Browse by category</p>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { name: "Food", color: "#C4572A", desc: "Lunch, snacks, drinks" },
-              { name: "Electronics", color: "#6366F1", desc: "Gadgets, phones, accessories" },
-              { name: "Fashion", color: "#EC4899", desc: "Clothing, shoes, bags" },
-              { name: "Groceries", color: "#1A7D4B", desc: "Rice, oil, provisions" },
-              { name: "Home", color: "#D4A24E", desc: "Kitchen, cleaning, decor" },
-            ].map((cat) => (
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-3" style={{ color: "var(--text-muted)" }}>Trending searches</p>
+          <div className="flex flex-wrap gap-2">
+            {["Jollof rice", "Shawarma", "Airpods", "Rice 50kg", "Sneakers", "Blender", "Chicken"].map((term) => (
               <button
-                key={cat.name}
+                key={term}
                 type="button"
-                onClick={() => { setActiveCategory(cat.name); setQuery(""); }}
-                className="p-4 rounded-[16px] text-left press-feedback"
-                style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                onClick={() => { setQuery(term); saveSearch(term); }}
+                className="h-[34px] px-4 rounded-full text-[12px] font-medium press-feedback"
+                style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
               >
-                <div className="w-10 h-10 rounded-[10px] flex items-center justify-center mb-2" style={{ background: cat.color + "15" }}>
-                  <span className="text-[18px] font-extrabold" style={{ color: cat.color }}>{cat.name.charAt(0)}</span>
-                </div>
-                <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{cat.name}</p>
-                <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{cat.desc}</p>
+                {term}
               </button>
             ))}
           </div>

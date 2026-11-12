@@ -315,47 +315,57 @@ export default function DiscoverPage() {
         </div>
       ) : (
         <div>
-          {/* ── Hero Greeting — Bricolage Grotesque, Figma specs ── */}
-          <div className="px-5 pt-5 pb-2">
-            <h1 className="font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: "34px", lineHeight: "108%", letterSpacing: "-0.8px", color: "var(--text)" }}>
-              {activeCategory === "Food" ? "Deals dropping now" : activeCategory === "Electronics" ? "Group buy, pay less" : activeCategory === "Fashion" ? "Better prices together" : "Pool together, pay less"}
+          {/* ── Category grid — primary entry point (Zepto/Blinkit style) ── */}
+          <div className="px-5 pt-4">
+            <h1 className="text-[22px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.5px", color: "var(--text)" }}>
+              Buy together. Pay less.
             </h1>
-            <p className="text-[14px] font-semibold mt-1.5" style={{ color: "var(--text-secondary)" }}>
-              {activeCategory === "Food" ? "More people join, everyone's price drops. Up to 30% off." : activeCategory === "Fashion" ? "Better style, better price. Together." : "More people join, everyone saves. Up to 30% off."}
-            </p>
-          </div>
 
-          {/* ── Category tabs — SVG icons, no emoji ── */}
-          <div className="px-5 mt-2 flex gap-2 overflow-x-auto hide-scrollbar">
-            {[
-              { key: "Food", label: "Food", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" /><path d="M6 1v3M10 1v3M14 1v3" /></svg> },
-              { key: "Fashion", label: "Fashion", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6.3 2h11.4L22 8l-10 14L2 8z" /></svg> },
-              { key: "Electronics", label: "Gadgets", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" /></svg> },
-              { key: "Groceries", label: "Groceries", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><path d="M3 6h18M16 10a4 4 0 0 1-8 0" /></svg> },
-            ].map((cat) => (
-              <button
-                key={cat.key} type="button" onClick={() => setActiveCategory(cat.key)}
-                className="h-[34px] px-4 rounded-full text-[13px] font-bold whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5"
-                style={{ background: activeCategory === cat.key ? "var(--dark)" : "var(--sand)", color: activeCategory === cat.key ? "white" : "var(--text-secondary)", transition: "background 200ms, color 200ms" }}
-              >{cat.icon}{cat.label}</button>
-            ))}
-          </div>
+            {/* Search — tappable link to /search */}
+            <Link href="/search" className="mt-3 mb-4 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+              <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search for food, stores, deals...</span>
+            </Link>
 
-          {/* ── Search — always visible ── */}
-          <div className="px-5 mt-3 mb-2">
-            <div className="relative">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute left-3.5 top-1/2 -translate-y-1/2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-              <input
-                type="text" aria-label="Search deals and vendors" placeholder={`Search ${activeCategory.toLowerCase()}, vendors, or pools...`} value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-[44px] pl-10 pr-11 rounded-full text-[14px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
-                style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}
-              />
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute right-3.5 top-1/2 -translate-y-1/2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" /></svg>
+            {/* 2x4 category grid */}
+            <div className="grid grid-cols-4 gap-x-3 gap-y-4">
+              {[
+                { key: "Food", label: "Food", color: "#C4572A", bg: "#FEF2F0", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#C4572A" strokeWidth="1.6"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" stroke="#C4572A" strokeWidth="1.6"/><path d="M6 1v3M10 1v3M14 1v3" stroke="#C4572A" strokeWidth="1.6"/></svg> },
+                { key: "Groceries", label: "Groceries", color: "#1A7D4B", bg: "#ECFDF5", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A7D4B" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },
+                { key: "Electronics", label: "Gadgets", color: "#6366F1", bg: "#EEF2FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg> },
+                { key: "Fashion", label: "Fashion", color: "#EC4899", bg: "#FDF2F8", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EC4899" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6.3 2h11.4L22 8l-10 14L2 8z"/></svg> },
+                { key: "Home", label: "Home", color: "#D4A24E", bg: "#FFFBEB", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A24E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
+                { key: "Health", label: "Health", color: "#0EA5E9", bg: "#F0F9FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
+                { key: "Beauty", label: "Beauty", color: "#A855F7", bg: "#FAF5FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A855F7" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+                { key: "More", label: "More", color: "#6B7280", bg: "#F3F4F6", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> },
+              ].map((cat) => {
+                const isActive = activeCategory === cat.key;
+                return (
+                  <button
+                    key={cat.key}
+                    type="button"
+                    onClick={() => { if (cat.key === "More") { window.location.href = "/search"; return; } setActiveCategory(cat.key); }}
+                    className="flex flex-col items-center gap-1.5 press-feedback"
+                  >
+                    <div
+                      className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center transition-all"
+                      style={{
+                        background: isActive ? cat.color : cat.bg,
+                        border: isActive ? "none" : "1px solid transparent",
+                        transform: isActive ? "scale(1.05)" : "scale(1)",
+                      }}
+                    >
+                      <div style={isActive ? { filter: "brightness(0) invert(1)" } : undefined}>
+                      {cat.icon}
+                    </div>
+                    </div>
+                    <span className="text-[11px] font-semibold" style={{ color: isActive ? cat.color : "var(--text-secondary)" }}>
+                      {cat.label}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-            {searchQuery.length === 1 && (
-              <p className="text-[10px] mt-1 ml-4" style={{ color: "var(--coral)" }}>Type one more letter to search</p>
-            )}
           </div>
 
           {/* ── Section header ── */}
