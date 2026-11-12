@@ -651,10 +651,42 @@ function DiscoverContent() {
                 );
               })()}
 
+              {/* ═══ TOP SELLERS — horizontal, at top of category ═══ */}
+              {filteredStores.length > 0 && (
+                <section className="mt-2 -mx-5">
+                  <div className="px-5 flex items-center justify-between mb-3">
+                    <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                      Top sellers{userArea ? ` near ${userArea}` : ""}
+                    </h3>
+                    <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>{filteredStores.length} stores</span>
+                  </div>
+                  <div className="overflow-x-auto hide-scrollbar">
+                    <div className="flex gap-3 px-5 pb-1 w-max">
+                      {filteredStores.map((store) => (
+                        <Link key={store.id} href={`/store/${store.id}`} className="shrink-0 w-[130px] press-feedback">
+                          <div className="w-[130px] h-[130px] rounded-[16px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                            {(store.imageUrl || store.heroImage) ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={store.imageUrl || store.heroImage || ""} alt={store.name} className="w-full h-full object-cover" loading="lazy" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <span className="text-[24px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
+                              </div>
+                            )}
+                          </div>
+                          <h4 className="text-[12px] font-bold mt-1.5 truncate" style={{ color: "var(--text)" }}>{store.name}</h4>
+                          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}{store.orderCount > 0 ? ` · ${store.orderCount}+` : ""}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+
               {/* Section header */}
               {sortedPools.length > 0 && (
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-[16px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sortedPools.length} {activeCategory.toLowerCase()} deal{sortedPools.length !== 1 ? "s" : ""}</h3>
+                <div className="flex items-center justify-between mb-3 mt-5">
+                  <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sortedPools.length} {activeCategory.toLowerCase()} deal{sortedPools.length !== 1 ? "s" : ""}</h3>
                 </div>
               )}
 
@@ -778,40 +810,7 @@ function DiscoverContent() {
             </div>
           )}
 
-          {/* ═══ TOP SELLERS — horizontal image cards ═══ */}
-          {inCategoryMode && filteredStores.length > 0 && (
-            <section className="mt-6">
-              <div className="px-5 flex items-center justify-between mb-3">
-                <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                  Top sellers{userArea ? ` near ${userArea}` : ""}
-                </h3>
-                <span className="text-[12px] font-bold" style={{ color: "var(--coral)" }}>{filteredStores.length} stores</span>
-              </div>
-              <div className="overflow-x-auto hide-scrollbar">
-                <div className="flex gap-3 px-5 pb-1 w-max" style={{ scrollSnapType: "x mandatory" }}>
-                  {filteredStores.map((store, idx) => (
-                    <Link key={store.id} href={`/store/${store.id}`} className={`shrink-0 w-[160px] press-feedback card-enter card-enter-${(idx % 8) + 1}`} style={{ scrollSnapAlign: "start" }}>
-                      <div className="w-[160px] h-[160px] rounded-[18px] overflow-hidden" style={{ background: "var(--sand)" }}>
-                        {(store.imageUrl || store.heroImage) ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={store.imageUrl || store.heroImage || ""} alt={store.name} className="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-[28px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
-                          </div>
-                        )}
-                      </div>
-                      <h4 className="text-[13px] font-bold mt-2 truncate" style={{ color: "var(--text)" }}>{store.name}</h4>
-                      <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{store.deliveryEstimate}{store.orderCount > 0 ? ` · ${store.orderCount}+ orders` : ""}</p>
-                      {store.bestSaving > 0 && (
-                        <span className="text-[10px] font-bold inline-block mt-0.5" style={{ color: "var(--gold)" }}>Up to {store.bestSaving}% off</span>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
+          {/* Top sellers moved to top of category feed */}
 
           {/* ── Demand signal — bottom of category page ── */}
           {inCategoryMode && (
