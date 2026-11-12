@@ -189,10 +189,11 @@ function SearchContent() {
             <div style={{ columns: "2", columnGap: "12px" }}>
               {exploreFeed.map((p, i) => {
                 const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
-                // Stagger: alternate between short and tall based on index
-                const imgH = [140, 170, 130, 160, 150, 180][i % 6];
+                // Alternate: tall cards (image + info) and short cards (image + overlay price)
+                const isCompact = i % 3 === 1;
+                const imgH = isCompact ? 160 : [200, 180, 220, 190][i % 4];
                 return (
-                  <Link key={p.id} href={`/product/${p.id}`} className="rounded-[14px] overflow-hidden press-feedback mb-3 block" style={{ background: "var(--card)", breakInside: "avoid" }}>
+                  <Link key={p.id} href={`/product/${p.id}`} className="rounded-[14px] overflow-hidden press-feedback mb-3 block" style={{ breakInside: "avoid" }}>
                     <div className="relative" style={{ height: `${imgH}px`, background: "var(--sand)" }}>
                       {p.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -204,16 +205,26 @@ function SearchContent() {
                         <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
                       )}
                       {p.poolMemberCount > 0 && (
-                        <span className="absolute bottom-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>{p.poolMemberCount}/{p.minPoolSize}</span>
+                        <span className="absolute top-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>{p.poolMemberCount}/{p.minPoolSize}</span>
+                      )}
+                      {/* Compact cards: overlay name + price on image */}
+                      {isCompact && (
+                        <div className="absolute bottom-0 left-0 right-0 p-2.5" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" }}>
+                          <p className="text-[12px] font-bold truncate text-white">{p.name}</p>
+                          <span className="text-[14px] font-extrabold tabular-nums text-white leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fmt(p.groupPrice)}</span>
+                        </div>
                       )}
                     </div>
-                    <div className="p-2.5">
-                      <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
-                      <div className="flex items-baseline gap-1 mt-0.5">
-                        <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
-                        {p.retailPrice > p.groupPrice && <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>}
+                    {/* Full cards: info below image */}
+                    {!isCompact && (
+                      <div className="p-2.5" style={{ background: "var(--card)" }}>
+                        <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
+                          {p.retailPrice > p.groupPrice && <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </Link>
                 );
               })}
