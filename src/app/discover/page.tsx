@@ -387,24 +387,6 @@ function DiscoverContent() {
                 <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop" alt="Home & Living" className="absolute bottom-0 right-0 w-[55%] h-[85%] object-cover rounded-tl-[16px]" loading="lazy" />
               </Link>
 
-              {/* ── How it works — compact explainer ── */}
-              <div className="mt-6 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-2.5" style={{ color: "var(--emerald)" }}>How ChopDrop works</p>
-                <div className="flex gap-3">
-                  {[
-                    { step: "1", label: "Pick a deal", sub: "Choose a category" },
-                    { step: "2", label: "Join the pool", sub: "More people = lower price" },
-                    { step: "3", label: "Everyone saves", sub: "Didn't fill? Full refund" },
-                  ].map((s) => (
-                    <div key={s.step} className="flex-1 text-center">
-                      <div className="w-8 h-8 rounded-full mx-auto flex items-center justify-center text-[12px] font-extrabold text-white mb-1.5" style={{ background: "var(--emerald)" }}>{s.step}</div>
-                      <p className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{s.label}</p>
-                      <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{s.sub}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               {/* ── Flash deal banner (if active) ── */}
               {sortedPools.filter(p => p.isFlashDeal).length > 0 && (() => {
                 const flash = sortedPools.find(p => p.isFlashDeal)!;
@@ -441,20 +423,22 @@ function DiscoverContent() {
                 );
               })()}
 
-              {/* ── Trending pools — 2-col product grid with join CTAs ── */}
+              {/* ── Trending pools — 2-col product grid with social proof + join CTAs ── */}
               {sortedPools.length > 0 && (
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Trending pools</h3>
-                    {sortedPools.length > 4 && (
-                      <Link href="/discover?category=Food" className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>See all</Link>
-                    )}
+                    <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Trending now</h3>
+                    <Link href="/search" className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>See all</Link>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     {sortedPools.filter(p => !p.isFlashDeal).slice(0, 6).map((p) => {
                       const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
                       const spotsLeft = p.minPoolSize - p.fill.joined;
+                      const memberNames = p.poolMemberNames || [];
+                      const lastJoined = p.poolLastJoinedName;
+                      const lastJoinedAt = p.poolLastJoinedAt;
+                      const agoMin = lastJoinedAt ? Math.floor((Date.now() - new Date(lastJoinedAt).getTime()) / 60000) : 0;
                       return (
                         <Link key={`grid-${p.id}`} href={`/product/${p.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                           <div className="h-[120px] relative" style={{ background: "var(--sand)" }}>
@@ -467,17 +451,38 @@ function DiscoverContent() {
                             {sav >= 10 && (
                               <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
                             )}
+                            {/* Member avatars on image */}
+                            {memberNames.length > 0 && (
+                              <div className="absolute bottom-2 left-2 flex -space-x-1.5">
+                                {memberNames.slice(0, 3).map((name, i) => (
+                                  <div key={i} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[8px] font-bold text-white ring-2 ring-white" style={{ background: ["var(--coral)", "var(--emerald)", "var(--gold)"][i % 3] }}>
+                                    {name.charAt(0)}
+                                  </div>
+                                ))}
+                                {p.fill.joined > 3 && (
+                                  <div className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold ring-2 ring-white" style={{ background: "var(--dark)", color: "white" }}>
+                                    +{p.fill.joined - 3}
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                           <div className="p-3">
                             <p className="text-[13px] font-bold truncate leading-tight" style={{ color: "var(--text)" }}>{p.name}</p>
                             <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{p.vendor.name}</p>
+                            {/* FOMO: last joined */}
+                            {lastJoined && agoMin <= 30 && (
+                              <p className="text-[10px] font-bold mt-1" style={{ color: "var(--emerald)" }}>
+                                {lastJoined} joined {agoMin <= 1 ? "just now" : `${agoMin}m ago`}
+                              </p>
+                            )}
                             {/* Price row */}
-                            <div className="flex items-baseline gap-1 mt-2">
+                            <div className="flex items-baseline gap-1 mt-1.5">
                               <span className="text-[17px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
                               <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>
                             </div>
                             {/* Fill bar */}
-                            <div className="flex items-center gap-1.5 mt-2">
+                            <div className="flex items-center gap-1.5 mt-1.5">
                               <div className="flex-1 h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
                                 <div className="h-full rounded-full" style={{ width: `${p.fill.fillPct}%`, background: "var(--emerald)" }} />
                               </div>
@@ -485,7 +490,7 @@ function DiscoverContent() {
                             </div>
                             {/* Join CTA */}
                             <div className="mt-2.5 h-[34px] rounded-[10px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                              {p.fill.joined > 0 ? `Join · ${spotsLeft} left` : "Start pool"}
+                              {p.fill.joined > 0 ? `Join · ${spotsLeft} left` : "Be first · Get this price"}
                             </div>
                           </div>
                         </Link>
@@ -503,19 +508,30 @@ function DiscoverContent() {
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ background: "var(--emerald)" }} />
                   </span>
                   <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>
-                    {sortedPools.reduce((s, p) => s + p.fill.joined, 0)} people buying right now
+                    {sortedPools.reduce((s, p) => s + p.fill.joined, 0)} people in active pools
                   </span>
                 </div>
               )}
 
-              {/* ── Invite friends CTA ── */}
-              <div className="mt-5 mb-4 rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
-                <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Invite friends, save more</p>
-                <p className="text-[12px] mt-1" style={{ color: "var(--subdued)" }}>Share your group link on WhatsApp. More people join, everyone pays less.</p>
-                <Link href="/pools" className="mt-3 h-[40px] rounded-[12px] flex items-center justify-center text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
-                  Start a group
-                </Link>
+              {/* ── How it works — moved below products ── */}
+              <div className="mt-5 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-2.5" style={{ color: "var(--emerald)" }}>New here? How it works</p>
+                <div className="flex gap-3">
+                  {[
+                    { step: "1", label: "Pick a deal", sub: "Browse any category" },
+                    { step: "2", label: "Join a group", sub: "More people = lower price" },
+                    { step: "3", label: "Everyone saves", sub: "Didn't fill? Full refund" },
+                  ].map((s) => (
+                    <div key={s.step} className="flex-1 text-center">
+                      <div className="w-7 h-7 rounded-full mx-auto flex items-center justify-center text-[11px] font-extrabold text-white mb-1" style={{ background: "var(--emerald)" }}>{s.step}</div>
+                      <p className="text-[11px] font-bold" style={{ color: "var(--text)" }}>{s.label}</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: "var(--text-muted)" }}>{s.sub}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              <div className="h-4 mb-4" />
             </div>
           )}
 
