@@ -284,25 +284,35 @@ function DiscoverContent() {
         {/* Category tabs removed — single feed for now */}
       </header>}
 
-      {/* ── Category header — sticky, replaces home header ── */}
-      {inCategoryMode && (
-        <header className="sticky top-0 z-40 px-5 pt-3 pb-2" style={{ background: "var(--bg)" }}>
-          <div className="flex items-center gap-3">
-            <button type="button" onClick={() => router.push("/discover")} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "var(--sand)" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-            </button>
-            <h1 className="text-[20px] font-extrabold flex-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{activeCategory}</h1>
-            <Link href="/cart" aria-label="Cart" className="relative w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-              {cart.totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "var(--coral)" }}>
-                  {cart.totalItems}
-                </span>
-              )}
-            </Link>
-          </div>
-        </header>
-      )}
+      {/* ── Category header — sticky, colored, carries energy from home card ── */}
+      {inCategoryMode && (() => {
+        const catColors: Record<string, { bg: string; text: string }> = {
+          Food: { bg: "#C4572A", text: "white" },
+          Groceries: { bg: "#1A7D4B", text: "white" },
+          Electronics: { bg: "#A5B4FC", text: "#312E81" },
+          Fashion: { bg: "#EC4899", text: "white" },
+          Home: { bg: "#D4A24E", text: "white" },
+        };
+        const cc = catColors[activeCategory] || { bg: "var(--dark)", text: "white" };
+        return (
+          <header className="sticky top-0 z-40" style={{ background: cc.bg }}>
+            <div className="px-5 pt-3 pb-3 flex items-center gap-3">
+              <button type="button" onClick={() => router.push("/discover")} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 press-feedback" style={{ background: "rgba(255,255,255,0.2)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={cc.text} strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+              </button>
+              <h1 className="text-[20px] font-extrabold flex-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: cc.text }}>{activeCategory}</h1>
+              <Link href="/cart" aria-label="Cart" className="relative w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.2)" }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={cc.text} strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                {cart.totalItems > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] rounded-full flex items-center justify-center text-[9px] font-bold text-white px-1" style={{ background: "#DC2626" }}>
+                    {cart.totalItems}
+                  </span>
+                )}
+              </Link>
+            </div>
+          </header>
+        );
+      })()}
 
       {/* ── Location panel ── */}
       {areaOpen && (
