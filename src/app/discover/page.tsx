@@ -355,7 +355,7 @@ function DiscoverContent() {
                   <Link href="/discover?category=Food" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#C4572A", height: "230px" }}>
                     <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Food</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=400&q=80&fit=crop" alt="Food" className="absolute bottom-0 right-0 w-[75%] h-[70%] object-cover rounded-tl-[16px]" loading="lazy" />
+                    <img src="/categories/food.png" alt="Food" className="absolute bottom-[-8px] right-[-8px] w-[80%] h-[75%] object-contain drop-shadow-lg" loading="lazy" />
                   </Link>
                   {/* Gadgets — short */}
                   <Link href="/discover?category=Electronics" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#6366F1", height: "180px" }}>
