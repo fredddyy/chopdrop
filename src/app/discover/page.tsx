@@ -361,7 +361,7 @@ function DiscoverContent() {
                   <Link href="/discover?category=Electronics" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#A5B4FC", height: "180px" }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#312E81" }}>Gadgets</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/categories/gadgets.png" alt="Gadgets" className="absolute object-contain pointer-events-none" style={{ width: "130%", height: "110%", bottom: "-15%", right: "-25%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.25))" }} loading="lazy" />
+                    <img src="/categories/gadgets.png" alt="Gadgets" className="absolute object-contain pointer-events-none" style={{ width: "140%", height: "120%", bottom: "-8%", right: "-18%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.25))" }} loading="lazy" />
                   </Link>
                 </div>
                 {/* Right column */}
@@ -370,7 +370,7 @@ function DiscoverContent() {
                   <Link href="/discover?category=Groceries" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#1A7D4B", height: "180px" }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>Groceries</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/categories/groceries.png" alt="Groceries" className="absolute object-contain pointer-events-none" style={{ width: "120%", height: "120%", bottom: "-15%", right: "-30%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.2))" }} loading="lazy" />
+                    <img src="/categories/groceries.png" alt="Groceries" className="absolute object-contain pointer-events-none" style={{ width: "110%", height: "115%", bottom: "-10%", right: "-10%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.2))" }} loading="lazy" />
                   </Link>
                   {/* Fashion — tall */}
                   <Link href="/discover?category=Fashion" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#EC4899", height: "230px" }}>
@@ -382,9 +382,9 @@ function DiscoverContent() {
               </div>
               {/* Home & Living — full width */}
               <Link href="/discover?category=Home" className="relative overflow-hidden rounded-[20px] press-feedback mt-3 block" style={{ background: "#D4A24E", height: "140px" }}>
-                <span className="absolute top-3.5 left-4 text-[24px] font-extrabold text-white leading-none tracking-[-0.5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Home & Living</span>
+                <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>Home &<br />Living</span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop" alt="Home & Living" className="absolute bottom-0 right-0 w-[55%] h-[85%] object-cover rounded-tl-[16px]" loading="lazy" />
+                <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=400&q=80&fit=crop&bg=remove" alt="Home & Living" className="absolute object-cover pointer-events-none" style={{ width: "65%", height: "120%", bottom: "-10%", right: "-5%", borderRadius: "16px 0 0 0", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.15))" }} loading="lazy" />
               </Link>
 
               {/* ── Flash deal banner (if active) ── */}
