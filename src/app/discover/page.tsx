@@ -347,32 +347,31 @@ function DiscoverContent() {
                 <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search for food, stores, deals...</span>
               </Link>
 
-              {/* 2x4 category grid */}
-              <div className="grid grid-cols-4 gap-x-3 gap-y-4">
+              {/* Category cards — large, 2x3 grid with product images */}
+              <div className="grid grid-cols-3 gap-2.5">
                 {[
-                  { key: "Food", label: "Food", color: "#C4572A", bg: "#FEF2F0", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#C4572A" strokeWidth="1.6"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" stroke="#C4572A" strokeWidth="1.6"/><path d="M6 1v3M10 1v3M14 1v3" stroke="#C4572A" strokeWidth="1.6"/></svg> },
-                  { key: "Groceries", label: "Groceries", color: "#1A7D4B", bg: "#ECFDF5", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A7D4B" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },
-                  { key: "Electronics", label: "Gadgets", color: "#6366F1", bg: "#EEF2FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg> },
-                  { key: "Fashion", label: "Fashion", color: "#EC4899", bg: "#FDF2F8", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EC4899" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6.3 2h11.4L22 8l-10 14L2 8z"/></svg> },
-                  { key: "Home", label: "Home", color: "#D4A24E", bg: "#FFFBEB", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A24E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
-                  { key: "Health", label: "Health", color: "#0EA5E9", bg: "#F0F9FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
-                  { key: "Beauty", label: "Beauty", color: "#A855F7", bg: "#FAF5FF", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A855F7" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
-                  { key: "More", label: "More", color: "#6B7280", bg: "#F3F4F6", icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> },
+                  { key: "Food", label: "Food", bg: "#FEF2F0", color: "#C4572A", img: "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=200&q=80&fit=crop" },
+                  { key: "Groceries", label: "Groceries", bg: "#ECFDF5", color: "#1A7D4B", img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80&fit=crop" },
+                  { key: "Electronics", label: "Gadgets", bg: "#EEF2FF", color: "#6366F1", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&q=80&fit=crop" },
+                  { key: "Fashion", label: "Fashion", bg: "#FDF2F8", color: "#EC4899", img: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=200&q=80&fit=crop" },
+                  { key: "Home", label: "Home &\nLiving", bg: "#FFFBEB", color: "#D4A24E", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80&fit=crop" },
                 ].map((cat) => (
                   <Link
                     key={cat.key}
-                    href={cat.key === "More" ? "/search" : `/discover?category=${cat.key}`}
-                    className="flex flex-col items-center gap-1.5 press-feedback"
+                    href={`/discover?category=${cat.key}`}
+                    className="relative overflow-hidden rounded-[16px] press-feedback"
+                    style={{ background: cat.bg, aspectRatio: "1", border: "1px solid var(--border)" }}
                   >
-                    <div
-                      className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center"
-                      style={{ background: cat.bg }}
-                    >
-                      {cat.icon}
-                    </div>
-                    <span className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+                    <span className="absolute top-3 left-3 text-[13px] font-bold leading-tight whitespace-pre-line" style={{ color: cat.color }}>
                       {cat.label}
                     </span>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={cat.img}
+                      alt={cat.label}
+                      className="absolute bottom-0 right-0 w-[55%] h-[55%] object-cover rounded-tl-[12px]"
+                      loading="lazy"
+                    />
                   </Link>
                 ))}
               </div>
