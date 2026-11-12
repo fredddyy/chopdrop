@@ -180,81 +180,43 @@ function SearchContent() {
         <div className="px-5 mt-4">
           <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Explore deals</p>
           {exploreLoading ? (
-            <div className="flex gap-3">
-              {[0, 1].map(col => (
-                <div key={col} className="flex-1 flex flex-col gap-3">
-                  {[0, 1, 2].map(i => (
-                    <div key={i} className="rounded-[14px] overflow-hidden" style={{ height: `${130 + (i % 2) * 40}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${(col * 3 + i) * 80}ms` }} />
-                  ))}
-                </div>
+            <div style={{ columns: "2", columnGap: "12px" }}>
+              {[0, 1, 2, 3, 4, 5].map(i => (
+                <div key={i} className="rounded-[14px] overflow-hidden mb-3" style={{ height: `${120 + (i % 3) * 25}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 80}ms`, breakInside: "avoid" }} />
               ))}
             </div>
           ) : exploreFeed.length > 0 ? (
-            <div className="flex gap-3">
-              {/* Left column */}
-              <div className="flex-1 flex flex-col gap-3">
-                {exploreFeed.filter((_, i) => i % 2 === 0).map((p, i) => {
-                  const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
-                  const imgH = i % 3 === 0 ? 180 : i % 3 === 1 ? 140 : 160;
-                  return (
-                    <Link key={p.id} href={`/product/${p.id}`} className="rounded-[14px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-                      <div className="relative" style={{ height: `${imgH}px`, background: "var(--sand)" }}>
-                        {p.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
-                        )}
-                        {sav >= 10 && (
-                          <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
-                        )}
-                        {p.poolMemberCount > 0 && (
-                          <span className="absolute bottom-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>{p.poolMemberCount}/{p.minPoolSize}</span>
-                        )}
+            <div style={{ columns: "2", columnGap: "12px" }}>
+              {exploreFeed.map((p, i) => {
+                const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
+                // Stagger: alternate between short and tall based on index
+                const imgH = [140, 170, 130, 160, 150, 180][i % 6];
+                return (
+                  <Link key={p.id} href={`/product/${p.id}`} className="rounded-[14px] overflow-hidden press-feedback mb-3 block" style={{ background: "var(--card)", breakInside: "avoid" }}>
+                    <div className="relative" style={{ height: `${imgH}px`, background: "var(--sand)" }}>
+                      {p.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
+                      )}
+                      {sav >= 10 && (
+                        <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
+                      )}
+                      {p.poolMemberCount > 0 && (
+                        <span className="absolute bottom-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>{p.poolMemberCount}/{p.minPoolSize}</span>
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
+                        {p.retailPrice > p.groupPrice && <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>}
                       </div>
-                      <div className="p-2.5">
-                        <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
-                        <div className="flex items-baseline gap-1 mt-0.5">
-                          <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
-                          {p.retailPrice > p.groupPrice && <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-              {/* Right column */}
-              <div className="flex-1 flex flex-col gap-3">
-                {exploreFeed.filter((_, i) => i % 2 === 1).map((p, i) => {
-                  const sav = Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100);
-                  const imgH = i % 3 === 0 ? 140 : i % 3 === 1 ? 180 : 150;
-                  return (
-                    <Link key={p.id} href={`/product/${p.id}`} className="rounded-[14px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-                      <div className="relative" style={{ height: `${imgH}px`, background: "var(--sand)" }}>
-                        {p.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{p.name.charAt(0)}</div>
-                        )}
-                        {sav >= 10 && (
-                          <span className="absolute top-2 left-2 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white" style={{ background: "var(--emerald)" }}>{sav}% off</span>
-                        )}
-                        {p.poolMemberCount > 0 && (
-                          <span className="absolute bottom-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>{p.poolMemberCount}/{p.minPoolSize}</span>
-                        )}
-                      </div>
-                      <div className="p-2.5">
-                        <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{p.name}</p>
-                        <div className="flex items-baseline gap-1 mt-0.5">
-                          <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(p.groupPrice)}</span>
-                          {p.retailPrice > p.groupPrice && <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(p.retailPrice)}</span>}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <p className="text-center text-[13px] py-8" style={{ color: "var(--text-muted)" }}>No deals available yet. Check back soon.</p>
