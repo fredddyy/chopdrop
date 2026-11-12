@@ -101,6 +101,7 @@ function DiscoverContent() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [userArea, setUserArea] = useState("");
   const [userAddress, setUserAddress] = useState("");
@@ -120,6 +121,18 @@ function DiscoverContent() {
       setActiveSubcategory(null);
     }
   }, [categoryParam]);
+
+  // Check if first visit
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem("chopdrop-onboarded")) setShowOnboarding(true);
+    } catch {}
+  }, []);
+
+  function dismissOnboarding() {
+    setShowOnboarding(false);
+    try { localStorage.setItem("chopdrop-onboarded", "1"); } catch {}
+  }
 
   // Read profile on mount
   useEffect(() => {
@@ -453,6 +466,39 @@ function DiscoverContent() {
                 <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search for food, stores, deals...</span>
               </Link>
 
+              {/* ── First-visit onboarding — dismissible ── */}
+              {showOnboarding && (
+                <div className="mb-4 rounded-[16px] overflow-hidden" style={{ background: "var(--dark)" }}>
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <p className="text-[10px] font-extrabold uppercase tracking-[0.12em]" style={{ color: "var(--emerald)" }}>How ChopDrop works</p>
+                      <button type="button" onClick={dismissOnboarding} className="text-[11px] font-bold" style={{ color: "var(--subdued)" }}>Skip</button>
+                    </div>
+                    <h3 className="text-[18px] font-extrabold text-white leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                      More people join,<br />everyone pays less.
+                    </h3>
+                    <p className="text-[12px] mt-2 leading-[155%]" style={{ color: "var(--subdued)" }}>
+                      Pick any product. Join a group. When enough people are in, everyone gets the group price. Didn&apos;t fill? Full refund. Zero risk.
+                    </p>
+                    {/* Visual example */}
+                    <div className="mt-4 flex items-center gap-3">
+                      <div className="flex-1 rounded-[10px] p-2.5 text-center" style={{ background: "rgba(255,255,255,0.06)" }}>
+                        <p className="text-[9px] uppercase tracking-wide" style={{ color: "var(--subdued)" }}>Solo price</p>
+                        <p className="text-[18px] font-extrabold text-white tabular-nums mt-0.5 line-through" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", opacity: 0.5 }}>₦2,000</p>
+                      </div>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                      <div className="flex-1 rounded-[10px] p-2.5 text-center" style={{ background: "rgba(13,159,95,0.15)", border: "1px solid rgba(13,159,95,0.2)" }}>
+                        <p className="text-[9px] uppercase tracking-wide" style={{ color: "var(--emerald)" }}>5 people join</p>
+                        <p className="text-[18px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>₦1,400</p>
+                      </div>
+                    </div>
+                    <button type="button" onClick={dismissOnboarding} className="mt-4 w-full h-[42px] rounded-[12px] text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+                      Got it, let me browse
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Category cards — solid color surface, photo floats on top */}
               <div className="flex gap-3">
                 {/* Left column */}
@@ -598,24 +644,6 @@ function DiscoverContent() {
                   </span>
                 </div>
               )}
-
-              {/* ── How it works — moved below products ── */}
-              <div className="mt-5 rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] mb-2.5" style={{ color: "var(--emerald)" }}>New here? How it works</p>
-                <div className="flex gap-3">
-                  {[
-                    { step: "1", label: "Pick a deal", sub: "Browse any category" },
-                    { step: "2", label: "Join a group", sub: "More people = lower price" },
-                    { step: "3", label: "Everyone saves", sub: "Didn't fill? Full refund" },
-                  ].map((s) => (
-                    <div key={s.step} className="flex-1 text-center">
-                      <div className="w-7 h-7 rounded-full mx-auto flex items-center justify-center text-[11px] font-extrabold text-white mb-1" style={{ background: "var(--emerald)" }}>{s.step}</div>
-                      <p className="text-[11px] font-bold" style={{ color: "var(--text)" }}>{s.label}</p>
-                      <p className="text-[9px] mt-0.5" style={{ color: "var(--text-muted)" }}>{s.sub}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
               <div className="h-4 mb-4" />
             </div>
