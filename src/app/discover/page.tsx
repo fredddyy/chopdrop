@@ -659,32 +659,34 @@ function DiscoverContent() {
                     <div className="flex gap-3 px-5 pb-2 w-max">
                       {filteredStores.map((store) => (
                           <Link key={store.id} href={`/store/${store.id}`} aria-label={`Visit ${store.name}`} className="shrink-0 w-[270px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-                            {/* Hero banner — 160px per design system */}
-                            <div className="h-[160px] relative" style={{ background: "var(--sand)" }}>
-                              {(store.heroImage || store.imageUrl) ? (
-                                <StoreHeroImg src={store.bannerUrl || store.imageUrl || ""} alt={store.name} fallback={store.name.charAt(0)} />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <span className="text-[36px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
-                                </div>
-                              )}
-                              {store.bestSaving > 0 && (
-                                <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px] text-white" style={{ background: "var(--coral)" }}>
-                                  Up to {store.bestSaving}% off
-                                </span>
-                              )}
-                              {store.orderCount > 0 && (
-                                <span className="absolute top-2.5 right-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px]" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>
-                                  {store.orderCount}+ orders
-                                </span>
-                              )}
-                              {/* Store logo overlay */}
-                              {store.imageUrl && store.bannerUrl && (
-                                <div className="absolute bottom-2.5 left-2.5 w-[36px] h-[36px] rounded-[10px] overflow-hidden ring-2 ring-white" style={{ background: "var(--card)" }}>
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img src={store.imageUrl} alt={`${store.name} logo`} className="w-full h-full object-cover" loading="lazy" />
-                                </div>
-                              )}
+                            {/* Hero banner — rounded corners inside card, ops-controlled */}
+                            <div className="p-2 pb-0">
+                              <div className="h-[140px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                                {(store.bannerUrl || store.imageUrl) ? (
+                                  <StoreHeroImg src={store.bannerUrl || store.imageUrl || ""} alt={store.name} fallback={store.name.charAt(0)} />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <span className="text-[36px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{store.name.charAt(0)}</span>
+                                  </div>
+                                )}
+                                {store.bestSaving > 0 && (
+                                  <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px] text-white" style={{ background: "var(--coral)" }}>
+                                    Up to {store.bestSaving}% off
+                                  </span>
+                                )}
+                                {store.orderCount > 0 && (
+                                  <span className="absolute top-2.5 right-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px]" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>
+                                    {store.orderCount}+ orders
+                                  </span>
+                                )}
+                                {/* Restaurant avatar — bottom left inside banner */}
+                                {store.imageUrl && (
+                                  <div className="absolute bottom-2 left-2 w-[40px] h-[40px] rounded-full overflow-hidden" style={{ border: "3px solid white" }}>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={store.imageUrl} alt={`${store.name} logo`} className="w-full h-full object-cover" loading="lazy" />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             {/* Info — answers: what, how cheap, who's buying */}
                             <div className="p-3">
