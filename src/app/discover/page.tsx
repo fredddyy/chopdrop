@@ -443,9 +443,9 @@ function DiscoverContent() {
                   const savingsAmount = p.retailPrice - p.groupPrice;
                   const emptyCtas = [`Save ${fmt(savingsAmount)}`, `${sav}% off · ${spotsLeft} spots`, `${spotsLeft} spots`];
                   return (
-                    <Link key={`home-${p.id}`} href={`/product/${p.id}`} className="shrink-0 w-[165px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                    <Link key={`home-${p.id}`} href={`/product/${p.id}`} className="shrink-0 w-[220px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
                       <div className="p-2 pb-0">
-                        <div className="h-[115px] relative rounded-[10px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                        <div className="h-[140px] relative rounded-[10px] overflow-hidden" style={{ background: "var(--sand)" }}>
                           {p.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
