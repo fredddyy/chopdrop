@@ -520,35 +520,39 @@ function DiscoverContent() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/categories/food.png" alt="Food" className="absolute object-contain pointer-events-none" style={{ width: "140%", height: "110%", bottom: "-10%", right: "-25%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.25))" }} loading="lazy" />
                   </Link>
-                  {/* Gadgets — short */}
-                  <Link href="/discover?category=Electronics" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#A5B4FC", height: "180px" }}>
+                  {/* Gadgets — coming soon */}
+                  <div className="relative overflow-hidden rounded-[20px]" style={{ background: "#A5B4FC", height: "180px", opacity: 0.45 }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#312E81" }}>Gadgets</span>
+                    <span className="absolute top-3.5 right-3 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full z-10" style={{ background: "rgba(0,0,0,0.15)", color: "#312E81" }}>Soon</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/categories/gadgets.png" alt="Gadgets" className="absolute object-contain pointer-events-none" style={{ width: "140%", height: "120%", bottom: "-8%", right: "-18%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.25))" }} loading="lazy" />
-                  </Link>
+                    <img src="/categories/gadgets.png" alt="Gadgets" className="absolute object-contain pointer-events-none" style={{ width: "140%", height: "120%", bottom: "-8%", right: "-18%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.25)) grayscale(0.3)" }} loading="lazy" />
+                  </div>
                 </div>
                 {/* Right column */}
                 <div className="flex-1 flex flex-col gap-3">
-                  {/* Groceries — short */}
-                  <Link href="/discover?category=Groceries" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#1A7D4B", height: "180px" }}>
+                  {/* Groceries — coming soon */}
+                  <div className="relative overflow-hidden rounded-[20px]" style={{ background: "#1A7D4B", height: "180px", opacity: 0.45 }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>Groceries</span>
+                    <span className="absolute top-3.5 right-3 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full z-10" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}>Soon</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/categories/groceries.png" alt="Groceries" className="absolute object-contain pointer-events-none" style={{ width: "110%", height: "115%", bottom: "-10%", right: "-10%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.2))" }} loading="lazy" />
-                  </Link>
-                  {/* Fashion — tall */}
-                  <Link href="/discover?category=Fashion" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#EC4899", height: "230px" }}>
+                    <img src="/categories/groceries.png" alt="Groceries" className="absolute object-contain pointer-events-none" style={{ width: "110%", height: "115%", bottom: "-10%", right: "-10%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.2)) grayscale(0.3)" }} loading="lazy" />
+                  </div>
+                  {/* Fashion — coming soon */}
+                  <div className="relative overflow-hidden rounded-[20px]" style={{ background: "#EC4899", height: "230px", opacity: 0.45 }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>Fashion</span>
+                    <span className="absolute top-3.5 right-3 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full z-10" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}>Soon</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/categories/fashion.png" alt="Fashion" className="absolute object-contain pointer-events-none" style={{ width: "130%", height: "110%", bottom: "-10%", right: "-20%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.15))" }} loading="lazy" />
-                  </Link>
+                    <img src="/categories/fashion.png" alt="Fashion" className="absolute object-contain pointer-events-none" style={{ width: "130%", height: "110%", bottom: "-10%", right: "-20%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.15)) grayscale(0.3)" }} loading="lazy" />
+                  </div>
                 </div>
               </div>
-              {/* Home & Living — full width */}
-              <Link href="/discover?category=Home" className="relative overflow-hidden rounded-[20px] press-feedback mt-3 block" style={{ background: "#D4A24E", height: "140px" }}>
+              {/* Home & Living — coming soon, full width */}
+              <div className="relative overflow-hidden rounded-[20px] mt-3" style={{ background: "#D4A24E", height: "140px", opacity: 0.45 }}>
                 <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>Home &<br />Living</span>
+                <span className="absolute top-3.5 right-3 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full z-10" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}>Soon</span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/categories/home.png" alt="Home & Living" className="absolute object-contain pointer-events-none" style={{ width: "75%", height: "130%", bottom: "-20%", right: "-5%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.15))" }} loading="lazy" />
-              </Link>
+                <img src="/categories/home.png" alt="Home & Living" className="absolute object-contain pointer-events-none" style={{ width: "75%", height: "130%", bottom: "-20%", right: "-5%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.15)) grayscale(0.3)" }} loading="lazy" />
+              </div>
 
               {/* ── Flash deal banner (if active) ── */}
               {sortedPools.filter(p => p.isFlashDeal).length > 0 && (() => {
