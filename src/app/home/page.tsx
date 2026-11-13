@@ -416,7 +416,7 @@ export default function HomePage() {
                         {/* Live pool indicator */}
                         {r.livePools.count > 0 && (
                           <div className="flex items-center gap-1.5 mt-2">
-                            <span className="w-[6px] h-[6px] rounded-full animate-pulse" style={{ background: "var(--coral)" }} />
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                             <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>
                               {r.livePools.count} live {r.livePools.count === 1 ? "pool" : "pools"} · {r.livePools.totalMembers} {r.livePools.totalMembers === 1 ? "person" : "people"} in
                             </span>
