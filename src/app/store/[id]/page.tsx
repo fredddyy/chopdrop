@@ -293,7 +293,7 @@ export default function StorePage() {
                     const activeGroups = itemPool ? 1 : 0;
                     return (
                       <div key={item.id} className="relative">
-                        <button type="button" onClick={() => { setSelectedItem(item); setSheetQty(1); }} className="block press-feedback text-left w-full">
+                        <Link href={`/product/${item.id}`} className="block press-feedback text-left w-full">
                           {/* Image */}
                           <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
                             {item.imageUrl ? (
@@ -326,7 +326,7 @@ export default function StorePage() {
                               {hasDiscount && <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>}
                             </div>
                           </div>
-                        </button>
+                        </Link>
                         {/* Groups Active badge */}
                         <p className="text-[9px] font-bold mt-0.5" style={{ color: activeGroups > 0 ? "var(--coral)" : "var(--text-muted)" }}>
                           {activeGroups} {activeGroups === 1 ? "Group" : "Groups"} Active
