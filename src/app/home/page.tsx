@@ -163,19 +163,28 @@ export default function HomePage() {
           <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
         {/* Filter pills */}
-        <div className="flex gap-2 mt-2 overflow-x-auto hide-scrollbar">
+        <div className="flex gap-2 mt-2.5 overflow-x-auto hide-scrollbar">
           {([
-            { key: "all", label: "All" },
-            { key: "deals", label: "Group deals" },
-            { key: "live", label: "Live pools" },
-            { key: "popular", label: "Popular" },
-          ] as const).map(f => (
+            { key: "all", label: "All", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg> },
+            { key: "deals", label: "Group deals", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg> },
+            { key: "live", label: "Live", icon: <><span className="w-[6px] h-[6px] rounded-full shrink-0 animate-pulse" style={{ background: filter === "live" ? "var(--coral)" : "var(--coral)" }} /><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg></> },
+            { key: "popular", label: "Popular", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> },
+          ] as const).map(f => {
+            const active = filter === f.key;
+            return (
             <button key={f.key} type="button" onClick={() => setFilter(f.key)}
-              className="h-[32px] px-3.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 press-feedback"
-              style={{ background: filter === f.key ? "var(--dark)" : "var(--sand)", color: filter === f.key ? "white" : "var(--text-secondary)", transition: "background 150ms, color 150ms" }}>
+              className="h-[34px] px-3.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 press-feedback inline-flex items-center gap-1.5"
+              style={{
+                background: active ? "var(--coral)" : "var(--card)",
+                color: active ? "white" : "var(--text-secondary)",
+                border: active ? "none" : "1px solid var(--border)",
+                transition: "all 150ms ease-out",
+              }}>
+              {f.icon}
               {f.label}
             </button>
-          ))}
+            );
+          })}
         </div>
       </header>
 
