@@ -266,69 +266,6 @@ export default function StorePage() {
 
       {/* Group discount tiers moved into the Group Order Status card above */}
 
-      {/* ═══ GROUP DEALS — real pool data, hidden when expired ═══ */}
-      {featured && (hasLivePool || featuredSav > 0) && (
-        <section className="px-5 mt-6">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[17px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Group deals</h3>
-            {hasLivePool && (
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
-                {livePools.length} live pool{livePools.length !== 1 ? "s" : ""}
-              </span>
-            )}
-            {!hasLivePool && featuredSav > 0 && (
-              <span className="text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>Save up to {featuredSav}%</span>
-            )}
-          </div>
-
-          <Link href={`/product/${featured.id}`} className="block rounded-[16px] overflow-hidden press-feedback card-enter card-enter-1" style={{ background: "var(--dark)" }}>
-            {featured.imageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={featured.imageUrl} alt={featured.name} className="w-full h-[200px] object-cover" />
-            )}
-            <div className="p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h4 className="text-[17px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{featured.name}</h4>
-                  <p className="text-[12px] mt-0.5" style={{ color: "var(--subdued)" }}>{store.name}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <span className="text-[24px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "var(--gold)" }}>{fp(featured.groupPrice)}</span>
-                  <p className="text-[12px] line-through" style={{ color: "var(--subdued)" }}>{fp(featured.retailPrice)}</p>
-                </div>
-              </div>
-
-              {/* Live pool progress — real data */}
-              {hasLivePool && featuredPool && (
-                <>
-                  <div className="mt-3 flex items-center justify-between text-[12px] font-extrabold text-white">
-                    <span>{featuredPool.memberCount}/{featuredPool.minSize} joined</span>
-                    <span style={{ color: "var(--emerald)" }}>{featuredMinutesLeft > 60 ? `${Math.floor(featuredMinutesLeft / 60)}h ${featuredMinutesLeft % 60}m left` : `${featuredMinutesLeft}m left`}</span>
-                  </div>
-                  <div className="mt-1.5 h-[6px] overflow-hidden" style={{ background: "rgba(255,255,255,0.15)", borderRadius: "9px" }}>
-                    <div className="h-full" style={{ width: `${Math.round((featuredPool.memberCount / featuredPool.minSize) * 100)}%`, background: "var(--emerald)", borderRadius: "9px", transition: "width 300ms ease-out" }} />
-                  </div>
-                </>
-              )}
-
-              {/* No active pool — show savings hook instead */}
-              {!hasLivePool && (
-                <div className="mt-3 flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                  <span className="text-[12px] font-bold" style={{ color: "var(--emerald)" }}>Save {featuredSav}% when {featured.minPoolSize} people join. Start a pool.</span>
-                </div>
-              )}
-
-              {/* CTA */}
-              <div className="mt-4 w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[15px] font-bold text-white" style={{ background: "var(--coral)" }}>
-                <span>{hasLivePool ? `Join Pool \u2014 ${fp(featured.groupPrice)}` : `Start Pool \u2014 ${fp(featured.groupPrice)}`}</span>
-                <span className="text-[12px] font-bold opacity-80">Save {featuredSav}%</span>
-              </div>
-            </div>
-          </Link>
-        </section>
-      )}
-
       {/* ═══ THE FULL MENU ═══ */}
       <section className="px-5 mt-8">
         <h2 className="text-[24px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>The full menu</h2>
