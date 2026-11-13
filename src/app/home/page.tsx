@@ -145,7 +145,7 @@ export default function HomePage() {
           </div>
         </div>
         {/* Search link */}
-        <Link href="/search" className="mt-2.5 flex items-center h-[38px] px-3.5 rounded-[10px] gap-2" style={{ background: "var(--sand)" }}>
+        <Link href="/search" className="mt-2.5 flex items-center h-[38px] px-3.5 rounded-[12px] gap-2" style={{ background: "var(--sand)" }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
@@ -158,8 +158,8 @@ export default function HomePage() {
             <div key={i}>
               <div className="rounded-[16px]" style={{ height: "160px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }} />
               <div className="pt-2.5 space-y-2">
-                <div className="h-4 rounded-[6px] w-[55%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120 + 50}ms` }} />
-                <div className="h-3 rounded-[6px] w-[75%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120 + 100}ms` }} />
+                <div className="h-4 rounded-lg w-[55%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120 + 50}ms` }} />
+                <div className="h-3 rounded-lg w-[75%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120 + 100}ms` }} />
               </div>
             </div>
           ))}
@@ -218,7 +218,7 @@ export default function HomePage() {
                         )}
                         {/* Tier badge */}
                         {order.currentDiscount > 0 && (
-                          <span className="absolute top-3 right-3 text-[10px] font-extrabold px-2 py-1 rounded-[8px] text-white" style={{ background: "var(--emerald)" }}>
+                          <span className="absolute top-3 right-3 text-[10px] font-extrabold px-2 py-1 rounded-lg text-white" style={{ background: "var(--emerald)" }}>
                             {order.currentDiscount}% off
                           </span>
                         )}
@@ -273,7 +273,7 @@ export default function HomePage() {
                           <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>
                             {minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m left` : `${minsLeft}m left`}
                           </span>
-                          <span className="h-[34px] px-5 rounded-[10px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>
+                          <span className="h-[34px] px-5 rounded-[12px] flex items-center justify-center text-[12px] font-bold text-white" style={{ background: "var(--coral)" }}>
                             Join this order
                           </span>
                         </div>
@@ -344,7 +344,7 @@ export default function HomePage() {
                         )}
                         {/* Discount badge — on banner */}
                         {bestTier && (
-                          <span className="absolute top-3 left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-[8px] text-white" style={{ background: "var(--coral)" }}>
+                          <span className="absolute top-3 left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-lg text-white" style={{ background: "var(--coral)" }}>
                             Up to {bestTier.discount}% off
                           </span>
                         )}
@@ -388,7 +388,7 @@ export default function HomePage() {
                           r.tiers.length > 0 ? (
                             <div className="flex items-center gap-1.5 mt-2">
                               {r.tiers.map((t, i) => (
-                                <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-[6px]"
+                                <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-lg"
                                   style={{
                                     background: i === r.tiers.length - 1 ? "var(--emerald)" : "var(--emerald-soft)",
                                     color: i === r.tiers.length - 1 ? "white" : "var(--emerald)",
@@ -421,7 +421,7 @@ export default function HomePage() {
                 {inactiveRestaurants.map((r) => (
                   <Link key={r.id} href={`/store/${r.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                     <div className="p-1.5 pb-0">
-                      <div className="h-[90px] relative rounded-[10px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                      <div className="h-[90px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
                         <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
                         {r.imageUrl && (
                           <div className="absolute bottom-1.5 left-1.5 w-[26px] h-[26px] rounded-full overflow-hidden" style={{ border: "2px solid white" }}>

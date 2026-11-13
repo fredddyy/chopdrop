@@ -371,7 +371,7 @@ function DiscoverContent() {
           </div>
           {/* Row 2: Search — integrated into header */}
           <div className="px-5 pb-2">
-            <Link href={`/search?category=${activeCategory}`} className="flex items-center h-[38px] px-3.5 rounded-[10px] gap-2" style={{ background: "var(--sand)" }}>
+            <Link href={`/search?category=${activeCategory}`} className="flex items-center h-[38px] px-3.5 rounded-[12px] gap-2" style={{ background: "var(--sand)" }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
               <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search {activeCategory.toLowerCase()}...</span>
             </Link>
@@ -410,13 +410,13 @@ function DiscoverContent() {
           <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.3)" }} />
           <div className="absolute top-[52px] left-5 right-5 max-w-[428px] mx-auto rounded-[12px] p-4 sheet-enter" style={{ background: "var(--card)", border: "1px solid var(--border)" }} onClick={(e) => e.stopPropagation()}>
             <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Where should we deliver?</p>
-            <button type="button" onClick={useMyLocation} disabled={locating} className="w-full h-11 rounded-[8px] text-[13px] font-bold flex items-center justify-center gap-2 cursor-pointer mb-3 disabled:opacity-50" style={{ background: "var(--emerald)", color: "white" }}>
+            <button type="button" onClick={useMyLocation} disabled={locating} className="w-full h-11 rounded-lg text-[13px] font-bold flex items-center justify-center gap-2 cursor-pointer mb-3 disabled:opacity-50" style={{ background: "var(--emerald)", color: "white" }}>
               {locating ? "Finding you..." : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" /></svg>Use my location</>}
             </button>
-            <input type="text" aria-label="Type your delivery area" placeholder="Or type your area, e.g. Lekki Phase 1" value={areaInput} onChange={(e) => setAreaInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && areaInput.trim()) saveLocation(areaInput.trim()); }} className="w-full h-11 px-4 rounded-[8px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] mb-2" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
+            <input type="text" aria-label="Type your delivery area" placeholder="Or type your area, e.g. Lekki Phase 1" value={areaInput} onChange={(e) => setAreaInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && areaInput.trim()) saveLocation(areaInput.trim()); }} className="w-full h-11 px-4 rounded-lg text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] mb-2" style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
             <div className="flex flex-wrap gap-1.5">
               {areaSuggestions.slice(0, 8).map((a) => (
-                <button key={a} type="button" onClick={() => saveLocation(a)} className="h-8 px-3 rounded-[6px] text-[12px] font-bold cursor-pointer" style={{ background: userArea === a ? "var(--dark)" : "var(--sand)", color: userArea === a ? "white" : "var(--text-secondary)" }}>{a}</button>
+                <button key={a} type="button" onClick={() => saveLocation(a)} className="h-8 px-3 rounded-lg text-[12px] font-bold cursor-pointer" style={{ background: userArea === a ? "var(--dark)" : "var(--sand)", color: userArea === a ? "white" : "var(--text-secondary)" }}>{a}</button>
               ))}
             </div>
             {userAddress && <p className="text-[11px] mt-3" style={{ color: "var(--text-muted)" }}>Current: {userAddress}</p>}
@@ -428,29 +428,29 @@ function DiscoverContent() {
       {loading ? (
         <div className="px-5 pt-6" aria-busy="true">
           {/* Heading skeleton */}
-          <div className="h-7 rounded-[8px] w-[65%] mb-2" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-          <div className="h-4 rounded-[6px] w-[45%] mb-5" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "50ms" }} />
+          <div className="h-7 rounded-lg w-[65%] mb-2" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div className="h-4 rounded-lg w-[45%] mb-5" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "50ms" }} />
           {/* Search bar skeleton */}
           <div className="h-[42px] rounded-[12px] mb-4" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
           {/* Category cards skeleton — masonry */}
           <div className="flex gap-3 mb-3">
             <div className="flex-1 flex flex-col gap-3">
-              <div className="rounded-[20px]" style={{ height: "230px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
-              <div className="rounded-[20px]" style={{ height: "180px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "250ms" }} />
+              <div className="rounded-[16px]" style={{ height: "230px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
+              <div className="rounded-[16px]" style={{ height: "180px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "250ms" }} />
             </div>
             <div className="flex-1 flex flex-col gap-3">
-              <div className="rounded-[20px]" style={{ height: "180px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
-              <div className="rounded-[20px]" style={{ height: "230px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "300ms" }} />
+              <div className="rounded-[16px]" style={{ height: "180px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
+              <div className="rounded-[16px]" style={{ height: "230px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "300ms" }} />
             </div>
           </div>
           {/* Full-width card skeleton */}
-          <div className="rounded-[20px]" style={{ height: "140px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "350ms" }} />
+          <div className="rounded-[16px]" style={{ height: "140px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "350ms" }} />
         </div>
       ) : error ? (
         <div className="py-20 text-center px-8">
           <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Couldn&apos;t load deals</h2>
           <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
-          <button type="button" onClick={() => fetchData()} className="h-11 px-6 rounded-[8px] text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>Try again</button>
+          <button type="button" onClick={() => fetchData()} className="h-11 px-6 rounded-lg text-[13px] font-bold text-white cursor-pointer" style={{ background: "var(--coral)" }}>Try again</button>
         </div>
       ) : (
         <div>
@@ -494,12 +494,12 @@ function DiscoverContent() {
                     </div>
                     {/* Visual price comparison */}
                     <div className="mt-3 flex items-center gap-3">
-                      <div className="flex-1 rounded-[10px] p-2.5 text-center" style={{ background: "rgba(255,255,255,0.06)" }}>
+                      <div className="flex-1 rounded-[12px] p-2.5 text-center" style={{ background: "rgba(255,255,255,0.06)" }}>
                         <p className="text-[9px] uppercase tracking-wide" style={{ color: "var(--subdued)" }}>Solo price</p>
                         <p className="text-[18px] font-extrabold text-white tabular-nums mt-0.5 line-through" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", opacity: 0.5 }}>₦2,000</p>
                       </div>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                      <div className="flex-1 rounded-[10px] p-2.5 text-center" style={{ background: "rgba(13,159,95,0.15)", border: "1px solid rgba(13,159,95,0.2)" }}>
+                      <div className="flex-1 rounded-[12px] p-2.5 text-center" style={{ background: "rgba(13,159,95,0.15)", border: "1px solid rgba(13,159,95,0.2)" }}>
                         <p className="text-[9px] uppercase tracking-wide" style={{ color: "var(--emerald)" }}>5 people join</p>
                         <p className="text-[18px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>₦1,400</p>
                       </div>
@@ -516,13 +516,13 @@ function DiscoverContent() {
                 {/* Left column */}
                 <div className="flex-1 flex flex-col gap-3">
                   {/* Food — tall */}
-                  <Link href="/discover?category=Food" className="relative overflow-hidden rounded-[20px] press-feedback" style={{ background: "#C4572A", height: "230px" }}>
+                  <Link href="/discover?category=Food" className="relative overflow-hidden rounded-[16px] press-feedback" style={{ background: "#C4572A", height: "230px" }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>Food</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/categories/food.png" alt="Food" className="absolute object-contain pointer-events-none" style={{ width: "140%", height: "110%", bottom: "-10%", right: "-25%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.25))" }} loading="lazy" />
                   </Link>
                   {/* Gadgets — coming soon */}
-                  <div className="relative overflow-hidden rounded-[20px]" style={{ background: "#A5B4FC", height: "180px", opacity: 0.45 }}>
+                  <div className="relative overflow-hidden rounded-[16px]" style={{ background: "#A5B4FC", height: "180px", opacity: 0.45 }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#312E81" }}>Gadgets</span>
                     <span className="absolute top-3.5 right-3 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full z-10" style={{ background: "rgba(0,0,0,0.15)", color: "#312E81" }}>Soon</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -532,14 +532,14 @@ function DiscoverContent() {
                 {/* Right column */}
                 <div className="flex-1 flex flex-col gap-3">
                   {/* Groceries — coming soon */}
-                  <div className="relative overflow-hidden rounded-[20px]" style={{ background: "#1A7D4B", height: "180px", opacity: 0.45 }}>
+                  <div className="relative overflow-hidden rounded-[16px]" style={{ background: "#1A7D4B", height: "180px", opacity: 0.45 }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>Groceries</span>
                     <span className="absolute top-3.5 right-3 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full z-10" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}>Soon</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/categories/groceries.png" alt="Groceries" className="absolute object-contain pointer-events-none" style={{ width: "110%", height: "115%", bottom: "-10%", right: "-10%", filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.2)) grayscale(0.3)" }} loading="lazy" />
                   </div>
                   {/* Fashion — coming soon */}
-                  <div className="relative overflow-hidden rounded-[20px]" style={{ background: "#EC4899", height: "230px", opacity: 0.45 }}>
+                  <div className="relative overflow-hidden rounded-[16px]" style={{ background: "#EC4899", height: "230px", opacity: 0.45 }}>
                     <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>Fashion</span>
                     <span className="absolute top-3.5 right-3 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full z-10" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}>Soon</span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -548,7 +548,7 @@ function DiscoverContent() {
                 </div>
               </div>
               {/* Home & Living — coming soon, full width */}
-              <div className="relative overflow-hidden rounded-[20px] mt-3" style={{ background: "#D4A24E", height: "140px", opacity: 0.45 }}>
+              <div className="relative overflow-hidden rounded-[16px] mt-3" style={{ background: "#D4A24E", height: "140px", opacity: 0.45 }}>
                 <span className="absolute top-3 left-3.5 text-[22px] font-extrabold text-white leading-none tracking-[-0.5px] z-10" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>Home &<br />Living</span>
                 <span className="absolute top-3.5 right-3 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full z-10" style={{ background: "rgba(255,255,255,0.2)", color: "white" }}>Soon</span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -622,10 +622,10 @@ function DiscoverContent() {
                 const flashSav = Math.round(((flash.retailPrice - flash.groupPrice) / flash.retailPrice) * 100);
                 const flashMins = flash.poolDeadline ? Math.max(0, Math.round((new Date(flash.poolDeadline).getTime() - Date.now()) / 60000)) : 0;
                 return (
-                  <Link href={`/product/${flash.id}`} className="mb-4 block rounded-[14px] p-3 press-feedback" style={{ background: "var(--coral)" }}>
+                  <Link href={`/product/${flash.id}`} className="mb-4 block rounded-[16px] p-3 press-feedback" style={{ background: "var(--coral)" }}>
                     <div className="flex items-center gap-3">
                       {flash.imageUrl && (
-                        <div className="w-[50px] h-[50px] rounded-[10px] overflow-hidden shrink-0">
+                        <div className="w-[50px] h-[50px] rounded-[12px] overflow-hidden shrink-0">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={flash.imageUrl} alt="" className="w-full h-full object-cover" />
                         </div>
@@ -663,7 +663,7 @@ function DiscoverContent() {
                         return (
                           <Link key={`trend-${p.id}`} href={`/product/${p.id}`} className="shrink-0 w-[220px] rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
                             <div className="p-2 pb-0">
-                              <div className="h-[140px] relative rounded-[10px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                              <div className="h-[140px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
                                 {p.imageUrl ? (
                                   // eslint-disable-next-line @next/next/no-img-element
                                   <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
@@ -718,12 +718,12 @@ function DiscoverContent() {
                                   </div>
                                 )}
                                 {store.bestSaving > 0 && (
-                                  <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px] text-white" style={{ background: "var(--coral)" }}>
+                                  <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold px-2 py-1 rounded-lg text-white" style={{ background: "var(--coral)" }}>
                                     Up to {store.bestSaving}% off
                                   </span>
                                 )}
                                 {store.orderCount > 0 && (
-                                  <span className="absolute top-2.5 right-2.5 text-[10px] font-extrabold px-2 py-1 rounded-[8px]" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>
+                                  <span className="absolute top-2.5 right-2.5 text-[10px] font-extrabold px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)", color: "white" }}>
                                     {store.orderCount}+ orders
                                   </span>
                                 )}

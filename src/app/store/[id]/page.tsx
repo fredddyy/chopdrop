@@ -99,7 +99,7 @@ export default function StorePage() {
     return (
       <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
         {/* Hero image placeholder */}
-        <div className="h-[200px] rounded-b-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+        <div className="h-[200px] rounded-b-[16px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
 
         {/* Vendor name + address */}
         <div className="px-5 mt-5 flex items-center gap-4">
@@ -118,7 +118,7 @@ export default function StorePage() {
         </div>
 
         {/* Menu item rows */}
-        <div className="px-5 mt-5 rounded-[22px] overflow-hidden" style={{ background: "var(--card)" }}>
+        <div className="px-5 mt-5 rounded-[16px] overflow-hidden" style={{ background: "var(--card)" }}>
           {[0, 1, 2].map((i) => (
             <div key={i}>
               {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
@@ -249,7 +249,7 @@ export default function StorePage() {
             value={menuSearch}
             onChange={(e) => setMenuSearch(e.target.value)}
             placeholder="Search menu..."
-            className="w-full h-[38px] pl-9 pr-3 rounded-[10px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
+            className="w-full h-[38px] pl-9 pr-3 rounded-[12px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
             style={{ background: "var(--sand)", color: "var(--text)" }}
           />
         </div>
@@ -422,7 +422,7 @@ export default function StorePage() {
         const isPlateAdd = !isError && !addedToast.includes("Network");
         return (
           <div className="fixed z-[100] left-0 right-0 bottom-[120px] px-5 celebrate">
-            <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-[8px] px-4 py-3" style={{ background: isError ? "var(--coral)" : "var(--emerald)" }}>
+            <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-lg px-4 py-3" style={{ background: isError ? "var(--coral)" : "var(--emerald)" }}>
               {!isError && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>}
               <span className="text-[13px] font-bold text-white">{isPlateAdd ? `${addedToast} added to plate` : addedToast}</span>
             </div>
@@ -444,7 +444,7 @@ export default function StorePage() {
             {/* Backdrop */}
             <div className="fixed inset-0 z-[80]" style={{ background: "rgba(0,0,0,0.4)" }} onClick={() => setSelectedItem(null)} />
             {/* Sheet */}
-            <div className="fixed bottom-0 left-0 right-0 z-[81] rounded-t-[24px] max-w-[480px] mx-auto" style={{ background: "var(--card)", animation: "slideUp 200ms ease-out" }}>
+            <div className="fixed bottom-0 left-0 right-0 z-[81] rounded-t-[16px] max-w-[480px] mx-auto" style={{ background: "var(--card)", animation: "slideUp 200ms ease-out" }}>
               {/* Handle */}
               <div className="w-10 h-1 rounded-full mx-auto mt-3" style={{ background: "var(--border)" }} />
 
@@ -455,7 +455,7 @@ export default function StorePage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                     {hasDiscount && (
-                      <span className="relative -top-[170px] left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-[8px] text-white" style={{ background: "var(--emerald)" }}>
+                      <span className="relative -top-[170px] left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-lg text-white" style={{ background: "var(--emerald)" }}>
                         {sav}% less together
                       </span>
                     )}
@@ -502,7 +502,7 @@ export default function StorePage() {
                     <p className="text-[13px] font-bold mb-2" style={{ color: "var(--text)" }}>Price tiers</p>
                     <div className="flex flex-col gap-1.5">
                       {/* Solo price row */}
-                      <div className="flex items-center justify-between h-[38px] px-3.5 rounded-[10px]" style={{ background: "var(--sand)" }}>
+                      <div className="flex items-center justify-between h-[38px] px-3.5 rounded-[12px]" style={{ background: "var(--sand)" }}>
                         <span className="text-[12px] font-medium" style={{ color: "var(--text-muted)" }}>Solo</span>
                         <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>
                       </div>
@@ -511,7 +511,7 @@ export default function StorePage() {
                         const tierPrice = Math.round(item.retailPrice * (1 - t.discount / 100));
                         const isLast = i === tiers.length - 1;
                         return (
-                          <div key={t.min} className="flex items-center justify-between h-[38px] px-3.5 rounded-[10px]" style={{ background: isLast ? "var(--emerald-soft)" : "var(--sand)" }}>
+                          <div key={t.min} className="flex items-center justify-between h-[38px] px-3.5 rounded-[12px]" style={{ background: isLast ? "var(--emerald-soft)" : "var(--sand)" }}>
                             <div className="flex items-center gap-1.5">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={isLast ? "var(--emerald)" : "var(--text-muted)"} strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
                               <span className="text-[12px] font-medium" style={{ color: isLast ? "var(--emerald)" : "var(--text)" }}>{t.min}+ people</span>
