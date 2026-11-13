@@ -199,23 +199,23 @@ function DiscoverContent() {
     return () => ctrl.abort();
   }, [activeCategory, activeSubcategory, userLat, userLng]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Re-fetch when user navigates back (pool joins won't reflect otherwise)
+  // Re-fetch when user navigates back (silent — no loading skeleton)
   useEffect(() => {
     function handleVisibility() {
-      if (document.visibilityState === "visible") fetchData();
+      if (document.visibilityState === "visible") fetchData(undefined, true);
     }
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [activeCategory, userLat, userLng]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 30-second polling for live FOMO updates
+  // 60-second polling for live updates (silent — no loading skeleton)
   useEffect(() => {
-    const interval = setInterval(() => { if (document.visibilityState === "visible" && !loading) fetchData(); }, 30000);
+    const interval = setInterval(() => { if (document.visibilityState === "visible" && !loading) fetchData(undefined, true); }, 60000);
     return () => clearInterval(interval);
   }, [activeCategory, userLat, userLng, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function fetchData(signal?: AbortSignal) {
-    setLoading(true);
+  async function fetchData(signal?: AbortSignal, silent = false) {
+    if (!silent) setLoading(true);
     setError(false);
     try {
       const [storesResult, productsResult] = await Promise.allSettled([
@@ -246,7 +246,7 @@ function DiscoverContent() {
       if ((e as Error).name !== "AbortError") setError(true);
     }
     if (signal?.aborted) return;
-    setLoading(false);
+    if (!silent) setLoading(false);
   }
 
   // Infinite scroll — load more products
