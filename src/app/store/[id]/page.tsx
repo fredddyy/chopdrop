@@ -483,6 +483,26 @@ export default function StorePage() {
                   {/* Refundable line removed */}
                 </div>
 
+                {/* Pool spots — empty avatar circles */}
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {Array.from({ length: Math.min(item.minPoolSize, 5) }).map((_, i) => {
+                      const filled = itemPool ? i < itemPool.memberCount : false;
+                      return (
+                        <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
+                          style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "2px solid var(--card)" : "2px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
+                          {filled ? String.fromCharCode(65 + i) : "?"}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>
+                    {itemPool && itemPool.memberCount > 0
+                      ? `${itemPool.memberCount} of ${item.minPoolSize} joined`
+                      : `${item.minPoolSize} people needed`}
+                  </span>
+                </div>
+
                 {/* Live group status (if active) */}
                 {itemPool && poolMins > 0 && (
                   <div className="mt-4 rounded-[12px] p-3" style={{ background: "var(--sand)" }}>
@@ -523,26 +543,6 @@ export default function StorePage() {
                     </div>
                   </div>
                 )}
-
-                {/* Pool spots — empty avatar circles */}
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="flex -space-x-2">
-                    {Array.from({ length: Math.min(item.minPoolSize, 5) }).map((_, i) => {
-                      const filled = itemPool ? i < itemPool.memberCount : false;
-                      return (
-                        <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
-                          style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "2px solid var(--card)" : "2px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
-                          {filled ? String.fromCharCode(65 + i) : "?"}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>
-                    {itemPool && itemPool.memberCount > 0
-                      ? `${itemPool.memberCount} of ${item.minPoolSize} joined`
-                      : `${item.minPoolSize} people needed`}
-                  </span>
-                </div>
 
                 {/* Quantity picker */}
                 <div className="flex items-center justify-between mt-4">
