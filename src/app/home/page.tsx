@@ -273,46 +273,55 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Restaurant list — each card has group CTA */}
+              {/* Restaurant cards — social energy even at cold start */}
               <h2 className="text-[15px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
                 Pick a restaurant to start
               </h2>
               <div className="flex flex-col gap-3">
                 {inactiveRestaurants.map((r) => (
-                  <Link key={r.id} href={`/store/${r.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-                    {/* Banner with rounded corners */}
+                  <Link key={r.id} href={`/store/${r.id}`} aria-label={`Start a group order at ${r.name}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                    {/* Banner with name overlay */}
                     <div className="p-2 pb-0">
-                      <div className="h-[120px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                      <div className="h-[100px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
                         <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
-                        {r.imageUrl && (
-                          <div className="absolute bottom-2 left-2 w-[36px] h-[36px] rounded-full overflow-hidden" style={{ border: "3px solid white" }}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="p-3">
-                      <div className="flex items-start justify-between">
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-[15px] font-bold truncate" style={{ color: "var(--text)" }}>{r.name}</h3>
-                          <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{r.address}</p>
-                          {r.lowestPrice > 0 && (
-                            <p className="text-[12px] font-bold mt-1" style={{ color: "var(--text)" }}>From {fmt(r.lowestPrice)}</p>
-                          )}
+                        {/* Flat dark strip at bottom — name on banner per design system */}
+                        <div className="absolute bottom-0 left-0 right-0 px-3 py-2" style={{ background: "rgba(28,28,30,0.7)" }}>
+                          <h3 className="text-[14px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{r.name}</h3>
                         </div>
                       </div>
-                      {/* Tier info + CTA */}
-                      <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
-                        {r.tiers.length > 0 ? (
-                          <div className="flex items-center gap-1.5">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Up to {r.tiers[r.tiers.length - 1].discount}% off with {r.tiers[r.tiers.length - 1].min}+ people</span>
-                          </div>
-                        ) : (
-                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Group discounts available</span>
-                        )}
-                        <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>Start order →</span>
+                    </div>
+                    <div className="p-3 pt-2.5">
+                      {/* Price anchor — large, bold */}
+                      {r.lowestPrice > 0 && (
+                        <p className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>From {fmt(r.lowestPrice)}</p>
+                      )}
+                      {/* Tier chips — visual discount breakdown */}
+                      {r.tiers.length > 0 ? (
+                        <div className="flex items-center gap-1.5 mt-2">
+                          {r.tiers.map((t, i) => (
+                            <span key={i} className="text-[10px] font-bold px-2 py-1 rounded-[8px]"
+                              style={{
+                                background: i === r.tiers.length - 1 ? "var(--emerald)" : "var(--emerald-soft)",
+                                color: i === r.tiers.length - 1 ? "white" : "var(--emerald)",
+                              }}>
+                              {t.min}+ = {t.discount}% off
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+                      {/* Ghost avatar slots — social energy for cold start */}
+                      <div className="flex items-center gap-2 mt-2.5">
+                        <div className="flex -space-x-1.5">
+                          {[0, 1, 2].map(i => (
+                            <div key={i} className="w-[22px] h-[22px] rounded-full" style={{ border: "1.5px dashed var(--border)", background: "var(--sand)" }} />
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>Be the first to start</span>
+                      </div>
+                      {/* Full-width CTA button */}
+                      <div className="mt-3 h-[42px] rounded-[12px] flex items-center justify-between px-4 text-white" style={{ background: "var(--coral)" }}>
+                        <span className="text-[13px] font-bold">Start a group order</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                       </div>
                     </div>
                   </Link>

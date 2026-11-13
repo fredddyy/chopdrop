@@ -100,7 +100,8 @@ export async function GET() {
     const tiers = parseGroupTiers(r.groupTiers);
     const cheapestMeal = r.meals[0]?.price ?? 0;
     const cheapestProduct = r.products[0]?.groupPrice ?? 0;
-    const lowestPrice = cheapestProduct > 0 ? cheapestProduct : cheapestMeal;
+    const prices = [cheapestMeal, cheapestProduct].filter(p => p > 0);
+    const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
 
     const activeOrder = r.groupOrders[0];
     if (activeOrder) {
