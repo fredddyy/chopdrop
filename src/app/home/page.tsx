@@ -244,7 +244,7 @@ export default function HomePage() {
                   const isChopMode = filter === "chop";
                   const chopFriendsNeeded = Math.ceil(item.retailPrice / 10000); // each friend chops ₦100
                   return (
-                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[16px] overflow-hidden" style={{ background: "var(--card)", borderBottom: isChopMode ? "2px solid var(--gold)" : "2px solid var(--coral)" }}>
+                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                     {/* Image */}
                     <div className="relative" style={{ aspectRatio: "4/3", background: "var(--sand)" }}>
                       {item.imageUrl ? (
