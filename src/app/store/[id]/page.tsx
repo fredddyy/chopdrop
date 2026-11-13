@@ -49,6 +49,8 @@ export default function StorePage() {
   const [activeTab, setActiveTab] = useState("");
   const [addedToast, setAddedToast] = useState("");
   const [menuSearch, setMenuSearch] = useState("");
+  const [selectedItem, setSelectedItem] = useState<Product | null>(null);
+  const [sheetQty, setSheetQty] = useState(1);
   const [livePools, setLivePools] = useState<RealPool[]>([]);
   const cart = useCart();
 
@@ -291,7 +293,7 @@ export default function StorePage() {
                     const activeGroups = itemPool ? 1 : 0;
                     return (
                       <div key={item.id} className="relative">
-                        <Link href={`/product/${item.id}`} className="block press-feedback">
+                        <button type="button" onClick={() => { setSelectedItem(item); setSheetQty(1); }} className="block press-feedback text-left w-full">
                           {/* Image */}
                           <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
                             {item.imageUrl ? (
@@ -324,7 +326,7 @@ export default function StorePage() {
                               {hasDiscount && <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>}
                             </div>
                           </div>
-                        </Link>
+                        </button>
                         {/* Groups Active badge */}
                         <p className="text-[9px] font-bold mt-0.5" style={{ color: activeGroups > 0 ? "var(--coral)" : "var(--text-muted)" }}>
                           {activeGroups} {activeGroups === 1 ? "Group" : "Groups"} Active
@@ -425,6 +427,161 @@ export default function StorePage() {
               <span className="text-[13px] font-bold text-white">{isPlateAdd ? `${addedToast} added to plate` : addedToast}</span>
             </div>
           </div>
+        );
+      })()}
+
+      {/* ═══ PRODUCT BOTTOM SHEET ═══ */}
+      {selectedItem && store && (() => {
+        const item = selectedItem;
+        const hasDiscount = item.groupPrice < item.retailPrice;
+        const sav = hasDiscount ? Math.round(((item.retailPrice - item.groupPrice) / item.retailPrice) * 100) : 0;
+        const savAmount = item.retailPrice - item.groupPrice;
+        const itemPool = livePools.find(lp => lp.productId === item.id);
+        const poolMins = itemPool ? Math.max(0, Math.round((new Date(itemPool.deadline).getTime() - Date.now()) / 60000)) : 0;
+        const tiers = parseStoreTiers(store.groupTiers);
+        return (
+          <>
+            {/* Backdrop */}
+            <div className="fixed inset-0 z-[80]" style={{ background: "rgba(0,0,0,0.4)" }} onClick={() => setSelectedItem(null)} />
+            {/* Sheet */}
+            <div className="fixed bottom-0 left-0 right-0 z-[81] rounded-t-[24px] max-w-[480px] mx-auto" style={{ background: "var(--card)", animation: "slideUp 200ms ease-out" }}>
+              {/* Handle */}
+              <div className="w-10 h-1 rounded-full mx-auto mt-3" style={{ background: "var(--border)" }} />
+
+              <div className="px-5 pt-3 pb-8 max-h-[80vh] overflow-y-auto">
+                {/* Product image */}
+                {item.imageUrl && (
+                  <div className="rounded-[16px] overflow-hidden mb-3" style={{ height: "180px" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                    {hasDiscount && (
+                      <span className="relative -top-[170px] left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-[8px] text-white" style={{ background: "var(--emerald)" }}>
+                        {sav}% less together
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Name + restaurant */}
+                <h3 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{item.name}</h3>
+                <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{store.name}</p>
+
+                {/* Prices — group vs solo */}
+                <div className="mt-3">
+                  <div className="flex items-baseline gap-3">
+                    <div>
+                      <span className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.groupPrice)}</span>
+                      {hasDiscount && <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>Group · join others</p>}
+                    </div>
+                    {hasDiscount && (
+                      <div>
+                        <span className="text-[20px] font-extrabold tabular-nums leading-none line-through" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>
+                        <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>solo</p>
+                      </div>
+                    )}
+                  </div>
+                  {hasDiscount && (
+                    <p className="text-[11px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>
+                      Save {fp(savAmount)} · Refundable if group doesn&apos;t fill
+                    </p>
+                  )}
+                </div>
+
+                {/* Live group status (if active) */}
+                {itemPool && poolMins > 0 && (
+                  <div className="mt-4 rounded-[12px] p-3" style={{ background: "var(--sand)" }}>
+                    <div className="flex items-center justify-between text-[12px] font-bold">
+                      <span style={{ color: "var(--text)" }}>{itemPool.memberCount}/{itemPool.minSize} people joined</span>
+                      <span style={{ color: "var(--coral)" }}>{poolMins > 60 ? `${Math.floor(poolMins / 60)}h ${poolMins % 60}m` : `${poolMins}m`} left</span>
+                    </div>
+                    <div className="mt-1.5 h-[5px] rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+                      <div className="h-full rounded-full" style={{ width: `${Math.round((itemPool.memberCount / itemPool.minSize) * 100)}%`, background: "var(--emerald)" }} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Tier info (if no active pool) */}
+                {!itemPool && tiers.length > 0 && (
+                  <div className="mt-3 flex gap-2">
+                    {tiers.map((t) => (
+                      <div key={t.min} className="flex-1 rounded-[10px] py-2 text-center" style={{ background: "var(--sand)" }}>
+                        <p className="text-[12px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{t.min}+</p>
+                        <p className="text-[9px]" style={{ color: "var(--text-muted)" }}>people</p>
+                        <p className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>{t.discount}% off</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Quantity picker */}
+                <div className="flex items-center justify-between mt-4">
+                  <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Quantity</span>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setSheetQty(Math.max(1, sheetQty - 1))} className="w-[36px] h-[36px] rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--sand)" }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                    </button>
+                    <span className="text-[16px] font-extrabold tabular-nums w-8 text-center" style={{ color: "var(--text)" }}>{sheetQty}</span>
+                    <button type="button" onClick={() => setSheetQty(sheetQty + 1)} className="w-[36px] h-[36px] rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--coral)" }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* CTAs */}
+                <div className="mt-4 space-y-2">
+                  {/* Start/Join group — primary */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      for (let i = 0; i < sheetQty; i++) addToPlate(item, store.name);
+                      setSelectedItem(null);
+                      router.push(`/product/${item.id}`);
+                    }}
+                    className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback"
+                    style={{ background: "var(--coral)" }}
+                  >
+                    <span>{itemPool ? "Join Group" : "Start Group"} · {fp(item.groupPrice * sheetQty)}</span>
+                    {hasDiscount && <span className="text-[12px] opacity-80">Save {sav}%</span>}
+                  </button>
+                  {/* Solo + Share row */}
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        for (let i = 0; i < sheetQty; i++) addToPlate(item, store.name);
+                        setSelectedItem(null);
+                      }}
+                      className="flex-1 h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold press-feedback"
+                      style={{ background: "var(--sand)", color: "var(--text)" }}
+                    >
+                      Solo {fp(item.retailPrice * sheetQty)}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = `${window.location.origin}/product/${item.id}`;
+                        const text = `${item.name} for ${fp(item.groupPrice)} on ChopDrop (${sav}% off with group). ${url}`;
+                        if (navigator.share) navigator.share({ title: item.name, text, url }).catch(() => {});
+                        else if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => { setAddedToast("Link copied!"); setTimeout(() => setAddedToast(""), 2000); }).catch(() => {});
+                      }}
+                      className="flex-1 h-[44px] rounded-[12px] flex items-center justify-center gap-1.5 text-[13px] font-bold press-feedback"
+                      style={{ background: "var(--dark)", color: "white" }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" /></svg>
+                      Share deal
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <style jsx>{`
+                @keyframes slideUp {
+                  from { transform: translateY(100%); }
+                  to { transform: translateY(0); }
+                }
+              `}</style>
+            </div>
+          </>
         );
       })()}
 
