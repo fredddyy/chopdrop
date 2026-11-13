@@ -552,21 +552,7 @@ export default function StorePage() {
                     Solo · {fp(item.retailPrice * sheetQty)}
                   </button>
                 </div>
-                {/* Share — subtle text link below CTAs */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const url = `${window.location.origin}/product/${item.id}`;
-                    const text = `${item.name} for ${fp(item.groupPrice)} on ChopDrop (${sav}% off with group). ${url}`;
-                    if (navigator.share) navigator.share({ title: item.name, text, url }).catch(() => {});
-                    else if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => { setAddedToast("Link copied!"); setTimeout(() => setAddedToast(""), 2000); }).catch(() => {});
-                  }}
-                  className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-bold cursor-pointer w-full"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" /></svg>
-                  Share this deal
-                </button>
+                {/* Share only shown after group exists */}
               </div>
 
               <style jsx>{`
