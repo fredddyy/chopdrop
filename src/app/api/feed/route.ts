@@ -51,13 +51,13 @@ export async function GET() {
       meals: {
         where: { isAvailable: true },
         take: 1,
-        select: { price: true },
+        select: { name: true, price: true },
         orderBy: { price: "asc" },
       },
       products: {
         where: { isActive: true, category: "Food" },
         take: 1,
-        select: { groupPrice: true, retailPrice: true },
+        select: { name: true, groupPrice: true, retailPrice: true },
         orderBy: { groupPrice: "asc" },
       },
     },
@@ -94,6 +94,8 @@ export async function GET() {
     address: string;
     lowestPrice: number;
     lowestRetailPrice: number;
+    cheapestItemName: string | null;
+    hasBanner: boolean;
     tiers: Array<{ min: number; discount: number }>;
   }> = [];
 
@@ -106,6 +108,10 @@ export async function GET() {
     const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
     // Only show retail price story when products have actual group discount
     const lowestRetailPrice = cheapestRetail > 0 && cheapestRetail > cheapestProduct ? cheapestRetail : 0;
+    // Cheapest item name for price context
+    const cheapestItemName = cheapestProduct > 0 && cheapestProduct <= cheapestMeal
+      ? r.products[0]?.name ?? null
+      : r.meals[0]?.name ?? null;
 
     const activeOrder = r.groupOrders[0];
     if (activeOrder) {
@@ -143,6 +149,8 @@ export async function GET() {
         address: r.address,
         lowestPrice,
         lowestRetailPrice,
+        cheapestItemName,
+        hasBanner: !!r.bannerUrl,
         tiers,
       });
     }

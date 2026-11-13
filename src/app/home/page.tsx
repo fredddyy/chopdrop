@@ -32,6 +32,8 @@ interface InactiveRestaurant {
   address: string;
   lowestPrice: number;
   lowestRetailPrice: number;
+  cheapestItemName: string | null;
+  hasBanner: boolean;
   tiers: { min: number; discount: number }[];
 }
 
@@ -278,35 +280,57 @@ export default function HomePage() {
 
               {/* Restaurant cards — price story + low-commitment CTA */}
               <div className="flex flex-col gap-3">
-                {inactiveRestaurants.map((r) => {
+                {inactiveRestaurants.map((r, idx) => {
                   const bestTier = r.tiers.length > 0 ? r.tiers[r.tiers.length - 1] : null;
                   const groupPrice = bestTier && r.lowestRetailPrice > 0
                     ? Math.round(r.lowestRetailPrice * (1 - bestTier.discount / 100))
                     : 0;
+                  // Colored fallback when no banner uploaded
+                  const fallbackColors = ["#C4572A", "#1A7D4B", "#6366F1", "#D4A24E", "#EC4899", "#0EA5E9"];
+                  const fallbackBg = fallbackColors[idx % fallbackColors.length];
                   return (
                     <Link key={r.id} href={`/store/${r.id}`} aria-label={`Browse ${r.name} menu`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                      {/* Banner with name overlay */}
+                      {/* Banner — real image or colored fallback with logo */}
                       <div className="p-2 pb-0">
-                        <div className="h-[100px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
-                          <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
-                          <div className="absolute bottom-0 left-0 right-0 px-3 py-2" style={{ background: "rgba(28,28,30,0.7)" }}>
-                            <h3 className="text-[14px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{r.name}</h3>
+                        {r.hasBanner ? (
+                          <div className="h-[100px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                            <StoreImg src={r.bannerUrl} fallback={r.name.charAt(0)} />
+                            <div className="absolute bottom-0 left-0 right-0 px-3 py-2" style={{ background: "rgba(28,28,30,0.7)" }}>
+                              <h3 className="text-[14px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{r.name}</h3>
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          /* Colored card with logo + name — no stretching logos as banners */
+                          <div className="h-[80px] relative rounded-[12px] overflow-hidden flex items-center gap-3 px-4" style={{ background: fallbackBg }}>
+                            {r.imageUrl && (
+                              <div className="w-[44px] h-[44px] rounded-full overflow-hidden shrink-0" style={{ border: "2px solid rgba(255,255,255,0.3)" }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
+                              </div>
+                            )}
+                            <h3 className="text-[16px] font-extrabold text-white leading-tight truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{r.name}</h3>
+                          </div>
+                        )}
                       </div>
                       <div className="p-3 pt-2.5">
-                        {/* Price story — solo vs group (concrete naira, not abstract %) */}
+                        {/* Price with item name for context */}
                         {r.lowestRetailPrice > 0 && groupPrice > 0 && groupPrice < r.lowestRetailPrice ? (
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[17px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fmt(groupPrice)}</span>
-                            <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(r.lowestRetailPrice)}</span>
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>with {bestTier?.min}+ people</span>
+                          <div>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-[17px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fmt(groupPrice)}</span>
+                              <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(r.lowestRetailPrice)}</span>
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>with {bestTier?.min}+ people</span>
+                            </div>
+                            {r.cheapestItemName && <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{r.cheapestItemName}</p>}
                           </div>
                         ) : r.lowestPrice > 0 ? (
-                          <p className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>From {fmt(r.lowestPrice)}</p>
+                          <div>
+                            <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>From {fmt(r.lowestPrice)}</span>
+                            {r.cheapestItemName && <span className="text-[11px] ml-1.5" style={{ color: "var(--text-muted)" }}>{r.cheapestItemName}</span>}
+                          </div>
                         ) : null}
-                        {/* Tier chips */}
-                        {r.tiers.length > 0 && (
+                        {/* Tier chips OR generic group savings line */}
+                        {r.tiers.length > 0 ? (
                           <div className="flex items-center gap-1.5 mt-2">
                             {r.tiers.map((t, i) => (
                               <span key={i} className="text-[10px] font-bold px-2 py-1 rounded-[8px]"
@@ -318,17 +342,12 @@ export default function HomePage() {
                               </span>
                             ))}
                           </div>
+                        ) : (
+                          <p className="text-[10px] font-bold mt-2" style={{ color: "var(--emerald)" }}>
+                            Order with 3+ people, save 10-30%
+                          </p>
                         )}
-                        {/* Ghost avatars — seats waiting to be filled */}
-                        <div className="flex items-center gap-2 mt-2.5">
-                          <div className="flex -space-x-1.5" aria-hidden="true">
-                            {[0, 1, 2].map(i => (
-                              <div key={i} className="w-[22px] h-[22px] rounded-full" style={{ border: "1.5px dashed var(--border)", background: "var(--sand)" }} />
-                            ))}
-                          </div>
-                          <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>Invite friends, everyone saves</span>
-                        </div>
-                        {/* Low-commitment CTA — "Browse menu" not "Start order" */}
+                        {/* CTA */}
                         <div className="mt-3 h-[42px] rounded-[12px] flex items-center justify-between px-4 text-white" style={{ background: "var(--coral)" }}>
                           <span className="text-[13px] font-bold">Browse menu</span>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
