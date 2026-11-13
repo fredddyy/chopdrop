@@ -227,8 +227,9 @@ export default function HomePage() {
               </h2>
               <div className="grid grid-cols-2 gap-3">
                 {filteredItems.map(item => (
-                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block">
-                    <div className="relative rounded-[16px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                    {/* Image with bottom fade */}
+                    <div className="relative" style={{ aspectRatio: "1", background: "var(--sand)" }}>
                       {item.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
@@ -237,28 +238,47 @@ export default function HomePage() {
                           <span className="text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
                         </div>
                       )}
-                      {/* Savings badge */}
-                      <span className="absolute top-2 left-2 text-[9px] font-extrabold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>
-                        {item.savings}% off
-                      </span>
-                      {/* Active pool badge */}
+                      {/* Savings ribbon — top left */}
+                      <div className="absolute top-0 left-0 px-2.5 py-1 text-[10px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 12px 0" }}>
+                        -{item.savings}%
+                      </div>
+                      {/* Active pool — bottom right overlay */}
                       {item.activePool && (
-                        <span className="absolute top-2 right-2 text-[9px] font-bold px-2 py-0.5 rounded-full text-white inline-flex items-center gap-0.5" style={{ background: "rgba(0,0,0,0.7)" }}>
-                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
-                          {item.activePool.memberCount} in
-                        </span>
+                        <div className="absolute bottom-2 right-2 flex -space-x-1">
+                          {Array.from({ length: Math.min(item.activePool.memberCount, 3) }).map((_, j) => (
+                            <div key={j} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "var(--gold)"][j % 3], border: "1.5px solid white" }}>
+                              {String.fromCharCode(65 + j)}
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
-                    <div className="pt-2">
+                    {/* Info — inside card padding */}
+                    <div className="px-3 pt-2.5 pb-3">
                       <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
-                      <p className="text-[10px] truncate" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
-                      <div className="flex items-baseline gap-1.5 mt-0.5">
-                        <span className="text-[15px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
-                        <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                      <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
+                      {/* Price — dramatic scale */}
+                      <div className="flex items-baseline gap-1.5 mt-1.5">
+                        <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
+                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
                       </div>
-                      <p className="text-[9px] font-bold mt-0.5" style={{ color: item.activePool ? "var(--coral)" : "var(--text-muted)" }}>
-                        {item.activePool ? `${item.activePool.memberCount} of ${item.activePool.minSize} joined` : `${item.minPoolSize} people needed`}
-                      </p>
+                      {/* Pool status — avatar dots + text */}
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <div className="flex -space-x-1">
+                          {Array.from({ length: Math.min(item.minPoolSize, 4) }).map((_, j) => {
+                            const filled = item.activePool ? j < item.activePool.memberCount : false;
+                            return (
+                              <div key={j} className="w-[16px] h-[16px] rounded-full flex items-center justify-center text-[6px] font-bold"
+                                style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "1.5px solid var(--card)" : "1.5px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
+                                {filled ? "!" : "?"}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <span className="text-[9px] font-bold" style={{ color: item.activePool ? "var(--coral)" : "var(--text-muted)" }}>
+                          {item.activePool ? `${item.activePool.memberCount} joined` : `${item.minPoolSize} needed`}
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 ))}
