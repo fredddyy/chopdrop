@@ -284,7 +284,7 @@ export default function HomePage() {
                     ? Math.round(r.lowestRetailPrice * (1 - bestTier.discount / 100))
                     : 0;
                   return (
-                    <Link key={r.id} href={`/store/${r.id}`} aria-label={`Browse ${r.name} menu`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                    <Link key={r.id} href={`/store/${r.id}`} aria-label={`Browse ${r.name} menu`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                       {/* Banner with name overlay */}
                       <div className="p-2 pb-0">
                         <div className="h-[100px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
@@ -349,7 +349,7 @@ export default function HomePage() {
               </h2>
               <div className="grid grid-cols-2 gap-3">
                 {inactiveRestaurants.map((r) => (
-                  <Link key={r.id} href={`/store/${r.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                  <Link key={r.id} href={`/store/${r.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                     <div className="p-1.5 pb-0">
                       <div className="h-[90px] relative rounded-[10px] overflow-hidden" style={{ background: "var(--sand)" }}>
                         <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
