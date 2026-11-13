@@ -565,6 +565,30 @@ export default function ProductDetailPage() {
         </div>
       )}
 
+      {/* ── Pool spots — empty avatar circles ── */}
+      {!joinedStatus && hasPoolPricing && (
+        <div className="px-5 mt-5">
+          <div className="flex items-center gap-3">
+            <div className="flex -space-x-2">
+              {Array.from({ length: Math.min(poolSize, 5) }).map((_, i) => {
+                const filled = pool ? i < memberCount : false;
+                return (
+                  <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
+                    style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "2px solid var(--bg)" : "2px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
+                    {filled ? String.fromCharCode(65 + i) : "?"}
+                  </div>
+                );
+              })}
+            </div>
+            <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>
+              {pool && memberCount > 0
+                ? `${memberCount} of ${poolSize} joined`
+                : `${poolSize} people needed`}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* ── Joined: green progress card ── */}
       {joinedStatus === "filling" && hasPoolPricing && (
         <div className="px-5 mt-4">
@@ -722,12 +746,6 @@ export default function ProductDetailPage() {
               {isPoolExpired && (
                 <p className="text-[11px] font-bold mb-2 text-center" style={{ color: "var(--coral)" }}>
                   Previous pool expired. Start a fresh one below.
-                </p>
-              )}
-              {!pool && !isPoolExpired && (
-                <p className="text-[11px] font-bold mb-2 text-center" style={{ color: "var(--emerald)" }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="inline -mt-px mr-1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                  {poolSize <= 5 ? `Only ${poolSize} people needed. Pools this size usually fill fast.` : `${poolSize} people needed. Start it and share with your group.`}
                 </p>
               )}
               <div className="flex gap-2.5">
