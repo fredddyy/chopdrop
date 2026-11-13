@@ -137,7 +137,8 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-2">
             {userArea && (
-              <span className="text-[11px] font-bold px-3 h-[28px] rounded-full flex items-center" style={{ background: "var(--sand)", color: "var(--text-secondary)" }}>
+              <span className="text-[11px] font-bold pl-2.5 pr-3 h-[28px] rounded-full flex items-center gap-1" style={{ background: "var(--sand)", color: "var(--text-secondary)" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
                 {userArea}
               </span>
             )}
