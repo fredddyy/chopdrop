@@ -487,7 +487,7 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <main className="flex-1 max-w-[428px] mx-auto w-full pb-40" style={{ background: "var(--bg)" }}>
+    <main className="flex-1 max-w-[428px] mx-auto w-full pb-56" style={{ background: "var(--bg)" }}>
 
       {/* ── Header ── */}
       <div className="px-5 pt-4 flex items-center justify-between">
@@ -589,7 +589,7 @@ export default function ProductDetailPage() {
       <div className="h-8" />
 
       {/* ═══ STICKY CTA ═══ */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pt-3 pb-[calc(56px+env(safe-area-inset-bottom))]" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
+      <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto">
 
           {/* ── JOINED: filling — loss aversion copy ── */}
