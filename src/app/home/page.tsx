@@ -78,7 +78,7 @@ export default function HomePage() {
   const [userArea, setUserArea] = useState("");
   const [userName, setUserName] = useState("");
   const [isReturning, setIsReturning] = useState(false);
-  const [filter, setFilter] = useState<"all" | "deals" | "live" | "popular">("all");
+  const [filter, setFilter] = useState<"all" | "deals" | "live" | "chop" | "popular">("all");
 
   useEffect(() => {
     try {
@@ -167,7 +167,8 @@ export default function HomePage() {
           {([
             { key: "all", label: "All", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg> },
             { key: "deals", label: "Group deals", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg> },
-            { key: "live", label: "Live", icon: <><span className="w-[6px] h-[6px] rounded-full shrink-0 animate-pulse" style={{ background: filter === "live" ? "var(--coral)" : "var(--coral)" }} /><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg></> },
+            { key: "live", label: "Live", icon: <><span className="w-[6px] h-[6px] rounded-full shrink-0 animate-pulse" style={{ background: "var(--coral)" }} /><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg></> },
+            { key: "chop", label: "Free Chop", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg> },
             { key: "popular", label: "Popular", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> },
           ] as const).map(f => {
             const active = filter === f.key;
@@ -175,7 +176,7 @@ export default function HomePage() {
             <button key={f.key} type="button" onClick={() => setFilter(f.key)}
               className="h-[34px] px-3.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 press-feedback inline-flex items-center gap-1.5"
               style={{
-                background: active ? "var(--coral)" : "var(--card)",
+                background: active ? "var(--dark)" : "var(--card)",
                 color: active ? "white" : "var(--text-secondary)",
                 border: active ? "none" : "1px solid var(--border)",
                 transition: "all 150ms ease-out",
@@ -215,12 +216,13 @@ export default function HomePage() {
       )}
 
       {!loading && !error && (() => {
-        const isItemView = filter === "deals" || filter === "live";
+        const isItemView = filter === "deals" || filter === "live" || filter === "chop";
         const filteredRestaurants = inactiveRestaurants.filter(r => {
           if (filter === "all") return true;
           if (filter === "deals") return r.groupDealCount > 0;
           if (filter === "live") return r.livePools.count > 0;
           if (filter === "popular") return r.recentOrderCount > 0;
+          if (filter === "chop") return r.groupDealCount > 0;
           return true;
         });
         const filteredItems = isItemView
@@ -232,15 +234,17 @@ export default function HomePage() {
           {isItemView && filteredItems.length > 0 && (
             <div className="px-5 pt-4">
               <h2 className="text-[18px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                {filter === "live" ? "Live group deals" : "Group deals"}
+                {filter === "live" ? "Live group deals" : filter === "chop" ? "Chop to free" : "Group deals"}
               </h2>
               <div className="grid grid-cols-2 gap-3">
                 {filteredItems.map(item => {
                   const poolMembers = item.activePool?.memberCount || 0;
                   const spotsLeft = item.minPoolSize - poolMembers;
                   const hasPool = item.activePool && poolMembers > 0;
+                  const isChopMode = filter === "chop";
+                  const chopFriendsNeeded = Math.ceil(item.retailPrice / 10000); // each friend chops ₦100
                   return (
-                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[16px] overflow-hidden" style={{ background: "var(--card)", borderBottom: "2px solid var(--coral)" }}>
+                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[16px] overflow-hidden" style={{ background: "var(--card)", borderBottom: isChopMode ? "2px solid var(--gold)" : "2px solid var(--coral)" }}>
                     {/* Image */}
                     <div className="relative" style={{ aspectRatio: "4/3", background: "var(--sand)" }}>
                       {item.imageUrl ? (
@@ -251,31 +255,58 @@ export default function HomePage() {
                           <span className="text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
                         </div>
                       )}
-                      {/* Savings ribbon — top left */}
-                      <div className="absolute top-0 left-0 px-2.5 py-1 text-[10px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 12px 0" }}>
-                        -{item.savings}%
-                      </div>
+                      {/* Ribbon — top left */}
+                      {isChopMode ? (
+                        <div className="absolute top-0 left-0 px-2.5 py-1 text-[10px] font-extrabold text-white" style={{ background: "var(--coral)", borderRadius: "0 0 12px 0" }}>
+                          Chop to FREE
+                        </div>
+                      ) : (
+                        <div className="absolute top-0 left-0 px-2.5 py-1 text-[10px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 12px 0" }}>
+                          -{item.savings}%
+                        </div>
+                      )}
                     </div>
                     {/* Info */}
                     <div className="px-3 pt-2.5 pb-3">
                       <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                       <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
-                      {/* Price — dramatic scale */}
-                      <div className="flex items-baseline gap-1.5 mt-1.5">
-                        <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
-                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
-                      </div>
-                      {/* Pool status — mini progress bar + conversational copy */}
+                      {/* Price */}
+                      {isChopMode ? (
+                        <div className="mt-1.5">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-[18px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                            <span className="text-[14px] font-extrabold leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>FREE</span>
+                          </div>
+                          <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>if {chopFriendsNeeded} friends chop</p>
+                        </div>
+                      ) : (
+                        <div className="flex items-baseline gap-1.5 mt-1.5">
+                          <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
+                          <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                        </div>
+                      )}
+                      {/* Bottom — progress bar or chop CTA */}
                       <div className="mt-2">
-                        <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                          <div className="h-full rounded-full" style={{ width: `${hasPool ? Math.round((poolMembers / item.minPoolSize) * 100) : 0}%`, background: "var(--emerald)", transition: "width 0.5s ease" }} />
-                        </div>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="text-[11px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--coral)" }}>
-                            {hasPool ? `${poolMembers} joined` : `Need ${spotsLeft} people`}
-                          </span>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
-                        </div>
+                        {isChopMode ? (
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>
+                              Share to chop
+                            </span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                              <div className="h-full rounded-full" style={{ width: `${hasPool ? Math.round((poolMembers / item.minPoolSize) * 100) : 0}%`, background: "var(--emerald)", transition: "width 0.5s ease" }} />
+                            </div>
+                            <div className="flex items-center justify-between mt-1">
+                              <span className="text-[11px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--coral)" }}>
+                                {hasPool ? `${poolMembers} joined` : `Need ${spotsLeft} people`}
+                              </span>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </Link>
@@ -413,6 +444,37 @@ export default function HomePage() {
                     Pick a restaurant. Share with friends. Everyone&apos;s bill drops up to 30%. No one joins? You still eat at regular price. No extra cost.
                   </p>
                 </div>
+              )}
+
+              {/* Chop to Free promo card */}
+              {dealItems.length > 0 && filter === "all" && (
+                <button type="button" onClick={() => setFilter("chop")} className="rounded-[16px] overflow-hidden p-4 text-left press-feedback mb-1" style={{ background: "var(--dark)" }}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-extrabold uppercase tracking-wide" style={{ color: "var(--gold)" }}>Free Chop</p>
+                      <h3 className="text-[17px] font-extrabold text-white mt-1 leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                        Share with friends.<br />They chop. You eat free.
+                      </h3>
+                      <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>
+                        {dealItems.length} items available to chop to ₦0
+                      </p>
+                    </div>
+                    <div className="flex -space-x-2 shrink-0 ml-3">
+                      {dealItems.slice(0, 3).map((d, i) => (
+                        d.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={i} src={d.imageUrl} alt="" className="w-[40px] h-[40px] rounded-full object-cover" style={{ border: "2px solid var(--dark)" }} />
+                        ) : (
+                          <div key={i} className="w-[40px] h-[40px] rounded-full flex items-center justify-center text-[12px] font-bold" style={{ background: "var(--coral)", color: "white", border: "2px solid var(--dark)" }}>{d.name.charAt(0)}</div>
+                        )
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 mt-3">
+                    <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>See chop deals</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
+                  </div>
+                </button>
               )}
 
               {/* Restaurant cards — Chowdeck DNA + group buying identity */}
