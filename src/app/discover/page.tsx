@@ -426,8 +426,25 @@ function DiscoverContent() {
 
       {/* ── Content ── */}
       {loading ? (
-        <div className="flex items-center justify-center py-32" aria-busy="true">
-          <div className="w-6 h-6 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
+        <div className="px-5 pt-6" aria-busy="true">
+          {/* Heading skeleton */}
+          <div className="h-7 rounded-[8px] w-[65%] mb-2" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div className="h-4 rounded-[6px] w-[45%] mb-5" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "50ms" }} />
+          {/* Search bar skeleton */}
+          <div className="h-[42px] rounded-[12px] mb-4" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+          {/* Category cards skeleton — masonry */}
+          <div className="flex gap-3 mb-3">
+            <div className="flex-1 flex flex-col gap-3">
+              <div className="rounded-[20px]" style={{ height: "230px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
+              <div className="rounded-[20px]" style={{ height: "180px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "250ms" }} />
+            </div>
+            <div className="flex-1 flex flex-col gap-3">
+              <div className="rounded-[20px]" style={{ height: "180px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
+              <div className="rounded-[20px]" style={{ height: "230px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "300ms" }} />
+            </div>
+          </div>
+          {/* Full-width card skeleton */}
+          <div className="rounded-[20px]" style={{ height: "140px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "350ms" }} />
         </div>
       ) : error ? (
         <div className="py-20 text-center px-8">
