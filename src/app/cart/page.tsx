@@ -336,12 +336,6 @@ export default function CartPage() {
                 <span style={{ color: "var(--text-secondary)" }}>Service fee <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>({packCount} {packCount === 1 ? "pack" : "packs"})</span></span>
                 <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
               </div>
-              {creditsToApply > 0 && (
-                <div className="flex justify-between">
-                  <span style={{ color: "var(--emerald)" }}>Credits applied</span>
-                  <span className="font-bold" style={{ color: "var(--emerald)" }}>-{formatNaira(creditsToApply)}</span>
-                </div>
-              )}
               {/* Pool savings callout */}
               {cart.items.some(item => {
                 const key = item.realDailyMenuId || item.dailyMenuId;
@@ -429,12 +423,6 @@ export default function CartPage() {
                   <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Delivery</span>
                   <span className="text-[13px] font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "Pickup (free)" : formatNaira(deliveryFee)}</span>
                 </div>
-                {creditsToApply > 0 && (
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[13px]" style={{ color: "var(--emerald)" }}>Credits</span>
-                    <span className="text-[13px] font-bold" style={{ color: "var(--emerald)" }}>-{formatNaira(creditsToApply)}</span>
-                  </div>
-                )}
                 <div className="h-px my-2" style={{ background: "var(--border)" }} />
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>You pay</span>
