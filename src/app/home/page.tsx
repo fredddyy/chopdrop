@@ -61,6 +61,7 @@ export default function HomePage() {
   const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
   const [inactiveRestaurants, setInactiveRestaurants] = useState<InactiveRestaurant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [totalActive, setTotalActive] = useState(0);
   const [userArea, setUserArea] = useState("");
   const [userName, setUserName] = useState("");
@@ -76,6 +77,12 @@ export default function HomePage() {
       }
     } catch {}
 
+    loadFeed();
+  }, []);
+
+  function loadFeed() {
+    setLoading(true);
+    setError(false);
     fetch("/api/feed")
       .then(r => r.json())
       .then(d => {
@@ -83,11 +90,13 @@ export default function HomePage() {
           setActiveOrders(d.data.activeOrders);
           setInactiveRestaurants(d.data.inactiveRestaurants);
           setTotalActive(d.data.totalActive);
+        } else {
+          setError(true);
         }
       })
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, []);
+  }
 
   // Silent refresh every 60s
   useEffect(() => {
@@ -139,14 +148,23 @@ export default function HomePage() {
 
       {/* ── Loading ── */}
       {loading && (
-        <div className="px-5 pt-4 space-y-3">
-          {[0, 1, 2].map(i => (
-            <div key={i} className="rounded-[16px]" style={{ height: "180px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
-          ))}
+        <div className="flex items-center justify-center py-32">
+          <div className="w-6 h-6 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
-      {!loading && (
+      {/* ── Error + retry ── */}
+      {!loading && error && (
+        <div className="py-20 text-center px-8">
+          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Couldn&apos;t load restaurants</h2>
+          <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
+          <button type="button" onClick={loadFeed} className="h-11 px-6 rounded-[12px] text-[13px] font-bold text-white cursor-pointer press-feedback" style={{ background: "var(--coral)" }}>
+            Try again
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && (
         <div>
           {/* ═══ LIVE ORDERS — restaurants with active group orders ═══ */}
           {activeOrders.length > 0 && (

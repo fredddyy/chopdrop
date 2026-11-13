@@ -152,7 +152,7 @@ export async function GET() {
         lowestRetailPrice,
         cheapestItemName,
         hasBanner: !!r.bannerUrl,
-        rating: [0, 4.8, 4.5, 4.9, 4.3, 4.7][r.sortOrder % 6] || 4.5,
+        rating: 0, // Real ratings — will be populated from actual review data
         tiers,
       });
     }
