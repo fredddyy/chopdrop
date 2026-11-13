@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     const pools = await prisma.pool.findMany({
       where,
       include: {
-        members: { select: { id: true, userId: true, quantity: true } },
+        members: { select: { id: true, userId: true, quantity: true, user: { select: { firstName: true } } }, orderBy: { createdAt: "asc" } },
         creator: { select: { firstName: true } },
         product: { select: { groupPrice: true, minPoolSize: true } },
       },
@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
       status: p.status,
       minSize: p.minSize,
       memberCount: p.members.length,
+      memberNames: p.members.slice(0, 5).map(m => m.user.firstName),
       totalQuantity: p.members.reduce((sum, m) => sum + m.quantity, 0),
       spotsLeft: p.minSize - p.members.length,
       deadline: p.deadline,

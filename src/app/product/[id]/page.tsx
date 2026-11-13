@@ -22,6 +22,7 @@ interface PoolData {
   id: string;
   name: string | null;
   memberCount: number;
+  memberNames: string[];
   spotsLeft: number;
   deadline: string;
   creatorName: string;
@@ -577,13 +578,14 @@ export default function ProductDetailPage() {
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
               {Array.from({ length: Math.min(poolSize, 5) }).map((_, i) => {
+                const names = pool?.memberNames || [];
                 const actualFilled = pool ? Math.max(memberCount, joinedStatus ? 1 : 0) : (joinedStatus ? 1 : 0);
                 const filled = i < actualFilled;
-                const isYou = joinedStatus && i === 0;
+                const initial = filled ? (names[i]?.charAt(0) || (userName || "?").charAt(0)) : "?";
                 return (
                   <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
                     style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "2px solid var(--bg)" : "2px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
-                    {isYou ? (userName || "You").charAt(0) : filled ? String.fromCharCode(65 + i) : "?"}
+                    {initial}
                   </div>
                 );
               })}
