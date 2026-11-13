@@ -233,60 +233,7 @@ export default function StorePage() {
         <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
       </div>
 
-      {/* ═══ GROUP ORDER STATUS — the social commerce hub ═══ */}
-      {(() => {
-        const tiers = parseStoreTiers(store.groupTiers);
-        return (
-          <div className="px-5 mt-4">
-            <div className="rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
-              {/* Active order state — will be populated when someone starts one */}
-              <div className="flex items-center gap-2 mb-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                <p className="text-[13px] font-bold text-white">Group order</p>
-              </div>
-              <p className="text-[12px] leading-[155%]" style={{ color: "var(--subdued)" }}>
-                Pick your food below. Share with friends. More people order, everyone saves. No one joins? You still eat at regular price.
-              </p>
-              {/* Tier breakdown */}
-              {tiers.length > 0 && (
-                <div className="flex gap-2 mt-3">
-                  {tiers.map((t) => (
-                    <div key={t.min} className="flex-1 rounded-[10px] py-2 text-center" style={{ background: "rgba(255,255,255,0.08)" }}>
-                      <p className="text-[14px] font-extrabold text-white tabular-nums">{t.min}+</p>
-                      <p className="text-[9px]" style={{ color: "var(--subdued)" }}>people</p>
-                      <p className="text-[11px] font-extrabold mt-0.5" style={{ color: "var(--emerald)" }}>{t.discount}% off</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {/* CTAs — start + share */}
-              <Link href={`/group/create?restaurant=${id}`} className="mt-3 h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
-                Start a group order
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  const url = typeof window !== "undefined" ? `${window.location.origin}/store/${id}` : "";
-                  const text = `Order from ${store.name} on ChopDrop. More people join, everyone saves up to ${tiers.length > 0 ? tiers[tiers.length - 1].discount : 30}%. ${url}`;
-                  if (navigator.share) {
-                    navigator.share({ title: store.name, text, url }).catch(() => {});
-                  } else if (navigator.clipboard) {
-                    navigator.clipboard.writeText(text).then(() => { setAddedToast("Link copied!"); setTimeout(() => setAddedToast(""), 2000); }).catch(() => {});
-                  }
-                }}
-                className="mt-2 h-[38px] rounded-[12px] flex items-center justify-center gap-2 text-[12px] font-bold cursor-pointer press-feedback"
-                style={{ background: "rgba(255,255,255,0.1)", color: "white" }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" /></svg>
-                Share with friends on WhatsApp
-              </button>
-            </div>
-          </div>
-        );
-      })()}
-
-
-      {/* Group discount tiers moved into the Group Order Status card above */}
+      {/* Group order hub removed — action happens via product cards + sticky bar */}
 
       {/* ═══ THE FULL MENU ═══ */}
       <section className="px-5 mt-6">
