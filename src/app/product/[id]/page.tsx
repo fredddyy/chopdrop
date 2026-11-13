@@ -558,16 +558,9 @@ export default function ProductDetailPage() {
         </div>
       )}
 
-      {/* ── Description ── */}
-      {product.description && (
-        <div className="px-5 mt-3">
-          <p className="text-[14px] leading-[145%]" style={{ color: "var(--text-muted)" }}>{product.description}</p>
-        </div>
-      )}
-
       {/* ── Pool spots — empty avatar circles ── */}
       {!joinedStatus && hasPoolPricing && (
-        <div className="px-5 mt-5">
+        <div className="px-5 mt-3">
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
               {Array.from({ length: Math.min(poolSize, 5) }).map((_, i) => {
@@ -586,6 +579,13 @@ export default function ProductDetailPage() {
                 : `${poolSize} people needed`}
             </span>
           </div>
+        </div>
+      )}
+
+      {/* ── Description ── */}
+      {product.description && (
+        <div className="px-5 mt-3">
+          <p className="text-[14px] leading-[145%]" style={{ color: "var(--text-muted)" }}>{product.description}</p>
         </div>
       )}
 
