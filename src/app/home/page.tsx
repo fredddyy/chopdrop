@@ -36,6 +36,8 @@ interface InactiveRestaurant {
   hasBanner: boolean;
   rating: number;
   tiers: { min: number; discount: number }[];
+  recentOrderCount: number;
+  recentOrderNames: string[];
 }
 
 function fmt(kobo: number): string {
@@ -63,6 +65,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [totalActive, setTotalActive] = useState(0);
+  const [weeklyOrderCount, setWeeklyOrderCount] = useState(0);
   const [userArea, setUserArea] = useState("");
   const [userName, setUserName] = useState("");
   const [isReturning, setIsReturning] = useState(false);
@@ -90,6 +93,7 @@ export default function HomePage() {
           setActiveOrders(d.data.activeOrders);
           setInactiveRestaurants(d.data.inactiveRestaurants);
           setTotalActive(d.data.totalActive);
+          setWeeklyOrderCount(d.data.weeklyOrderCount || 0);
         } else {
           setError(true);
         }
@@ -109,6 +113,7 @@ export default function HomePage() {
               setActiveOrders(d.data.activeOrders);
               setInactiveRestaurants(d.data.inactiveRestaurants);
               setTotalActive(d.data.totalActive);
+          setWeeklyOrderCount(d.data.weeklyOrderCount || 0);
             }
           })
           .catch(() => {});
@@ -305,6 +310,17 @@ export default function HomePage() {
                 </div>
               )}
 
+              {/* Platform activity — social proof even at cold start */}
+              {weeklyOrderCount > 0 && (
+                <div className="flex items-center gap-2 mb-4 py-2.5 px-3.5 rounded-[12px]" style={{ background: "var(--sand)" }}>
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--emerald)" }} />
+                    <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "var(--emerald)" }} />
+                  </span>
+                  <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{weeklyOrderCount} group orders this week</span>
+                </div>
+              )}
+
               {/* Restaurant cards — Chowdeck DNA + group buying identity */}
               <div className="flex flex-col gap-4">
                 {inactiveRestaurants.map((r, idx) => {
@@ -364,23 +380,39 @@ export default function HomePage() {
                           )}
                           <span>{r.cheapestItemName || r.address.split(",")[0]}</span>
                         </div>
-                        {/* Tier chips — our differentiator */}
-                        {r.tiers.length > 0 ? (
-                          <div className="flex items-center gap-1.5 mt-2">
-                            {r.tiers.map((t, i) => (
-                              <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-[6px]"
-                                style={{
-                                  background: i === r.tiers.length - 1 ? "var(--emerald)" : "var(--emerald-soft)",
-                                  color: i === r.tiers.length - 1 ? "white" : "var(--emerald)",
-                                }}>
-                                {t.min}+ = {t.discount}%
-                              </span>
-                            ))}
+                        {/* Social proof — recent activity on this restaurant */}
+                        {r.recentOrderCount > 0 ? (
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="flex -space-x-1.5" aria-hidden="true">
+                              {r.recentOrderNames.slice(0, 3).map((name, i) => (
+                                <div key={i} className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "#D4A24E"][i % 3], border: "1.5px solid white" }}>
+                                  {name.charAt(0)}
+                                </div>
+                              ))}
+                            </div>
+                            <span className="text-[10px] font-bold" style={{ color: "var(--text-secondary)" }}>
+                              {r.recentOrderCount} {r.recentOrderCount === 1 ? "order" : "orders"} this week
+                            </span>
                           </div>
                         ) : (
-                          <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>
-                            Save up to 30% with group orders
-                          </p>
+                          /* No recent orders — show tier chips or generic group line */
+                          r.tiers.length > 0 ? (
+                            <div className="flex items-center gap-1.5 mt-2">
+                              {r.tiers.map((t, i) => (
+                                <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-[6px]"
+                                  style={{
+                                    background: i === r.tiers.length - 1 ? "var(--emerald)" : "var(--emerald-soft)",
+                                    color: i === r.tiers.length - 1 ? "white" : "var(--emerald)",
+                                  }}>
+                                  {t.min}+ = {t.discount}%
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>
+                              Save up to 30% with group orders
+                            </p>
+                          )
                         )}
                       </div>
                     </Link>

@@ -98,7 +98,53 @@ export async function GET() {
     hasBanner: boolean;
     rating: number;
     tiers: Array<{ min: number; discount: number }>;
+    recentOrderCount: number;
+    recentOrderNames: string[];
   }> = [];
+
+  // Query recent group order activity per restaurant (last 7 days)
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const recentGroupOrders = await prisma.groupOrder.findMany({
+    where: { createdAt: { gte: sevenDaysAgo } },
+    select: {
+      restaurantId: true,
+      members: {
+        where: { paymentStatus: "SUCCESS" },
+        select: { user: { select: { firstName: true } } },
+        take: 5,
+      },
+    },
+  });
+  const recentActivity = new Map<string, { count: number; names: string[] }>();
+  for (const go of recentGroupOrders) {
+    const existing = recentActivity.get(go.restaurantId) || { count: 0, names: [] };
+    existing.count += go.members.length;
+    for (const m of go.members) {
+      if (existing.names.length < 5 && !existing.names.includes(m.user.firstName)) {
+        existing.names.push(m.user.firstName);
+      }
+    }
+    recentActivity.set(go.restaurantId, existing);
+  }
+
+  // Also count legacy orders per restaurant (from Order model)
+  const recentLegacyOrders = await prisma.order.findMany({
+    where: { createdAt: { gte: sevenDaysAgo }, paymentStatus: "SUCCESS" },
+    select: {
+      dailyMenu: { select: { meal: { select: { restaurantId: true } } } },
+      customerName: true,
+    },
+  });
+  for (const o of recentLegacyOrders) {
+    const rid = o.dailyMenu.meal.restaurantId;
+    const existing = recentActivity.get(rid) || { count: 0, names: [] };
+    existing.count += 1;
+    const firstName = o.customerName.split(" ")[0];
+    if (existing.names.length < 5 && !existing.names.includes(firstName)) {
+      existing.names.push(firstName);
+    }
+    recentActivity.set(rid, existing);
+  }
 
   for (const r of restaurants) {
     const tiers = parseGroupTiers(r.groupTiers);
@@ -153,6 +199,8 @@ export async function GET() {
         cheapestItemName,
         hasBanner: !!r.bannerUrl,
         rating: 0, // Real ratings — will be populated from actual review data
+        recentOrderCount: recentActivity.get(r.id)?.count ?? 0,
+        recentOrderNames: recentActivity.get(r.id)?.names ?? [],
         tiers,
       });
     }
@@ -177,6 +225,7 @@ export async function GET() {
       activeOrders,
       inactiveRestaurants,
       totalActive: activeOrders.length,
+      weeklyOrderCount: Array.from(recentActivity.values()).reduce((s, a) => s + a.count, 0),
     },
   });
 }
