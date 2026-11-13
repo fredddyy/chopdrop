@@ -426,25 +426,8 @@ function DiscoverContent() {
 
       {/* ── Content ── */}
       {loading ? (
-        <div className="px-5 pt-6" aria-busy="true">
-          <div className="h-8 rounded w-[70%] mb-2" style={{ background: "var(--sand)" }} />
-          <div className="h-4 rounded w-[50%] mb-6" style={{ background: "var(--sand)" }} />
-          <div className="rounded-[16px] overflow-hidden mb-4" style={{ background: "var(--dark)" }}>
-            <div className="h-[200px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-            <div className="p-4 space-y-2">
-              <div className="h-4 rounded w-[60%]" style={{ background: "rgba(255,255,255,0.1)" }} />
-              <div className="h-6 rounded w-[35%]" style={{ background: "rgba(255,255,255,0.1)" }} />
-            </div>
-          </div>
-          {[0, 1].map((i) => (
-            <div key={i} className="flex gap-3 mb-3">
-              <div className="w-[70px] h-[70px] rounded-[12px] shrink-0" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }} />
-              <div className="flex-1 space-y-2 py-1">
-                <div className="h-4 rounded w-[65%]" style={{ background: "var(--sand)" }} />
-                <div className="h-5 rounded w-[30%]" style={{ background: "var(--sand)" }} />
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center justify-center py-32" aria-busy="true">
+          <div className="w-6 h-6 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : error ? (
         <div className="py-20 text-center px-8">

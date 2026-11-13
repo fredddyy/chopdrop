@@ -180,10 +180,8 @@ function SearchContent() {
         <div className="px-5 mt-4">
           <p className="text-[13px] font-bold mb-3" style={{ color: "var(--text)" }}>Explore deals</p>
           {exploreLoading ? (
-            <div style={{ columns: "2", columnGap: "12px" }}>
-              {[0, 1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="rounded-[14px] overflow-hidden mb-3" style={{ height: `${120 + (i % 3) * 25}px`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 80}ms`, breakInside: "avoid" }} />
-              ))}
+            <div className="flex items-center justify-center py-16">
+              <div className="w-5 h-5 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : exploreFeed.length > 0 ? (
             <div style={{ columns: "2", columnGap: "12px" }}>
@@ -237,18 +235,8 @@ function SearchContent() {
 
       {/* Loading */}
       {loading && (
-        <div className="px-5 mt-6">
-          <div className="grid grid-cols-2 gap-3">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <div className="h-[120px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 80}ms` }} />
-                <div className="p-3 space-y-2">
-                  <div className="h-3 w-3/4 rounded" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-                  <div className="h-4 w-1/2 rounded" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="flex items-center justify-center py-16">
+          <div className="w-5 h-5 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
