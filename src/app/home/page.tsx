@@ -71,6 +71,7 @@ export default function HomePage() {
   const [userArea, setUserArea] = useState("");
   const [userName, setUserName] = useState("");
   const [isReturning, setIsReturning] = useState(false);
+  const [filter, setFilter] = useState<"all" | "deals" | "live" | "popular">("all");
 
   useEffect(() => {
     try {
@@ -152,6 +153,21 @@ export default function HomePage() {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
+        {/* Filter pills */}
+        <div className="flex gap-2 mt-2 overflow-x-auto hide-scrollbar">
+          {([
+            { key: "all", label: "All" },
+            { key: "deals", label: "Group deals" },
+            { key: "live", label: "Live pools" },
+            { key: "popular", label: "Popular" },
+          ] as const).map(f => (
+            <button key={f.key} type="button" onClick={() => setFilter(f.key)}
+              className="h-[32px] px-3.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 press-feedback"
+              style={{ background: filter === f.key ? "var(--dark)" : "var(--sand)", color: filter === f.key ? "white" : "var(--text-secondary)", transition: "background 150ms, color 150ms" }}>
+              {f.label}
+            </button>
+          ))}
+        </div>
       </header>
 
       {/* ── Loading skeleton ── */}
@@ -180,7 +196,15 @@ export default function HomePage() {
         </div>
       )}
 
-      {!loading && !error && (
+      {!loading && !error && (() => {
+        const filteredRestaurants = inactiveRestaurants.filter(r => {
+          if (filter === "all") return true;
+          if (filter === "deals") return r.groupDealCount > 0;
+          if (filter === "live") return r.livePools.count > 0;
+          if (filter === "popular") return r.recentOrderCount > 0;
+          return true;
+        });
+        return (
         <div>
           {/* ═══ LIVE ORDERS — restaurants with active group orders ═══ */}
           {activeOrders.length > 0 && (
@@ -315,7 +339,7 @@ export default function HomePage() {
 
               {/* Restaurant cards — Chowdeck DNA + group buying identity */}
               <div className="flex flex-col gap-4">
-                {inactiveRestaurants.map((r, idx) => {
+                {filteredRestaurants.map((r, idx) => {
                   const bestTier = r.tiers.length > 0 ? r.tiers[r.tiers.length - 1] : null;
                   const fallbackColors = ["#C4572A", "#1A7D4B", "#6366F1", "#D4A24E", "#EC4899", "#0EA5E9"];
                   const fallbackBg = fallbackColors[idx % fallbackColors.length];
@@ -442,7 +466,7 @@ export default function HomePage() {
                 Start a new order
               </h2>
               <div className="grid grid-cols-2 gap-3">
-                {inactiveRestaurants.map((r) => (
+                {filteredRestaurants.map((r) => (
                   <Link key={r.id} href={`/store/${r.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                     <div className="p-1.5 pb-0">
                       <div className="h-[90px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
@@ -476,7 +500,8 @@ export default function HomePage() {
             </div>
           )}
         </div>
-      )}
+        );
+      })()}
 
       <BottomNav />
     </main>
