@@ -94,8 +94,8 @@ export default function CartPage() {
   const deliveryFee = deliveryToggle === "delivery" ? (realDeliveryFee !== null ? realDeliveryFee : (deliveryPref?.fee || 0)) : 0;
   const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
   const serviceFee = packCount * 15000;
-  const creditsToApply = Math.min(creditBalance, cart.subtotal + deliveryFee + serviceFee);
-  const orderTotal = cart.subtotal + deliveryFee + serviceFee - creditsToApply;
+  const creditsToApply = 0;
+  const orderTotal = cart.subtotal + deliveryFee + serviceFee;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
 
   async function handleConnectOffice() {
