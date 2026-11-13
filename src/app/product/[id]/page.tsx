@@ -55,7 +55,7 @@ export default function ProductDetailPage() {
   const [justPaid, setJustPaid] = useState(false);
   const [userName, setUserName] = useState("");
   const [expiredPoolId, setExpiredPoolId] = useState<string | null>(null);
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0); // seconds remaining
   const [poolTimerHours, setPoolTimerHours] = useState(2);
   const cart = useCart();
 
@@ -91,6 +91,16 @@ export default function ProductDetailPage() {
       }
     } catch {}
   }, [id]);
+
+  // Live countdown timer — ticks every second when pool has a deadline
+  useEffect(() => {
+    if (!pools.length || !pools[0].deadline) { setTimeLeft(0); return; }
+    const deadline = new Date(pools[0].deadline).getTime();
+    const tick = () => setTimeLeft(Math.max(0, Math.floor((deadline - Date.now()) / 1000)));
+    tick();
+    const iv = setInterval(tick, 1000);
+    return () => clearInterval(iv);
+  }, [pools]);
 
   // Fetch delivery estimate when delivery is selected
   useEffect(() => {
@@ -585,10 +595,14 @@ export default function ProductDetailPage() {
                   ? `1 of ${poolSize} joined`
                   : `${poolSize} people needed`}
             </span>
-            <span className="ml-auto text-[11px] font-bold flex items-center gap-1" style={{ color: "var(--coral)" }}>
+            <span className="ml-auto text-[11px] font-bold tabular-nums flex items-center gap-1" style={{ color: "var(--coral)" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-              {pool && minutesLeft > 0
-                ? (minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`)
+              {pool && timeLeft > 0
+                ? (timeLeft >= 3600
+                    ? `${Math.floor(timeLeft / 3600)}h ${Math.floor((timeLeft % 3600) / 60)}m ${timeLeft % 60}s`
+                    : timeLeft >= 60
+                      ? `${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`
+                      : `${timeLeft}s`)
                 : `${poolTimerHours}h window`}
             </span>
           </div>
