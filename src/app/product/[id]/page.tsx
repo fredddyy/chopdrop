@@ -561,17 +561,19 @@ export default function ProductDetailPage() {
         </div>
       )}
 
-      {/* ── Pool spots — empty avatar circles ── */}
-      {!joinedStatus && hasPoolPricing && (
+      {/* ── Pool spots — avatar circles (shown for both joined and not-joined) ── */}
+      {hasPoolPricing && (joinedStatus === "filling" || !joinedStatus) && (
         <div className="px-5 mt-3">
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
               {Array.from({ length: Math.min(poolSize, 5) }).map((_, i) => {
-                const filled = pool ? i < memberCount : false;
+                const actualFilled = pool ? Math.max(memberCount, joinedStatus ? 1 : 0) : (joinedStatus ? 1 : 0);
+                const filled = i < actualFilled;
+                const isYou = joinedStatus && i === 0;
                 return (
                   <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
                     style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "2px solid var(--bg)" : "2px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
-                    {filled ? String.fromCharCode(65 + i) : "?"}
+                    {isYou ? (userName || "You").charAt(0) : filled ? String.fromCharCode(65 + i) : "?"}
                   </div>
                 );
               })}
@@ -579,7 +581,9 @@ export default function ProductDetailPage() {
             <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>
               {pool && memberCount > 0
                 ? `${memberCount} of ${poolSize} joined`
-                : `${poolSize} people needed`}
+                : joinedStatus
+                  ? `1 of ${poolSize} joined`
+                  : `${poolSize} people needed`}
             </span>
             <span className="ml-auto text-[11px] font-bold flex items-center gap-1" style={{ color: "var(--coral)" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
@@ -587,26 +591,6 @@ export default function ProductDetailPage() {
                 ? (minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`)
                 : `${poolTimerHours}h window`}
             </span>
-          </div>
-        </div>
-      )}
-
-      {/* ── Joined: green progress card ── */}
-      {joinedStatus === "filling" && hasPoolPricing && (
-        <div className="px-5 mt-4">
-          <div className="rounded-[16px] overflow-hidden p-4" style={{ background: "var(--emerald-soft)" }}>
-            <p className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>You&apos;re in! {Math.max(pool ? pool.memberCount : memberCount, 1)} of {pool ? pool.minSize : product.minPoolSize} needed</p>
-            <p className="text-[12px] mt-0.5" style={{ color: "var(--emerald)" }}>
-              {(() => {
-                const left = Math.max((pool ? pool.minSize : product.minPoolSize) - Math.max(pool ? pool.memberCount : memberCount, 1), 0);
-                return left > 0 ? `${left} more ${left === 1 ? "person" : "people"} and everyone eats.` : "Pool is full!";
-              })()}
-            </p>
-            {/* You + others */}
-            <div className="mt-3 flex items-center gap-2">
-              <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: "var(--coral)" }}>{(userName || "You").charAt(0)}</div>
-              <span className="text-[11px] font-bold" style={{ color: "var(--text)" }}>You{pool && pool.memberCount > 1 ? ` + ${pool.memberCount - 1} other${pool.memberCount > 2 ? "s" : ""}` : ""}</span>
-            </div>
           </div>
         </div>
       )}
