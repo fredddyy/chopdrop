@@ -527,7 +527,7 @@ export default function StorePage() {
                   </div>
                 </div>
 
-                {/* CTAs */}
+                {/* CTAs — two buttons stacked */}
                 <div className="mt-4 space-y-2">
                   {/* Start/Join group — primary */}
                   <button
@@ -543,35 +543,34 @@ export default function StorePage() {
                     <span>{itemPool ? "Join Group" : "Start Group"} · {fp(item.groupPrice * sheetQty)}</span>
                     {hasDiscount && <span className="text-[12px] opacity-80">Save {sav}%</span>}
                   </button>
-                  {/* Solo + Share row */}
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        for (let i = 0; i < sheetQty; i++) addToPlate(item, store.name);
-                        setSelectedItem(null);
-                      }}
-                      className="flex-1 h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold press-feedback"
-                      style={{ background: "var(--sand)", color: "var(--text)" }}
-                    >
-                      Solo {fp(item.retailPrice * sheetQty)}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const url = `${window.location.origin}/product/${item.id}`;
-                        const text = `${item.name} for ${fp(item.groupPrice)} on ChopDrop (${sav}% off with group). ${url}`;
-                        if (navigator.share) navigator.share({ title: item.name, text, url }).catch(() => {});
-                        else if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => { setAddedToast("Link copied!"); setTimeout(() => setAddedToast(""), 2000); }).catch(() => {});
-                      }}
-                      className="flex-1 h-[44px] rounded-[12px] flex items-center justify-center gap-1.5 text-[13px] font-bold press-feedback"
-                      style={{ background: "var(--dark)", color: "white" }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" /></svg>
-                      Share deal
-                    </button>
-                  </div>
+                  {/* Solo — secondary */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      for (let i = 0; i < sheetQty; i++) addToPlate(item, store.name);
+                      setSelectedItem(null);
+                    }}
+                    className="w-full h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold press-feedback"
+                    style={{ background: "var(--sand)", color: "var(--text)" }}
+                  >
+                    Solo · {fp(item.retailPrice * sheetQty)}
+                  </button>
                 </div>
+                {/* Share — subtle text link below CTAs */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const url = `${window.location.origin}/product/${item.id}`;
+                    const text = `${item.name} for ${fp(item.groupPrice)} on ChopDrop (${sav}% off with group). ${url}`;
+                    if (navigator.share) navigator.share({ title: item.name, text, url }).catch(() => {});
+                    else if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => { setAddedToast("Link copied!"); setTimeout(() => setAddedToast(""), 2000); }).catch(() => {});
+                  }}
+                  className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-bold cursor-pointer w-full"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" /></svg>
+                  Share this deal
+                </button>
               </div>
 
               <style jsx>{`
