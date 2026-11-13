@@ -312,12 +312,32 @@ export default function HomePage() {
 
               {/* Platform activity — social proof even at cold start */}
               {weeklyOrderCount > 0 && (
-                <div className="flex items-center gap-2 mb-4 py-2.5 px-3.5 rounded-[12px]" style={{ background: "var(--sand)" }}>
-                  <span className="relative flex h-2 w-2 shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--emerald)" }} />
-                    <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "var(--emerald)" }} />
-                  </span>
-                  <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{weeklyOrderCount} group orders this week</span>
+                <div className="mb-5 rounded-[14px] p-3.5" style={{ background: "var(--dark)" }}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="relative flex h-2.5 w-2.5 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--emerald)" }} />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ background: "var(--emerald)" }} />
+                    </span>
+                    <span className="text-[13px] font-bold text-white">{weeklyOrderCount} group orders this week in {userArea || "Lagos"}</span>
+                  </div>
+                  {/* Recent orderer names from all restaurants */}
+                  {(() => {
+                    const allNames = inactiveRestaurants.flatMap(r => r.recentOrderNames).filter((n, i, a) => a.indexOf(n) === i).slice(0, 4);
+                    return allNames.length > 0 ? (
+                      <div className="flex items-center gap-2 mt-2.5">
+                        <div className="flex -space-x-1.5" aria-hidden="true">
+                          {allNames.map((name, i) => (
+                            <div key={i} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "#D4A24E", "#6366F1"][i % 4], border: "2px solid var(--dark)" }}>
+                              {name.charAt(0)}
+                            </div>
+                          ))}
+                        </div>
+                        <span className="text-[11px]" style={{ color: "var(--subdued)" }}>
+                          {allNames.slice(0, 2).join(", ")}{allNames.length > 2 ? ` and ${weeklyOrderCount - 2} others` : ""} ordered recently
+                        </span>
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
               )}
 
