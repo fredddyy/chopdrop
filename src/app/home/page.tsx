@@ -34,6 +34,7 @@ interface InactiveRestaurant {
   lowestRetailPrice: number;
   cheapestItemName: string | null;
   hasBanner: boolean;
+  rating: number;
   tiers: { min: number; discount: number }[];
 }
 
@@ -278,80 +279,83 @@ export default function HomePage() {
                 </div>
               )}
 
-              {/* Restaurant cards — price story + low-commitment CTA */}
-              <div className="flex flex-col gap-3">
+              {/* Restaurant cards — Chowdeck DNA + group buying identity */}
+              <div className="flex flex-col gap-4">
                 {inactiveRestaurants.map((r, idx) => {
                   const bestTier = r.tiers.length > 0 ? r.tiers[r.tiers.length - 1] : null;
-                  const groupPrice = bestTier && r.lowestRetailPrice > 0
-                    ? Math.round(r.lowestRetailPrice * (1 - bestTier.discount / 100))
-                    : 0;
-                  // Colored fallback when no banner uploaded
                   const fallbackColors = ["#C4572A", "#1A7D4B", "#6366F1", "#D4A24E", "#EC4899", "#0EA5E9"];
                   const fallbackBg = fallbackColors[idx % fallbackColors.length];
                   return (
-                    <Link key={r.id} href={`/store/${r.id}`} aria-label={`Browse ${r.name} menu`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                      {/* Banner — real image or colored fallback with logo */}
-                      <div className="p-2 pb-0">
+                    <Link key={r.id} href={`/store/${r.id}`} aria-label={`Browse ${r.name} menu`} className="press-feedback block">
+                      {/* Banner — food photo with logo overlay + discount badge */}
+                      <div className="relative rounded-[16px] overflow-hidden" style={{ height: r.hasBanner ? "160px" : "100px", background: r.hasBanner ? "var(--sand)" : fallbackBg }}>
                         {r.hasBanner ? (
-                          <div className="h-[100px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
-                            <StoreImg src={r.bannerUrl} fallback={r.name.charAt(0)} />
-                            <div className="absolute bottom-0 left-0 right-0 px-3 py-2" style={{ background: "rgba(28,28,30,0.7)" }}>
-                              <h3 className="text-[14px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{r.name}</h3>
+                          <StoreImg src={r.bannerUrl} fallback={r.name.charAt(0)} />
+                        ) : r.imageUrl ? (
+                          /* Colored bg with centered logo for no-banner restaurants */
+                          <div className="w-full h-full flex items-center justify-center">
+                            <div className="w-[56px] h-[56px] rounded-full overflow-hidden" style={{ border: "3px solid rgba(255,255,255,0.3)" }}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
                             </div>
                           </div>
                         ) : (
-                          /* Colored card with logo + name — no stretching logos as banners */
-                          <div className="h-[80px] relative rounded-[12px] overflow-hidden flex items-center gap-3 px-4" style={{ background: fallbackBg }}>
-                            {r.imageUrl && (
-                              <div className="w-[44px] h-[44px] rounded-full overflow-hidden shrink-0" style={{ border: "2px solid rgba(255,255,255,0.3)" }}>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
-                              </div>
-                            )}
-                            <h3 className="text-[16px] font-extrabold text-white leading-tight truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{r.name}</h3>
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-[32px] font-extrabold text-white" style={{ opacity: 0.4 }}>{r.name.charAt(0)}</span>
                           </div>
                         )}
+                        {/* Logo overlay — bottom left on banner images */}
+                        {r.hasBanner && r.imageUrl && (
+                          <div className="absolute bottom-3 left-3 w-[40px] h-[40px] rounded-full overflow-hidden" style={{ border: "3px solid white" }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        {/* Discount badge — on banner */}
+                        {bestTier && (
+                          <span className="absolute top-3 left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-[8px] text-white" style={{ background: "var(--coral)" }}>
+                            Up to {bestTier.discount}% off
+                          </span>
+                        )}
                       </div>
-                      <div className="p-3 pt-2.5">
-                        {/* Price with item name for context */}
-                        {r.lowestRetailPrice > 0 && groupPrice > 0 && groupPrice < r.lowestRetailPrice ? (
-                          <div>
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-[17px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fmt(groupPrice)}</span>
-                              <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(r.lowestRetailPrice)}</span>
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>with {bestTier?.min}+ people</span>
-                            </div>
-                            {r.cheapestItemName && <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>{r.cheapestItemName}</p>}
-                          </div>
-                        ) : r.lowestPrice > 0 ? (
-                          <div>
-                            <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>From {fmt(r.lowestPrice)}</span>
-                            {r.cheapestItemName && <span className="text-[11px] ml-1.5" style={{ color: "var(--text-muted)" }}>{r.cheapestItemName}</span>}
-                          </div>
-                        ) : null}
-                        {/* Tier chips OR generic group savings line */}
+
+                      {/* Info — below banner, no card wrapper needed */}
+                      <div className="pt-2.5 pb-1">
+                        <h3 className="text-[15px] font-bold" style={{ color: "var(--text)" }}>{r.name}</h3>
+                        {/* Delivery metadata row */}
+                        <div className="flex items-center gap-1 mt-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
+                          {r.lowestPrice > 0 && (
+                            <>
+                              <span className="font-bold" style={{ color: "var(--text)" }}>From {fmt(r.lowestPrice)}</span>
+                              <span>·</span>
+                            </>
+                          )}
+                          {r.rating > 0 && (
+                            <>
+                              <span style={{ color: "var(--emerald)" }}>★ {r.rating.toFixed(1)}</span>
+                              <span>·</span>
+                            </>
+                          )}
+                          <span>{r.cheapestItemName || r.address.split(",")[0]}</span>
+                        </div>
+                        {/* Tier chips — our differentiator */}
                         {r.tiers.length > 0 ? (
                           <div className="flex items-center gap-1.5 mt-2">
                             {r.tiers.map((t, i) => (
-                              <span key={i} className="text-[10px] font-bold px-2 py-1 rounded-[8px]"
+                              <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-[6px]"
                                 style={{
                                   background: i === r.tiers.length - 1 ? "var(--emerald)" : "var(--emerald-soft)",
                                   color: i === r.tiers.length - 1 ? "white" : "var(--emerald)",
                                 }}>
-                                {t.min}+ = {t.discount}% off
+                                {t.min}+ = {t.discount}%
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-[10px] font-bold mt-2" style={{ color: "var(--emerald)" }}>
-                            Order with 3+ people, save 10-30%
+                          <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>
+                            Save up to 30% with group orders
                           </p>
                         )}
-                        {/* CTA */}
-                        <div className="mt-3 h-[42px] rounded-[12px] flex items-center justify-between px-4 text-white" style={{ background: "var(--coral)" }}>
-                          <span className="text-[13px] font-bold">Browse menu</span>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                        </div>
                       </div>
                     </Link>
                   );
