@@ -158,6 +158,13 @@ export async function GET() {
     }
   }
 
+  // Sort inactive: restaurants with banners first (better visual), then by sortOrder
+  inactiveRestaurants.sort((a, b) => {
+    if (a.hasBanner && !b.hasBanner) return -1;
+    if (!a.hasBanner && b.hasBanner) return 1;
+    return 0;
+  });
+
   // Sort active orders: most members first (most social), then by deadline (most urgent)
   activeOrders.sort((a, b) => {
     if (b.memberCount !== a.memberCount) return b.memberCount - a.memberCount;
