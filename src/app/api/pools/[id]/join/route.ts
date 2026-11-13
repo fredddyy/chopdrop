@@ -78,6 +78,15 @@ export async function POST(
 
     const newMemberCount = pool.members.length + 1;
 
+    // Reset deadline if this is the first member (pool was empty)
+    if (pool.members.length === 0) {
+      const hours = (pool.deadline.getTime() - pool.createdAt.getTime()) / 3600000 || 2;
+      await tx.pool.update({
+        where: { id },
+        data: { deadline: new Date(Date.now() + hours * 3600000) },
+      });
+    }
+
     // If pool is now filled, update status
     if (newMemberCount >= pool.minSize) {
       await tx.pool.update({
