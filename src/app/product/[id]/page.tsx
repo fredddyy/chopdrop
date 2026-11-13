@@ -709,72 +709,56 @@ export default function ProductDetailPage() {
             );
           })()}
 
-          {/* ── NOT JOINED: pool pricing ── */}
+          {/* ── NOT JOINED: pool pricing — two side-by-side CTAs ── */}
           {!joinedStatus && hasPoolPricing && (
             <>
-              {/* Pool status scoreboard — visible at decision point */}
+              {/* Pool status scoreboard */}
               {pool && !isPoolExpired && memberCount > 0 && (
                 <div className="flex items-center justify-between mb-2 text-[11px] font-bold" style={{ color: "var(--text-muted)" }}>
                   <span style={{ color: "var(--emerald)" }}>{memberCount}/{poolSize} joined</span>
                   <span>{minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`}</span>
                 </div>
               )}
-              {/* Expired pool notice */}
               {isPoolExpired && (
                 <p className="text-[11px] font-bold mb-2 text-center" style={{ color: "var(--coral)" }}>
                   Previous pool expired. Start a fresh one below.
                 </p>
               )}
-              {/* Pool confidence — reduce risk for first-timers */}
               {!pool && !isPoolExpired && (
                 <p className="text-[11px] font-bold mb-2 text-center" style={{ color: "var(--emerald)" }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="inline -mt-px mr-1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
                   {poolSize <= 5 ? `Only ${poolSize} people needed. Pools this size usually fill fast.` : `${poolSize} people needed. Start it and share with your group.`}
                 </p>
               )}
-              <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
-                className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
-                style={{ background: "var(--coral)" }}>
-                <span>{joining ? "Joining\u2026" : isPoolExpired ? `Start New Pool \u2014 ${fp(poolUnitTotal)}` : pool ? `Join Pool \u2014 ${fp(poolUnitTotal)}` : `Start Pool \u2014 ${fp(poolUnitTotal)}`}</span>
-                <span className="text-[12px] font-bold opacity-80">Save {savings}%</span>
-              </button>
-              {/* Pre-payment share — Pinduoduo viral loop */}
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2.5">
                 <button type="button" onClick={addSolo}
-                  className="flex-1 h-[44px] rounded-full flex items-center justify-center text-[13px] font-bold cursor-pointer press-feedback"
-                  style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
+                  className="flex-1 h-[50px] rounded-full flex items-center justify-center text-[14px] font-bold cursor-pointer press-feedback"
+                  style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
                   Solo {fp(soloTotal)}
                 </button>
-                <button type="button"
-                  className="flex-1 h-[44px] rounded-full flex items-center justify-center gap-1.5 text-[13px] font-bold cursor-pointer press-feedback"
-                  style={{ background: "var(--dark)", color: "white" }}
-                  onClick={() => {
-                    const shareText = `${product.name} for ${fp(product.groupPrice)} instead of ${fp(product.retailPrice)}! ${spotsLeft} spot${spotsLeft !== 1 ? "s" : ""} left. Join the pool: ${typeof window !== "undefined" ? window.location.href : ""}`;
-                    if (navigator.share) navigator.share({ title: product.name, text: shareText, url: window.location.href }).catch(() => {});
-                    else { navigator.clipboard.writeText(window.location.href); setToast("Link copied!"); }
-                  }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13" /></svg>
-                  Share deal
+                <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
+                  className="flex-[1.4] h-[50px] rounded-full flex items-center justify-center gap-2 text-[14px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
+                  style={{ background: "var(--coral)" }}>
+                  <span>{joining ? "Joining\u2026" : isPoolExpired ? "Start Pool" : pool ? "Join Pool" : "Start Pool"} {fp(poolUnitTotal)}</span>
                 </button>
               </div>
             </>
           )}
 
-          {/* ── NOT JOINED: no pool pricing — request pool is primary ── */}
+          {/* ── NOT JOINED: no pool pricing ── */}
           {!joinedStatus && !hasPoolPricing && (
-            <>
+            <div className="flex gap-2.5">
               <button type="button" onClick={() => router.push(`/request-sent/${id}`)}
-                className="w-full h-[54px] rounded-full flex items-center justify-between px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
-                style={{ background: "var(--coral)" }}>
-                <span>Request Pool</span>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.4" strokeLinecap="round"><path d="M5 11.667c0 2.163.702 4.269 2 6 .265.353.66.587 1.098.65.437.062.882-.052 1.235-.317.354-.265.588-.66.65-1.098.063-.437-.051-.882-.316-1.235A6.644 6.644 0 018.333 11.667M5 11.667h1.667m1.666 0h.834c2.534-.066 5.012.76 7 2.333.124.093.271.15.425.163.154.014.31-.015.448-.084.138-.07.255-.176.336-.308.081-.131.125-.283.125-.438V3.333c0-.155-.044-.306-.125-.438a.832.832 0 00-.336-.308.834.834 0 00-.448-.084.834.834 0 00-.425.164c-1.989 1.573-4.466 2.398-7 2.333H6.667 4.167c-.442 0-.866.176-1.179.488A1.667 1.667 0 002.5 6.667V10c0 .442.176.866.488 1.179.313.312.737.488 1.179.488H5m3.333 0H6.667m0-6.667v6.667" /></svg>
+                className="flex-1 h-[50px] rounded-full flex items-center justify-center text-[14px] font-bold cursor-pointer press-feedback"
+                style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
+                Request Pool
               </button>
               <button type="button" onClick={addSolo}
-                className="w-full h-[40px] rounded-full flex items-center justify-center text-[12px] font-bold mt-2 cursor-pointer press-feedback"
-                style={{ background: "var(--sand)", color: "#1C1C1E" }}>
-                Add to plate · {fp(product.retailPrice)}
+                className="flex-[1.4] h-[50px] rounded-full flex items-center justify-center text-[14px] font-bold text-white cursor-pointer press-feedback"
+                style={{ background: "var(--coral)" }}>
+                Buy Solo {fp(product.retailPrice)}
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
