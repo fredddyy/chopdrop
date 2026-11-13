@@ -496,16 +496,31 @@ export default function StorePage() {
                   </div>
                 )}
 
-                {/* Tier info (if no active pool) */}
-                {!itemPool && tiers.length > 0 && (
-                  <div className="mt-3 flex gap-2">
-                    {tiers.map((t) => (
-                      <div key={t.min} className="flex-1 rounded-[10px] py-2 text-center" style={{ background: "var(--sand)" }}>
-                        <p className="text-[12px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{t.min}+</p>
-                        <p className="text-[9px]" style={{ color: "var(--text-muted)" }}>people</p>
-                        <p className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>{t.discount}% off</p>
+                {/* Price tiers — list format */}
+                {tiers.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-[13px] font-bold mb-2" style={{ color: "var(--text)" }}>Price tiers</p>
+                    <div className="flex flex-col gap-1.5">
+                      {/* Solo price row */}
+                      <div className="flex items-center justify-between h-[38px] px-3.5 rounded-[10px]" style={{ background: "var(--sand)" }}>
+                        <span className="text-[12px] font-medium" style={{ color: "var(--text-muted)" }}>Solo</span>
+                        <span className="text-[13px] font-bold tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>
                       </div>
-                    ))}
+                      {/* Tier rows */}
+                      {tiers.map((t, i) => {
+                        const tierPrice = Math.round(item.retailPrice * (1 - t.discount / 100));
+                        const isLast = i === tiers.length - 1;
+                        return (
+                          <div key={t.min} className="flex items-center justify-between h-[38px] px-3.5 rounded-[10px]" style={{ background: isLast ? "var(--emerald-soft)" : "var(--sand)" }}>
+                            <div className="flex items-center gap-1.5">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={isLast ? "var(--emerald)" : "var(--text-muted)"} strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
+                              <span className="text-[12px] font-medium" style={{ color: isLast ? "var(--emerald)" : "var(--text)" }}>{t.min}+ people</span>
+                            </div>
+                            <span className="text-[13px] font-bold tabular-nums" style={{ color: isLast ? "var(--emerald)" : "var(--text)" }}>{fp(tierPrice)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 
