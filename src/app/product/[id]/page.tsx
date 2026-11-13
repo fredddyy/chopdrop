@@ -578,6 +578,11 @@ export default function ProductDetailPage() {
                 ? `${memberCount} of ${poolSize} joined`
                 : `${poolSize} people needed`}
             </span>
+            {pool && minutesLeft > 0 && (
+              <span className="ml-auto text-[11px] font-bold" style={{ color: "var(--coral)" }}>
+                {minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`}
+              </span>
+            )}
           </div>
         </div>
       )}
