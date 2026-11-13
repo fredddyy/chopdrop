@@ -93,6 +93,7 @@ export async function GET() {
     bannerUrl: string | null;
     address: string;
     lowestPrice: number;
+    lowestRetailPrice: number;
     tiers: Array<{ min: number; discount: number }>;
   }> = [];
 
@@ -100,8 +101,12 @@ export async function GET() {
     const tiers = parseGroupTiers(r.groupTiers);
     const cheapestMeal = r.meals[0]?.price ?? 0;
     const cheapestProduct = r.products[0]?.groupPrice ?? 0;
+    const cheapestRetail = r.products[0]?.retailPrice ?? 0;
+    const mealOriginal = r.meals[0]?.price ?? 0; // meals don't have separate retail
     const prices = [cheapestMeal, cheapestProduct].filter(p => p > 0);
     const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
+    const retailPrices = [mealOriginal, cheapestRetail].filter(p => p > 0);
+    const lowestRetailPrice = retailPrices.length > 0 ? Math.min(...retailPrices) : 0;
 
     const activeOrder = r.groupOrders[0];
     if (activeOrder) {
@@ -138,6 +143,7 @@ export async function GET() {
         bannerUrl: r.bannerUrl,
         address: r.address,
         lowestPrice,
+        lowestRetailPrice,
         tiers,
       });
     }

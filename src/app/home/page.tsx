@@ -31,6 +31,7 @@ interface InactiveRestaurant {
   bannerUrl: string | null;
   address: string;
   lowestPrice: number;
+  lowestRetailPrice: number;
   tiers: { min: number; discount: number }[];
 }
 
@@ -59,6 +60,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [totalActive, setTotalActive] = useState(0);
   const [userArea, setUserArea] = useState("");
+  const [userName, setUserName] = useState("");
+  const [isReturning, setIsReturning] = useState(false);
 
   useEffect(() => {
     try {
@@ -66,6 +69,7 @@ export default function HomePage() {
       if (stored) {
         const p = JSON.parse(stored);
         if (p.areaName) setUserArea(p.areaName);
+        if (p.name) { setUserName(p.name); setIsReturning(true); }
       }
     } catch {}
 
@@ -247,85 +251,92 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* ═══ COLD START — when no active orders, show value prop + restaurants ═══ */}
+          {/* ═══ COLD START — social proof + zero-risk + price stories ═══ */}
           {activeOrders.length === 0 && inactiveRestaurants.length > 0 && (
             <div className="px-5 pt-4">
-              {/* Value proposition — explains the mechanic */}
-              <div className="rounded-[16px] p-5 mb-5" style={{ background: "var(--dark)" }}>
-                <h2 className="text-[20px] font-extrabold text-white leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                  Order together,<br />save together.
-                </h2>
-                <p className="text-[12px] mt-2 leading-[155%]" style={{ color: "var(--subdued)" }}>
-                  Pick a restaurant. Start a group order. More people join, everyone&apos;s bill drops. 3 people = 10% off. 5 = 20%. 10 = 30%.
-                </p>
-                <div className="flex gap-2 mt-3">
-                  {[
-                    { n: "3+", save: "10%" },
-                    { n: "5+", save: "20%" },
-                    { n: "10+", save: "30%" },
-                  ].map((tier) => (
-                    <div key={tier.n} className="flex-1 rounded-[10px] py-2 text-center" style={{ background: "rgba(255,255,255,0.08)" }}>
-                      <p className="text-[14px] font-extrabold tabular-nums text-white">{tier.n}</p>
-                      <p className="text-[9px] mt-0.5" style={{ color: "var(--subdued)" }}>people</p>
-                      <p className="text-[10px] font-extrabold mt-0.5" style={{ color: "var(--emerald)" }}>{tier.save} off</p>
-                    </div>
-                  ))}
+              {/* Returning user greeting */}
+              {isReturning ? (
+                <div className="mb-4">
+                  <h2 className="text-[20px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                    Hey {userName.split(" ")[0]}, ready<br />to order?
+                  </h2>
+                  <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>
+                    Pick a restaurant and share with your people. More join, everyone saves.
+                  </p>
                 </div>
-              </div>
+              ) : (
+                /* First-time user — social proof, not explanation */
+                <div className="mb-4">
+                  <h2 className="text-[20px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                    Lunch is cheaper<br />when you order together.
+                  </h2>
+                  <p className="text-[12px] mt-1 leading-[155%]" style={{ color: "var(--text-muted)" }}>
+                    Pick a restaurant. Share with friends. Everyone&apos;s bill drops up to 30%. No one joins? You still eat at regular price. Zero risk.
+                  </p>
+                </div>
+              )}
 
-              {/* Restaurant cards — social energy even at cold start */}
-              <h2 className="text-[15px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                Pick a restaurant to start
-              </h2>
+              {/* Restaurant cards — price story + low-commitment CTA */}
               <div className="flex flex-col gap-3">
-                {inactiveRestaurants.map((r) => (
-                  <Link key={r.id} href={`/store/${r.id}`} aria-label={`Start a group order at ${r.name}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-                    {/* Banner with name overlay */}
-                    <div className="p-2 pb-0">
-                      <div className="h-[100px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
-                        <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
-                        {/* Flat dark strip at bottom — name on banner per design system */}
-                        <div className="absolute bottom-0 left-0 right-0 px-3 py-2" style={{ background: "rgba(28,28,30,0.7)" }}>
-                          <h3 className="text-[14px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{r.name}</h3>
+                {inactiveRestaurants.map((r) => {
+                  const bestTier = r.tiers.length > 0 ? r.tiers[r.tiers.length - 1] : null;
+                  const groupPrice = bestTier && r.lowestRetailPrice > 0
+                    ? Math.round(r.lowestRetailPrice * (1 - bestTier.discount / 100))
+                    : 0;
+                  return (
+                    <Link key={r.id} href={`/store/${r.id}`} aria-label={`Browse ${r.name} menu`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                      {/* Banner with name overlay */}
+                      <div className="p-2 pb-0">
+                        <div className="h-[100px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                          <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
+                          <div className="absolute bottom-0 left-0 right-0 px-3 py-2" style={{ background: "rgba(28,28,30,0.7)" }}>
+                            <h3 className="text-[14px] font-extrabold text-white truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{r.name}</h3>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="p-3 pt-2.5">
-                      {/* Price anchor — large, bold */}
-                      {r.lowestPrice > 0 && (
-                        <p className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>From {fmt(r.lowestPrice)}</p>
-                      )}
-                      {/* Tier chips — visual discount breakdown */}
-                      {r.tiers.length > 0 ? (
-                        <div className="flex items-center gap-1.5 mt-2">
-                          {r.tiers.map((t, i) => (
-                            <span key={i} className="text-[10px] font-bold px-2 py-1 rounded-[8px]"
-                              style={{
-                                background: i === r.tiers.length - 1 ? "var(--emerald)" : "var(--emerald-soft)",
-                                color: i === r.tiers.length - 1 ? "white" : "var(--emerald)",
-                              }}>
-                              {t.min}+ = {t.discount}% off
-                            </span>
-                          ))}
+                      <div className="p-3 pt-2.5">
+                        {/* Price story — solo vs group (concrete naira, not abstract %) */}
+                        {r.lowestRetailPrice > 0 && groupPrice > 0 && groupPrice < r.lowestRetailPrice ? (
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-[17px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fmt(groupPrice)}</span>
+                            <span className="text-[12px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(r.lowestRetailPrice)}</span>
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>with {bestTier?.min}+ people</span>
+                          </div>
+                        ) : r.lowestPrice > 0 ? (
+                          <p className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>From {fmt(r.lowestPrice)}</p>
+                        ) : null}
+                        {/* Tier chips */}
+                        {r.tiers.length > 0 && (
+                          <div className="flex items-center gap-1.5 mt-2">
+                            {r.tiers.map((t, i) => (
+                              <span key={i} className="text-[10px] font-bold px-2 py-1 rounded-[8px]"
+                                style={{
+                                  background: i === r.tiers.length - 1 ? "var(--emerald)" : "var(--emerald-soft)",
+                                  color: i === r.tiers.length - 1 ? "white" : "var(--emerald)",
+                                }}>
+                                {t.min}+ = {t.discount}% off
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {/* Ghost avatars + zero-risk nudge */}
+                        <div className="flex items-center gap-2 mt-2.5">
+                          <div className="flex -space-x-1.5">
+                            {[0, 1, 2].map(i => (
+                              <div key={i} className="w-[22px] h-[22px] rounded-full" style={{ border: "1.5px dashed var(--border)", background: "var(--sand)" }} />
+                            ))}
+                          </div>
+                          <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>No one joins? You still eat. Zero risk.</span>
                         </div>
-                      ) : null}
-                      {/* Ghost avatar slots — social energy for cold start */}
-                      <div className="flex items-center gap-2 mt-2.5">
-                        <div className="flex -space-x-1.5">
-                          {[0, 1, 2].map(i => (
-                            <div key={i} className="w-[22px] h-[22px] rounded-full" style={{ border: "1.5px dashed var(--border)", background: "var(--sand)" }} />
-                          ))}
+                        {/* Low-commitment CTA — "Browse menu" not "Start order" */}
+                        <div className="mt-3 h-[42px] rounded-[12px] flex items-center justify-between px-4 text-white" style={{ background: "var(--coral)" }}>
+                          <span className="text-[13px] font-bold">Browse menu</span>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                         </div>
-                        <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>Be the first to start</span>
                       </div>
-                      {/* Full-width CTA button */}
-                      <div className="mt-3 h-[42px] rounded-[12px] flex items-center justify-between px-4 text-white" style={{ background: "var(--coral)" }}>
-                        <span className="text-[13px] font-bold">Start a group order</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           )}
