@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
       await handleGroupOrderPayment(reference, amount);
     } else if (reference.startsWith("instant_")) {
       await handleInstantOrderPayment(reference, amount);
+    } else if (reference.startsWith("chop_")) {
+      await handleChopPayment(reference);
     } else {
       await handleLegacyOrderPayment(reference, amount);
     }
@@ -145,5 +147,22 @@ async function handleLegacyOrderPayment(reference: string, amount: number) {
       where: { id: order.dailyMenuId },
       data: { currentOrders: { increment: order.quantity } },
     });
+  });
+}
+
+async function handleChopPayment(reference: string) {
+  const session = await prisma.chopSession.findFirst({
+    where: { paymentRef: reference },
+  });
+  if (!session) return;
+  if (session.paymentStatus === "SUCCESS") return; // idempotent
+
+  await prisma.chopSession.update({
+    where: { id: session.id },
+    data: {
+      paymentStatus: "SUCCESS",
+      status: "PAID",
+      paidAt: new Date(),
+    },
   });
 }

@@ -40,6 +40,7 @@ model User {
   gangMembers       GangMember[]
   groupOrdersCreated  GroupOrder[]       @relation("GroupOrderCoordinator")
   groupOrderMembers   GroupOrderMember[]
+  chopSessions        ChopSession[]
 }
 
 model PushSubscription {
@@ -511,6 +512,59 @@ enum PoolStatus {
   COMPLETED  // all members paid, order placed
   EXPIRED    // deadline passed without filling
   CANCELLED  // creator or system cancelled
+}
+
+// ═══════════════════════════════════════
+// PRICE CHOP — Share-to-chop-the-price mechanic
+// ═══════════════════════════════════════
+
+model ChopSession {
+  id                 String      @id @default(cuid())
+  userId             String
+  shareCode          String      @unique
+  status             ChopStatus  @default(ACTIVE)
+  cartSnapshot       Json        // [{ productId, name, imageUrl, quantity, retailPrice, groupPrice }]
+  retailTotal        Int         // kobo — full price before chops
+  groupFloor         Int         // kobo — minimum price (sum of groupPrices)
+  chopAmountPerClick Int         // kobo — how much each friend chops off
+  maxChops           Int         // max number of chops allowed
+  currentChopCount   Int         @default(0)
+  currentTotal       Int         // kobo — retailTotal minus chops, never below groupFloor
+  deliveryFee        Int         @default(0)
+  serviceFee         Int         @default(0)
+  expiresAt          DateTime
+  paymentRef         String?
+  paymentStatus      PaymentStatus @default(PENDING)
+  paidAt             DateTime?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  user   User        @relation(fields: [userId], references: [id])
+  chops  ChopClick[]
+
+  @@index([shareCode])
+  @@index([userId])
+}
+
+model ChopClick {
+  id          String   @id @default(cuid())
+  sessionId   String
+  chopperName String
+  ipHash      String
+  amount      Int      // kobo — actual amount this chop removed
+  createdAt   DateTime @default(now())
+
+  session ChopSession @relation(fields: [sessionId], references: [id])
+
+  @@unique([sessionId, ipHash])
+  @@index([sessionId])
+}
+
+enum ChopStatus {
+  ACTIVE
+  PAID
+  EXPIRED
+  CANCELLED
 }
 
 // ═══════════════════════════════════════

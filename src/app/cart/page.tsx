@@ -33,6 +33,7 @@ export default function CartPage() {
   const [realDeliveryFee, setRealDeliveryFee] = useState<number | null>(null);
   const [deliveryToggle, setDeliveryToggle] = useState<"pickup" | "delivery">("pickup");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [chopLoading, setChopLoading] = useState(false);
 
   // Load delivery preference
   useEffect(() => {
@@ -120,6 +121,32 @@ export default function CartPage() {
     if (cart.items.length === 0) return false;
     if (deliveryToggle === "delivery" && !deliveryAddress.trim()) { setError("Enter a delivery address"); return false; }
     return true;
+  }
+
+  async function handleChop() {
+    if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; }
+    if (!validateBeforePay()) return;
+    setChopLoading(true); setError(null);
+    try {
+      // Fetch product details for chop-eligible items
+      const chopItems: Array<{ productId: string; quantity: number; retailPrice: number; groupPrice: number; name: string; imageUrl: string | null }> = [];
+      for (const item of cart.items) {
+        const pid = item.dailyMenuId.replace("instant-", "");
+        const res = await fetch(`/api/products/${pid}`);
+        const json = await res.json();
+        if (json.success && json.data && json.data.retailPrice > json.data.groupPrice) {
+          chopItems.push({ productId: pid, quantity: item.quantity, retailPrice: json.data.retailPrice, groupPrice: json.data.groupPrice, name: item.name, imageUrl: item.imageUrl });
+        }
+      }
+      if (chopItems.length === 0) { setError("No items eligible for Price Chop"); setChopLoading(false); return; }
+      const res = await fetch("/api/chop", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: chopItems }) });
+      const json = await res.json();
+      if (json.success) {
+        cart.clearCart();
+        window.location.href = `/chop/${json.data.shareCode}`;
+      } else { setError(json.error || "Failed to create chop session"); }
+    } catch { setError("Network error"); }
+    setChopLoading(false);
   }
 
   async function handlePay() {
@@ -361,18 +388,28 @@ export default function CartPage() {
             ) : (
               <>
                 {error && <div className="text-[12px] font-bold p-2.5 rounded-[10px] mb-2 text-center" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>{error}</div>}
-                <button type="button"
-                  onClick={() => {
-                    if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; }
-                    if (!validateBeforePay()) return;
-                    setConfirmOpen(true);
-                  }}
-                  disabled={loading}
-                  className="w-full h-[50px] rounded-[12px] text-[15px] font-bold text-white flex items-center justify-between px-5 press-feedback disabled:opacity-50"
-                  style={{ background: isAuthenticated === false ? "var(--dark)" : "var(--coral)" }}>
-                  <span>{loading ? "Processing\u2026" : isAuthenticated === false ? "Log in to pay" : "Pay now"}</span>
-                  <span className="text-[15px] font-extrabold tabular-nums">{formatNaira(orderTotal)}</span>
-                </button>
+                <div className="flex gap-2.5">
+                  <button type="button"
+                    onClick={() => {
+                      if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; }
+                      if (!validateBeforePay()) return;
+                      setConfirmOpen(true);
+                    }}
+                    disabled={loading}
+                    className="flex-1 h-[50px] rounded-full flex flex-col items-center justify-center press-feedback disabled:opacity-50"
+                    style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
+                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>{isAuthenticated === false ? "Log in" : "Pay solo"}</span>
+                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(orderTotal)}</span>
+                  </button>
+                  <button type="button"
+                    onClick={handleChop}
+                    disabled={chopLoading || loading}
+                    className="flex-[1.4] h-[50px] rounded-full flex flex-col items-center justify-center text-white press-feedback disabled:opacity-50"
+                    style={{ background: "var(--coral)" }}>
+                    <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>{chopLoading ? "Creating..." : "Share to Chop"}</span>
+                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>from {formatNaira(Math.round(orderTotal * 0.7))}</span>
+                  </button>
+                </div>
                 <div className="flex items-center justify-center gap-3 mt-2">
                   <div className="flex items-center gap-1">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
