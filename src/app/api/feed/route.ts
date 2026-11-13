@@ -252,11 +252,40 @@ export async function GET() {
     return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
   });
 
+  // Fetch group-deal products for item-level filtering
+  const dealProducts = await prisma.product.findMany({
+    where: { isActive: true, category: "Food", retailPrice: { gt: 0 } },
+    select: {
+      id: true, name: true, imageUrl: true, retailPrice: true, groupPrice: true, minPoolSize: true,
+      vendor: { select: { id: true, name: true } },
+    },
+    orderBy: { groupPrice: "asc" },
+    take: 50,
+  });
+  const dealItems = dealProducts
+    .filter(p => p.groupPrice < p.retailPrice)
+    .map(p => {
+      const pool = activePools.find(ap => ap.product.vendorId === p.vendor.id);
+      return {
+        id: p.id,
+        name: p.name,
+        imageUrl: p.imageUrl,
+        retailPrice: p.retailPrice,
+        groupPrice: p.groupPrice,
+        savings: Math.round(((p.retailPrice - p.groupPrice) / p.retailPrice) * 100),
+        restaurantId: p.vendor.id,
+        restaurantName: p.vendor.name,
+        minPoolSize: p.minPoolSize,
+        activePool: pool ? { memberCount: pool.members.length, minSize: pool.minSize } : null,
+      };
+    });
+
   return NextResponse.json({
     success: true,
     data: {
       activeOrders,
       inactiveRestaurants,
+      dealItems,
       totalActive: activeOrders.length,
       weeklyOrderCount: Array.from(recentActivity.values()).reduce((s, a) => s + a.count, 0),
     },

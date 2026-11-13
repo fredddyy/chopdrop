@@ -42,6 +42,12 @@ interface InactiveRestaurant {
   livePools: { count: number; totalMembers: number; bestFill: number; memberNames: string[] };
 }
 
+interface DealItem {
+  id: string; name: string; imageUrl: string | null; retailPrice: number; groupPrice: number;
+  savings: number; restaurantId: string; restaurantName: string; minPoolSize: number;
+  activePool: { memberCount: number; minSize: number } | null;
+}
+
 function fmt(kobo: number): string {
   return "\u20A6" + (kobo / 100).toLocaleString();
 }
@@ -64,6 +70,7 @@ function StoreImg({ src, fallback }: { src: string | null; fallback: string }) {
 export default function HomePage() {
   const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
   const [inactiveRestaurants, setInactiveRestaurants] = useState<InactiveRestaurant[]>([]);
+  const [dealItems, setDealItems] = useState<DealItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [totalActive, setTotalActive] = useState(0);
@@ -95,6 +102,7 @@ export default function HomePage() {
         if (d.success) {
           setActiveOrders(d.data.activeOrders);
           setInactiveRestaurants(d.data.inactiveRestaurants);
+          setDealItems(d.data.dealItems || []);
           setTotalActive(d.data.totalActive);
           setWeeklyOrderCount(d.data.weeklyOrderCount || 0);
         } else {
@@ -115,8 +123,9 @@ export default function HomePage() {
             if (d.success) {
               setActiveOrders(d.data.activeOrders);
               setInactiveRestaurants(d.data.inactiveRestaurants);
+              setDealItems(d.data.dealItems || []);
               setTotalActive(d.data.totalActive);
-          setWeeklyOrderCount(d.data.weeklyOrderCount || 0);
+              setWeeklyOrderCount(d.data.weeklyOrderCount || 0);
             }
           })
           .catch(() => {});
@@ -197,6 +206,7 @@ export default function HomePage() {
       )}
 
       {!loading && !error && (() => {
+        const isItemView = filter === "deals" || filter === "live";
         const filteredRestaurants = inactiveRestaurants.filter(r => {
           if (filter === "all") return true;
           if (filter === "deals") return r.groupDealCount > 0;
@@ -204,10 +214,59 @@ export default function HomePage() {
           if (filter === "popular") return r.recentOrderCount > 0;
           return true;
         });
+        const filteredItems = isItemView
+          ? dealItems.filter(d => filter === "live" ? d.activePool !== null : true)
+          : [];
         return (
         <div>
+          {/* ═══ ITEM CARDS — shown when filtering by deals or live ═══ */}
+          {isItemView && filteredItems.length > 0 && (
+            <div className="px-5 pt-4">
+              <h2 className="text-[18px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                {filter === "live" ? "Live group deals" : "Group deals"}
+              </h2>
+              <div className="grid grid-cols-2 gap-3">
+                {filteredItems.map(item => (
+                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block">
+                    <div className="relative rounded-[16px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                      {item.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
+                        </div>
+                      )}
+                      {/* Savings badge */}
+                      <span className="absolute top-2 left-2 text-[9px] font-extrabold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>
+                        {item.savings}% off
+                      </span>
+                      {/* Active pool badge */}
+                      {item.activePool && (
+                        <span className="absolute top-2 right-2 text-[9px] font-bold px-2 py-0.5 rounded-full text-white inline-flex items-center gap-0.5" style={{ background: "rgba(0,0,0,0.7)" }}>
+                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+                          {item.activePool.memberCount} in
+                        </span>
+                      )}
+                    </div>
+                    <div className="pt-2">
+                      <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                      <p className="text-[10px] truncate" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
+                      <div className="flex items-baseline gap-1.5 mt-0.5">
+                        <span className="text-[15px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
+                        <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                      </div>
+                      <p className="text-[9px] font-bold mt-0.5" style={{ color: item.activePool ? "var(--coral)" : "var(--text-muted)" }}>
+                        {item.activePool ? `${item.activePool.memberCount} of ${item.activePool.minSize} joined` : `${item.minPoolSize} people needed`}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           {/* ═══ LIVE ORDERS — restaurants with active group orders ═══ */}
-          {activeOrders.length > 0 && (
+          {!isItemView && activeOrders.length > 0 && (
             <div className="px-5 pt-4">
               <div className="flex items-center gap-2 mb-4">
                 <span className="relative flex h-2.5 w-2.5">
@@ -313,7 +372,7 @@ export default function HomePage() {
           )}
 
           {/* ═══ COLD START — social proof + zero-risk + price stories ═══ */}
-          {activeOrders.length === 0 && inactiveRestaurants.length > 0 && (
+          {!isItemView && activeOrders.length === 0 && inactiveRestaurants.length > 0 && (
             <div className="px-5 pt-4">
               {/* Returning user greeting */}
               {isReturning ? (
@@ -460,7 +519,7 @@ export default function HomePage() {
           )}
 
           {/* ═══ RESTAURANTS BELOW ACTIVE ORDERS — compact grid ═══ */}
-          {activeOrders.length > 0 && inactiveRestaurants.length > 0 && (
+          {!isItemView && activeOrders.length > 0 && inactiveRestaurants.length > 0 && (
             <div className="px-5 mt-6">
               <h2 className="text-[15px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
                 Start a new order
