@@ -7,9 +7,56 @@ import { parseGroupTiers, getGroupDiscount } from "@/lib/group-tier-pricing";
 
 // GET /api/group-orders?mine=true — list user's group orders
 // GET /api/group-orders?gangId=xxx — list group orders for a gang
+// GET /api/group-orders?restaurantId=xxx — active group order for a restaurant (public)
 export async function GET(request: NextRequest) {
   const mine = request.nextUrl.searchParams.get("mine");
   const gangId = request.nextUrl.searchParams.get("gangId");
+  const restaurantId = request.nextUrl.searchParams.get("restaurantId");
+
+  // Public — active group order for a restaurant (no auth needed)
+  if (restaurantId) {
+    const now = new Date();
+    const order = await prisma.groupOrder.findFirst({
+      where: { restaurantId, status: "OPEN", deadline: { gt: now } },
+      include: {
+        coordinator: { select: { firstName: true } },
+        members: {
+          select: {
+            userId: true,
+            paymentStatus: true,
+            user: { select: { firstName: true } },
+          },
+          orderBy: { createdAt: "desc" },
+        },
+        restaurant: { select: { groupTiers: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!order) return NextResponse.json({ success: true, data: null });
+
+    const paidCount = order.members.filter(m => m.paymentStatus === "SUCCESS").length;
+    const tiers = parseGroupTiers(order.restaurant.groupTiers);
+    const { discount, nextTier } = getGroupDiscount(tiers, paidCount);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: order.id,
+        inviteCode: order.inviteCode,
+        deadline: order.deadline,
+        status: order.status,
+        coordinatorName: order.coordinator.firstName,
+        memberCount: order.members.length,
+        paidMemberCount: paidCount,
+        memberNames: order.members.slice(0, 6).map(m => m.user.firstName),
+        currentDiscount: discount,
+        nextTier,
+        spotsToNextTier: nextTier ? Math.max(0, nextTier.min - paidCount) : 0,
+        tiers,
+      },
+    });
+  }
 
   const user = await getUserFromCookie();
   if (!user) return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });

@@ -198,75 +198,73 @@ export default function StorePage() {
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-40" style={{ background: "var(--bg)" }}>
 
-      {/* ── Header ── */}
-      <div className="px-5 pt-4 flex items-center justify-between">
-        <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback" style={{ background: "var(--sand)" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+      {/* ── Header — clean nav ── */}
+      <div className="px-5 pt-4 flex items-center gap-3">
+        <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback shrink-0" style={{ background: "var(--sand)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
-        <div className="text-center">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>Local Kitchens</p>
-          <p className="text-[14px] font-extrabold" style={{ color: "#1C1C1E", fontFamily: "'Bricolage Grotesque', sans-serif" }}>A kitchen your people trust</p>
-        </div>
-        <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
-        </button>
-      </div>
-
-      {/* ── Vendor profile ── */}
-      <div className="px-5 mt-5 flex items-center gap-4">
-        {store.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={store.imageUrl} alt={store.name} className="w-14 h-14 rounded-full object-cover shrink-0" />
-        ) : (
-          <div className="w-14 h-14 rounded-full flex items-center justify-center text-[18px] font-extrabold shrink-0" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>
-            {store.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2)}
-          </div>
-        )}
-        <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>{store.name}</h1>
-          <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
-        </div>
-      </div>
-
-      {/* ── Rating + pools badges ── */}
-      <div className="px-5 mt-3 flex items-center gap-2 flex-wrap">
-        <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "var(--sand)", color: "#1C1C1E" }}>
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="inline-block -mt-px mr-1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-          4.9 · 128 reviews
-        </span>
-        <span className="text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: "var(--sand)", color: "#1C1C1E" }}>
-          {store.products.length} pools completed
-        </span>
-        <Link href={`/group/create?restaurant=${id}`} className="text-[11px] font-bold px-3 py-1 rounded-full press-feedback" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="inline-block -mt-px mr-1"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-          Order with friends
+        <h1 className="text-[18px] font-extrabold flex-1 truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h1>
+        <Link href="/cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
         </Link>
       </div>
 
+      {/* ── Banner + vendor info ── */}
+      {store.bannerUrl && (
+        <div className="px-5 mt-3">
+          <div className="h-[140px] rounded-[16px] overflow-hidden relative" style={{ background: "var(--sand)" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={store.bannerUrl} alt={store.name} className="w-full h-full object-cover" />
+            {store.imageUrl && (
+              <div className="absolute bottom-3 left-3 w-[40px] h-[40px] rounded-full overflow-hidden" style={{ border: "3px solid white" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={store.imageUrl} alt="" className="w-full h-full object-cover" />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="px-5 mt-3">
+        <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
+      </div>
 
-      {/* ═══ GROUP DISCOUNT TIERS — if restaurant has them ═══ */}
+      {/* ═══ GROUP ORDER STATUS — the social commerce hub ═══ */}
       {(() => {
         const tiers = parseStoreTiers(store.groupTiers);
-        if (tiers.length === 0) return null;
         return (
-          <div className="px-5 mt-5">
+          <div className="px-5 mt-4">
             <div className="rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2" style={{ color: "var(--emerald)" }}>Group discount</p>
-              <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Order together, save more</p>
-              <div className="flex gap-2 mt-3">
-                {tiers.map((t) => (
-                  <div key={t.min} className="flex-1 rounded-[10px] py-2 text-center" style={{ background: "rgba(255,255,255,0.08)" }}>
-                    <p className="text-[16px] font-extrabold text-white tabular-nums">{t.min}+</p>
-                    <p className="text-[10px] mt-0.5" style={{ color: "var(--subdued)" }}>people</p>
-                    <p className="text-[12px] font-extrabold mt-1" style={{ color: "var(--emerald)" }}>{t.discount}% off</p>
-                  </div>
-                ))}
+              {/* Active order state — will be populated when someone starts one */}
+              <div className="flex items-center gap-2 mb-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                <p className="text-[13px] font-bold text-white">Group order</p>
               </div>
-              <p className="text-[11px] mt-3" style={{ color: "var(--subdued)" }}>Start a group order. Everyone pays full price upfront. After the deadline, your discount is credited back to your wallet.</p>
+              <p className="text-[12px] leading-[155%]" style={{ color: "var(--subdued)" }}>
+                Pick your food below. Share with friends. More people order, everyone saves. No one joins? You still eat at regular price.
+              </p>
+              {/* Tier breakdown */}
+              {tiers.length > 0 && (
+                <div className="flex gap-2 mt-3">
+                  {tiers.map((t) => (
+                    <div key={t.min} className="flex-1 rounded-[10px] py-2 text-center" style={{ background: "rgba(255,255,255,0.08)" }}>
+                      <p className="text-[14px] font-extrabold text-white tabular-nums">{t.min}+</p>
+                      <p className="text-[9px]" style={{ color: "var(--subdued)" }}>people</p>
+                      <p className="text-[11px] font-extrabold mt-0.5" style={{ color: "var(--emerald)" }}>{t.discount}% off</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* CTA */}
+              <Link href={`/group/create?restaurant=${id}`} className="mt-3 h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+                Start a group order
+              </Link>
             </div>
           </div>
         );
       })()}
+
+
+      {/* Group discount tiers moved into the Group Order Status card above */}
 
       {/* ═══ GROUP DEALS — real pool data, hidden when expired ═══ */}
       {featured && (hasLivePool || featuredSav > 0) && (
