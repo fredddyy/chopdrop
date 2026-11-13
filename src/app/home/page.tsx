@@ -226,13 +226,17 @@ export default function HomePage() {
                 {filter === "live" ? "Live group deals" : "Group deals"}
               </h2>
               <div className="grid grid-cols-2 gap-3">
-                {filteredItems.map(item => (
-                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                    {/* Image with bottom fade */}
-                    <div className="relative" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                {filteredItems.map(item => {
+                  const poolMembers = item.activePool?.memberCount || 0;
+                  const spotsLeft = item.minPoolSize - poolMembers;
+                  const hasPool = item.activePool && poolMembers > 0;
+                  return (
+                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[16px] overflow-hidden" style={{ background: "var(--card)", borderBottom: "2px solid var(--coral)" }}>
+                    {/* Image */}
+                    <div className="relative" style={{ aspectRatio: "4/3", background: "var(--sand)" }}>
                       {item.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <span className="text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
@@ -242,18 +246,8 @@ export default function HomePage() {
                       <div className="absolute top-0 left-0 px-2.5 py-1 text-[10px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 12px 0" }}>
                         -{item.savings}%
                       </div>
-                      {/* Active pool — bottom right overlay */}
-                      {item.activePool && (
-                        <div className="absolute bottom-2 right-2 flex -space-x-1">
-                          {Array.from({ length: Math.min(item.activePool.memberCount, 3) }).map((_, j) => (
-                            <div key={j} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "var(--gold)"][j % 3], border: "1.5px solid white" }}>
-                              {String.fromCharCode(65 + j)}
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </div>
-                    {/* Info — inside card padding */}
+                    {/* Info */}
                     <div className="px-3 pt-2.5 pb-3">
                       <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                       <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
@@ -262,26 +256,22 @@ export default function HomePage() {
                         <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
                         <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
                       </div>
-                      {/* Pool status — avatar dots + text */}
-                      <div className="flex items-center gap-1.5 mt-2">
-                        <div className="flex -space-x-1">
-                          {Array.from({ length: Math.min(item.minPoolSize, 4) }).map((_, j) => {
-                            const filled = item.activePool ? j < item.activePool.memberCount : false;
-                            return (
-                              <div key={j} className="w-[16px] h-[16px] rounded-full flex items-center justify-center text-[6px] font-bold"
-                                style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "1.5px solid var(--card)" : "1.5px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
-                                {filled ? "!" : "?"}
-                              </div>
-                            );
-                          })}
+                      {/* Pool status — mini progress bar + conversational copy */}
+                      <div className="mt-2">
+                        <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${hasPool ? Math.round((poolMembers / item.minPoolSize) * 100) : 0}%`, background: "var(--emerald)", transition: "width 0.5s ease" }} />
                         </div>
-                        <span className="text-[9px] font-bold" style={{ color: item.activePool ? "var(--coral)" : "var(--text-muted)" }}>
-                          {item.activePool ? `${item.activePool.memberCount} joined` : `${item.minPoolSize} needed`}
-                        </span>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-[11px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--coral)" }}>
+                            {hasPool ? `${poolMembers} joined` : `Need ${spotsLeft} people`}
+                          </span>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
+                        </div>
                       </div>
                     </div>
                   </Link>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
