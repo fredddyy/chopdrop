@@ -597,16 +597,43 @@ export default function ProductDetailPage() {
                   ? `1 of ${poolSize} joined`
                   : `${poolSize} people needed`}
             </span>
-            <span className="ml-auto text-[11px] font-bold tabular-nums flex items-center gap-1" style={{ color: "var(--coral)" }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-              {pool && timeLeft > 0 && memberCount > 0
+            {(() => {
+              const isLive = pool && timeLeft > 0 && memberCount > 0;
+              const totalSecs = poolTimerHours * 3600;
+              const pct = isLive ? Math.max(0, Math.min(1, timeLeft / totalSecs)) : 1;
+              const urgent = isLive && timeLeft < 300;
+              const half = isLive && timeLeft < totalSecs / 2 && !urgent;
+              const timerColor = urgent ? "var(--coral)" : half ? "var(--gold)" : "var(--emerald)";
+              const r = 18; const c = 2 * Math.PI * r; const offset = c * (1 - pct);
+              const timeStr = isLive
                 ? (timeLeft >= 3600
-                    ? `${Math.floor(timeLeft / 3600)}h ${Math.floor((timeLeft % 3600) / 60)}m ${timeLeft % 60}s`
-                    : timeLeft >= 60
-                      ? `${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`
-                      : `${timeLeft}s`)
-                : `${poolTimerHours}h window`}
-            </span>
+                    ? `${Math.floor(timeLeft / 3600)}:${String(Math.floor((timeLeft % 3600) / 60)).padStart(2, "0")}:${String(timeLeft % 60).padStart(2, "0")}`
+                    : `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, "0")}`)
+                : `${poolTimerHours}h`;
+              return (
+                <div className="ml-auto flex items-center gap-1.5" style={{ animation: urgent ? "pulse 1.5s ease-in-out infinite" : "none" }}>
+                  <div className="relative w-[36px] h-[36px]">
+                    <svg width="36" height="36" viewBox="0 0 40 40" className="block" style={{ transform: "rotate(-90deg)" }}>
+                      <circle cx="20" cy="20" r={r} fill="none" stroke="var(--sand)" strokeWidth="3" />
+                      <circle cx="20" cy="20" r={r} fill="none" stroke={timerColor} strokeWidth="3"
+                        strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="round"
+                        style={{ transition: "stroke-dashoffset 1s linear, stroke 0.5s ease" }} />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-[8px] font-extrabold tabular-nums" style={{ color: timerColor }}>
+                      {isLive ? (timeLeft >= 3600 ? `${Math.floor(timeLeft / 3600)}h` : `${Math.floor(timeLeft / 60)}m`) : `${poolTimerHours}h`}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[12px] font-extrabold tabular-nums block leading-none" style={{ color: timerColor, fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                      {timeStr}
+                    </span>
+                    <span className="text-[9px] font-medium block mt-0.5" style={{ color: "var(--text-muted)" }}>
+                      {isLive ? (urgent ? "hurry!" : "left to fill") : "window"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
