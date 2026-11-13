@@ -597,7 +597,7 @@ export default function ProductDetailPage() {
             </span>
             <span className="ml-auto text-[11px] font-bold tabular-nums flex items-center gap-1" style={{ color: "var(--coral)" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-              {pool && timeLeft > 0
+              {pool && timeLeft > 0 && memberCount > 0
                 ? (timeLeft >= 3600
                     ? `${Math.floor(timeLeft / 3600)}h ${Math.floor((timeLeft % 3600) / 60)}m ${timeLeft % 60}s`
                     : timeLeft >= 60
