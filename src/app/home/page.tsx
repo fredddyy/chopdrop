@@ -354,7 +354,15 @@ export default function HomePage() {
 
                       {/* Info — below banner, no card wrapper needed */}
                       <div className="pt-2.5 pb-1">
-                        <h3 className="text-[15px] font-bold" style={{ color: "var(--text)" }}>{r.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-[15px] font-bold" style={{ color: "var(--text)" }}>{r.name}</h3>
+                          {r.livePools.count > 0 && (
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 shrink-0" style={{ background: "var(--coral)", color: "white" }}>
+                              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                              {r.livePools.count} live · {r.livePools.totalMembers} in
+                            </span>
+                          )}
+                        </div>
                         {/* Delivery metadata row */}
                         <div className="flex items-center gap-1 mt-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
                           {r.lowestPrice > 0 && (
@@ -404,15 +412,6 @@ export default function HomePage() {
                               Save up to 30% with group orders
                             </p>
                           )
-                        )}
-                        {/* Live pool pill — single group activity signal */}
-                        {r.livePools.count > 0 && (
-                          <div className="mt-2">
-                            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1" style={{ background: "var(--coral)", color: "white" }}>
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                              {r.livePools.totalMembers} {r.livePools.totalMembers === 1 ? "person" : "people"} joining
-                            </span>
-                          </div>
                         )}
                       </div>
                     </Link>
