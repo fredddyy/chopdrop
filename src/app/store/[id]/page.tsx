@@ -48,6 +48,7 @@ export default function StorePage() {
   const [error, setError] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const [addedToast, setAddedToast] = useState("");
+  const [menuSearch, setMenuSearch] = useState("");
   const [livePools, setLivePools] = useState<RealPool[]>([]);
   const cart = useCart();
 
@@ -139,8 +140,10 @@ export default function StorePage() {
     return (
       <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
         <div className="py-20 text-center px-8">
-          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "#1C1C1E" }}>Couldn&apos;t load store</h2>
-          <button type="button" onClick={() => router.push("/discover")} className="text-[14px] font-bold mt-3 cursor-pointer" style={{ color: "var(--coral)" }}>Back to Discover</button>
+          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "#1C1C1E" }}>Couldn&apos;t load restaurant</h2>
+          <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
+          <button type="button" onClick={() => window.location.reload()} className="h-11 px-6 rounded-[12px] text-[13px] font-bold text-white cursor-pointer press-feedback" style={{ background: "var(--coral)" }}>Try again</button>
+          <button type="button" onClick={() => router.push("/home")} className="text-[13px] font-bold mt-3 block cursor-pointer" style={{ color: "var(--text-muted)" }}>Back to home</button>
         </div>
         <BottomNav />
       </main>
@@ -185,7 +188,9 @@ export default function StorePage() {
   const menuTabs = [...new Set(allItems.map((p) => p.subcategory || p.category))];
   // Default to first tab
   const currentTab = menuTabs.includes(activeTab) ? activeTab : menuTabs[0] || "";
-  const filteredItems = menuTabs.length <= 1 ? allItems : allItems.filter((p) => (p.subcategory || p.category) === currentTab);
+  const tabFiltered = menuTabs.length <= 1 ? allItems : allItems.filter((p) => (p.subcategory || p.category) === currentTab);
+  const sq = menuSearch.trim().toLowerCase();
+  const filteredItems = sq.length >= 2 ? tabFiltered.filter(p => p.name.toLowerCase().includes(sq)) : tabFiltered;
 
   // Group by subcategory
   const grouped = new Map<string, Product[]>();
@@ -254,10 +259,27 @@ export default function StorePage() {
                   ))}
                 </div>
               )}
-              {/* CTA */}
+              {/* CTAs — start + share */}
               <Link href={`/group/create?restaurant=${id}`} className="mt-3 h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
                 Start a group order
               </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  const url = typeof window !== "undefined" ? `${window.location.origin}/store/${id}` : "";
+                  const text = `Order from ${store.name} on ChopDrop. More people join, everyone saves up to ${tiers.length > 0 ? tiers[tiers.length - 1].discount : 30}%. ${url}`;
+                  if (navigator.share) {
+                    navigator.share({ title: store.name, text, url }).catch(() => {});
+                  } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(() => { setAddedToast("Link copied!"); setTimeout(() => setAddedToast(""), 2000); }).catch(() => {});
+                  }
+                }}
+                className="mt-2 h-[38px] rounded-[12px] flex items-center justify-center gap-2 text-[12px] font-bold cursor-pointer press-feedback"
+                style={{ background: "rgba(255,255,255,0.1)", color: "white" }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" /></svg>
+                Share with friends on WhatsApp
+              </button>
             </div>
           </div>
         );
@@ -267,9 +289,21 @@ export default function StorePage() {
       {/* Group discount tiers moved into the Group Order Status card above */}
 
       {/* ═══ THE FULL MENU ═══ */}
-      <section className="px-5 mt-8">
-        <h2 className="text-[24px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>The full menu</h2>
-        <p className="text-[13px] mt-1" style={{ color: "var(--text-muted)" }}>Tap any item to see pool pricing. Solo orders use the full price.</p>
+      <section className="px-5 mt-6">
+        <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Menu</h2>
+
+        {/* Menu search */}
+        <div className="relative mt-3 mb-3">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+          <input
+            type="text"
+            value={menuSearch}
+            onChange={(e) => setMenuSearch(e.target.value)}
+            placeholder="Search menu..."
+            className="w-full h-[38px] pl-9 pr-3 rounded-[10px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
+            style={{ background: "var(--sand)", color: "var(--text)" }}
+          />
+        </div>
 
         {/* Category pills — 44px touch target */}
         <div className="flex overflow-x-auto hide-scrollbar gap-2 mt-4">
@@ -306,11 +340,13 @@ export default function StorePage() {
                     const hasPool = item.groupPrice < item.retailPrice;
                     const sav = hasPool ? Math.round(((item.retailPrice - item.groupPrice) / item.retailPrice) * 100) : 0;
                     const inCart = cart.items.find((c) => c.dailyMenuId === item.id)?.quantity || 0;
+                    const itemPool = livePools.find(lp => lp.productId === item.id);
+                    const poolMins = itemPool ? Math.max(0, Math.round((new Date(itemPool.deadline).getTime() - Date.now()) / 60000)) : 0;
                     return (
                       <div key={item.id}>
                         {i > 0 && <div className="mx-4 h-px" style={{ background: "var(--border)" }} />}
                         <div className="flex items-center gap-3 px-4 py-3">
-                          <Link href={`/product/${item.id}`} className="shrink-0">
+                          <Link href={`/product/${item.id}`} className="shrink-0 relative">
                             {item.imageUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={item.imageUrl} alt={item.name} className="w-[56px] h-[56px] rounded-[12px] object-cover" loading="lazy" />
@@ -319,10 +355,21 @@ export default function StorePage() {
                                 <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
                               </div>
                             )}
+                            {/* Live pool badge on image */}
+                            {itemPool && poolMins > 0 && (
+                              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[8px] font-bold text-white px-1" style={{ background: "var(--emerald)" }}>
+                                {itemPool.memberCount}
+                              </span>
+                            )}
                           </Link>
                           <Link href={`/product/${item.id}`} className="flex-1 min-w-0 press-feedback">
-                            {/* 2-line wrap instead of truncate */}
                             <h4 className="text-[14px] font-bold leading-[135%]" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4>
+                            {/* Live pool status line */}
+                            {itemPool && poolMins > 0 && (
+                              <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>
+                                {itemPool.memberCount}/{itemPool.minSize} joined · {poolMins > 60 ? `${Math.floor(poolMins / 60)}h ${poolMins % 60}m` : `${poolMins}m`} left
+                              </p>
+                            )}
                             <div className="flex items-baseline gap-1.5 mt-0.5">
                               {hasPool ? (
                                 <>
