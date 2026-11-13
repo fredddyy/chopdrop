@@ -247,34 +247,106 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* ═══ INACTIVE RESTAURANTS — "Start an order" ═══ */}
-          {inactiveRestaurants.length > 0 && (
+          {/* ═══ COLD START — when no active orders, show value prop + restaurants ═══ */}
+          {activeOrders.length === 0 && inactiveRestaurants.length > 0 && (
+            <div className="px-5 pt-4">
+              {/* Value proposition — explains the mechanic */}
+              <div className="rounded-[16px] p-5 mb-5" style={{ background: "var(--dark)" }}>
+                <h2 className="text-[20px] font-extrabold text-white leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  Order together,<br />save together.
+                </h2>
+                <p className="text-[12px] mt-2 leading-[155%]" style={{ color: "var(--subdued)" }}>
+                  Pick a restaurant. Start a group order. More people join, everyone&apos;s bill drops. 3 people = 10% off. 5 = 20%. 10 = 30%.
+                </p>
+                <div className="flex gap-2 mt-3">
+                  {[
+                    { n: "3+", save: "10%" },
+                    { n: "5+", save: "20%" },
+                    { n: "10+", save: "30%" },
+                  ].map((tier) => (
+                    <div key={tier.n} className="flex-1 rounded-[10px] py-2 text-center" style={{ background: "rgba(255,255,255,0.08)" }}>
+                      <p className="text-[14px] font-extrabold tabular-nums text-white">{tier.n}</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: "var(--subdued)" }}>people</p>
+                      <p className="text-[10px] font-extrabold mt-0.5" style={{ color: "var(--emerald)" }}>{tier.save} off</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Restaurant list — each card has group CTA */}
+              <h2 className="text-[15px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                Pick a restaurant to start
+              </h2>
+              <div className="flex flex-col gap-3">
+                {inactiveRestaurants.map((r) => (
+                  <Link key={r.id} href={`/store/${r.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
+                    {/* Banner with rounded corners */}
+                    <div className="p-2 pb-0">
+                      <div className="h-[120px] relative rounded-[12px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                        <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
+                        {r.imageUrl && (
+                          <div className="absolute bottom-2 left-2 w-[36px] h-[36px] rounded-full overflow-hidden" style={{ border: "3px solid white" }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-start justify-between">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-[15px] font-bold truncate" style={{ color: "var(--text)" }}>{r.name}</h3>
+                          <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{r.address}</p>
+                          {r.lowestPrice > 0 && (
+                            <p className="text-[12px] font-bold mt-1" style={{ color: "var(--text)" }}>From {fmt(r.lowestPrice)}</p>
+                          )}
+                        </div>
+                      </div>
+                      {/* Tier info + CTA */}
+                      <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+                        {r.tiers.length > 0 ? (
+                          <div className="flex items-center gap-1.5">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                            <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Up to {r.tiers[r.tiers.length - 1].discount}% off with {r.tiers[r.tiers.length - 1].min}+ people</span>
+                          </div>
+                        ) : (
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Group discounts available</span>
+                        )}
+                        <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>Start order →</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ═══ RESTAURANTS BELOW ACTIVE ORDERS — compact grid ═══ */}
+          {activeOrders.length > 0 && inactiveRestaurants.length > 0 && (
             <div className="px-5 mt-6">
               <h2 className="text-[15px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                {activeOrders.length > 0 ? "Start a new order" : "Restaurants near you"}
+                Start a new order
               </h2>
               <div className="grid grid-cols-2 gap-3">
                 {inactiveRestaurants.map((r) => (
                   <Link key={r.id} href={`/store/${r.id}`} className="rounded-[16px] overflow-hidden press-feedback" style={{ background: "var(--card)" }}>
-                    <div className="h-[100px] relative" style={{ background: "var(--sand)" }}>
-                      <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
-                      {r.imageUrl && (
-                        <div className="absolute bottom-2 left-2 w-[30px] h-[30px] rounded-full overflow-hidden" style={{ border: "2px solid white" }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
-                        </div>
-                      )}
+                    <div className="p-1.5 pb-0">
+                      <div className="h-[90px] relative rounded-[10px] overflow-hidden" style={{ background: "var(--sand)" }}>
+                        <StoreImg src={r.bannerUrl || r.imageUrl} fallback={r.name.charAt(0)} />
+                        {r.imageUrl && (
+                          <div className="absolute bottom-1.5 left-1.5 w-[26px] h-[26px] rounded-full overflow-hidden" style={{ border: "2px solid white" }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="p-2.5">
+                    <div className="p-2.5 pt-2">
                       <p className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{r.name}</p>
-                      {r.lowestPrice > 0 && (
-                        <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>From {fmt(r.lowestPrice)}</p>
-                      )}
                       {r.tiers.length > 0 && (
-                        <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>
-                          Up to {r.tiers[r.tiers.length - 1].discount}% off with groups
-                        </p>
+                        <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>Save up to {r.tiers[r.tiers.length - 1].discount}%</p>
                       )}
+                      <p className="text-[10px] font-bold mt-1" style={{ color: "var(--coral)" }}>Start order →</p>
                     </div>
                   </Link>
                 ))}
