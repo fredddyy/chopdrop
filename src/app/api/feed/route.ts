@@ -60,6 +60,9 @@ export async function GET() {
         select: { name: true, groupPrice: true, retailPrice: true },
         orderBy: { groupPrice: "asc" },
       },
+      _count: {
+        select: { products: { where: { isActive: true, category: "Food" } } },
+      },
     },
     orderBy: { sortOrder: "asc" },
   });
@@ -100,6 +103,7 @@ export async function GET() {
     tiers: Array<{ min: number; discount: number }>;
     recentOrderCount: number;
     recentOrderNames: string[];
+    groupDealCount: number;
   }> = [];
 
   // Query recent group order activity per restaurant (last 7 days)
@@ -201,6 +205,7 @@ export async function GET() {
         rating: 0, // Real ratings — will be populated from actual review data
         recentOrderCount: recentActivity.get(r.id)?.count ?? 0,
         recentOrderNames: recentActivity.get(r.id)?.names ?? [],
+        groupDealCount: r._count.products,
         tiers,
       });
     }

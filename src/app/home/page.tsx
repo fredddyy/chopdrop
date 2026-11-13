@@ -38,6 +38,7 @@ interface InactiveRestaurant {
   tiers: { min: number; discount: number }[];
   recentOrderCount: number;
   recentOrderNames: string[];
+  groupDealCount: number;
 }
 
 function fmt(kobo: number): string {
@@ -352,7 +353,14 @@ export default function HomePage() {
 
                       {/* Info — below banner, no card wrapper needed */}
                       <div className="pt-2.5 pb-1">
-                        <h3 className="text-[15px] font-bold" style={{ color: "var(--text)" }}>{r.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-[15px] font-bold" style={{ color: "var(--text)" }}>{r.name}</h3>
+                          {r.groupDealCount > 0 && (
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: "var(--coral)", color: "white" }}>
+                              {r.groupDealCount} {r.groupDealCount === 1 ? "deal" : "deals"}
+                            </span>
+                          )}
+                        </div>
                         {/* Delivery metadata row */}
                         <div className="flex items-center gap-1 mt-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
                           {r.lowestPrice > 0 && (
