@@ -295,17 +295,14 @@ export default function HomePage() {
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
                           </div>
                         ) : (
-                          <>
-                            <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "var(--sand)" }}>
-                              <div className="h-full rounded-full" style={{ width: `${hasPool ? Math.round((poolMembers / item.minPoolSize) * 100) : 0}%`, background: "var(--emerald)", transition: "width 0.5s ease" }} />
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text-muted)" }}>
+                              {hasPool ? `${poolMembers}/${item.minPoolSize} joined` : `${item.minPoolSize} people needed`}
+                            </span>
+                            <div className="w-[26px] h-[26px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral)" }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                             </div>
-                            <div className="flex items-center justify-between mt-1">
-                              <span className="text-[11px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--coral)" }}>
-                                {hasPool ? `${poolMembers} joined` : `Need ${spotsLeft} people`}
-                              </span>
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
-                            </div>
-                          </>
+                          </div>
                         )}
                       </div>
                     </div>
