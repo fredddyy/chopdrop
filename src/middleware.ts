@@ -18,6 +18,11 @@ export function middleware(request: NextRequest) {
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Redirect /discover to /home — home is now the main entry point
+  if (pathname === "/discover") {
+    return NextResponse.redirect(new URL("/home", request.url));
+  }
+
   // Protect checkout/account pages — require user token (menu and restaurants are public)
   const protectedPages = ["/orders", "/account"];
   const isProtected = protectedPages.some((p) => pathname.startsWith(p));
@@ -38,5 +43,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/orders", "/account"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/orders", "/account", "/discover"],
 };
