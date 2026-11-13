@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       address: body.address,
       phone: body.phone,
       imageUrl: body.imageUrl || null,
+      bannerUrl: body.bannerUrl || null,
     },
   });
 

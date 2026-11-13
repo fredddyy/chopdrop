@@ -8,6 +8,7 @@ interface RestaurantData {
   address: string;
   phone: string;
   imageUrl: string | null;
+  bannerUrl: string | null;
   isActive: boolean;
   groupTiers?: Array<{ min: number; discount: number }>;
 }
@@ -17,6 +18,7 @@ interface FormState {
   address: string;
   phone: string;
   imageUrl: string;
+  bannerUrl: string;
   groupTiers: Array<{ min: number; discount: number }>;
 }
 
@@ -25,6 +27,7 @@ const EMPTY_FORM: FormState = {
   address: "",
   phone: "",
   imageUrl: "",
+  bannerUrl: "",
   groupTiers: [],
 };
 
@@ -64,6 +67,7 @@ export default function RestaurantsPage() {
       address: r.address,
       phone: r.phone,
       imageUrl: r.imageUrl || "",
+      bannerUrl: r.bannerUrl || "",
       groupTiers: Array.isArray(r.groupTiers) ? r.groupTiers : [],
     });
     setShowModal(true);
@@ -78,6 +82,7 @@ export default function RestaurantsPage() {
         address: form.address,
         phone: form.phone,
         imageUrl: form.imageUrl || null,
+        bannerUrl: form.bannerUrl || null,
         groupTiers: validTiers.length > 0 ? validTiers : null,
       };
 
@@ -309,6 +314,39 @@ export default function RestaurantsPage() {
                   onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
                   className="w-full h-8 px-3 mt-2 rounded-lg border border-[#E5E7EB] text-xs text-[#9CA3AF] focus:outline-none"
                   placeholder="or paste URL..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-[#6B7280] mb-1">Banner (food photo)</label>
+                <p className="text-[10px] text-[#9CA3AF] mb-2">Upload a food photo for the home feed card. This shows as the hero banner, not the logo.</p>
+                <div className="flex items-center gap-3">
+                  {form.bannerUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={form.bannerUrl} alt="" className="w-24 h-14 rounded-lg object-cover shrink-0" />
+                  )}
+                  <label className="h-10 px-4 rounded-lg border border-[#E5E7EB] text-sm font-medium text-[#1C1C1E] flex items-center gap-2 cursor-pointer hover:bg-[#F8F8F6]">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
+                    Upload Banner
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const fd = new FormData();
+                      fd.append("file", file);
+                      fd.append("folder", "chopdrop/banners");
+                      try {
+                        const res = await fetch("/api/upload", { method: "POST", body: fd });
+                        const data = await res.json();
+                        if (data.success) setForm({ ...form, bannerUrl: data.url });
+                      } catch {}
+                    }} />
+                  </label>
+                </div>
+                <input
+                  value={form.bannerUrl}
+                  onChange={(e) => setForm({ ...form, bannerUrl: e.target.value })}
+                  className="w-full h-8 px-3 mt-2 rounded-lg border border-[#E5E7EB] text-xs text-[#9CA3AF] focus:outline-none"
+                  placeholder="or paste banner URL..."
                 />
               </div>
             </div>
