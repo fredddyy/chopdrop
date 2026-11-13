@@ -102,11 +102,10 @@ export async function GET() {
     const cheapestMeal = r.meals[0]?.price ?? 0;
     const cheapestProduct = r.products[0]?.groupPrice ?? 0;
     const cheapestRetail = r.products[0]?.retailPrice ?? 0;
-    const mealOriginal = r.meals[0]?.price ?? 0; // meals don't have separate retail
     const prices = [cheapestMeal, cheapestProduct].filter(p => p > 0);
     const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
-    const retailPrices = [mealOriginal, cheapestRetail].filter(p => p > 0);
-    const lowestRetailPrice = retailPrices.length > 0 ? Math.min(...retailPrices) : 0;
+    // Only show retail price story when products have actual group discount
+    const lowestRetailPrice = cheapestRetail > 0 && cheapestRetail > cheapestProduct ? cheapestRetail : 0;
 
     const activeOrder = r.groupOrders[0];
     if (activeOrder) {

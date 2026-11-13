@@ -69,7 +69,7 @@ export default function HomePage() {
       if (stored) {
         const p = JSON.parse(stored);
         if (p.areaName) setUserArea(p.areaName);
-        if (p.name) { setUserName(p.name); setIsReturning(true); }
+        if (p.name?.trim()) { setUserName(p.name.trim()); setIsReturning(true); }
       }
     } catch {}
 
@@ -271,7 +271,7 @@ export default function HomePage() {
                     Lunch is cheaper<br />when you order together.
                   </h2>
                   <p className="text-[12px] mt-1 leading-[155%]" style={{ color: "var(--text-muted)" }}>
-                    Pick a restaurant. Share with friends. Everyone&apos;s bill drops up to 30%. No one joins? You still eat at regular price. Zero risk.
+                    Pick a restaurant. Share with friends. Everyone&apos;s bill drops up to 30%. No one joins? You still eat at regular price. No extra cost.
                   </p>
                 </div>
               )}
@@ -319,14 +319,14 @@ export default function HomePage() {
                             ))}
                           </div>
                         )}
-                        {/* Ghost avatars + zero-risk nudge */}
+                        {/* Ghost avatars — seats waiting to be filled */}
                         <div className="flex items-center gap-2 mt-2.5">
-                          <div className="flex -space-x-1.5">
+                          <div className="flex -space-x-1.5" aria-hidden="true">
                             {[0, 1, 2].map(i => (
                               <div key={i} className="w-[22px] h-[22px] rounded-full" style={{ border: "1.5px dashed var(--border)", background: "var(--sand)" }} />
                             ))}
                           </div>
-                          <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>No one joins? You still eat. Zero risk.</span>
+                          <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>Invite friends, everyone saves</span>
                         </div>
                         {/* Low-commitment CTA — "Browse menu" not "Start order" */}
                         <div className="mt-3 h-[42px] rounded-[12px] flex items-center justify-between px-4 text-white" style={{ background: "var(--coral)" }}>
