@@ -581,11 +581,12 @@ export default function ProductDetailPage() {
                 ? `${memberCount} of ${poolSize} joined`
                 : `${poolSize} people needed`}
             </span>
-            {pool && minutesLeft > 0 && (
-              <span className="ml-auto text-[11px] font-bold" style={{ color: "var(--coral)" }}>
-                {minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`}
-              </span>
-            )}
+            <span className="ml-auto text-[11px] font-bold flex items-center gap-1" style={{ color: "var(--coral)" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+              {pool && minutesLeft > 0
+                ? (minutesLeft > 60 ? `${Math.floor(minutesLeft / 60)}h ${minutesLeft % 60}m left` : `${minutesLeft}m left`)
+                : `${poolTimerHours}h window`}
+            </span>
           </div>
         </div>
       )}
