@@ -146,10 +146,18 @@ export default function HomePage() {
         </Link>
       </header>
 
-      {/* ── Loading ── */}
+      {/* ── Loading skeleton ── */}
       {loading && (
-        <div className="flex items-center justify-center py-32">
-          <div className="w-6 h-6 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
+        <div className="px-5 pt-4 space-y-5">
+          {[0, 1, 2].map(i => (
+            <div key={i}>
+              <div className="rounded-[16px]" style={{ height: "160px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }} />
+              <div className="pt-2.5 space-y-2">
+                <div className="h-4 rounded-[6px] w-[55%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120 + 50}ms` }} />
+                <div className="h-3 rounded-[6px] w-[75%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120 + 100}ms` }} />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

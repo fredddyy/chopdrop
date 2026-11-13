@@ -48,7 +48,7 @@ Every UI component, page, and screen MUST follow the design system defined here 
 ### 5. Interaction States & Motion Polish
 
 * **State Prototyping:** Every interactive component must have explicit state changes: Default, Hover/Focus (150ms ease-out), Disabled (solid #F0EBE4 fill with opacity reduction).
-* **The Anti-Skeleton Rule:** Never use generic gray pulsing skeleton loading screens. Use a crisp spinner or subtle rhythmic opacity pulse on the actual warm background.
+* **Skeleton Loaders:** Use pulsing skeleton screens that match the actual page layout (card shapes, text lines, image placeholders). Skeletons should pulse on `var(--sand)` background to feel warm, not cold gray.
 
 ## 🚫 AI Anti-Patterns (ZERO TOLERANCE)
 
