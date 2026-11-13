@@ -12,9 +12,8 @@ export function BottomNav() {
 
   const links = [
     { href: "/home", label: "Home", icon: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5", match: ["/home", "/menu", "/product"], count: 0 },
-    { href: "/search", label: "Search", icon: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35", match: ["/search"], count: 0 },
-    { href: "/pools", label: "Groups", icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75", count: 0 },
-    { href: "/orders", label: "Activity", icon: "M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2", count: cart.totalItems },
+    { href: "/cart", label: "Cart", icon: "M6 7h12l1 14H5L6 7ZM9 9V6a3 3 0 0 1 6 0v3", match: ["/cart"], count: cart.totalItems },
+    { href: "/orders", label: "Activity", icon: "M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2", count: 0 },
     { href: "/account", label: "Me", icon: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z", count: 0 },
   ];
 
@@ -38,7 +37,7 @@ export function BottomNav() {
         </Link>
       )}
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden" style={{ background: "rgba(255,255,255,0.95)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--border)" }}>
-      <div className="max-w-lg mx-auto grid grid-cols-5 py-2 px-4">
+      <div className="max-w-lg mx-auto grid grid-cols-4 py-2 px-4">
         {links.map((link) => {
           const active = link.match
             ? link.match.some(m => pathname === m || pathname.startsWith(m + "/"))
