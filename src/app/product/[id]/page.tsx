@@ -528,6 +528,9 @@ export default function ProductDetailPage() {
       <div className="px-5 mt-5">
         <h1 className="text-[28px] font-extrabold leading-[108%]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-0.8px", color: "#1C1C1E" }}>{product.name}</h1>
         <p className="text-[14px] font-semibold mt-1.5" style={{ color: "var(--text-muted)", lineHeight: "145%" }}>{product.vendor.name}</p>
+        {product.description && (
+          <p className="text-[13px] leading-[145%] mt-2" style={{ color: "var(--text-muted)" }}>{product.description}</p>
+        )}
       </div>
 
       {/* ── Two-price display — pool is hero, solo is anchor ── */}
@@ -584,13 +587,6 @@ export default function ProductDetailPage() {
               </span>
             )}
           </div>
-        </div>
-      )}
-
-      {/* ── Description ── */}
-      {product.description && (
-        <div className="px-5 mt-3">
-          <p className="text-[14px] leading-[145%]" style={{ color: "var(--text-muted)" }}>{product.description}</p>
         </div>
       )}
 
