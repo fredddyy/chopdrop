@@ -39,6 +39,7 @@ interface InactiveRestaurant {
   recentOrderCount: number;
   recentOrderNames: string[];
   groupDealCount: number;
+  livePools: { count: number; totalMembers: number; bestFill: number };
 }
 
 function fmt(kobo: number): string {
@@ -411,6 +412,15 @@ export default function HomePage() {
                               Save up to 30% with group orders
                             </p>
                           )
+                        )}
+                        {/* Live pool indicator */}
+                        {r.livePools.count > 0 && (
+                          <div className="flex items-center gap-1.5 mt-2">
+                            <span className="w-[6px] h-[6px] rounded-full animate-pulse" style={{ background: "var(--coral)" }} />
+                            <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>
+                              {r.livePools.count} live {r.livePools.count === 1 ? "pool" : "pools"} · {r.livePools.totalMembers} {r.livePools.totalMembers === 1 ? "person" : "people"} in
+                            </span>
+                          </div>
                         )}
                       </div>
                     </Link>

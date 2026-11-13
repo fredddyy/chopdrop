@@ -104,6 +104,7 @@ export async function GET() {
     recentOrderCount: number;
     recentOrderNames: string[];
     groupDealCount: number;
+    livePools: { count: number; totalMembers: number; bestFill: number };
   }> = [];
 
   // Query recent group order activity per restaurant (last 7 days)
@@ -148,6 +149,27 @@ export async function GET() {
       existing.names.push(firstName);
     }
     recentActivity.set(rid, existing);
+  }
+
+  // Query active product-level pools per restaurant
+  const activePools = await prisma.pool.findMany({
+    where: { status: "OPEN", deadline: { gt: now }, members: { some: {} } },
+    select: {
+      id: true,
+      members: { select: { id: true } },
+      minSize: true,
+      product: { select: { vendorId: true } },
+    },
+  });
+  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; bestFill: number }>();
+  for (const p of activePools) {
+    const rid = p.product.vendorId;
+    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, bestFill: 0 };
+    existing.count += 1;
+    existing.totalMembers += p.members.length;
+    const fill = Math.round((p.members.length / p.minSize) * 100);
+    if (fill > existing.bestFill) existing.bestFill = fill;
+    livePoolsByRestaurant.set(rid, existing);
   }
 
   for (const r of restaurants) {
@@ -206,6 +228,7 @@ export async function GET() {
         recentOrderCount: recentActivity.get(r.id)?.count ?? 0,
         recentOrderNames: recentActivity.get(r.id)?.names ?? [],
         groupDealCount: r._count.products,
+        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, bestFill: 0 },
         tiers,
       });
     }
