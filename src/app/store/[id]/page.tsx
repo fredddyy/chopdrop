@@ -546,7 +546,7 @@ export default function StorePage() {
                     onClick={() => {
                       for (let i = 0; i < sheetQty; i++) addToPlate(item, store.name);
                       setSelectedItem(null);
-                      router.push(`/product/${item.id}`);
+                      router.push(`/group/create?restaurant=${id}`);
                     }}
                     className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback"
                     style={{ background: "var(--coral)" }}
