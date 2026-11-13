@@ -480,11 +480,7 @@ export default function StorePage() {
                       </div>
                     )}
                   </div>
-                  {hasDiscount && (
-                    <p className="text-[11px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>
-                      Save {fp(savAmount)} · Refundable if group doesn&apos;t fill
-                    </p>
-                  )}
+                  {/* Refundable line removed */}
                 </div>
 
                 {/* Live group status (if active) */}
@@ -541,7 +537,7 @@ export default function StorePage() {
                     style={{ background: "var(--coral)" }}
                   >
                     <span>{itemPool ? "Join Group" : "Start Group"} · {fp(item.groupPrice * sheetQty)}</span>
-                    {hasDiscount && <span className="text-[12px] opacity-80">Save {sav}%</span>}
+                    {hasDiscount && <span className="text-[12px] opacity-80">Save {fp(savAmount * sheetQty)}</span>}
                   </button>
                   {/* Solo — secondary */}
                   <button
