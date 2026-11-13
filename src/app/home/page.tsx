@@ -350,6 +350,13 @@ export default function HomePage() {
                             Up to {bestTier.discount}% off
                           </span>
                         )}
+                        {/* Group deals count — on banner */}
+                        {r.groupDealCount > 0 && (
+                          <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 text-white" style={{ background: "rgba(0,0,0,0.7)" }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                            {r.groupDealCount} {r.groupDealCount === 1 ? "deal" : "deals"}
+                          </span>
+                        )}
                       </div>
 
                       {/* Info — below banner, no card wrapper needed */}
