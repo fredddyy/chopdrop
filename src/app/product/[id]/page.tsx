@@ -45,7 +45,7 @@ export default function ProductDetailPage() {
   const [confirmSheet, setConfirmSheet] = useState<{ action: "join" | "create"; poolId?: string } | null>(null);
   const [sharePrompt, setSharePrompt] = useState<{ url: string; name: string } | null>(null);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number; address?: string } | null>(null);
-  const [deliveryOption, setDeliveryOption] = useState<"pickup" | "delivery">("pickup");
+  const [deliveryOption, setDeliveryOption] = useState<"pickup" | "delivery">("delivery");
   const [deliveryEstimate, setDeliveryEstimate] = useState<{ fullFee: number; subsidizedFee: number; distanceKm: number; walkMinutes: number } | null>(null);
   const [estimateLoading, setEstimateLoading] = useState(false);
   // Joined pool state: null = not joined, or status string
@@ -779,14 +779,16 @@ export default function ProductDetailPage() {
               )}
               <div className="flex gap-2.5">
                 <button type="button" onClick={addSolo}
-                  className="flex-1 h-[50px] rounded-full flex items-center justify-center text-[14px] font-bold cursor-pointer press-feedback"
+                  className="flex-1 h-[50px] rounded-full flex flex-col items-center justify-center cursor-pointer press-feedback"
                   style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
-                  Solo {fp(soloTotal)}
+                  <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Solo</span>
+                  <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(soloTotal)}</span>
                 </button>
                 <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
-                  className="flex-[1.4] h-[50px] rounded-full flex items-center justify-center gap-2 text-[14px] font-bold text-white cursor-pointer press-feedback disabled:opacity-50"
+                  className="flex-[1.4] h-[50px] rounded-full flex flex-col items-center justify-center text-white cursor-pointer press-feedback disabled:opacity-50"
                   style={{ background: "var(--coral)" }}>
-                  <span>{joining ? "Joining\u2026" : isPoolExpired ? "Start Pool" : pool ? "Join Pool" : "Start Pool"} {fp(poolUnitTotal)}</span>
+                  <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Start Pool" : pool ? "Join Pool" : "Start Pool"}</span>
+                  <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(poolUnitTotal)}</span>
                 </button>
               </div>
             </>

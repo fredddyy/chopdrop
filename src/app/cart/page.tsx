@@ -289,36 +289,21 @@ export default function CartPage() {
             </section>
           )}
 
-          {/* ═══ FULFILLMENT ═══ */}
+          {/* ═══ DELIVERY DETAILS ═══ */}
           <section className="rounded-[16px] p-4" data-delivery-section style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-2" style={{ color: "var(--text-muted)" }}>How do you want it?</p>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => setDeliveryToggle("pickup")}
-                className="flex-1 h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold press-feedback"
-                style={{ background: deliveryToggle === "pickup" ? "var(--card)" : "transparent", border: deliveryToggle === "pickup" ? "1.5px solid var(--text)" : "1.5px solid var(--border)", color: deliveryToggle === "pickup" ? "var(--text)" : "var(--text-muted)" }}>
-                Pickup (free)
-              </button>
-              <button type="button" onClick={() => setDeliveryToggle("delivery")}
-                className="flex-1 h-[44px] rounded-[12px] flex items-center justify-center text-[13px] font-bold press-feedback"
-                style={{ background: deliveryToggle === "delivery" ? "var(--card)" : "transparent", border: deliveryToggle === "delivery" ? "1.5px solid var(--text)" : "1.5px solid var(--border)", color: deliveryToggle === "delivery" ? "var(--text)" : "var(--text-muted)" }}>
-                Delivery {deliveryFee > 0 ? `(${formatNaira(deliveryFee)})` : ""}
-              </button>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-2" style={{ color: "var(--text-muted)" }}>Delivery details</p>
+            <div>
+              <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter delivery address"
+                aria-label="Delivery address" autoComplete="street-address"
+                className="w-full h-[44px] px-3.5 rounded-[12px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
+                style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
+              {deliveryFee === 0 && !deliveryPref && !deliveryAddress.trim() && (
+                <p className="text-[11px] mt-1.5" style={{ color: "var(--text-muted)" }}>Enter your address for a delivery quote</p>
+              )}
+              {deliveryFee > 0 && (
+                <p className="text-[11px] mt-1.5 font-bold" style={{ color: "var(--text)" }}>Delivery fee: {formatNaira(deliveryFee)}</p>
+              )}
             </div>
-            {/* Delivery address input — was missing */}
-            {deliveryToggle === "delivery" && (
-              <div className="mt-3">
-                <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter delivery address"
-                  aria-label="Delivery address" autoComplete="street-address"
-                  className="w-full h-[44px] px-3.5 rounded-[12px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
-                  style={{ background: "var(--sand)", color: "var(--text)", border: "1px solid var(--border)" }} />
-                {deliveryFee === 0 && !deliveryPref && !deliveryAddress.trim() && (
-                  <p className="text-[11px] mt-1.5" style={{ color: "var(--text-muted)" }}>Enter your address above for a delivery quote</p>
-                )}
-                {deliveryFee === 0 && deliveryAddress.trim() && !deliveryPref && (
-                  <p className="text-[11px] mt-1.5" style={{ color: "var(--emerald)" }}>Delivery fee will be confirmed at checkout</p>
-                )}
-              </div>
-            )}
           </section>
 
           {/* ═══ ORDER SUMMARY ═══ */}
