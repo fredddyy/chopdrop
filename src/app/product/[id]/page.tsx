@@ -788,23 +788,25 @@ export default function ProductDetailPage() {
               )}
               <div className="flex gap-2">
                 <button type="button" onClick={addToCart}
-                  className="w-[50px] h-[54px] rounded-[12px] flex items-center justify-center cursor-pointer press-feedback shrink-0"
+                  className="w-[48px] h-[48px] rounded-[12px] flex items-center justify-center cursor-pointer press-feedback shrink-0"
                   style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
                 </button>
                 <button type="button" onClick={addSolo}
-                  className="flex-1 h-[54px] rounded-[12px] flex flex-col items-center justify-center cursor-pointer press-feedback"
+                  className="flex-1 h-[48px] rounded-[12px] flex items-center justify-center gap-2 cursor-pointer press-feedback"
                   style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
-                  <span className="text-[10px] font-semibold leading-none" style={{ color: "var(--text-muted)" }}>Buy alone</span>
-                  <span className="text-[16px] font-extrabold tabular-nums leading-none mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(soloTotal)}</span>
-                  <span className="text-[9px] font-medium mt-0.5 leading-none" style={{ color: "var(--text-muted)" }}>incl. {fp(fullDeliveryFee)} delivery</span>
+                  <div className="text-center">
+                    <span className="text-[17px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(soloTotal)}</span>
+                    <span className="text-[9px] font-medium leading-none mt-0.5 block" style={{ color: "var(--text-muted)" }}>Buy alone · {fp(fullDeliveryFee)} delivery</span>
+                  </div>
                 </button>
                 <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
-                  className="flex-[1.3] h-[54px] rounded-[12px] flex flex-col items-center justify-center text-white cursor-pointer press-feedback disabled:opacity-50"
+                  className="flex-[1.3] h-[48px] rounded-[12px] flex items-center justify-center gap-2 text-white cursor-pointer press-feedback disabled:opacity-50"
                   style={{ background: "var(--coral)" }}>
-                  <span className="text-[10px] font-semibold leading-none" style={{ opacity: 0.8 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Start Group" : pool ? "Join Group" : "Start Group"}</span>
-                  <span className="text-[16px] font-extrabold tabular-nums leading-none mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(poolUnitTotal)}</span>
-                  <span className="text-[9px] font-medium mt-0.5 leading-none" style={{ opacity: 0.7 }}>incl. {fp(deliveryShare)} delivery</span>
+                  <div className="text-center">
+                    <span className="text-[17px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(poolUnitTotal)}</span>
+                    <span className="text-[9px] font-medium leading-none mt-0.5 block" style={{ opacity: 0.7 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Start Group" : pool ? "Join Group" : "Start Group"} · {fp(deliveryShare)} delivery</span>
+                  </div>
                 </button>
               </div>
             </>
