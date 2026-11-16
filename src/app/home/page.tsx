@@ -162,26 +162,42 @@ export default function HomePage() {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
-        {/* Filter pills */}
-        <div className="flex gap-2 mt-2.5 overflow-x-auto hide-scrollbar">
+        {/* Categories — icon + label, horizontal scroll */}
+        <div className="flex gap-4 mt-3 overflow-x-auto hide-scrollbar">
+          {[
+            { label: "Food", img: "/categories/food.png", href: "/home" },
+            { label: "Groceries", img: "/categories/groceries.png", href: "/home" },
+            { label: "Gadgets", img: "/categories/gadgets.png", href: "/home" },
+            { label: "Fashion", img: "/categories/fashion.png", href: "/home" },
+            { label: "Home", img: "/categories/home.png", href: "/home" },
+          ].map(c => (
+            <Link key={c.label} href={c.href} className="flex flex-col items-center gap-1 shrink-0 press-feedback" style={{ minWidth: "56px" }}>
+              <div className="w-[48px] h-[48px] rounded-[16px] flex items-center justify-center overflow-hidden" style={{ background: "var(--sand)" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={c.img} alt={c.label} className="w-[32px] h-[32px] object-contain" />
+              </div>
+              <span className="text-[10px] font-bold" style={{ color: "var(--text-secondary)" }}>{c.label}</span>
+            </Link>
+          ))}
+        </div>
+        {/* Tabs — All, Group Order, Chop Price, etc. */}
+        <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
           {([
-            { key: "all", label: "All", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg> },
-            { key: "deals", label: "Group deals", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg> },
-            { key: "live", label: "Live", icon: <><span className="w-[6px] h-[6px] rounded-full shrink-0 animate-pulse" style={{ background: "var(--coral)" }} /><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg></> },
-            { key: "chop", label: "Free Chop", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg> },
-            { key: "popular", label: "Popular", icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg> },
+            { key: "all", label: "All" },
+            { key: "deals", label: "Group Order" },
+            { key: "chop", label: "Chop Price" },
+            { key: "live", label: "Live" },
+            { key: "popular", label: "Popular" },
           ] as const).map(f => {
             const active = filter === f.key;
             return (
             <button key={f.key} type="button" onClick={() => setFilter(f.key)}
-              className="h-[34px] px-3.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 press-feedback inline-flex items-center gap-1.5"
+              className="h-[30px] px-3 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 press-feedback"
               style={{
-                background: active ? "var(--dark)" : "var(--card)",
-                color: active ? "white" : "var(--text-secondary)",
-                border: active ? "none" : "1px solid var(--border)",
+                background: active ? "var(--dark)" : "transparent",
+                color: active ? "white" : "var(--text-muted)",
                 transition: "all 150ms ease-out",
               }}>
-              {f.icon}
               {f.label}
             </button>
             );
