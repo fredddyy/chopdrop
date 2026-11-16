@@ -406,20 +406,22 @@ export default function StorePage() {
                               -{sav}%
                             </div>
                           )}
-                          {/* Add/stepper on image */}
+                          {/* Add/stepper on image — slides left from + */}
                           <div className="absolute bottom-1.5 right-1.5 z-10 flex items-center" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                            {inCart > 0 && (
-                              <div className="flex items-center gap-0.5 overflow-hidden" style={{ animation: "cardIn 200ms ease-out" }}>
-                                <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
-                                  className="w-[24px] h-[24px] rounded-lg flex items-center justify-center"
-                                  style={{ background: "white" }}>
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
-                                </button>
-                                <span className="w-[18px] text-center text-[10px] font-extrabold text-white tabular-nums" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{inCart}</span>
-                              </div>
-                            )}
+                            <div className="flex items-center overflow-hidden" style={{
+                              maxWidth: inCart > 0 ? "50px" : "0px",
+                              opacity: inCart > 0 ? 1 : 0,
+                              transition: "max-width 250ms cubic-bezier(0.4,0,0.2,1), opacity 200ms ease-out",
+                            }}>
+                              <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
+                                className="w-[24px] h-[24px] rounded-lg flex items-center justify-center shrink-0"
+                                style={{ background: "white" }}>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                              </button>
+                              <span className="w-[20px] text-center text-[10px] font-extrabold text-white tabular-nums shrink-0" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{inCart}</span>
+                            </div>
                             <button type="button" onClick={() => addToPlate(item, store.name)}
-                              className="w-[24px] h-[24px] rounded-lg flex items-center justify-center"
+                              className="w-[24px] h-[24px] rounded-lg flex items-center justify-center shrink-0"
                               style={{ background: inCart > 0 ? "var(--coral)" : "white" }}>
                               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={inCart > 0 ? "white" : "var(--text)"} strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                             </button>
