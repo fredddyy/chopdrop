@@ -166,8 +166,9 @@ export default function HomePage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <span className="text-[14px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
-        {/* Categories — rectangular rounded buttons with image */}
-        <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
+        {/* Categories */}
+        <p className="text-[15px] font-extrabold mt-4 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Categories</p>
+        <div className="flex gap-2 overflow-x-auto hide-scrollbar">
           {[
             { label: "Food", img: "/categories/food.png" },
             { label: "Groceries", img: "/categories/groceries.png" },
