@@ -78,12 +78,12 @@ type FilterKey = typeof TABS[number]["key"];
 
 function TabBar({ filter, setFilter }: { filter: FilterKey; setFilter: (f: FilterKey) => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const textRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
 
   const updateIndicator = useCallback(() => {
     const idx = TABS.findIndex(t => t.key === filter);
-    const el = tabRefs.current[idx];
+    const el = textRefs.current[idx];
     const container = containerRef.current;
     if (el && container) {
       setIndicator({ left: el.offsetLeft - container.scrollLeft, width: el.offsetWidth });
@@ -105,11 +105,10 @@ function TabBar({ filter, setFilter }: { filter: FilterKey; setFilter: (f: Filte
           const active = filter === f.key;
           return (
             <button key={f.key} type="button"
-              ref={el => { tabRefs.current[i] = el; }}
               onClick={() => setFilter(f.key)}
               className="px-2.5 pb-2 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback"
               style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
-              {f.label}
+              <span ref={el => { textRefs.current[i] = el; }}>{f.label}</span>
             </button>
           );
         })}
