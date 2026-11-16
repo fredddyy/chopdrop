@@ -208,7 +208,7 @@ export default function HomePage() {
     <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
       {/* ── Header — greeting + delivery ── */}
-      <header className="sticky top-0 z-40 px-5 pt-3 pb-2" style={{ background: "var(--bg)" }}>
+      <header className="px-5 pt-3 pb-2">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
             {/* Greeting + name */}
