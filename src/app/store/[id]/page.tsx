@@ -474,7 +474,7 @@ export default function StorePage() {
                 </div>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(total)}</span>
-                  <span className="text-[10px] font-medium opacity-70">+ delivery</span>
+                  <span className="text-[10px] font-medium opacity-70">excl. delivery</span>
                 </div>
               </Link>
             </div>

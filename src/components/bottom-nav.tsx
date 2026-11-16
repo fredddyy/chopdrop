@@ -34,7 +34,7 @@ export function BottomNav() {
             </div>
             <div className="text-right">
               <span key={cart.totalItems} className="text-[14px] font-extrabold text-white tabular-nums pop" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(cart.subtotal)}</span>
-              <span className="text-[9px] font-medium text-white/60 block leading-none">plus delivery fee</span>
+              <span className="text-[9px] font-medium text-white/60 block leading-none">excl. delivery</span>
             </div>
           </div>
         </Link>
