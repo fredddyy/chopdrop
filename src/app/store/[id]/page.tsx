@@ -469,10 +469,13 @@ export default function StorePage() {
             <div className="max-w-[480px] mx-auto">
               <Link href="/cart" className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
                 <div className="flex items-center gap-2">
-                  <span className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[11px] font-bold" style={{ background: "rgba(255,255,255,0.25)" }}>{cart.totalItems}</span>
-                  <span>View plate</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                  <span>Checkout</span>
                 </div>
-                <span className="tabular-nums">{fp(total)}</span>
+                <div className="text-right">
+                  <span className="tabular-nums block leading-none">{fp(total)}</span>
+                  <span className="text-[10px] font-medium opacity-70">plus delivery fee</span>
+                </div>
               </Link>
             </div>
           </div>

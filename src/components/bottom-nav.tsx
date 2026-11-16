@@ -29,10 +29,13 @@ export function BottomNav() {
         <Link href="/cart" className="fixed bottom-[72px] left-4 right-4 z-50 md:hidden max-w-[480px] mx-auto sheet-enter">
           <div className="h-[48px] rounded-[12px] flex items-center justify-between px-5 press-feedback" style={{ background: "#1C1C1E" }}>
             <div className="flex items-center gap-2">
-              <span key={cart.totalItems} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold pop" style={{ background: "var(--coral)", color: "white" }}>{cart.totalItems}</span>
-              <span className="text-[13px] font-bold text-white">View cart</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+              <span className="text-[13px] font-bold text-white">Checkout</span>
             </div>
-            <span className="text-[14px] font-extrabold text-white tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(cart.subtotal)}</span>
+            <div className="text-right">
+              <span key={cart.totalItems} className="text-[14px] font-extrabold text-white tabular-nums pop" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(cart.subtotal)}</span>
+              <span className="text-[9px] font-medium text-white/60 block leading-none">plus delivery fee</span>
+            </div>
           </div>
         </Link>
       )}
