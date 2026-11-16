@@ -198,6 +198,12 @@ export default function ProductDetailPage() {
     } catch {}
   }
 
+  function addToCart() {
+    if (!product) return;
+    cart.addItem({ dailyMenuId: `instant-${product.id}`, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantName: product.vendor.name, price: product.retailPrice });
+    showToast("added");
+  }
+
   function addSolo() {
     if (!product) return;
     cart.addItem({ dailyMenuId: `instant-${product.id}`, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantName: product.vendor.name, price: product.retailPrice });
@@ -778,7 +784,7 @@ export default function ProductDetailPage() {
                 </p>
               )}
               <div className="flex gap-2">
-                <button type="button" onClick={addSolo}
+                <button type="button" onClick={addToCart}
                   className="w-[50px] h-[50px] rounded-[12px] flex items-center justify-center cursor-pointer press-feedback shrink-0"
                   style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
