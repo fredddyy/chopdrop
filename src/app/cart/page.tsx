@@ -41,13 +41,17 @@ export default function CartPage() {
     const restIds = [...new Set(cart.items.map(i => i.restaurantId).filter(Boolean))] as string[];
     if (restIds.length === 0) return;
     Promise.all(restIds.map(rid =>
-      fetch(`/api/stores/${rid}`).then(r => r.json()).then(d => d.success ? { id: rid, groupTarget: d.data.groupTarget || 0, groupDiscount: d.data.groupDiscount || 0, groupWindowMins: d.data.groupWindowMins || 0 } : null).catch(() => null)
+      fetch(`/api/stores/${rid}`).then(r => r.ok ? r.json() : null).then(d => d?.success ? { id: rid, name: d.data.name, groupTarget: d.data.groupTarget || 0, groupDiscount: d.data.groupDiscount || 0, groupWindowMins: d.data.groupWindowMins || 0 } : null).catch(() => null)
     )).then(results => {
       const info: Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number }> = {};
-      for (const r of results) { if (r) info[r.id] = { groupTarget: r.groupTarget, groupDiscount: r.groupDiscount, groupWindowMins: r.groupWindowMins }; }
+      for (const r of results) {
+        if (!r) continue;
+        info[r.id] = { groupTarget: r.groupTarget, groupDiscount: r.groupDiscount, groupWindowMins: r.groupWindowMins };
+        if (r.name) info[r.name] = info[r.id]; // also index by name for items without restaurantId
+      }
       setRestaurantInfo(info);
     });
-  }, [cart.items]);
+  }, [cart.items.length]);
 
   // Load delivery preference
   useEffect(() => {
@@ -304,7 +308,7 @@ export default function CartPage() {
                   const restName = restItems[0]?.restaurantName || restKey;
                   const restId = restItems[0]?.restaurantId || restKey;
                   const restSubtotal = restUnpacked.reduce((s, i) => s + i.price * i.quantity, 0);
-                  const groupInfo = restaurantInfo[restId];
+                  const groupInfo = restaurantInfo[restId] || restaurantInfo[restName];
                   const hasGroup = groupInfo && groupInfo.groupTarget > 0 && groupInfo.groupDiscount > 0;
                   return (
                     <section key={restKey} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
