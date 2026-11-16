@@ -339,35 +339,46 @@ export default function MealsPage() {
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0" />
                           ) : <div className="w-8 h-8 rounded-lg bg-[#F5F5F0] shrink-0" />}
-                          <span className="text-sm text-[#1C1C1E] flex-1">{item.name}</span>
-                          <span className="text-xs tabular-nums text-[#6B7280]">{fp(item.price)}</span>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm text-[#1C1C1E]">{item.name}</span>
+                            {item.description && <p className="text-[10px] text-[#9CA3AF] truncate">{item.description}</p>}
+                          </div>
+                          <span className="text-xs tabular-nums text-[#6B7280] shrink-0">{fp(item.price)}</span>
                           <button onClick={() => deleteItem(item.id)} className="text-[10px] text-[#E84C3D] cursor-pointer">×</button>
                         </div>
                       ))}
 
                       {/* Add item form */}
-                      <div className="px-4 py-3 bg-[#FAFAFA] flex gap-2 items-end">
+                      <div className="px-4 py-3 bg-[#FAFAFA] space-y-2">
+                        <div className="flex gap-2 items-end">
+                          <input
+                            value={getItemForm(cat.id).name}
+                            onChange={e => setItemForms(prev => ({ ...prev, [cat.id]: { ...getItemForm(cat.id), name: e.target.value } }))}
+                            placeholder="Item name"
+                            className="h-8 px-2 rounded-md border border-[#E5E7EB] text-xs flex-1 focus:outline-none"
+                          />
+                          <input
+                            type="number"
+                            value={getItemForm(cat.id).price}
+                            onChange={e => setItemForms(prev => ({ ...prev, [cat.id]: { ...getItemForm(cat.id), price: e.target.value } }))}
+                            placeholder="₦"
+                            className="h-8 w-20 px-2 rounded-md border border-[#E5E7EB] text-xs focus:outline-none"
+                          />
+                          <label className="h-8 px-2 rounded-md border border-[#E5E7EB] text-[10px] font-medium flex items-center cursor-pointer hover:bg-white">
+                            Img
+                            <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                              const f = e.target.files?.[0];
+                              if (f) { const url = await uploadImage(f, "chopdrop/items"); if (url) setItemForms(prev => ({ ...prev, [cat.id]: { ...getItemForm(cat.id), imageUrl: url } })); }
+                            }} />
+                          </label>
+                          <button onClick={() => addItem(cat.id)} className="h-8 px-3 rounded-md text-[10px] font-bold text-white cursor-pointer" style={{ background: "#1C1C1E" }}>Add</button>
+                        </div>
                         <input
-                          value={getItemForm(cat.id).name}
-                          onChange={e => setItemForms(prev => ({ ...prev, [cat.id]: { ...getItemForm(cat.id), name: e.target.value } }))}
-                          placeholder="Item name"
-                          className="h-8 px-2 rounded-md border border-[#E5E7EB] text-xs flex-1 focus:outline-none"
+                          value={getItemForm(cat.id).description}
+                          onChange={e => setItemForms(prev => ({ ...prev, [cat.id]: { ...getItemForm(cat.id), description: e.target.value } }))}
+                          placeholder="Description (optional)"
+                          className="h-8 px-2 rounded-md border border-[#E5E7EB] text-xs w-full focus:outline-none"
                         />
-                        <input
-                          type="number"
-                          value={getItemForm(cat.id).price}
-                          onChange={e => setItemForms(prev => ({ ...prev, [cat.id]: { ...getItemForm(cat.id), price: e.target.value } }))}
-                          placeholder="₦"
-                          className="h-8 w-20 px-2 rounded-md border border-[#E5E7EB] text-xs focus:outline-none"
-                        />
-                        <label className="h-8 px-2 rounded-md border border-[#E5E7EB] text-[10px] font-medium flex items-center cursor-pointer hover:bg-white">
-                          Img
-                          <input type="file" accept="image/*" className="hidden" onChange={async e => {
-                            const f = e.target.files?.[0];
-                            if (f) { const url = await uploadImage(f, "chopdrop/items"); if (url) setItemForms(prev => ({ ...prev, [cat.id]: { ...getItemForm(cat.id), imageUrl: url } })); }
-                          }} />
-                        </label>
-                        <button onClick={() => addItem(cat.id)} className="h-8 px-3 rounded-md text-[10px] font-bold text-white cursor-pointer" style={{ background: "#1C1C1E" }}>Add</button>
                       </div>
                     </div>
                   ))}
