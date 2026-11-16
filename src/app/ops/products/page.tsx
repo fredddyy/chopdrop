@@ -131,7 +131,7 @@ export default function ProductsPage() {
         description: form.description || null,
         vendorId: form.vendorId,
         retailPrice: Number(form.retailPrice),
-        groupPrice: Number(form.groupPrice),
+        groupPrice: Number(form.groupPrice) || Number(form.retailPrice),
         minPoolSize: Number(form.minPoolSize),
         imageUrl: form.imageUrl || null,
         category: form.category,
@@ -389,13 +389,13 @@ export default function ProductsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#6B7280] mb-1">Group price (Naira)</label>
+                  <label className="block text-xs font-medium text-[#6B7280] mb-1">Group price (optional)</label>
                   <input
                     type="number"
                     value={form.groupPrice}
                     onChange={(e) => setForm({ ...form, groupPrice: e.target.value })}
                     className="w-full h-10 px-3 rounded-lg border border-[#E5E7EB] text-sm text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#E84C3D]/30 focus:border-[#E84C3D]"
-                    placeholder="0"
+                    placeholder="Same as retail if empty"
                   />
                 </div>
               </div>
