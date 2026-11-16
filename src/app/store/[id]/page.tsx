@@ -338,7 +338,6 @@ export default function StorePage() {
         </div>
         );
       })()}
-      )}
 
       {/* ═══ THE FULL MENU ═══ */}
       <section className="px-5 mt-4">
