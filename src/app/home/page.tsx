@@ -325,14 +325,14 @@ export default function HomePage() {
                   const chopFriendsNeeded = Math.ceil(item.retailPrice / 10000); // each friend chops ₦100
                   return (
                   <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-lg overflow-hidden">
-                    {/* Image */}
-                    <div className="relative" style={{ aspectRatio: "4/3", background: "var(--sand)" }}>
+                    {/* Image + add button */}
+                    <div className="relative" style={{ aspectRatio: "1", background: "var(--sand)" }}>
                       {item.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-[24px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
+                          <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
                         </div>
                       )}
                       {/* Ribbon — top left */}
@@ -345,19 +345,20 @@ export default function HomePage() {
                           -{item.savings}%
                         </div>
                       )}
+                      {/* Add button — bottom right on image */}
+                      <div className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-full flex items-center justify-center" style={{ background: "var(--coral)" }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                      </div>
                     </div>
                     {/* Info */}
-                    <div className="pt-1.5 pb-1">
+                    <div className="pt-1.5">
                       <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                       <p className="text-[9px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
                       {/* Price */}
                       {isChopMode ? (
-                        <div className="mt-1">
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-[13px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
-                            <span className="text-[11px] font-extrabold leading-none" style={{ color: "var(--emerald)" }}>FREE</span>
-                          </div>
-                          <p className="text-[9px] mt-0.5" style={{ color: "var(--text-muted)" }}>if {chopFriendsNeeded} friends chop</p>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-[13px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                          <span className="text-[11px] font-extrabold leading-none" style={{ color: "var(--emerald)" }}>FREE</span>
                         </div>
                       ) : (
                         <div className="flex items-baseline gap-1 mt-1">
@@ -365,25 +366,16 @@ export default function HomePage() {
                           <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
                         </div>
                       )}
-                      {/* Bottom — progress bar or chop CTA */}
-                      <div className="mt-1.5">
-                        {isChopMode ? (
-                          <span className="text-[9px] font-bold" style={{ color: "var(--coral)" }}>Share to chop</span>
-                        ) : (
-                          <>
-                            <div className="h-[3px] rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
-                              <div className="h-full rounded-full" style={{ width: `${hasPool ? Math.round((poolMembers / item.minPoolSize) * 100) : 5}%`, minWidth: "6px", background: hasPool ? "var(--emerald)" : "var(--coral)", transition: "width 0.5s ease" }} />
-                            </div>
-                            <div className="flex items-center justify-between mt-1">
-                              <span className="text-[9px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text-muted)" }}>
-                                {hasPool ? `${poolMembers} joined` : `${item.minPoolSize} needed`}
-                              </span>
-                              <div className="w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral)" }}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                              </div>
-                            </div>
-                          </>
-                        )}
+                      {/* Pool status pill */}
+                      <div className="mt-1.5 mb-1">
+                        <span className="text-[9px] font-bold px-2 py-1 rounded-lg inline-block" style={{
+                          background: hasPool ? "rgba(26,125,75,0.1)" : "var(--sand)",
+                          color: hasPool ? "var(--emerald)" : "var(--text-muted)",
+                        }}>
+                          {isChopMode
+                            ? `${chopFriendsNeeded} friends to chop`
+                            : hasPool ? `${poolMembers} Group Active` : `${item.minPoolSize} needed`}
+                        </span>
                       </div>
                     </div>
                   </Link>
