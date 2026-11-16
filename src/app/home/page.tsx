@@ -426,27 +426,18 @@ export default function HomePage() {
           {/* ═══ COLD START — social proof + zero-risk + price stories ═══ */}
           {!isItemView && activeOrders.length === 0 && inactiveRestaurants.length > 0 && (
             <div className="px-5 pt-4">
-              {/* Returning user greeting */}
-              {isReturning ? (
-                <div className="mb-4">
-                  <h2 className="text-[20px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                    Hey {userName.split(" ")[0]}, ready<br />to order?
-                  </h2>
-                  <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>
-                    Pick a restaurant and share with your people. More join, everyone saves.
-                  </p>
-                </div>
-              ) : (
-                /* First-time user — social proof, not explanation */
-                <div className="mb-4">
-                  <h2 className="text-[20px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                    Lunch is cheaper<br />when you order together.
-                  </h2>
-                  <p className="text-[12px] mt-1 leading-[155%]" style={{ color: "var(--text-muted)" }}>
-                    Pick a restaurant. Share with friends. Everyone&apos;s bill drops up to 30%. No one joins? You still eat at regular price. No extra cost.
-                  </p>
-                </div>
-              )}
+              {/* Time-based greeting */}
+              <div className="mb-4">
+                <h2 className="text-[22px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                  {(() => {
+                    const h = new Date().getHours();
+                    const greeting = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
+                    const emoji = h < 12 ? "\u{1F44B}" : h < 17 ? "\u2600\uFE0F" : "\u{1F319}";
+                    const name = userName.split(" ")[0];
+                    return <>{greeting}, {emoji}<br />{name || "there"}</>;
+                  })()}
+                </h2>
+              </div>
 
               {/* Chop to Free promo card */}
               {dealItems.length > 0 && filter === "all" && (
