@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET /api/admin/products — list all products
-export async function GET() {
+// GET /api/admin/products — list all products (optionally filter by vendorId)
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const vendorId = searchParams.get("vendorId");
   const products = await prisma.product.findMany({
+    where: vendorId ? { vendorId } : undefined,
     include: { vendor: { select: { id: true, name: true, imageUrl: true } } },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });

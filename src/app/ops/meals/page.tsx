@@ -9,7 +9,7 @@ interface Category { id: string; name: string; selectionRule: string; items: Men
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
 
-type Tab = "meals" | "builder";
+type Tab = "meals" | "builder" | "products";
 
 export default function MealsPage() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -22,6 +22,9 @@ export default function MealsPage() {
   const [mealForm, setMealForm] = useState({ name: "", price: "", originalPrice: "", description: "", imageUrl: "", tag: "REGULAR", type: "FIXED", maxDeals: "20", restaurantId: "" });
   const [editingMeal, setEditingMeal] = useState<string | null>(null);
   const [showMealForm, setShowMealForm] = useState(false);
+
+  // Products state
+  const [storeProducts, setStoreProducts] = useState<Array<{ id: string; name: string; description: string | null; imageUrl: string | null; subcategory: string | null; retailPrice: number; groupPrice: number; category: string }>>([]);
 
   // Menu builder state
   const [categories, setCategories] = useState<Category[]>([]);
@@ -58,7 +61,14 @@ export default function MealsPage() {
     }).catch(() => setCatLoading(false));
   }, [selectedRestaurant]);
 
-  useEffect(() => { loadMeals(); loadCategories(); }, [loadMeals, loadCategories]);
+  useEffect(() => {
+    loadMeals(); loadCategories();
+    if (selectedRestaurant) {
+      fetch(`/api/admin/products?vendorId=${selectedRestaurant}`).then(r => r.json()).then(d => {
+        if (d.success) setStoreProducts(d.data);
+      }).catch(() => {});
+    }
+  }, [loadMeals, loadCategories, selectedRestaurant]);
 
   // Meal CRUD
   async function saveMeal() {
@@ -147,7 +157,7 @@ export default function MealsPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Menu</h1>
+        <h1 className="text-2xl font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "#1C1C1E" }}>Store Menu</h1>
       </div>
 
       {/* Restaurant selector */}
@@ -157,22 +167,22 @@ export default function MealsPage() {
           onChange={(e) => setSelectedRestaurant(e.target.value)}
           className="h-10 px-3 rounded-lg border border-[#E5E7EB] text-sm text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#E84C3D]/30 min-w-[280px]"
         >
-          <option value="">Select a restaurant...</option>
+          <option value="">Select a store...</option>
           {restaurants.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
         </select>
       </div>
 
       {!selectedRestaurant ? (
-        <div className="text-center py-16 text-sm text-[#9CA3AF]">Select a restaurant to manage its menu</div>
+        <div className="text-center py-16 text-sm text-[#9CA3AF]">Select a store to manage its menu</div>
       ) : (
         <>
           {/* Tabs */}
           <div className="flex gap-1 mb-6 bg-[#F8F8F6] p-1 rounded-lg w-fit">
-            {(["meals", "builder"] as Tab[]).map(t => (
+            {(["meals", "builder", "products"] as Tab[]).map(t => (
               <button key={t} onClick={() => setTab(t)}
                 className="h-8 px-4 rounded-md text-xs font-semibold cursor-pointer"
                 style={{ background: tab === t ? "#1C1C1E" : "transparent", color: tab === t ? "white" : "#6B7280" }}>
-                {t === "meals" ? "Meals & Combos" : "Menu Builder"}
+                {t === "meals" ? "Meals & Combos" : t === "builder" ? "Menu Builder" : `Products (${storeProducts.length})`}
               </button>
             ))}
           </div>
@@ -379,6 +389,58 @@ export default function MealsPage() {
                           placeholder="Description (optional)"
                           className="h-8 px-2 rounded-md border border-[#E5E7EB] text-xs w-full focus:outline-none"
                         />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ═══ PRODUCTS TAB ═══ */}
+          {tab === "products" && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold text-[#1C1C1E]">Store Products</h2>
+                <a href="/ops/products" className="text-xs font-semibold text-[#E84C3D] hover:underline">Manage in Catalog →</a>
+              </div>
+              {storeProducts.length === 0 ? (
+                <div className="py-8 text-center text-sm text-[#9CA3AF]">
+                  No products for this store. <a href="/ops/products" className="text-[#E84C3D] underline">Add products in Catalog</a>
+                </div>
+              ) : (
+                <div>
+                  {/* Group by subcategory */}
+                  {Object.entries(
+                    storeProducts.reduce<Record<string, typeof storeProducts>>((groups, p) => {
+                      const key = p.subcategory || p.category || "Other";
+                      if (!groups[key]) groups[key] = [];
+                      groups[key].push(p);
+                      return groups;
+                    }, {})
+                  ).map(([sub, items]) => (
+                    <div key={sub} className="mb-6">
+                      <div className="flex items-center justify-between px-4 py-2 bg-[#FAFAFA] border border-[#E5E7EB] rounded-t-xl">
+                        <span className="text-sm font-bold text-[#1C1C1E]">{sub}</span>
+                        <span className="text-[10px] text-[#9CA3AF]">{items.length} items</span>
+                      </div>
+                      <div className="border border-t-0 border-[#E5E7EB] rounded-b-xl overflow-hidden">
+                        {items.map(p => (
+                          <div key={p.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-[#F3F4F6] last:border-0">
+                            {p.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={p.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                            ) : <div className="w-10 h-10 rounded-lg bg-[#F5F5F0] shrink-0" />}
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm text-[#1C1C1E] block truncate">{p.name}</span>
+                              {p.description && <span className="text-[10px] text-[#9CA3AF] block truncate">{p.description}</span>}
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className="text-xs font-bold text-[#E84C3D] tabular-nums block">{fp(p.groupPrice)}</span>
+                              <span className="text-[10px] text-[#9CA3AF] tabular-nums line-through">{fp(p.retailPrice)}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ))}
