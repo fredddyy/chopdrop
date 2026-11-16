@@ -453,36 +453,6 @@ export default function HomePage() {
           {/* ═══ COLD START — social proof + zero-risk + price stories ═══ */}
           {!isItemView && activeOrders.length === 0 && inactiveRestaurants.length > 0 && (
             <div className="px-5 pt-4">
-              {/* Chop to Free promo card */}
-              {dealItems.length > 0 && filter === "all" && (
-                <button type="button" onClick={() => setFilter("chop")} className="rounded-[16px] overflow-hidden p-4 text-left press-feedback mb-1" style={{ background: "var(--dark)" }}>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] font-extrabold uppercase tracking-wide" style={{ color: "var(--gold)" }}>Free Chop</p>
-                      <h3 className="text-[17px] font-extrabold text-white mt-1 leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                        Share with friends.<br />They chop. You eat free.
-                      </h3>
-                      <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>
-                        {dealItems.length} items available to chop to ₦0
-                      </p>
-                    </div>
-                    <div className="flex -space-x-2 shrink-0 ml-3">
-                      {dealItems.slice(0, 3).map((d, i) => (
-                        d.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img key={i} src={d.imageUrl} alt="" className="w-[40px] h-[40px] rounded-full object-cover" style={{ border: "2px solid var(--dark)" }} />
-                        ) : (
-                          <div key={i} className="w-[40px] h-[40px] rounded-full flex items-center justify-center text-[12px] font-bold" style={{ background: "var(--coral)", color: "white", border: "2px solid var(--dark)" }}>{d.name.charAt(0)}</div>
-                        )
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 mt-3">
-                    <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>See chop deals</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
-                  </div>
-                </button>
-              )}
 
               {/* Restaurant cards — Chowdeck DNA + group buying identity */}
               <div className="flex flex-col gap-4">
