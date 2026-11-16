@@ -138,6 +138,7 @@ export default function HomePage() {
   const [userName, setUserName] = useState("");
   const [isReturning, setIsReturning] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Food");
+  const [categories, setCategories] = useState<Array<{ name: string; imageUrl: string | null }>>([]);
   const touchStartX = useRef(0);
   const swipeTab = useCallback((direction: "left" | "right") => {
     setFilter(prev => {
@@ -170,6 +171,7 @@ export default function HomePage() {
     } catch {}
 
     loadFeed();
+    fetch("/api/categories").then(r => r.json()).then(d => { if (d.success) setCategories(d.data); }).catch(() => {});
   }, []);
 
   function saveLocation(address: string, area?: string) {
@@ -321,25 +323,27 @@ export default function HomePage() {
         {/* Categories */}
         <p className="text-[18px] font-extrabold mt-4 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Categories</p>
         <div className="flex gap-2 overflow-x-auto hide-scrollbar">
-          {[
-            { label: "Food", img: "/categories/food.png" },
-            { label: "Groceries", img: "/categories/groceries.png" },
-            { label: "Gadgets", img: "/categories/gadgets.png" },
-            { label: "Fashion", img: "/categories/fashion.png" },
-            { label: "Home", img: "/categories/home.png" },
-          ].map(c => {
-            const active = activeCategory === c.label;
+          {(categories.length > 0 ? categories : [
+            { name: "Food", imageUrl: "/categories/food.png" },
+            { name: "Groceries", imageUrl: "/categories/groceries.png" },
+            { name: "Gadgets", imageUrl: "/categories/gadgets.png" },
+            { name: "Fashion", imageUrl: "/categories/fashion.png" },
+            { name: "Home", imageUrl: "/categories/home.png" },
+          ]).map(c => {
+            const active = activeCategory === c.name;
             return (
-            <button key={c.label} type="button" onClick={() => setActiveCategory(c.label)}
+            <button key={c.name} type="button" onClick={() => setActiveCategory(c.name)}
               className="h-[40px] px-3 rounded-[12px] flex items-center gap-2 shrink-0 press-feedback"
               style={{
                 background: active ? "rgba(196,87,42,0.1)" : "var(--sand)",
                 border: "1px solid transparent",
                 transition: "all 150ms ease-out",
               }}>
-              <span className="text-[14px] font-extrabold" style={{ color: active ? "var(--coral)" : "var(--text-secondary)" }}>{c.label}</span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.img} alt="" className="w-[24px] h-[24px] object-contain" />
+              <span className="text-[14px] font-extrabold" style={{ color: active ? "var(--coral)" : "var(--text-secondary)" }}>{c.name}</span>
+              {c.imageUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={c.imageUrl} alt="" className="w-[24px] h-[24px] object-contain" />
+              )}
             </button>
             );
           })}

@@ -49,7 +49,7 @@ const EMPTY_FORM: FormState = {
   isActive: true,
 };
 
-const CATEGORIES = ["Food", "Electronics", "Fashion", "Groceries", "Home"];
+const DEFAULT_CATEGORIES = ["Food", "Electronics", "Fashion", "Groceries", "Home"];
 
 function koboToNaira(kobo: number): string {
   return (kobo / 100).toLocaleString("en-NG");
@@ -69,6 +69,8 @@ export default function ProductsPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [categoryList, setCategoryList] = useState<string[]>(DEFAULT_CATEGORIES);
+  const [newCategory, setNewCategory] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -94,6 +96,9 @@ export default function ProductsPage() {
 
   useEffect(() => {
     load();
+    fetch("/api/categories").then(r => r.json()).then(d => {
+      if (d.success && d.data) setCategoryList(d.data.map((c: { name: string }) => c.name));
+    }).catch(() => {});
   }, [load]);
 
   function openAdd() {
@@ -414,10 +419,31 @@ export default function ProductsPage() {
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
                     className="w-full h-10 px-3 rounded-lg border border-[#E5E7EB] text-sm text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#E84C3D]/30 focus:border-[#E84C3D] bg-white"
                   >
-                    {CATEGORIES.map((c) => (
+                    {categoryList.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
+                  {/* Add new category */}
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      placeholder="New category name"
+                      className="flex-1 h-8 px-2 rounded-md border border-[#E5E7EB] text-xs focus:outline-none"
+                    />
+                    <button type="button" onClick={async () => {
+                      if (!newCategory.trim()) return;
+                      const res = await fetch("/api/admin/product-categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newCategory.trim() }) });
+                      const data = await res.json();
+                      if (data.success) {
+                        setCategoryList(data.data.map((c: { name: string }) => c.name));
+                        setForm({ ...form, category: newCategory.trim() });
+                        setNewCategory("");
+                      }
+                    }} className="h-8 px-3 rounded-md text-[10px] font-bold text-white cursor-pointer" style={{ background: "#1C1C1E" }}>
+                      + Add
+                    </button>
+                  </div>
                 </div>
               </div>
 
