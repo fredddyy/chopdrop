@@ -313,7 +313,7 @@ export default function HomePage() {
           {/* ═══ ITEM CARDS — shown when filtering by deals or live ═══ */}
           {isItemView && filteredItems.length > 0 && (
             <div className="px-5 pt-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2.5">
                 {filteredItems.map(item => {
                   const poolMembers = item.activePool?.memberCount || 0;
                   const spotsLeft = item.minPoolSize - poolMembers;
@@ -321,7 +321,7 @@ export default function HomePage() {
                   const isChopMode = filter === "chop";
                   const chopFriendsNeeded = Math.ceil(item.retailPrice / 10000); // each friend chops ₦100
                   return (
-                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-lg overflow-hidden">
                     {/* Image */}
                     <div className="relative" style={{ aspectRatio: "4/3", background: "var(--sand)" }}>
                       {item.imageUrl ? (
@@ -334,54 +334,49 @@ export default function HomePage() {
                       )}
                       {/* Ribbon — top left */}
                       {isChopMode ? (
-                        <div className="absolute top-0 left-0 px-2.5 py-1 text-[10px] font-extrabold text-white" style={{ background: "var(--coral)", borderRadius: "0 0 12px 0" }}>
-                          Chop to FREE
+                        <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--coral)", borderRadius: "0 0 8px 0" }}>
+                          FREE
                         </div>
                       ) : (
-                        <div className="absolute top-0 left-0 px-2.5 py-1 text-[10px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 12px 0" }}>
+                        <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 8px 0" }}>
                           -{item.savings}%
                         </div>
                       )}
                     </div>
                     {/* Info */}
-                    <div className="px-3 pt-2.5 pb-3">
-                      <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
-                      <p className="text-[10px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
+                    <div className="pt-1.5 pb-1">
+                      <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                      <p className="text-[9px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
                       {/* Price */}
                       {isChopMode ? (
-                        <div className="mt-1.5">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[18px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
-                            <span className="text-[14px] font-extrabold leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>FREE</span>
+                        <div className="mt-1">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-[13px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                            <span className="text-[11px] font-extrabold leading-none" style={{ color: "var(--emerald)" }}>FREE</span>
                           </div>
-                          <p className="text-[10px] mt-0.5" style={{ color: "var(--text-muted)" }}>if {chopFriendsNeeded} friends chop</p>
+                          <p className="text-[9px] mt-0.5" style={{ color: "var(--text-muted)" }}>if {chopFriendsNeeded} friends chop</p>
                         </div>
                       ) : (
-                        <div className="flex items-baseline gap-1.5 mt-1.5">
-                          <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
-                          <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
+                          <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
                         </div>
                       )}
                       {/* Bottom — progress bar or chop CTA */}
-                      <div className="mt-2">
+                      <div className="mt-1.5">
                         {isChopMode ? (
-                          <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>
-                              Share to chop
-                            </span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m9 18 6-6-6-6" /></svg>
-                          </div>
+                          <span className="text-[9px] font-bold" style={{ color: "var(--coral)" }}>Share to chop</span>
                         ) : (
                           <>
-                            <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
-                              <div className="h-full rounded-full" style={{ width: `${hasPool ? Math.round((poolMembers / item.minPoolSize) * 100) : 5}%`, minWidth: "8px", background: hasPool ? "var(--emerald)" : "var(--coral)", transition: "width 0.5s ease" }} />
+                            <div className="h-[3px] rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+                              <div className="h-full rounded-full" style={{ width: `${hasPool ? Math.round((poolMembers / item.minPoolSize) * 100) : 5}%`, minWidth: "6px", background: hasPool ? "var(--emerald)" : "var(--coral)", transition: "width 0.5s ease" }} />
                             </div>
-                            <div className="flex items-center justify-between mt-1.5">
-                              <span className="text-[10px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text-muted)" }}>
-                                {hasPool ? `${poolMembers}/${item.minPoolSize} joined` : `${item.minPoolSize} people needed`}
+                            <div className="flex items-center justify-between mt-1">
+                              <span className="text-[9px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text-muted)" }}>
+                                {hasPool ? `${poolMembers} joined` : `${item.minPoolSize} needed`}
                               </span>
-                              <div className="w-[26px] h-[26px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral)" }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                              <div className="w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral)" }}>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                               </div>
                             </div>
                           </>
