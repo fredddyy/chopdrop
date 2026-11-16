@@ -78,6 +78,7 @@ export default function HomePage() {
   const [userArea, setUserArea] = useState("");
   const [userName, setUserName] = useState("");
   const [isReturning, setIsReturning] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("Food");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [filter, setFilter] = useState<"all" | "deals" | "live" | "chop" | "popular">("all");
 
@@ -168,18 +169,27 @@ export default function HomePage() {
         {/* Categories — rectangular rounded buttons with image */}
         <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
           {[
-            { label: "Food", img: "/categories/food.png", href: "/home" },
-            { label: "Groceries", img: "/categories/groceries.png", href: "/home" },
-            { label: "Gadgets", img: "/categories/gadgets.png", href: "/home" },
-            { label: "Fashion", img: "/categories/fashion.png", href: "/home" },
-            { label: "Home", img: "/categories/home.png", href: "/home" },
-          ].map(c => (
-            <Link key={c.label} href={c.href} className="h-[40px] px-3 rounded-[12px] flex items-center gap-2 shrink-0 press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{c.label}</span>
+            { label: "Food", img: "/categories/food.png" },
+            { label: "Groceries", img: "/categories/groceries.png" },
+            { label: "Gadgets", img: "/categories/gadgets.png" },
+            { label: "Fashion", img: "/categories/fashion.png" },
+            { label: "Home", img: "/categories/home.png" },
+          ].map(c => {
+            const active = activeCategory === c.label;
+            return (
+            <button key={c.label} type="button" onClick={() => setActiveCategory(c.label)}
+              className="h-[40px] px-3 rounded-[12px] flex items-center gap-2 shrink-0 press-feedback"
+              style={{
+                background: active ? "var(--coral)" : "var(--card)",
+                border: active ? "1px solid var(--coral)" : "1px solid var(--border)",
+                transition: "all 150ms ease-out",
+              }}>
+              <span className="text-[12px] font-bold" style={{ color: active ? "white" : "var(--text)" }}>{c.label}</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={c.img} alt="" className="w-[24px] h-[24px] object-contain" />
-            </Link>
-          ))}
+            </button>
+            );
+          })}
         </div>
         {/* Tabs — text-only tab style */}
         <div className="flex gap-1 mt-3 overflow-x-auto hide-scrollbar">
