@@ -422,28 +422,26 @@ export default function StorePage() {
                           {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                         </div>
                         {/* Add button — right side, fixed width to prevent text shift */}
-                        <div className="shrink-0 self-end mb-1 w-[86px] flex justify-end">
-                          {inCart > 0 ? (
-                            <div className="flex items-center gap-1">
-                              <button type="button" aria-label="Decrease" onClick={() => cart.changeQuantity(item.id, -1)}
-                                className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
-                                style={{ background: "var(--sand)" }}>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
-                              </button>
-                              <span className="w-[22px] text-center text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{inCart}</span>
-                              <button type="button" aria-label="Add" onClick={() => addToPlate(item, store.name)}
-                                className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
-                                style={{ background: "var(--coral)" }}>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                              </button>
-                            </div>
-                          ) : (
-                            <button type="button" aria-label={`Add ${item.name}`} onClick={() => addToPlate(item, store.name)}
-                              className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
-                              style={{ background: "var(--coral)" }}>
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                        <div className="shrink-0 self-end mb-1 w-[86px] flex justify-end items-center">
+                          {/* Minus + count — expand from right */}
+                          <div className="flex items-center gap-1 overflow-hidden" style={{
+                            maxWidth: inCart > 0 ? "54px" : "0px",
+                            opacity: inCart > 0 ? 1 : 0,
+                            transition: "max-width 250ms cubic-bezier(0.4,0,0.2,1), opacity 200ms ease-out",
+                          }}>
+                            <button type="button" aria-label="Decrease" onClick={() => cart.changeQuantity(item.id, -1)}
+                              className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback shrink-0"
+                              style={{ background: "var(--sand)" }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                             </button>
-                          )}
+                            <span className="w-[22px] text-center text-[14px] font-extrabold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{inCart}</span>
+                          </div>
+                          {/* Plus button — always visible */}
+                          <button type="button" aria-label={`Add ${item.name}`} onClick={() => addToPlate(item, store.name)}
+                            className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback shrink-0"
+                            style={{ background: "var(--coral)", transition: "transform 150ms ease-out", transform: inCart > 0 ? "scale(1)" : "scale(1)" }}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                          </button>
                         </div>
                       </div>
                     );
