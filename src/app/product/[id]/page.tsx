@@ -479,7 +479,7 @@ export default function ProductDetailPage() {
         <div className="fixed bottom-[56px] left-0 right-0 z-40 px-5 pt-3 pb-4" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
           <div className="max-w-[428px] mx-auto">
             <button type="button"
-              className="w-full h-[50px] rounded-full flex items-center justify-center gap-2 text-[15px] font-bold text-white press-feedback"
+              className="w-full h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[15px] font-bold text-white press-feedback"
               style={{ background: "var(--coral)" }}
               onClick={() => {
                 if (navigator.share) navigator.share({ title: product.name, text: shareText, url: `${window.location.origin}/product/${id}` }).catch(() => {});
@@ -649,7 +649,7 @@ export default function ProductDetailPage() {
           {joinedStatus === "filling" && hasPoolPricing && (
             <>
               <button type="button"
-                className="w-full h-[54px] rounded-full flex items-center justify-center gap-2 px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
+                className="w-full h-[54px] rounded-[12px] flex items-center justify-center gap-2 px-6 text-[15px] font-bold text-white cursor-pointer press-feedback"
                 style={{ background: "var(--coral)" }}
                 onClick={() => { if (navigator.share) navigator.share({ title: `Join my ChopDrop pool!`, text: `${product.name} for ${fp(product.groupPrice)}. We need more people or the pool expires and nobody eats! Join: ${window.location.href}`, url: window.location.href }).catch(() => {}); }}>
                 Share to fill it
@@ -675,7 +675,7 @@ export default function ProductDetailPage() {
             <>
               <p className="text-[14px] font-bold mb-2" style={{ color: "var(--emerald)" }}>Your food is ready!</p>
               <button type="button"
-                className="w-full h-[54px] rounded-full flex items-center justify-center text-[15px] font-bold text-white cursor-pointer press-feedback"
+                className="w-full h-[54px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white cursor-pointer press-feedback"
                 style={{ background: "var(--emerald)" }}
                 onClick={() => alert("QR code feature coming soon")}>
                 Show QR Code
@@ -714,7 +714,7 @@ export default function ProductDetailPage() {
               {/* Refund — primary action */}
               <button type="button"
                 disabled={refunding}
-                className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback disabled:opacity-50"
+                className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback disabled:opacity-50"
                 style={{ background: "var(--emerald)" }}
                 onClick={async () => {
                   if (!expiredPoolId) { showToast("No pool found to refund"); return; }
@@ -745,7 +745,7 @@ export default function ProductDetailPage() {
 
               {/* Solo fallback */}
               <button type="button" onClick={addSolo}
-                className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold press-feedback"
+                className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[14px] font-bold press-feedback"
                 style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
                 <span>Order solo instead</span>
                 <span className="tabular-nums">{fp(soloTotal)}</span>
@@ -779,13 +779,13 @@ export default function ProductDetailPage() {
               )}
               <div className="flex gap-2.5">
                 <button type="button" onClick={addSolo}
-                  className="flex-1 h-[50px] rounded-full flex flex-col items-center justify-center cursor-pointer press-feedback"
+                  className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center cursor-pointer press-feedback"
                   style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
                   <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Solo</span>
                   <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(soloTotal)}</span>
                 </button>
                 <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
-                  className="flex-[1.4] h-[50px] rounded-full flex flex-col items-center justify-center text-white cursor-pointer press-feedback disabled:opacity-50"
+                  className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white cursor-pointer press-feedback disabled:opacity-50"
                   style={{ background: "var(--coral)" }}>
                   <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Start Pool" : pool ? "Join Pool" : "Start Pool"}</span>
                   <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(poolUnitTotal)}</span>
@@ -798,12 +798,12 @@ export default function ProductDetailPage() {
           {!joinedStatus && !hasPoolPricing && (
             <div className="flex gap-2.5">
               <button type="button" onClick={() => router.push(`/request-sent/${id}`)}
-                className="flex-1 h-[50px] rounded-full flex items-center justify-center text-[14px] font-bold cursor-pointer press-feedback"
+                className="flex-1 h-[50px] rounded-[12px] flex items-center justify-center text-[14px] font-bold cursor-pointer press-feedback"
                 style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
                 Request Pool
               </button>
               <button type="button" onClick={addSolo}
-                className="flex-[1.4] h-[50px] rounded-full flex items-center justify-center text-[14px] font-bold text-white cursor-pointer press-feedback"
+                className="flex-[1.4] h-[50px] rounded-[12px] flex items-center justify-center text-[14px] font-bold text-white cursor-pointer press-feedback"
                 style={{ background: "var(--coral)" }}>
                 Buy Solo {fp(product.retailPrice)}
               </button>
@@ -1012,7 +1012,7 @@ export default function ProductDetailPage() {
                     await createPool();
                   }
                 }}
-                className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-5 disabled:opacity-50"
+                className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-5 disabled:opacity-50"
                 style={{ background: "var(--coral)" }}
               >
                 {joining ? "Processing\u2026" : `Pay ${fp(poolUnitTotal * quantity)}`}

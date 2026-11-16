@@ -103,7 +103,18 @@
       "Bash(grep -r \"PAYSTACK\" .env*)",
       "Bash(find /c/Users/GodfredBoakye/Desktop/Buzzpay/src -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) -exec grep -l \"poolTiers\\\\|officeOrderCount\\\\|tier.*price\\\\|30.*off\\\\|10.*off\\\\|20.*off\" {} \\\\;)",
       "Bash(xargs grep:*)",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_Uw6byOGR7TWr@ep-winter-thunder-b7wesor1-pooler.c-13.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require\" PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes\" npx prisma db push --accept-data-loss)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_Uw6byOGR7TWr@ep-winter-thunder-b7wesor1-pooler.c-13.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require\" npx prisma db execute --stdin)",
+      "Bash(\"C:/Users/GodfredBoakye/.claude/skills/impeccable/scripts/bin/windows-x64/impeccable.exe\" context:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(./.claude/skills/impeccable/scripts/bin/windows-x64/impeccable.exe detect:*)",
+      "Bash(mkdir -p C:/Users/GodfredBoakye/Desktop/Buzzpay/src/app/api/chop/\\\\[code\\\\]/click)",
+      "Bash(mkdir -p C:/Users/GodfredBoakye/Desktop/Buzzpay/src/app/api/chop/\\\\[code\\\\]/pay)",
+      "Bash(.claude/skills/impeccable/scripts/impeccable.cmd detect:*)",
+      "Bash(/C/Users/GodfredBoakye/.claude/skills/impeccable/scripts/impeccable.cmd detect:*)",
+      "Bash(/C/Users/GodfredBoakye/.claude/skills/impeccable/scripts/bin/windows-x64/impeccable.exe detect:*)"
     ]
   }
 }

@@ -94,7 +94,7 @@ export default function ChopClickPage() {
           {data.ownerFirstName} now pays {fp(result.newTotal)} instead of {fp(data.retailTotal)}
         </p>
         <div className="mt-8 w-full space-y-3">
-          <Link href="/home" className="w-full h-[50px] rounded-full flex items-center justify-center text-[15px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+          <Link href="/home" className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
             Browse ChopDrop deals
           </Link>
           <p className="text-[12px] text-center" style={{ color: "var(--text-muted)" }}>
@@ -184,7 +184,7 @@ export default function ChopClickPage() {
               type="button"
               onClick={handleChop}
               disabled={chopping || !name.trim()}
-              className="w-full h-[54px] rounded-full flex items-center justify-center text-[16px] font-extrabold text-white press-feedback mt-3 disabled:opacity-50"
+              className="w-full h-[54px] rounded-[12px] flex items-center justify-center text-[16px] font-extrabold text-white press-feedback mt-3 disabled:opacity-50"
               style={{ background: "var(--coral)" }}
             >
               {chopping ? "Chopping..." : `Chop ${fp(data.chopAmountPerClick)} off!`}
@@ -206,7 +206,7 @@ export default function ChopClickPage() {
         <div className="mt-8 pt-6" style={{ borderTop: "1px solid var(--border)" }}>
           <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Want cheaper food too?</p>
           <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>Join ChopDrop and get friends to chop YOUR prices down.</p>
-          <Link href="/home" className="mt-3 w-full h-[48px] rounded-full flex items-center justify-center text-[14px] font-bold press-feedback" style={{ background: "var(--sand)", color: "var(--text)" }}>
+          <Link href="/home" className="mt-3 w-full h-[48px] rounded-[12px] flex items-center justify-center text-[14px] font-bold press-feedback" style={{ background: "var(--sand)", color: "var(--text)" }}>
             Browse ChopDrop deals
           </Link>
         </div>

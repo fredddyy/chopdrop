@@ -404,7 +404,7 @@ export default function StorePage() {
         return (
           <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
             <div className="max-w-[480px] mx-auto">
-              <Link href="/cart" className="w-full h-[50px] rounded-full flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+              <Link href="/cart" className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
                 <div className="flex items-center gap-2">
                   <span className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[11px] font-bold" style={{ background: "rgba(255,255,255,0.25)" }}>{cart.totalItems}</span>
                   <span>View plate</span>

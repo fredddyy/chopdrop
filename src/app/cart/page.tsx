@@ -396,7 +396,7 @@ export default function CartPage() {
                       setConfirmOpen(true);
                     }}
                     disabled={loading}
-                    className="flex-1 h-[50px] rounded-full flex flex-col items-center justify-center press-feedback disabled:opacity-50"
+                    className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center press-feedback disabled:opacity-50"
                     style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
                     <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>{isAuthenticated === false ? "Log in" : "Pay solo"}</span>
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(orderTotal)}</span>
@@ -404,7 +404,7 @@ export default function CartPage() {
                   <button type="button"
                     onClick={handleChop}
                     disabled={chopLoading || loading}
-                    className="flex-[1.4] h-[50px] rounded-full flex flex-col items-center justify-center text-white press-feedback disabled:opacity-50"
+                    className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback disabled:opacity-50"
                     style={{ background: "var(--coral)" }}>
                     <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>{chopLoading ? "Creating..." : "Share to Chop"}</span>
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>from {formatNaira(Math.round(orderTotal * 0.7))}</span>
