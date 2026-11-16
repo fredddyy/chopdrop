@@ -421,8 +421,8 @@ export default function StorePage() {
                           <h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4>
                           {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                         </div>
-                        {/* Add button — right side */}
-                        <div className="shrink-0 self-end mb-1">
+                        {/* Add button — right side, fixed width to prevent text shift */}
+                        <div className="shrink-0 self-end mb-1 w-[86px] flex justify-end">
                           {inCart > 0 ? (
                             <div className="flex items-center gap-1">
                               <button type="button" aria-label="Decrease" onClick={() => cart.changeQuantity(item.id, -1)}
