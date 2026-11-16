@@ -312,22 +312,29 @@ export default function CartPage() {
                   const hasGroup = groupInfo && groupInfo.groupTarget > 0 && groupInfo.groupDiscount > 0;
                   return (
                     <section key={restKey} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                      <div className="px-4 py-2.5 flex items-center justify-between" style={{ background: "var(--sand)" }}>
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{restName}</span>
-                          {hasGroup && (
-                            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "var(--emerald)", color: "white" }}>
-                              {groupInfo.groupDiscount}% group
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-right shrink-0 ml-2">
-                          <span className="text-[12px] font-extrabold tabular-nums block leading-none" style={{ color: "var(--text)" }}>{formatNaira(restSubtotal)}</span>
-                          {hasGroup && (
-                            <span className="text-[9px] font-bold" style={{ color: "var(--emerald)" }}>
-                              {formatNaira(Math.round(restSubtotal * (1 - groupInfo.groupDiscount / 100)))} in group
-                            </span>
-                          )}
+                      <div className="px-4 py-3" style={{ background: "var(--sand)" }}>
+                        <div className="flex items-center justify-between">
+                          <div className="min-w-0">
+                            <span className="text-[14px] font-extrabold truncate block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{restName}</span>
+                            {hasGroup && (
+                              <span className="text-[10px] font-bold mt-0.5 inline-flex items-center gap-1" style={{ color: "var(--emerald)" }}>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+                                {groupInfo.groupDiscount}% off in group order
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-right shrink-0 ml-3">
+                            {hasGroup ? (
+                              <>
+                                <span className="text-[11px] tabular-nums line-through block leading-none" style={{ color: "var(--text-muted)" }}>{formatNaira(restSubtotal)}</span>
+                                <span className="text-[16px] font-extrabold tabular-nums block leading-none mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
+                                  {formatNaira(Math.round(restSubtotal * (1 - groupInfo.groupDiscount / 100)))}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-[15px] font-extrabold tabular-nums block leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{formatNaira(restSubtotal)}</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="px-4">
