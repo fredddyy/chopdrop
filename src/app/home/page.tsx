@@ -326,7 +326,7 @@ export default function HomePage() {
                   return (
                   <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-lg overflow-hidden">
                     {/* Image + add button */}
-                    <div className="relative" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                    <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
                       {item.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
