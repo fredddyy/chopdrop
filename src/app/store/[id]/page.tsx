@@ -273,6 +273,9 @@ export default function StorePage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <h1 className="text-[18px] font-extrabold flex-1 truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h1>
+        <button type="button" onClick={() => { const el = document.getElementById("menu-search"); if (el) { el.classList.toggle("hidden"); el.focus(); } }} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+        </button>
         <Link href="/cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
         </Link>
@@ -339,21 +342,18 @@ export default function StorePage() {
       )}
 
       {/* ═══ THE FULL MENU ═══ */}
-      <section className="px-5 mt-6">
-        <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Menu</h2>
-
-        {/* Menu search */}
-        <div className="relative mt-3 mb-3">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-          <input
-            type="text"
-            value={menuSearch}
-            onChange={(e) => setMenuSearch(e.target.value)}
-            placeholder="Search menu..."
-            className="w-full h-[38px] pl-9 pr-3 rounded-[12px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
-            style={{ background: "var(--sand)", color: "var(--text)" }}
-          />
-        </div>
+      <section className="px-5 mt-4">
+        {/* Hidden search — toggled by header icon */}
+        <input
+          id="menu-search"
+          type="text"
+          value={menuSearch}
+          onChange={(e) => setMenuSearch(e.target.value)}
+          placeholder="Search menu..."
+          className="hidden w-full h-[38px] pl-3 pr-3 rounded-[12px] text-[13px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] mb-3"
+          style={{ background: "var(--sand)", color: "var(--text)" }}
+          onBlur={(e) => { if (!e.target.value) e.target.classList.add("hidden"); }}
+        />
 
         {/* Category tabs — underlined text style */}
         <StoreTabBar tabs={menuTabs} active={currentTab} onChange={setActiveTab} />
