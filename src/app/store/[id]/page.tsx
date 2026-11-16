@@ -500,25 +500,42 @@ export default function StorePage() {
         </p>
       </div>
 
-      {/* ── Sticky cart bar ── */}
+      {/* ── Sticky cart bar — solo vs group ── */}
       {cart.totalItems > 0 && (() => {
         const subtotal = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
         const isFreeDelivery = subtotal >= (store.freeDeliveryMin || 500000);
         const storeDeliveryFee = isFreeDelivery ? 0 : (store.deliveryFee || 50000);
-        const total = subtotal + storeDeliveryFee;
+        const soloTotal = subtotal + storeDeliveryFee;
+        const groupTotal = Math.round(subtotal * (1 - (store.groupDiscount || 0) / 100)) + storeDeliveryFee;
+        const hasGroupDiscount = store.groupTarget > 0 && store.groupDiscount > 0;
         return (
           <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
             <div className="max-w-[480px] mx-auto">
-              <Link href="/cart" className="w-full h-[54px] rounded-[12px] flex items-center justify-between px-5 text-white press-feedback" style={{ background: "var(--coral)" }}>
-                <div>
-                  <span className="text-[15px] font-bold block leading-none">Checkout</span>
-                  <span className="text-[10px] font-medium opacity-70 mt-0.5 block">{cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}</span>
+              {hasGroupDiscount ? (
+                <div className="flex gap-2">
+                  <Link href="/cart" className="flex-1 h-[54px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
+                    style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
+                    <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>Buy alone</span>
+                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
+                  </Link>
+                  <Link href="/cart" className="flex-[1.4] h-[54px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
+                    style={{ background: "var(--coral)" }}>
+                    <span className="text-[10px] font-medium" style={{ opacity: 0.8 }}>Group order · {store.groupDiscount}% off</span>
+                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
+                  </Link>
                 </div>
-                <div className="text-right">
-                  <span className="text-[16px] font-extrabold tabular-nums block leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(total)}</span>
-                  <span className="text-[10px] font-medium opacity-70 mt-0.5 block">{isFreeDelivery ? "free delivery" : `incl. ${fp(storeDeliveryFee)} delivery`}</span>
-                </div>
-              </Link>
+              ) : (
+                <Link href="/cart" className="w-full h-[54px] rounded-[12px] flex items-center justify-between px-5 text-white press-feedback" style={{ background: "var(--coral)" }}>
+                  <div>
+                    <span className="text-[15px] font-bold block leading-none">Checkout</span>
+                    <span className="text-[10px] font-medium opacity-70 mt-0.5 block">{cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[16px] font-extrabold tabular-nums block leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(soloTotal)}</span>
+                    <span className="text-[10px] font-medium opacity-70 mt-0.5 block">{isFreeDelivery ? "free delivery" : `incl. delivery`}</span>
+                  </div>
+                </Link>
+              )}
             </div>
           </div>
         );
