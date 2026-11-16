@@ -42,37 +42,54 @@ const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 
 function StoreTabBar({ tabs, active, onChange }: { tabs: string[]; active: string; onChange: (t: string) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const textRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
 
-  // Auto-scroll to active tab
-  useEffect(() => {
-    const idx = tabs.indexOf(active);
-    const btn = btnRefs.current[idx];
+  const updateIndicator = useCallback(() => {
+    const uniqueTabs = tabs.filter((v, i, a) => a.indexOf(v) === i);
+    const idx = uniqueTabs.indexOf(active);
+    const el = textRefs.current[idx];
     const container = scrollRef.current;
-    if (btn && container) {
-      const left = btn.offsetLeft - container.offsetWidth / 2 + btn.offsetWidth / 2;
-      container.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+    if (el && container) {
+      setIndicator({ left: el.offsetLeft - container.scrollLeft, width: el.offsetWidth });
+      // Auto-scroll to keep active tab visible
+      const btnLeft = el.offsetLeft - container.offsetWidth / 2 + el.offsetWidth / 2;
+      container.scrollTo({ left: Math.max(0, btnLeft), behavior: "smooth" });
     }
   }, [active, tabs]);
 
+  useEffect(() => { updateIndicator(); }, [updateIndicator]);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateIndicator, { passive: true });
+    return () => el.removeEventListener("scroll", updateIndicator);
+  }, [updateIndicator]);
+
   return (
-    <div className="relative mt-4 pb-[2px]">
-      <div ref={scrollRef} className="flex overflow-x-auto hide-scrollbar relative z-10">
+    <div className="relative mt-4">
+      <div ref={scrollRef} className="flex overflow-x-auto hide-scrollbar">
         {tabs.filter((v, i, a) => a.indexOf(v) === i).map((tab, i) => {
           const isActive = active === tab;
           return (
             <button key={tab} type="button"
-              ref={el => { btnRefs.current[i] = el; }}
               onClick={() => onChange(tab)}
-              className={`${i === 0 ? "pr-3" : "px-3"} pt-1 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback flex flex-col items-start`}
+              className={`${i === 0 ? "pr-3" : "px-3"} pb-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback`}
               style={{ color: isActive ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
-              <span className="pb-2">{tab}</span>
-              <div className="w-full h-[2px] rounded-full" style={{ background: isActive ? "var(--coral)" : "transparent" }} />
+              <span ref={el => { textRefs.current[i] = el; }}>{tab}</span>
             </button>
           );
         })}
       </div>
+      {/* Track line */}
       <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
+      {/* Sliding indicator */}
+      <div className="absolute bottom-0 h-[2px] rounded-full z-10" style={{
+        left: `${indicator.left}px`,
+        width: `${indicator.width}px`,
+        background: "var(--coral)",
+        transition: "left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1)",
+      }} />
     </div>
   );
 }
