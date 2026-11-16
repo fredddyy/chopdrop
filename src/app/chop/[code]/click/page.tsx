@@ -84,13 +84,13 @@ export default function ChopClickPage() {
   if (result) {
     return (
       <main className="flex-1 max-w-[428px] mx-auto w-full min-h-svh flex flex-col items-center justify-center px-5" style={{ background: "var(--bg)" }}>
-        <div className="w-20 h-20 rounded-full flex items-center justify-center mb-5" style={{ background: "var(--emerald)" }}>
+        <div className="w-20 h-20 rounded-full flex items-center justify-center mb-5 celebrate" style={{ background: "var(--emerald)" }}>
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="m5 12 4 4L19 6" /></svg>
         </div>
-        <h1 className="text-[24px] font-extrabold text-center" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+        <h1 className="text-[24px] font-extrabold text-center savings-reveal" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
           You chopped {fp(result.chopAmount)}!
         </h1>
-        <p className="text-[15px] mt-2 text-center" style={{ color: "var(--text-muted)" }}>
+        <p className="text-[15px] mt-2 text-center card-enter card-enter-2" style={{ color: "var(--text-muted)" }}>
           {data.ownerFirstName} now pays {fp(result.newTotal)} instead of {fp(data.retailTotal)}
         </p>
         <div className="mt-8 w-full space-y-3">
@@ -185,7 +185,7 @@ export default function ChopClickPage() {
               onClick={handleChop}
               disabled={chopping || !name.trim()}
               className="w-full h-[54px] rounded-[12px] flex items-center justify-center text-[16px] font-extrabold text-white press-feedback mt-3 disabled:opacity-50"
-              style={{ background: "var(--coral)" }}
+              style={{ background: "var(--coral)", animation: chopping ? "pulse 1.2s ease-in-out infinite" : "none" }}
             >
               {chopping ? "Chopping..." : `Chop ${fp(data.chopAmountPerClick)} off!`}
             </button>

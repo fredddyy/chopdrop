@@ -26,10 +26,10 @@ export function BottomNav() {
     <>
       {/* Floating cart bar — hidden on pages with their own sticky CTA */}
       {cart.totalItems > 0 && !hideCartBar && (
-        <Link href="/cart" className="fixed bottom-[72px] left-4 right-4 z-50 md:hidden max-w-[480px] mx-auto">
+        <Link href="/cart" className="fixed bottom-[72px] left-4 right-4 z-50 md:hidden max-w-[480px] mx-auto sheet-enter">
           <div className="h-[48px] rounded-[12px] flex items-center justify-between px-5 press-feedback" style={{ background: "#1C1C1E" }}>
             <div className="flex items-center gap-2">
-              <span className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: "var(--coral)", color: "white" }}>{cart.totalItems}</span>
+              <span key={cart.totalItems} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold pop" style={{ background: "var(--coral)", color: "white" }}>{cart.totalItems}</span>
               <span className="text-[13px] font-bold text-white">View cart</span>
             </div>
             <span className="text-[14px] font-extrabold text-white tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(cart.subtotal)}</span>
@@ -58,14 +58,15 @@ export function BottomNav() {
                 stroke={active ? "var(--coral)" : "currentColor"}
                 strokeWidth={active ? "0" : "1.6"}
                 strokeLinecap="round" strokeLinejoin="round"
+                style={{ transition: "transform 150ms ease-out", transform: active ? "scale(1.1)" : "scale(1)" }}
               >
                 <path d={link.icon} />
               </svg>
-              <span className={`text-[11px] ${active ? "font-bold" : "font-medium"}`}>
+              <span className={`text-[11px] ${active ? "font-bold" : "font-medium"}`} style={{ transition: "color 150ms ease-out" }}>
                 {link.label}
               </span>
               {link.count > 0 && (
-                <span className="absolute -top-0.5 right-1/2 translate-x-4 min-w-[18px] h-[18px] text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1" style={{ background: "var(--coral)" }}>
+                <span key={link.count} className="absolute -top-0.5 right-1/2 translate-x-4 min-w-[18px] h-[18px] text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 pop" style={{ background: "var(--coral)" }}>
                   {link.count}
                 </span>
               )}

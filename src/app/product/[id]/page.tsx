@@ -584,7 +584,7 @@ export default function ProductDetailPage() {
                 const initial = filled ? (names[i]?.charAt(0) || (userName || "?").charAt(0)) : "?";
                 return (
                   <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
-                    style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "2px solid var(--bg)" : "2px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
+                    style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "2px solid var(--bg)" : "2px dashed var(--border)", color: filled ? "white" : "var(--text-muted)", transition: "background 300ms ease, border-color 300ms ease, color 300ms ease, transform 300ms ease", transform: filled ? "scale(1)" : "scale(0.9)" }}>
                     {initial}
                   </div>
                 );

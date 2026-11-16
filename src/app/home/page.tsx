@@ -312,7 +312,7 @@ export default function HomePage() {
           ? dealItems.filter(d => filter === "live" ? d.activePool !== null : true)
           : [];
         return (
-        <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div key={filter} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="card-enter">
           {/* ═══ ITEM CARDS — shown when filtering by deals or live ═══ */}
           {isItemView && filteredItems.length > 0 && (
             <div className="px-5 pt-4">
