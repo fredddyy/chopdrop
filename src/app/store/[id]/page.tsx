@@ -56,26 +56,23 @@ function StoreTabBar({ tabs, active, onChange }: { tabs: string[]; active: strin
   }, [active, tabs]);
 
   return (
-    <div className="mt-4" style={{ borderBottom: "2px solid var(--border)" }}>
-      <div ref={scrollRef} className="flex overflow-x-auto hide-scrollbar">
+    <div className="relative mt-4">
+      <div ref={scrollRef} className="flex overflow-x-auto hide-scrollbar relative z-10">
         {tabs.filter((v, i, a) => a.indexOf(v) === i).map((tab, i) => {
           const isActive = active === tab;
           return (
             <button key={tab} type="button"
               ref={el => { btnRefs.current[i] = el; }}
               onClick={() => onChange(tab)}
-              className={`${i === 0 ? "pr-3" : "px-3"} pb-2.5 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback`}
-              style={{
-                color: isActive ? "var(--coral)" : "var(--text-muted)",
-                borderBottom: isActive ? "2px solid var(--coral)" : "2px solid transparent",
-                marginBottom: "-2px",
-                transition: "color 200ms ease-out, border-color 200ms ease-out",
-              }}>
+              className={`${i === 0 ? "pr-3" : "px-3"} pb-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback`}
+              style={{ color: isActive ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
               {tab}
+              {isActive && <div className="h-[2px] mt-1.5 rounded-full" style={{ background: "var(--coral)" }} />}
             </button>
           );
         })}
       </div>
+      <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
     </div>
   );
 }
@@ -393,7 +390,7 @@ export default function StorePage() {
                   {menuItems.map((item) => {
                     const inCart = cart.items.find((c) => c.dailyMenuId === item.id)?.quantity || 0;
                     return (
-                      <div key={item.id} className="flex items-start gap-3 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                      <div key={item.id} className="flex items-center gap-3 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
                         {item.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={item.imageUrl} alt={item.name} className="w-[70px] h-[70px] rounded-[12px] object-cover shrink-0" loading="lazy" />
@@ -406,30 +403,30 @@ export default function StorePage() {
                           <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.retailPrice)}</p>
                           <h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4>
                           {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
-                          {/* Add button — bottom right */}
-                          <div className="flex justify-end mt-1.5">
-                            {inCart > 0 ? (
-                              <div className="flex items-center gap-1">
-                                <button type="button" aria-label="Decrease" onClick={() => cart.changeQuantity(item.id, -1)}
-                                  className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
-                                  style={{ background: "var(--sand)" }}>
-                                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
-                                </button>
-                                <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{inCart}</span>
-                                <button type="button" aria-label="Add" onClick={() => addToPlate(item, store.name)}
-                                  className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
-                                  style={{ background: "var(--coral)" }}>
-                                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                                </button>
-                              </div>
-                            ) : (
-                              <button type="button" aria-label={`Add ${item.name}`} onClick={() => addToPlate(item, store.name)}
+                        </div>
+                        {/* Add button — right side */}
+                        <div className="shrink-0 self-end mb-1">
+                          {inCart > 0 ? (
+                            <div className="flex items-center gap-1">
+                              <button type="button" aria-label="Decrease" onClick={() => cart.changeQuantity(item.id, -1)}
+                                className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
+                                style={{ background: "var(--sand)" }}>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                              </button>
+                              <span className="w-[22px] text-center text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{inCart}</span>
+                              <button type="button" aria-label="Add" onClick={() => addToPlate(item, store.name)}
                                 className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
                                 style={{ background: "var(--coral)" }}>
                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                               </button>
-                            )}
-                          </div>
+                            </div>
+                          ) : (
+                            <button type="button" aria-label={`Add ${item.name}`} onClick={() => addToPlate(item, store.name)}
+                              className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
+                              style={{ background: "var(--coral)" }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
