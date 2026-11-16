@@ -563,7 +563,7 @@ export default function ProductDetailPage() {
             </div>
             <div className="pb-0.5">
               <span className="text-[22px] font-extrabold tabular-nums leading-none line-through block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fp(product.retailPrice)}</span>
-              <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>buy alone</p>
+              <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>store price</p>
             </div>
           </div>
           <p className="text-[12px] font-bold mt-1.5 flex items-center gap-3" style={{ color: "var(--emerald)" }}>
