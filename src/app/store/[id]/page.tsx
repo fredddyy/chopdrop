@@ -367,40 +367,44 @@ export default function StorePage() {
                   {menuItems.map((item) => {
                     const inCart = cart.items.find((c) => c.dailyMenuId === item.id)?.quantity || 0;
                     return (
-                      <div key={item.id} className="flex items-center gap-3 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                      <div key={item.id} className="flex items-start gap-3 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
                         {item.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={item.imageUrl} alt={item.name} className="w-[50px] h-[50px] rounded-[12px] object-cover shrink-0" loading="lazy" />
+                          <img src={item.imageUrl} alt={item.name} className="w-[70px] h-[70px] rounded-[12px] object-cover shrink-0" loading="lazy" />
                         ) : (
-                          <div className="w-[50px] h-[50px] rounded-[12px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
-                            <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
+                          <div className="w-[70px] h-[70px] rounded-[12px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                            <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-[14px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</h4>
-                          <p className="text-[13px] font-extrabold tabular-nums mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.retailPrice)}</p>
-                        </div>
-                        {inCart > 0 ? (
-                          <div className="flex items-center gap-1 shrink-0">
-                            <button type="button" aria-label="Decrease" onClick={() => cart.changeQuantity(item.id, -1)}
-                              className="w-[30px] h-[30px] rounded-lg flex items-center justify-center press-feedback"
-                              style={{ background: "var(--coral)" }}>
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
-                            </button>
-                            <span className="w-[22px] text-center text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{inCart}</span>
-                            <button type="button" aria-label="Add" onClick={() => addToPlate(item, store.name)}
-                              className="w-[30px] h-[30px] rounded-lg flex items-center justify-center press-feedback"
-                              style={{ background: "var(--coral)" }}>
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                            </button>
+                          <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.retailPrice)}</p>
+                          <h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4>
+                          {item.description && <p className="text-[11px] mt-0.5 leading-tight" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
+                          {/* Add button — bottom right */}
+                          <div className="flex justify-end mt-1.5">
+                            {inCart > 0 ? (
+                              <div className="flex items-center gap-1">
+                                <button type="button" aria-label="Decrease" onClick={() => cart.changeQuantity(item.id, -1)}
+                                  className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
+                                  style={{ background: "var(--sand)" }}>
+                                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                </button>
+                                <span className="w-[24px] text-center text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{inCart}</span>
+                                <button type="button" aria-label="Add" onClick={() => addToPlate(item, store.name)}
+                                  className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
+                                  style={{ background: "var(--coral)" }}>
+                                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                                </button>
+                              </div>
+                            ) : (
+                              <button type="button" aria-label={`Add ${item.name}`} onClick={() => addToPlate(item, store.name)}
+                                className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback"
+                                style={{ background: "var(--coral)" }}>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                              </button>
+                            )}
                           </div>
-                        ) : (
-                          <button type="button" aria-label={`Add ${item.name}`} onClick={() => addToPlate(item, store.name)}
-                            className="w-[32px] h-[32px] rounded-lg flex items-center justify-center press-feedback shrink-0"
-                            style={{ background: "var(--coral)" }}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                          </button>
-                        )}
+                        </div>
                       </div>
                     );
                   })}
