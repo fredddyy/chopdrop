@@ -149,6 +149,8 @@ export default function HomePage() {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [filter, setFilter] = useState<"all" | "deals" | "live" | "chop" | "popular">("all");
 
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem("chopdrop-customer");
