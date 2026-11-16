@@ -219,12 +219,12 @@ export default function HomePage() {
             </p>
             <p className="text-[14px] font-bold mt-0.5" style={{ color: "var(--text-secondary)" }}>{userName.split(" ")[0] || "there"}</p>
             {/* Delivery address */}
-            {(deliveryAddress || userArea) && (
-              <div className="flex items-center gap-1 mt-1">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
-                <span className="text-[11px] font-bold truncate" style={{ color: "var(--coral)" }}>{deliveryAddress || userArea}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-1 mt-1">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
+              <span className="text-[11px] font-bold truncate" style={{ color: deliveryAddress || userArea ? "var(--coral)" : "var(--text-muted)" }}>
+                {deliveryAddress || userArea || "Set your delivery address"}
+              </span>
+            </div>
           </div>
           <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: "var(--sand)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
