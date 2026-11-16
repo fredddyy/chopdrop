@@ -182,7 +182,7 @@ export default function HomePage() {
               className="h-[40px] px-3 rounded-[12px] flex items-center gap-2 shrink-0 press-feedback"
               style={{
                 background: active ? "rgba(196,87,42,0.1)" : "var(--sand)",
-                border: active ? "1px solid rgba(196,87,42,0.3)" : "1px solid transparent",
+                border: "1px solid transparent",
                 transition: "all 150ms ease-out",
               }}>
               <span className="text-[12px] font-bold" style={{ color: active ? "var(--coral)" : "var(--text-secondary)" }}>{c.label}</span>
