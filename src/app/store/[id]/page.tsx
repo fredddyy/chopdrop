@@ -295,46 +295,52 @@ export default function StorePage() {
                     const itemPool = livePools.find(lp => lp.productId === item.id);
                     const activeGroups = itemPool ? 1 : 0;
                     return (
-                      <div key={item.id} className="relative">
-                        <Link href={`/product/${item.id}`} className="block press-feedback text-left w-full">
-                          {/* Image */}
-                          <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
-                            {item.imageUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                      <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-lg overflow-hidden">
+                        {/* Image + badges */}
+                        <div className="relative" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                          {item.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="text-[18px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
+                            </div>
+                          )}
+                          {/* Savings ribbon */}
+                          {hasDiscount && (
+                            <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 8px 0" }}>
+                              -{sav}%
+                            </div>
+                          )}
+                          {/* Add button on image */}
+                          <button type="button" aria-label={`Add ${item.name}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToPlate(item, store.name); }}
+                            className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-lg flex items-center justify-center z-10"
+                            style={{ background: inCart > 0 ? "var(--coral)" : "white" }}>
+                            {inCart > 0 ? (
+                              <span className="text-[9px] font-bold text-white">{inCart}</span>
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <span className="text-[18px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
-                              </div>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                             )}
+                          </button>
+                        </div>
+                        {/* Info */}
+                        <div className="pt-1.5">
+                          <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                          <div className="flex items-baseline gap-1 mt-0.5">
+                            <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.groupPrice)}</span>
+                            {hasDiscount && <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>}
                           </div>
-                          {/* Add button — overlaps bottom-right of image */}
-                          {inCart === 0 && (
-                            <button type="button" aria-label={`Add ${item.name}`} onClick={(e) => { e.preventDefault(); addToPlate(item, store.name); }}
-                              className="absolute top-[calc(100%-68px)] right-1 w-[28px] h-[28px] rounded-full flex items-center justify-center z-10"
-                              style={{ background: "var(--coral)" }}>
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                            </button>
-                          )}
-                          {inCart > 0 && (
-                            <span className="absolute top-[calc(100%-68px)] right-1 w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white z-10" style={{ background: "var(--coral)" }}>
-                              {inCart}
-                            </span>
-                          )}
-                          {/* Info */}
+                          {/* Status box */}
                           <div className="mt-1.5">
-                            <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
-                            <div className="flex items-baseline gap-1 mt-0.5">
-                              <span className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.groupPrice)}</span>
-                              {hasDiscount && <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>}
+                            <div className="text-[9px] font-bold py-1.5 text-center rounded-lg" style={{
+                              background: activeGroups > 0 ? "rgba(26,125,75,0.1)" : "var(--sand)",
+                              color: activeGroups > 0 ? "var(--emerald)" : "var(--text-muted)",
+                            }}>
+                              {activeGroups > 0 ? `${activeGroups} Group Active` : "0 Groups Active"}
                             </div>
                           </div>
-                        </Link>
-                        {/* Groups Active badge */}
-                        <p className="text-[9px] font-bold mt-0.5" style={{ color: activeGroups > 0 ? "var(--coral)" : "var(--text-muted)" }}>
-                          {activeGroups} {activeGroups === 1 ? "Group" : "Groups"} Active
-                        </p>
-                      </div>
+                        </div>
+                      </Link>
                     );
                   })}
                 </div>
