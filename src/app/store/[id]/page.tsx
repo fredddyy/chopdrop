@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
@@ -50,6 +50,12 @@ export default function StorePage() {
   const [addedToast, setAddedToast] = useState("");
   const [menuSearch, setMenuSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState<Product | null>(null);
+  const touchStartX = useRef(0);
+  const swipeTab = useCallback((direction: "left" | "right", tabs: string[], current: string) => {
+    const idx = tabs.indexOf(current);
+    const next = direction === "left" ? Math.min(idx + 1, tabs.length - 1) : Math.max(idx - 1, 0);
+    setActiveTab(tabs[next]);
+  }, []);
   const [sheetQty, setSheetQty] = useState(1);
   const [livePools, setLivePools] = useState<RealPool[]>([]);
   const cart = useCart();
@@ -271,7 +277,13 @@ export default function StorePage() {
           </div>
         </div>
 
-        {/* Menu items by category */}
+        {/* Menu items by category — swipeable */}
+        <div
+          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+          onTouchEnd={(e) => {
+            const dx = e.changedTouches[0].clientX - touchStartX.current;
+            if (Math.abs(dx) > 60) swipeTab(dx < 0 ? "left" : "right", menuTabs, currentTab);
+          }}>
         {Array.from(grouped.entries()).map(([cat, items]) => {
           // Filter out ₦0 placeholder items and deduplicate by name
           const seen = new Set<string>();
@@ -301,7 +313,7 @@ export default function StorePage() {
                     return (
                       <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-lg overflow-hidden">
                         {/* Image + badges */}
-                        <div className="relative" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                        <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
                           {item.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
@@ -402,6 +414,7 @@ export default function StorePage() {
             </div>
           );
         })}
+        </div>
       </section>
 
       {/* ── Trust copy ── */}
