@@ -416,7 +416,7 @@ export default function HomePage() {
                         <StoreImg src={order.restaurantBanner || order.restaurantImage} fallback={order.restaurantName.charAt(0)} />
                         {/* Restaurant avatar */}
                         {order.restaurantImage && (
-                          <div className="absolute bottom-3 left-3 w-[40px] h-[40px] rounded-full overflow-hidden" style={{ border: "3px solid white" }}>
+                          <div className="absolute bottom-3 left-3 w-[46px] h-[46px] rounded-[12px] overflow-hidden" style={{ border: "3px solid white" }}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={order.restaurantImage} alt="" className="w-full h-full object-cover" />
                           </div>
@@ -521,7 +521,7 @@ export default function HomePage() {
                         )}
                         {/* Logo overlay — bottom left on banner images */}
                         {r.hasBanner && r.imageUrl && (
-                          <div className="absolute bottom-3 left-3 w-[40px] h-[40px] rounded-full overflow-hidden" style={{ border: "3px solid white" }}>
+                          <div className="absolute bottom-3 left-3 w-[46px] h-[46px] rounded-[12px] overflow-hidden" style={{ border: "3px solid white" }}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
                           </div>
