@@ -181,11 +181,11 @@ export default function HomePage() {
             <button key={c.label} type="button" onClick={() => setActiveCategory(c.label)}
               className="h-[40px] px-3 rounded-[12px] flex items-center gap-2 shrink-0 press-feedback"
               style={{
-                background: active ? "var(--coral)" : "var(--card)",
-                border: active ? "1px solid var(--coral)" : "1px solid var(--border)",
+                background: active ? "rgba(196,87,42,0.1)" : "var(--sand)",
+                border: active ? "1px solid rgba(196,87,42,0.3)" : "1px solid transparent",
                 transition: "all 150ms ease-out",
               }}>
-              <span className="text-[12px] font-bold" style={{ color: active ? "white" : "var(--text)" }}>{c.label}</span>
+              <span className="text-[12px] font-bold" style={{ color: active ? "var(--coral)" : "var(--text-secondary)" }}>{c.label}</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={c.img} alt="" className="w-[24px] h-[24px] object-contain" />
             </button>
