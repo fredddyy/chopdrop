@@ -195,7 +195,7 @@ export default function HomePage() {
         {/* Tabs — text-only tab style */}
         <div className="flex gap-1 mt-3 overflow-x-auto hide-scrollbar">
           {([
-            { key: "all", label: "All" },
+            { key: "all", label: "Stores" },
             { key: "deals", label: "Group Order" },
             { key: "chop", label: "Chop Price" },
             { key: "live", label: "Live" },
@@ -204,13 +204,11 @@ export default function HomePage() {
             const active = filter === f.key;
             return (
             <button key={f.key} type="button" onClick={() => setFilter(f.key)}
-              className="h-[30px] px-3 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback"
-              style={{
-                color: active ? "var(--coral)" : "var(--text-muted)",
-                borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent",
-                transition: "all 150ms ease-out",
-              }}>
-              {f.label}
+              className="px-1.5 pb-1 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback"
+              style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 150ms ease-out" }}>
+              <span style={{ borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent", paddingBottom: "4px", transition: "border-color 150ms ease-out" }}>
+                {f.label}
+              </span>
             </button>
             );
           })}
