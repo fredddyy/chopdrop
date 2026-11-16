@@ -106,7 +106,7 @@ function TabBar({ filter, setFilter }: { filter: FilterKey; setFilter: (f: Filte
           return (
             <button key={f.key} type="button"
               onClick={() => setFilter(f.key)}
-              className="px-2.5 pb-2 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback"
+              className={`${i === 0 ? "pr-2.5" : "px-2.5"} pb-2 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback`}
               style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
               <span ref={el => { textRefs.current[i] = el; }}>{f.label}</span>
             </button>
