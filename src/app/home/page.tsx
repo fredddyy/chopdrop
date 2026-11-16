@@ -165,7 +165,7 @@ export default function HomePage() {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
-        {/* Categories — horizontal pill buttons with image */}
+        {/* Categories — rectangular rounded buttons with image */}
         <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
           {[
             { label: "Food", img: "/categories/food.png", href: "/home" },
@@ -174,15 +174,15 @@ export default function HomePage() {
             { label: "Fashion", img: "/categories/fashion.png", href: "/home" },
             { label: "Home", img: "/categories/home.png", href: "/home" },
           ].map(c => (
-            <Link key={c.label} href={c.href} className="h-[36px] pl-1.5 pr-3 rounded-full flex items-center gap-1.5 shrink-0 press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <Link key={c.label} href={c.href} className="h-[40px] px-3 rounded-[12px] flex items-center gap-2 shrink-0 press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{c.label}</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.img} alt={c.label} className="w-[26px] h-[26px] object-contain rounded-full" style={{ background: "var(--sand)" }} />
-              <span className="text-[11px] font-bold" style={{ color: "var(--text-secondary)" }}>{c.label}</span>
+              <img src={c.img} alt="" className="w-[24px] h-[24px] object-contain" />
             </Link>
           ))}
         </div>
-        {/* Tabs — All, Group Order, Chop Price, etc. */}
-        <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
+        {/* Tabs — text-only tab style */}
+        <div className="flex gap-1 mt-3 overflow-x-auto hide-scrollbar">
           {([
             { key: "all", label: "All" },
             { key: "deals", label: "Group Order" },
@@ -193,10 +193,10 @@ export default function HomePage() {
             const active = filter === f.key;
             return (
             <button key={f.key} type="button" onClick={() => setFilter(f.key)}
-              className="h-[30px] px-3 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 press-feedback"
+              className="h-[28px] px-2.5 text-[12px] font-bold whitespace-nowrap shrink-0 press-feedback"
               style={{
-                background: active ? "var(--dark)" : "transparent",
-                color: active ? "white" : "var(--text-muted)",
+                color: active ? "var(--coral)" : "var(--text-muted)",
+                borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent",
                 transition: "all 150ms ease-out",
               }}>
               {f.label}
