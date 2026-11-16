@@ -470,11 +470,12 @@ export default function StorePage() {
               <Link href="/cart" className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-white press-feedback" style={{ background: "var(--coral)" }}>
                 <div className="flex items-center gap-2">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                  <span className="text-[10px] font-bold opacity-80">{cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}</span>
                   <span className="text-[15px] font-bold">Checkout</span>
                 </div>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(total)}</span>
-                  <span className="text-[10px] font-medium opacity-70">{cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}</span>
+                  <span className="text-[10px] font-medium opacity-70">incl. delivery</span>
                 </div>
               </Link>
             </div>
