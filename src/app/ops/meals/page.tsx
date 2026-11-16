@@ -31,6 +31,10 @@ export default function MealsPage() {
   const [catLoading, setCatLoading] = useState(false);
   const [newCatName, setNewCatName] = useState("");
   const [newCatRule, setNewCatRule] = useState("PICK_ONE");
+  const [editingCatId, setEditingCatId] = useState<string | null>(null);
+  const [editCatName, setEditCatName] = useState("");
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editItemForm, setEditItemForm] = useState({ name: "", price: "", description: "" });
   const [itemForms, setItemForms] = useState<Record<string, { name: string; price: string; description: string; imageUrl: string }>>({});
 
   // Load restaurants
@@ -139,6 +143,20 @@ export default function MealsPage() {
   async function deleteItem(id: string) {
     if (!confirm("Delete this item?")) return;
     await fetch(`/api/admin/menu-items/${id}`, { method: "DELETE" });
+    loadCategories();
+  }
+
+  async function updateCategoryName(catId: string) {
+    if (!editCatName.trim()) return;
+    await fetch(`/api/admin/categories/${catId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: editCatName.trim() }) });
+    setEditingCatId(null);
+    loadCategories();
+  }
+
+  async function updateItem(itemId: string) {
+    if (!editItemForm.name.trim()) return;
+    await fetch(`/api/admin/menu-items/${itemId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: editItemForm.name.trim(), price: Math.round(parseFloat(editItemForm.price || "0") * 100), description: editItemForm.description || null }) });
+    setEditingItemId(null);
     loadCategories();
   }
 
@@ -333,28 +351,54 @@ export default function MealsPage() {
                 <div className="space-y-4">
                   {categories.map(cat => (
                     <div key={cat.id} className="rounded-xl border border-[#E5E7EB] bg-white overflow-hidden">
-                      {/* Category header */}
+                      {/* Category header — editable */}
                       <div className="flex items-center justify-between px-4 py-3 bg-[#FAFAFA] border-b border-[#E5E7EB]">
-                        <div>
-                          <span className="text-sm font-bold text-[#1C1C1E]">{cat.name}</span>
-                          <span className="text-[10px] font-medium text-[#9CA3AF] ml-2">{cat.selectionRule.replace(/_/g, " ").toLowerCase()} · {cat.items.length} items</span>
-                        </div>
-                        <button onClick={() => deleteCategory(cat.id)} className="text-xs text-[#E84C3D] cursor-pointer hover:underline">Delete</button>
+                        {editingCatId === cat.id ? (
+                          <div className="flex items-center gap-2 flex-1">
+                            <input value={editCatName} onChange={e => setEditCatName(e.target.value)} className="h-7 px-2 rounded border border-[#E5E7EB] text-sm flex-1 focus:outline-none" autoFocus onKeyDown={e => e.key === "Enter" && updateCategoryName(cat.id)} />
+                            <button onClick={() => updateCategoryName(cat.id)} className="text-xs font-bold text-white px-3 h-7 rounded cursor-pointer" style={{ background: "#1C1C1E" }}>Save</button>
+                            <button onClick={() => setEditingCatId(null)} className="text-xs text-[#9CA3AF] cursor-pointer">Cancel</button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[#1C1C1E]">{cat.name}</span>
+                            <span className="text-[10px] font-medium text-[#9CA3AF]">{cat.selectionRule.replace(/_/g, " ").toLowerCase()} · {cat.items.length} items</span>
+                            <button onClick={() => { setEditingCatId(cat.id); setEditCatName(cat.name); }} className="text-[10px] text-[#6B7280] cursor-pointer hover:underline">Edit</button>
+                          </div>
+                        )}
+                        <button onClick={() => deleteCategory(cat.id)} className="text-xs text-[#E84C3D] cursor-pointer hover:underline ml-2 shrink-0">Delete</button>
                       </div>
 
-                      {/* Items */}
+                      {/* Items — click to edit */}
                       {cat.items.map(item => (
-                        <div key={item.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-[#F3F4F6] last:border-0">
-                          {item.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={item.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0" />
-                          ) : <div className="w-8 h-8 rounded-lg bg-[#F5F5F0] shrink-0" />}
-                          <div className="flex-1 min-w-0">
-                            <span className="text-sm text-[#1C1C1E]">{item.name}</span>
-                            {item.description && <p className="text-[10px] text-[#9CA3AF] truncate">{item.description}</p>}
-                          </div>
-                          <span className="text-xs tabular-nums text-[#6B7280] shrink-0">{fp(item.price)}</span>
-                          <button onClick={() => deleteItem(item.id)} className="text-[10px] text-[#E84C3D] cursor-pointer">×</button>
+                        <div key={item.id} className="border-b border-[#F3F4F6] last:border-0">
+                          {editingItemId === item.id ? (
+                            <div className="px-4 py-2.5 bg-[#FFFBF5] space-y-2">
+                              <div className="flex gap-2">
+                                <input value={editItemForm.name} onChange={e => setEditItemForm({ ...editItemForm, name: e.target.value })} className="flex-1 h-7 px-2 rounded border border-[#E5E7EB] text-sm focus:outline-none" placeholder="Name" />
+                                <input type="number" value={editItemForm.price} onChange={e => setEditItemForm({ ...editItemForm, price: e.target.value })} className="w-20 h-7 px-2 rounded border border-[#E5E7EB] text-sm focus:outline-none" placeholder="₦" />
+                              </div>
+                              <input value={editItemForm.description} onChange={e => setEditItemForm({ ...editItemForm, description: e.target.value })} className="w-full h-7 px-2 rounded border border-[#E5E7EB] text-xs focus:outline-none" placeholder="Description" />
+                              <div className="flex gap-2">
+                                <button onClick={() => updateItem(item.id)} className="text-xs font-bold text-white px-3 h-7 rounded cursor-pointer" style={{ background: "#1C1C1E" }}>Save</button>
+                                <button onClick={() => setEditingItemId(null)} className="text-xs text-[#9CA3AF] cursor-pointer">Cancel</button>
+                                <button onClick={() => { deleteItem(item.id); setEditingItemId(null); }} className="text-xs text-[#E84C3D] cursor-pointer ml-auto">Delete</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-[#FAFAFA]" onClick={() => { setEditingItemId(item.id); setEditItemForm({ name: item.name, price: String(item.price / 100), description: item.description || "" }); }}>
+                              {item.imageUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={item.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                              ) : <div className="w-8 h-8 rounded-lg bg-[#F5F5F0] shrink-0" />}
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm text-[#1C1C1E]">{item.name}</span>
+                                {item.description && <p className="text-[10px] text-[#9CA3AF] truncate">{item.description}</p>}
+                              </div>
+                              <span className="text-xs tabular-nums text-[#6B7280] shrink-0">{fp(item.price)}</span>
+                              <span className="text-[10px] text-[#9CA3AF]">Edit</span>
+                            </div>
+                          )}
                         </div>
                       ))}
 
@@ -398,56 +442,79 @@ export default function MealsPage() {
           )}
 
           {/* ═══ PRODUCTS TAB ═══ */}
-          {tab === "products" && (
+          {tab === "products" && (() => {
+            const grouped = storeProducts.reduce<Record<string, typeof storeProducts>>((g, p) => {
+              const key = p.subcategory || p.category || "Other";
+              if (!g[key]) g[key] = [];
+              g[key].push(p);
+              return g;
+            }, {});
+            return (
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-semibold text-[#1C1C1E]">Store Products</h2>
-                <a href="/ops/products" className="text-xs font-semibold text-[#E84C3D] hover:underline">Manage in Catalog →</a>
-              </div>
-              {storeProducts.length === 0 ? (
-                <div className="py-8 text-center text-sm text-[#9CA3AF]">
-                  No products for this store. <a href="/ops/products" className="text-[#E84C3D] underline">Add products in Catalog</a>
+              {/* Add product form */}
+              <div className="mb-4 p-4 rounded-xl border border-[#E5E7EB] bg-[#FAFAFA]">
+                <p className="text-xs font-bold text-[#1C1C1E] mb-2">Add product to this store</p>
+                <div className="flex gap-2 items-end flex-wrap">
+                  <input id="prod-name" placeholder="Product name" className="flex-1 min-w-[150px] h-8 px-2 rounded-md border border-[#E5E7EB] text-xs focus:outline-none" />
+                  <input id="prod-retail" type="number" placeholder="Retail ₦" className="w-24 h-8 px-2 rounded-md border border-[#E5E7EB] text-xs focus:outline-none" />
+                  <input id="prod-group" type="number" placeholder="Group ₦ (opt)" className="w-24 h-8 px-2 rounded-md border border-[#E5E7EB] text-xs focus:outline-none" />
+                  <input id="prod-sub" placeholder="Subcategory" className="w-28 h-8 px-2 rounded-md border border-[#E5E7EB] text-xs focus:outline-none" list="subcategory-list" />
+                  <datalist id="subcategory-list">
+                    {Object.keys(grouped).map(s => <option key={s} value={s} />)}
+                  </datalist>
+                  <button onClick={async () => {
+                    const name = (document.getElementById("prod-name") as HTMLInputElement).value.trim();
+                    const retail = parseFloat((document.getElementById("prod-retail") as HTMLInputElement).value) || 0;
+                    const group = parseFloat((document.getElementById("prod-group") as HTMLInputElement).value) || retail;
+                    const sub = (document.getElementById("prod-sub") as HTMLInputElement).value.trim();
+                    if (!name || !retail) return;
+                    await fetch("/api/admin/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ vendorId: selectedRestaurant, name, retailPrice: retail, groupPrice: group, subcategory: sub || null, category: storeProducts[0]?.category || "Food", minPoolSize: 5 }) });
+                    // Reload
+                    const res = await fetch(`/api/admin/products?vendorId=${selectedRestaurant}`);
+                    const d = await res.json();
+                    if (d.success) setStoreProducts(d.data);
+                    (document.getElementById("prod-name") as HTMLInputElement).value = "";
+                    (document.getElementById("prod-retail") as HTMLInputElement).value = "";
+                    (document.getElementById("prod-group") as HTMLInputElement).value = "";
+                  }} className="h-8 px-3 rounded-md text-[10px] font-bold text-white cursor-pointer" style={{ background: "#1C1C1E" }}>Add</button>
                 </div>
+              </div>
+
+              {/* Product groups */}
+              {Object.keys(grouped).length === 0 ? (
+                <div className="py-8 text-center text-sm text-[#9CA3AF]">No products yet. Add one above.</div>
               ) : (
-                <div>
-                  {/* Group by subcategory */}
-                  {Object.entries(
-                    storeProducts.reduce<Record<string, typeof storeProducts>>((groups, p) => {
-                      const key = p.subcategory || p.category || "Other";
-                      if (!groups[key]) groups[key] = [];
-                      groups[key].push(p);
-                      return groups;
-                    }, {})
-                  ).map(([sub, items]) => (
-                    <div key={sub} className="mb-6">
-                      <div className="flex items-center justify-between px-4 py-2 bg-[#FAFAFA] border border-[#E5E7EB] rounded-t-xl">
+                <div className="space-y-4">
+                  {Object.entries(grouped).map(([sub, items]) => (
+                    <div key={sub} className="rounded-xl border border-[#E5E7EB] bg-white overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2 bg-[#FAFAFA] border-b border-[#E5E7EB]">
                         <span className="text-sm font-bold text-[#1C1C1E]">{sub}</span>
                         <span className="text-[10px] text-[#9CA3AF]">{items.length} items</span>
                       </div>
-                      <div className="border border-t-0 border-[#E5E7EB] rounded-b-xl overflow-hidden">
-                        {items.map(p => (
-                          <div key={p.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-[#F3F4F6] last:border-0">
-                            {p.imageUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={p.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />
-                            ) : <div className="w-10 h-10 rounded-lg bg-[#F5F5F0] shrink-0" />}
-                            <div className="flex-1 min-w-0">
-                              <span className="text-sm text-[#1C1C1E] block truncate">{p.name}</span>
-                              {p.description && <span className="text-[10px] text-[#9CA3AF] block truncate">{p.description}</span>}
-                            </div>
-                            <div className="text-right shrink-0">
-                              <span className="text-xs font-bold text-[#E84C3D] tabular-nums block">{fp(p.groupPrice)}</span>
-                              <span className="text-[10px] text-[#9CA3AF] tabular-nums line-through">{fp(p.retailPrice)}</span>
-                            </div>
+                      {items.map(p => (
+                        <div key={p.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-[#F3F4F6] last:border-0">
+                          {p.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={p.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                          ) : <div className="w-10 h-10 rounded-lg bg-[#F5F5F0] shrink-0" />}
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm text-[#1C1C1E] block truncate">{p.name}</span>
+                            {p.description && <span className="text-[10px] text-[#9CA3AF] block truncate">{p.description}</span>}
                           </div>
-                        ))}
-                      </div>
+                          <div className="text-right shrink-0">
+                            <span className="text-xs font-bold text-[#E84C3D] tabular-nums block">{fp(p.groupPrice)}</span>
+                            {p.groupPrice < p.retailPrice && <span className="text-[10px] text-[#9CA3AF] tabular-nums line-through">{fp(p.retailPrice)}</span>}
+                          </div>
+                          <a href="/ops/products" className="text-[10px] text-[#6B7280] hover:underline shrink-0">Edit</a>
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
               )}
             </div>
-          )}
+            );
+          })()}
         </>
       )}
     </div>
