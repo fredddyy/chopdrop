@@ -473,9 +473,9 @@ export default function StorePage() {
                   <span className="text-[10px] font-bold opacity-80">{cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}</span>
                   <span className="text-[15px] font-bold">Checkout</span>
                 </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(total)}</span>
-                  <span className="text-[10px] font-medium opacity-70">incl. delivery</span>
+                <div className="text-right">
+                  <span className="text-[16px] font-extrabold tabular-nums block leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(total)}</span>
+                  <span className="text-[9px] font-medium opacity-70">incl. delivery</span>
                 </div>
               </Link>
             </div>
