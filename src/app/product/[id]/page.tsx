@@ -573,9 +573,6 @@ export default function ProductDetailPage() {
               Refundable
             </span>
           </p>
-          <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
-            Delivery: {fp(fullDeliveryFee)} alone · {fp(deliveryShare)} in group
-          </p>
         </div>
       ) : (
         <div className="px-5 mt-4">
@@ -796,16 +793,18 @@ export default function ProductDetailPage() {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
                 </button>
                 <button type="button" onClick={addSolo}
-                  className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center cursor-pointer press-feedback"
+                  className="flex-1 h-[56px] rounded-[12px] flex flex-col items-center justify-center cursor-pointer press-feedback"
                   style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
                   <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Buy alone</span>
                   <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(soloTotal)}</span>
+                  <span className="text-[8px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>incl. {fp(fullDeliveryFee)} delivery</span>
                 </button>
                 <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
-                  className="flex-[1.3] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white cursor-pointer press-feedback disabled:opacity-50"
+                  className="flex-[1.3] h-[56px] rounded-[12px] flex flex-col items-center justify-center text-white cursor-pointer press-feedback disabled:opacity-50"
                   style={{ background: "var(--coral)" }}>
                   <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Start Group" : pool ? "Join Group" : "Start Group"}</span>
                   <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(poolUnitTotal)}</span>
+                  <span className="text-[8px] font-medium mt-0.5" style={{ opacity: 0.6 }}>incl. {fp(deliveryShare)} delivery</span>
                 </button>
               </div>
             </>
