@@ -526,16 +526,18 @@ export default function StorePage() {
             <div className="max-w-[480px] mx-auto">
               {hasGroupDiscount ? (
                 <div className="flex gap-2">
-                  <Link href="/cart" className="flex-1 h-[54px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
+                  <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "solo"); router.push("/cart"); }}
+                    className="flex-1 h-[54px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
                     style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
                     <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>Buy alone</span>
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
-                  </Link>
-                  <Link href="/cart" className="flex-[1.4] h-[54px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
+                  </button>
+                  <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "group"); router.push("/cart"); }}
+                    className="flex-[1.4] h-[54px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
                     <span className="text-[10px] font-medium" style={{ opacity: 0.8 }}>Group order · {store.groupDiscount}% off</span>
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
-                  </Link>
+                  </button>
                 </div>
               ) : (
                 <Link href="/cart" className="w-full h-[54px] rounded-[12px] flex items-center justify-between px-5 text-white press-feedback" style={{ background: "var(--coral)" }}>

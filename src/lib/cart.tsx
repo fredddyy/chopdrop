@@ -26,6 +26,8 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
+  checkoutModes: Record<string, "solo" | "group">; // restaurantId/name → checkout mode
+  setCheckoutMode: (restaurantKey: string, mode: "solo" | "group") => void;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -35,12 +37,25 @@ const STORAGE_KEY = "chopdrop-cart";
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [checkoutModes, setCheckoutModes] = useState<Record<string, "solo" | "group">>({});
+
+  function setCheckoutMode(restaurantKey: string, mode: "solo" | "group") {
+    setCheckoutModes(prev => {
+      const next = { ...prev, [restaurantKey]: mode };
+      try { localStorage.setItem("chopdrop-checkout-modes", JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
 
   // Load from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try { setItems(JSON.parse(saved)); } catch { /* ignore */ }
+    }
+    const modes = localStorage.getItem("chopdrop-checkout-modes");
+    if (modes) {
+      try { setCheckoutModes(JSON.parse(modes)); } catch {}
     }
     setLoaded(true);
   }, []);
@@ -89,7 +104,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, changeQuantity, removePack, clearCart, totalItems, subtotal }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, changeQuantity, removePack, clearCart, totalItems, subtotal, checkoutModes, setCheckoutMode }}>
       {children}
     </CartContext.Provider>
   );

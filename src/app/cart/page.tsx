@@ -309,7 +309,8 @@ export default function CartPage() {
                   const restId = restItems[0]?.restaurantId || restKey;
                   const restSubtotal = restUnpacked.reduce((s, i) => s + i.price * i.quantity, 0);
                   const groupInfo = restaurantInfo[restId] || restaurantInfo[restName];
-                  const hasGroup = groupInfo && groupInfo.groupTarget > 0 && groupInfo.groupDiscount > 0;
+                  const chosenMode = cart.checkoutModes[restId] || cart.checkoutModes[restName] || "solo";
+                  const hasGroup = chosenMode === "group" && groupInfo && groupInfo.groupTarget > 0 && groupInfo.groupDiscount > 0;
                   return (
                     <section key={restKey} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                       <div className="px-4 py-3" style={{ background: "var(--sand)" }}>
