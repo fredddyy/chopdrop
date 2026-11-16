@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 
@@ -67,6 +67,64 @@ function StoreImg({ src, fallback }: { src: string | null; fallback: string }) {
   );
 }
 
+const TABS = [
+  { key: "all" as const, label: "Stores" },
+  { key: "deals" as const, label: "Group Order" },
+  { key: "chop" as const, label: "Chop Price" },
+  { key: "live" as const, label: "Live" },
+  { key: "popular" as const, label: "Popular" },
+];
+type FilterKey = typeof TABS[number]["key"];
+
+function TabBar({ filter, setFilter }: { filter: FilterKey; setFilter: (f: FilterKey) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+
+  const updateIndicator = useCallback(() => {
+    const idx = TABS.findIndex(t => t.key === filter);
+    const el = tabRefs.current[idx];
+    const container = containerRef.current;
+    if (el && container) {
+      setIndicator({ left: el.offsetLeft - container.scrollLeft, width: el.offsetWidth });
+    }
+  }, [filter]);
+
+  useEffect(() => { updateIndicator(); }, [updateIndicator]);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateIndicator, { passive: true });
+    return () => el.removeEventListener("scroll", updateIndicator);
+  }, [updateIndicator]);
+
+  return (
+    <div className="relative mt-3">
+      <div ref={containerRef} className="flex gap-1 overflow-x-auto hide-scrollbar">
+        {TABS.map((f, i) => {
+          const active = filter === f.key;
+          return (
+            <button key={f.key} type="button"
+              ref={el => { tabRefs.current[i] = el; }}
+              onClick={() => setFilter(f.key)}
+              className="px-2.5 pb-2 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback"
+              style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
+              {f.label}
+            </button>
+          );
+        })}
+      </div>
+      {/* Sliding underline */}
+      <div className="absolute bottom-0 h-[2px] rounded-full" style={{
+        left: `${indicator.left}px`,
+        width: `${indicator.width}px`,
+        background: "var(--coral)",
+        transition: "left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1)",
+      }} />
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
   const [inactiveRestaurants, setInactiveRestaurants] = useState<InactiveRestaurant[]>([]);
@@ -79,6 +137,14 @@ export default function HomePage() {
   const [userName, setUserName] = useState("");
   const [isReturning, setIsReturning] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Food");
+  const touchStartX = useRef(0);
+  const swipeTab = useCallback((direction: "left" | "right") => {
+    setFilter(prev => {
+      const idx = TABS.findIndex(t => t.key === prev);
+      const next = direction === "left" ? Math.min(idx + 1, TABS.length - 1) : Math.max(idx - 1, 0);
+      return TABS[next].key;
+    });
+  }, []);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [filter, setFilter] = useState<"all" | "deals" | "live" | "chop" | "popular">("all");
 
@@ -193,26 +259,7 @@ export default function HomePage() {
           })}
         </div>
         {/* Tabs — text-only tab style */}
-        <div className="flex gap-1 mt-3 overflow-x-auto hide-scrollbar">
-          {([
-            { key: "all", label: "Stores" },
-            { key: "deals", label: "Group Order" },
-            { key: "chop", label: "Chop Price" },
-            { key: "live", label: "Live" },
-            { key: "popular", label: "Popular" },
-          ] as const).map(f => {
-            const active = filter === f.key;
-            return (
-            <button key={f.key} type="button" onClick={() => setFilter(f.key)}
-              className="px-1.5 pb-1 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback"
-              style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 150ms ease-out" }}>
-              <span style={{ borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent", paddingBottom: "4px", transition: "border-color 150ms ease-out" }}>
-                {f.label}
-              </span>
-            </button>
-            );
-          })}
-        </div>
+        <TabBar filter={filter} setFilter={setFilter} />
       </header>
 
       {/* ── Loading skeleton ── */}
@@ -242,6 +289,11 @@ export default function HomePage() {
       )}
 
       {!loading && !error && (() => {
+        const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+        const handleTouchEnd = (e: React.TouchEvent) => {
+          const dx = e.changedTouches[0].clientX - touchStartX.current;
+          if (Math.abs(dx) > 60) swipeTab(dx < 0 ? "left" : "right");
+        };
         const isItemView = filter === "deals" || filter === "live" || filter === "chop";
         const filteredRestaurants = inactiveRestaurants.filter(r => {
           if (filter === "all") return true;
@@ -255,7 +307,7 @@ export default function HomePage() {
           ? dealItems.filter(d => filter === "live" ? d.activePool !== null : true)
           : [];
         return (
-        <div>
+        <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           {/* ═══ ITEM CARDS — shown when filtering by deals or live ═══ */}
           {isItemView && filteredItems.length > 0 && (
             <div className="px-5 pt-4">
