@@ -35,5 +35,16 @@ export async function POST() {
     updated += result.count;
   }
 
-  return NextResponse.json({ success: true, data: { updated } });
+  // Fix category — all oraimo products should be "Gadgets" not "Food"
+  const store = await prisma.restaurant.findFirst({ where: { name: "oraimo Nigeria" } });
+  let categoryFixed = 0;
+  if (store) {
+    const result = await prisma.product.updateMany({
+      where: { vendorId: store.id, category: { not: "Gadgets" } },
+      data: { category: "Gadgets" },
+    });
+    categoryFixed = result.count;
+  }
+
+  return NextResponse.json({ success: true, data: { updated, categoryFixed } });
 }
