@@ -205,8 +205,16 @@ export default function CartPage() {
         </div>
       ) : (
         <div className="px-5 space-y-5">
-          {/* ═══ ITEMS ═══ */}
+          {/* ═══ ITEMS — grouped by restaurant ═══ */}
           {(() => {
+            // Group items by restaurant
+            const restaurants = new Map<string, typeof cart.items>();
+            for (const item of cart.items) {
+              const key = item.restaurantId || item.restaurantName || "Other";
+              if (!restaurants.has(key)) restaurants.set(key, []);
+              restaurants.get(key)!.push(item);
+            }
+
             const packedIds = [...new Set(cart.items.filter(i => i.packId).map(i => i.packId!))];
             const unpackedItems = cart.items.filter(i => !i.packId);
 
@@ -275,11 +283,24 @@ export default function CartPage() {
                     </section>
                   );
                 })}
-                {unpackedItems.length > 0 && (
-                  <section className="rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                    {unpackedItems.map((item, idx) => renderItem(item, idx > 0))}
-                  </section>
-                )}
+                {/* Items grouped by restaurant */}
+                {Array.from(restaurants.entries()).map(([restKey, restItems]) => {
+                  const restUnpacked = restItems.filter(i => !i.packId);
+                  if (restUnpacked.length === 0) return null;
+                  const restName = restItems[0]?.restaurantName || restKey;
+                  const restSubtotal = restUnpacked.reduce((s, i) => s + i.price * i.quantity, 0);
+                  return (
+                    <section key={restKey} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                      <div className="px-4 py-2.5 flex items-center justify-between" style={{ background: "var(--sand)" }}>
+                        <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{restName}</span>
+                        <span className="text-[12px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(restSubtotal)}</span>
+                      </div>
+                      <div className="px-4">
+                        {restUnpacked.map((item, idx) => renderItem(item, idx > 0))}
+                      </div>
+                    </section>
+                  );
+                })}
               </>
             );
           })()}

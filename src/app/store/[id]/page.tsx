@@ -117,7 +117,7 @@ export default function StorePage() {
   const cart = useCart();
 
   function addToPlate(item: Product, storeName: string) {
-    cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantName: storeName, price: item.retailPrice });
+    cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantId: id, restaurantName: storeName, price: item.retailPrice });
     setAddedToast(item.name);
     setTimeout(() => setAddedToast(""), 2000);
   }
@@ -502,7 +502,10 @@ export default function StorePage() {
 
       {/* ── Sticky cart bar — solo vs group ── */}
       {cart.totalItems > 0 && (() => {
-        const subtotal = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        const storeItems = cart.items.filter(i => i.restaurantId === id || i.restaurantName === store.name);
+        if (storeItems.length === 0) return null;
+        const storeItemCount = storeItems.reduce((s, i) => s + i.quantity, 0);
+        const subtotal = storeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
         const isFreeDelivery = subtotal >= (store.freeDeliveryMin || 500000);
         const storeDeliveryFee = isFreeDelivery ? 0 : (store.deliveryFee || 50000);
         const soloTotal = subtotal + storeDeliveryFee;

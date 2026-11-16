@@ -8,6 +8,7 @@ export interface CartItem {
   name: string;
   description: string;
   imageUrl: string | null;
+  restaurantId?: string;
   restaurantName: string;
   price: number; // kobo
   quantity: number;
