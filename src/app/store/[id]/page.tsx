@@ -300,45 +300,44 @@ export default function StorePage() {
         <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
       </div>
 
-      {/* ═══ GROUP ORDER INFO — simple row ═══ */}
-      {store.groupTarget > 0 && store.groupDiscount > 0 && (
+      {/* ═══ GROUP ORDER INFO ═══ */}
+      {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
+        const hrs = Math.floor(store.groupWindowMins / 60);
+        const mins = store.groupWindowMins % 60;
+        const windowLabel = hrs > 0 ? `${hrs}h${mins > 0 ? `${mins}m` : ""}` : `${mins}m`;
+        return (
         <div className="px-5 mt-4">
-          <div className="flex items-center gap-3">
-            <div className="flex -space-x-2">
-              {Array.from({ length: Math.min(store.groupTarget, 5) }).map((_, i) => (
-                <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
-                  style={{ border: "2px dashed var(--border)", color: "var(--text-muted)", background: "transparent" }}>
-                  ?
-                </div>
-              ))}
+          <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
+            {/* Top row: headline + discount badge */}
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>Group order</p>
+                <p className="text-[18px] font-extrabold leading-tight mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                  Save {store.groupDiscount}%
+                </p>
+                <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                  when {store.groupTarget} people order together · {windowLabel} window
+                </p>
+              </div>
+              <span className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
+                {store.groupDiscount}%
+              </span>
             </div>
-            <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>
-              {store.groupTarget} people needed · {store.groupDiscount}% off
-            </span>
-            {(() => {
-              const hrs = Math.floor(store.groupWindowMins / 60);
-              const mins = store.groupWindowMins % 60;
-              const label = hrs > 0 ? `${hrs}h${mins > 0 ? ` ${mins}m` : ""}` : `${mins}m`;
-              return (
-                <div className="ml-auto flex items-center gap-1.5">
-                  <div className="relative w-[36px] h-[36px]">
-                    <svg width="36" height="36" viewBox="0 0 40 40" className="block" style={{ transform: "rotate(-90deg)" }}>
-                      <circle cx="20" cy="20" r="18" fill="none" stroke="var(--sand)" strokeWidth="3" />
-                      <circle cx="20" cy="20" r="18" fill="none" stroke="var(--emerald)" strokeWidth="3" strokeDasharray={`${2 * Math.PI * 18}`} strokeDashoffset="0" strokeLinecap="round" />
-                    </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-[8px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>
-                      {label}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[12px] font-extrabold tabular-nums block leading-none" style={{ color: "var(--emerald)" }}>{label}</span>
-                    <span className="text-[9px] font-medium block mt-0.5" style={{ color: "var(--text-muted)" }}>window</span>
-                  </div>
-                </div>
-              );
-            })()}
+            {/* Avatar row */}
+            <div className="flex items-center gap-2.5 mt-3">
+              <div className="flex -space-x-1.5">
+                {Array.from({ length: Math.min(store.groupTarget, 8) }).map((_, i) => (
+                  <div key={i} className="w-[26px] h-[26px] rounded-full"
+                    style={{ border: "2px dashed var(--border)", background: "var(--card)" }} />
+                ))}
+              </div>
+              {store.groupTarget > 8 && <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>+{store.groupTarget - 8}</span>}
+              <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>{store.groupTarget} spots</span>
+            </div>
           </div>
         </div>
+        );
+      })()}
       )}
 
       {/* ═══ THE FULL MENU ═══ */}
