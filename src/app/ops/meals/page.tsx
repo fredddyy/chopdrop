@@ -27,6 +27,8 @@ export default function MealsPage() {
   const [storeProducts, setStoreProducts] = useState<Array<{ id: string; name: string; description: string | null; imageUrl: string | null; subcategory: string | null; retailPrice: number; groupPrice: number; category: string }>>([]);
 
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [editingSubcat, setEditingSubcat] = useState<string | null>(null);
+  const [editSubcatName, setEditSubcatName] = useState("");
   const [editProductForm, setEditProductForm] = useState({ name: "", retailPrice: "", groupPrice: "", description: "", subcategory: "" });
 
   // Menu builder state
@@ -491,8 +493,36 @@ export default function MealsPage() {
                   {Object.entries(grouped).map(([sub, items]) => (
                     <div key={sub} className="rounded-xl border border-[#E5E7EB] bg-white overflow-hidden">
                       <div className="flex items-center justify-between px-4 py-2 bg-[#FAFAFA] border-b border-[#E5E7EB]">
-                        <span className="text-sm font-bold text-[#1C1C1E]">{sub}</span>
-                        <span className="text-[10px] text-[#9CA3AF]">{items.length} items</span>
+                        {editingSubcat === sub ? (
+                          <div className="flex items-center gap-2 flex-1">
+                            <input value={editSubcatName} onChange={e => setEditSubcatName(e.target.value)} className="h-7 px-2 rounded border border-[#E5E7EB] text-sm flex-1 focus:outline-none" autoFocus onKeyDown={e => {
+                              if (e.key === "Enter" && editSubcatName.trim()) {
+                                // Rename subcategory on all products in this group
+                                Promise.all(items.map(p => fetch(`/api/admin/products/${p.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ subcategory: editSubcatName.trim() }) }))).then(async () => {
+                                  setEditingSubcat(null);
+                                  const res = await fetch(`/api/admin/products?vendorId=${selectedRestaurant}`);
+                                  const d = await res.json();
+                                  if (d.success) setStoreProducts(d.data);
+                                });
+                              }
+                            }} />
+                            <button onClick={async () => {
+                              if (!editSubcatName.trim()) return;
+                              await Promise.all(items.map(p => fetch(`/api/admin/products/${p.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ subcategory: editSubcatName.trim() }) })));
+                              setEditingSubcat(null);
+                              const res = await fetch(`/api/admin/products?vendorId=${selectedRestaurant}`);
+                              const d = await res.json();
+                              if (d.success) setStoreProducts(d.data);
+                            }} className="text-xs font-bold text-white px-3 h-7 rounded cursor-pointer" style={{ background: "#1C1C1E" }}>Save</button>
+                            <button onClick={() => setEditingSubcat(null)} className="text-xs text-[#9CA3AF] cursor-pointer">Cancel</button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[#1C1C1E]">{sub}</span>
+                            <button onClick={() => { setEditingSubcat(sub); setEditSubcatName(sub); }} className="text-[10px] text-[#6B7280] cursor-pointer hover:underline">Rename</button>
+                          </div>
+                        )}
+                        <span className="text-[10px] text-[#9CA3AF] shrink-0 ml-2">{items.length} items</span>
                       </div>
                       {items.map(p => (
                         <div key={p.id} className="border-b border-[#F3F4F6] last:border-0">
