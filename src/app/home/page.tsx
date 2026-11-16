@@ -114,8 +114,10 @@ function TabBar({ filter, setFilter }: { filter: FilterKey; setFilter: (f: Filte
           );
         })}
       </div>
-      {/* Sliding underline */}
-      <div className="absolute bottom-0 h-[2px] rounded-full" style={{
+      {/* Full-width track line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
+      {/* Sliding active underline */}
+      <div className="absolute bottom-0 h-[2px] rounded-full z-10" style={{
         left: `${indicator.left}px`,
         width: `${indicator.width}px`,
         background: "var(--coral)",
