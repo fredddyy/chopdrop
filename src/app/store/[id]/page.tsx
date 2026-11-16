@@ -467,14 +467,14 @@ export default function StorePage() {
         return (
           <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
             <div className="max-w-[480px] mx-auto">
-              <Link href="/cart" className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[14px] font-bold text-white press-feedback" style={{ background: "var(--coral)" }}>
+              <Link href="/cart" className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-white press-feedback" style={{ background: "var(--coral)" }}>
                 <div className="flex items-center gap-2">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-                  <span>Checkout</span>
+                  <span className="text-[15px] font-bold">Checkout</span>
                 </div>
-                <div className="text-right">
-                  <span className="tabular-nums block leading-none">{fp(total)}</span>
-                  <span className="text-[10px] font-medium opacity-70">plus delivery fee</span>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(total)}</span>
+                  <span className="text-[10px] font-medium opacity-70">+ delivery</span>
                 </div>
               </Link>
             </div>
