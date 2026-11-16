@@ -104,7 +104,7 @@ export async function GET() {
     recentOrderCount: number;
     recentOrderNames: string[];
     groupDealCount: number;
-    livePools: { count: number; totalMembers: number; bestFill: number; memberNames: string[] };
+    livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[] };
   }> = [];
 
   // Query recent group order activity per restaurant (last 7 days)
@@ -161,12 +161,13 @@ export async function GET() {
       product: { select: { vendorId: true } },
     },
   });
-  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; bestFill: number; memberNames: string[] }>();
+  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[] }>();
   for (const p of activePools) {
     const rid = p.product.vendorId;
-    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, bestFill: 0, memberNames: [] };
+    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [] };
     existing.count += 1;
     existing.totalMembers += p.members.length;
+    existing.totalSize += p.minSize;
     for (const m of p.members) {
       if (existing.memberNames.length < 3 && !existing.memberNames.includes(m.user.firstName)) {
         existing.memberNames.push(m.user.firstName);
@@ -233,7 +234,7 @@ export async function GET() {
         recentOrderCount: recentActivity.get(r.id)?.count ?? 0,
         recentOrderNames: recentActivity.get(r.id)?.names ?? [],
         groupDealCount: r._count.products,
-        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, bestFill: 0, memberNames: [] },
+        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [] },
         tiers,
       });
     }

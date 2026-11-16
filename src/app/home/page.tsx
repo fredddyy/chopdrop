@@ -39,7 +39,7 @@ interface InactiveRestaurant {
   recentOrderCount: number;
   recentOrderNames: string[];
   groupDealCount: number;
-  livePools: { count: number; totalMembers: number; bestFill: number; memberNames: string[] };
+  livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[] };
 }
 
 interface DealItem {
@@ -530,7 +530,7 @@ export default function HomePage() {
                         {r.livePools.count > 0 ? (
                           <span className="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-lg inline-flex items-center gap-1 text-white" style={{ background: "var(--coral)" }}>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
-                            {r.livePools.totalMembers} joining
+                            {r.livePools.totalMembers}/{r.livePools.totalSize} joined
                           </span>
                         ) : bestTier ? (
                           <span className="absolute top-3 left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-lg text-white" style={{ background: "var(--coral)" }}>
