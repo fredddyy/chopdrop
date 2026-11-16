@@ -34,6 +34,20 @@ export default function CartPage() {
   const [deliveryToggle, setDeliveryToggle] = useState<"pickup" | "delivery">("pickup");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [chopLoading, setChopLoading] = useState(false);
+  const [restaurantInfo, setRestaurantInfo] = useState<Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number }>>({});
+
+  // Fetch group order info for restaurants in cart
+  useEffect(() => {
+    const restIds = [...new Set(cart.items.map(i => i.restaurantId).filter(Boolean))] as string[];
+    if (restIds.length === 0) return;
+    Promise.all(restIds.map(rid =>
+      fetch(`/api/stores/${rid}`).then(r => r.json()).then(d => d.success ? { id: rid, groupTarget: d.data.groupTarget || 0, groupDiscount: d.data.groupDiscount || 0, groupWindowMins: d.data.groupWindowMins || 0 } : null).catch(() => null)
+    )).then(results => {
+      const info: Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number }> = {};
+      for (const r of results) { if (r) info[r.id] = { groupTarget: r.groupTarget, groupDiscount: r.groupDiscount, groupWindowMins: r.groupWindowMins }; }
+      setRestaurantInfo(info);
+    });
+  }, [cart.items]);
 
   // Load delivery preference
   useEffect(() => {
@@ -288,12 +302,29 @@ export default function CartPage() {
                   const restUnpacked = restItems.filter(i => !i.packId);
                   if (restUnpacked.length === 0) return null;
                   const restName = restItems[0]?.restaurantName || restKey;
+                  const restId = restItems[0]?.restaurantId || restKey;
                   const restSubtotal = restUnpacked.reduce((s, i) => s + i.price * i.quantity, 0);
+                  const groupInfo = restaurantInfo[restId];
+                  const hasGroup = groupInfo && groupInfo.groupTarget > 0 && groupInfo.groupDiscount > 0;
                   return (
                     <section key={restKey} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                       <div className="px-4 py-2.5 flex items-center justify-between" style={{ background: "var(--sand)" }}>
-                        <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>{restName}</span>
-                        <span className="text-[12px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(restSubtotal)}</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-[12px] font-bold truncate" style={{ color: "var(--text)" }}>{restName}</span>
+                          {hasGroup && (
+                            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "var(--emerald)", color: "white" }}>
+                              {groupInfo.groupDiscount}% group
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-right shrink-0 ml-2">
+                          <span className="text-[12px] font-extrabold tabular-nums block leading-none" style={{ color: "var(--text)" }}>{formatNaira(restSubtotal)}</span>
+                          {hasGroup && (
+                            <span className="text-[9px] font-bold" style={{ color: "var(--emerald)" }}>
+                              {formatNaira(Math.round(restSubtotal * (1 - groupInfo.groupDiscount / 100)))} in group
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="px-4">
                         {restUnpacked.map((item, idx) => renderItem(item, idx > 0))}
