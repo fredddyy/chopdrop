@@ -40,6 +40,46 @@ interface RealPool {
 
 const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 
+function StoreTabBar({ tabs, active, onChange }: { tabs: string[]; active: string; onChange: (t: string) => void }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Auto-scroll to active tab
+  useEffect(() => {
+    const idx = tabs.indexOf(active);
+    const btn = btnRefs.current[idx];
+    const container = scrollRef.current;
+    if (btn && container) {
+      const left = btn.offsetLeft - container.offsetWidth / 2 + btn.offsetWidth / 2;
+      container.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+    }
+  }, [active, tabs]);
+
+  return (
+    <div className="mt-4" style={{ borderBottom: "2px solid var(--border)" }}>
+      <div ref={scrollRef} className="flex overflow-x-auto hide-scrollbar">
+        {tabs.filter((v, i, a) => a.indexOf(v) === i).map((tab, i) => {
+          const isActive = active === tab;
+          return (
+            <button key={tab} type="button"
+              ref={el => { btnRefs.current[i] = el; }}
+              onClick={() => onChange(tab)}
+              className={`${i === 0 ? "pr-3" : "px-3"} pb-2.5 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback`}
+              style={{
+                color: isActive ? "var(--coral)" : "var(--text-muted)",
+                borderBottom: isActive ? "2px solid var(--coral)" : "2px solid transparent",
+                marginBottom: "-2px",
+                transition: "color 200ms ease-out, border-color 200ms ease-out",
+              }}>
+              {tab}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function StorePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -261,21 +301,7 @@ export default function StorePage() {
         </div>
 
         {/* Category tabs — underlined text style */}
-        <div className="relative mt-4">
-          <div className="flex overflow-x-auto hide-scrollbar gap-1">
-            {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab, i) => {
-              const active = currentTab === tab;
-              return (
-              <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-                className={`${i === 0 ? "pr-2.5" : "px-2.5"} pb-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback`}
-                style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
-                <span style={{ borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent", paddingBottom: "6px", transition: "border-color 200ms ease-out" }}>{tab}</span>
-              </button>
-              );
-            })}
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
-        </div>
+        <StoreTabBar tabs={menuTabs} active={currentTab} onChange={setActiveTab} />
 
         {/* Menu items by category — swipeable */}
         <div
