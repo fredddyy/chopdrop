@@ -16,6 +16,7 @@ interface StoreDetail {
   id: string; name: string; address: string; phone: string;
   imageUrl: string | null; bannerUrl: string | null;
   groupTiers?: unknown;
+  groupTarget: number; groupDiscount: number; groupWindowMins: number;
   deliveryFee: number; freeDeliveryMin: number; groupDeliveryPct: number;
   categories: string[]; products: Product[];
   combos: Array<{ id: string; name: string; description: string | null; imageUrl: string | null; price: number; originalPrice: number | null }>;
@@ -296,7 +297,38 @@ export default function StorePage() {
         <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
       </div>
 
-      {/* Group order hub removed — action happens via product cards + sticky bar */}
+      {/* ═══ GROUP ORDER INFO ═══ */}
+      {store.groupTarget > 0 && store.groupDiscount > 0 && (
+        <div className="px-5 mt-4">
+          <div className="rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-extrabold uppercase tracking-wide" style={{ color: "var(--emerald)" }}>Group order</p>
+              <span className="text-[11px] font-bold" style={{ color: "var(--gold)" }}>{store.groupDiscount}% off</span>
+            </div>
+            <p className="text-[16px] font-extrabold text-white leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+              {store.groupTarget} people order, everyone saves {store.groupDiscount}%
+            </p>
+            <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>
+              {store.groupWindowMins >= 60 ? `${Math.floor(store.groupWindowMins / 60)}h ${store.groupWindowMins % 60 > 0 ? `${store.groupWindowMins % 60}m` : ""}` : `${store.groupWindowMins}m`} window to fill
+            </p>
+            {/* Empty avatar circles */}
+            <div className="flex items-center gap-2 mt-3">
+              <div className="flex -space-x-1.5">
+                {Array.from({ length: Math.min(store.groupTarget, 10) }).map((_, i) => (
+                  <div key={i} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold"
+                    style={{ border: "2px dashed rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.3)", background: "transparent" }}>
+                    ?
+                  </div>
+                ))}
+              </div>
+              {store.groupTarget > 10 && <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>+{store.groupTarget - 10}</span>}
+            </div>
+            <p className="text-[10px] mt-2" style={{ color: "rgba(255,255,255,0.4)" }}>
+              {store.groupTarget} spots · Build your plate, share with friends, everyone pays less
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ═══ THE FULL MENU ═══ */}
       <section className="px-5 mt-6">

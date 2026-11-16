@@ -14,6 +14,9 @@ interface RestaurantData {
   deliveryFee?: number;
   freeDeliveryMin?: number;
   groupDeliveryPct?: number;
+  groupTarget?: number;
+  groupDiscount?: number;
+  groupWindowMins?: number;
 }
 
 interface FormState {
@@ -26,6 +29,9 @@ interface FormState {
   deliveryFee: string;
   freeDeliveryMin: string;
   groupDeliveryPct: string;
+  groupTarget: string;
+  groupDiscount: string;
+  groupWindowMins: string;
 }
 
 const EMPTY_FORM: FormState = {
@@ -38,6 +44,9 @@ const EMPTY_FORM: FormState = {
   deliveryFee: "500",
   freeDeliveryMin: "5000",
   groupDeliveryPct: "25",
+  groupTarget: "10",
+  groupDiscount: "30",
+  groupWindowMins: "120",
 };
 
 export default function RestaurantsPage() {
@@ -81,6 +90,9 @@ export default function RestaurantsPage() {
       deliveryFee: String((r.deliveryFee || 50000) / 100),
       freeDeliveryMin: String((r.freeDeliveryMin || 500000) / 100),
       groupDeliveryPct: String(r.groupDeliveryPct ?? 25),
+      groupTarget: String(r.groupTarget ?? 10),
+      groupDiscount: String(r.groupDiscount ?? 30),
+      groupWindowMins: String(r.groupWindowMins ?? 120),
     });
     setShowModal(true);
   }
@@ -98,7 +110,10 @@ export default function RestaurantsPage() {
         groupTiers: validTiers.length > 0 ? validTiers : null,
         deliveryFee: Math.round(parseFloat(form.deliveryFee || "500") * 100),
         freeDeliveryMin: Math.round(parseFloat(form.freeDeliveryMin || "5000") * 100),
-        groupDeliveryPct: parseInt(form.groupDeliveryPct || "50", 10),
+        groupDeliveryPct: parseInt(form.groupDeliveryPct || "25", 10),
+        groupTarget: parseInt(form.groupTarget || "10", 10),
+        groupDiscount: parseInt(form.groupDiscount || "30", 10),
+        groupWindowMins: parseInt(form.groupWindowMins || "120", 10),
       };
 
       if (editId) {
@@ -364,6 +379,29 @@ export default function RestaurantsPage() {
                   placeholder="or paste banner URL..."
                 />
               </div>
+            </div>
+
+            {/* Group Order Settings */}
+            <div className="px-6 py-4 border-t border-[#E5E7EB]">
+              <label className="block text-xs font-medium text-[#6B7280] mb-2">Group Order Settings</label>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[10px] text-[#9CA3AF] mb-1">People needed</label>
+                  <input type="number" value={form.groupTarget} onChange={(e) => setForm({ ...form, groupTarget: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none" placeholder="10" />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-[#9CA3AF] mb-1">Discount (%)</label>
+                  <input type="number" value={form.groupDiscount} onChange={(e) => setForm({ ...form, groupDiscount: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none" placeholder="30" min="0" max="100" />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-[#9CA3AF] mb-1">Time window (min)</label>
+                  <input type="number" value={form.groupWindowMins} onChange={(e) => setForm({ ...form, groupWindowMins: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none" placeholder="120" />
+                </div>
+              </div>
+              <p className="text-[10px] text-[#9CA3AF] mt-1">When {form.groupTarget || "10"} people order together within {form.groupWindowMins || "120"} min, everyone gets {form.groupDiscount || "30"}% off.</p>
             </div>
 
             {/* Delivery Pricing */}
