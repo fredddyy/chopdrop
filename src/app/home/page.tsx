@@ -261,9 +261,11 @@ export default function HomePage() {
             );
           })}
         </div>
-        {/* Tabs — text-only tab style */}
-        <TabBar filter={filter} setFilter={setFilter} />
       </header>
+      {/* Tabs — sticky */}
+      <div className="sticky top-0 z-40 px-5" style={{ background: "var(--bg)" }}>
+        <TabBar filter={filter} setFilter={setFilter} />
+      </div>
 
       {/* ── Loading skeleton ── */}
       {loading && (
