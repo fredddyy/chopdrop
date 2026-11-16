@@ -413,7 +413,7 @@ export default function ProductDetailPage() {
   const spotsLeft = poolSize - memberCount;
   // Delivery fee from restaurant settings
   const restaurantDeliveryFee = product.vendor.deliveryFee ?? 50000;
-  const groupDeliveryPct = product.vendor.groupDeliveryPct ?? 50;
+  const groupDeliveryPct = product.vendor.groupDeliveryPct ?? 25;
   const fullDeliveryFee = restaurantDeliveryFee;
   const deliveryShare = Math.round(restaurantDeliveryFee * groupDeliveryPct / 100);
   const poolUnitTotal = product.groupPrice + deliveryShare;

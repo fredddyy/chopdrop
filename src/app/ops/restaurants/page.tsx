@@ -37,7 +37,7 @@ const EMPTY_FORM: FormState = {
   groupTiers: [],
   deliveryFee: "500",
   freeDeliveryMin: "5000",
-  groupDeliveryPct: "50",
+  groupDeliveryPct: "25",
 };
 
 export default function RestaurantsPage() {
@@ -80,7 +80,7 @@ export default function RestaurantsPage() {
       groupTiers: Array.isArray(r.groupTiers) ? r.groupTiers : [],
       deliveryFee: String((r.deliveryFee || 50000) / 100),
       freeDeliveryMin: String((r.freeDeliveryMin || 500000) / 100),
-      groupDeliveryPct: String(r.groupDeliveryPct ?? 50),
+      groupDeliveryPct: String(r.groupDeliveryPct ?? 25),
     });
     setShowModal(true);
   }
