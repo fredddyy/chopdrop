@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { prisma } from "@/lib/prisma";
 import { parseGroupTiers, getGroupDiscount } from "@/lib/group-tier-pricing";
 
 // GET /api/feed — home feed: restaurants with active group orders + inactive restaurants
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get("category") || null;
   const now = new Date();
 
   // Fetch all active restaurants with their group orders and basic info
@@ -55,13 +58,13 @@ export async function GET() {
         orderBy: { price: "asc" },
       },
       products: {
-        where: { isActive: true, category: "Food" },
+        where: { isActive: true, ...(category ? { category } : {}) },
         take: 1,
         select: { name: true, groupPrice: true, retailPrice: true },
         orderBy: { groupPrice: "asc" },
       },
       _count: {
-        select: { products: { where: { isActive: true, category: "Food" } } },
+        select: { products: { where: { isActive: true, ...(category ? { category } : {}) } } },
       },
     },
     orderBy: { sortOrder: "asc" },
@@ -255,7 +258,7 @@ export async function GET() {
 
   // Fetch group-deal products for item-level filtering
   const dealProducts = await prisma.product.findMany({
-    where: { isActive: true, category: "Food", retailPrice: { gt: 0 } },
+    where: { isActive: true, ...(category ? { category } : {}), retailPrice: { gt: 0 } },
     select: {
       id: true, name: true, imageUrl: true, retailPrice: true, groupPrice: true, minPoolSize: true,
       vendor: { select: { id: true, name: true } },

@@ -174,6 +174,9 @@ export default function HomePage() {
     fetch("/api/categories").then(r => r.json()).then(d => { if (d.success) setCategories(d.data); }).catch(() => {});
   }, []);
 
+  // Reload feed when category changes
+  useEffect(() => { loadFeed(activeCategory); }, [activeCategory]);
+
   function saveLocation(address: string, area?: string) {
     setDeliveryAddress(address);
     if (area) setUserArea(area);
@@ -216,10 +219,11 @@ export default function HomePage() {
     try { localStorage.setItem("chopdrop-location-prompt-dismissed", "1"); } catch {}
   }
 
-  function loadFeed() {
+  function loadFeed(cat?: string) {
+    const c = cat ?? activeCategory;
     setLoading(true);
     setError(false);
-    fetch("/api/feed")
+    fetch(`/api/feed${c ? `?category=${encodeURIComponent(c)}` : ""}`)
       .then(r => r.json())
       .then(d => {
         if (d.success) {
@@ -240,7 +244,7 @@ export default function HomePage() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (document.visibilityState === "visible") {
-        fetch("/api/feed")
+        fetch(`/api/feed${activeCategory ? `?category=${encodeURIComponent(activeCategory)}` : ""}`)
           .then(r => r.json())
           .then(d => {
             if (d.success) {
