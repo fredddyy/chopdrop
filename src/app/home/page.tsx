@@ -526,12 +526,17 @@ export default function HomePage() {
                             <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
                           </div>
                         )}
-                        {/* Discount badge — on banner */}
-                        {bestTier && (
+                        {/* Live pool pill — top left of banner */}
+                        {r.livePools.count > 0 ? (
+                          <span className="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-lg inline-flex items-center gap-1 text-white" style={{ background: "var(--coral)" }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+                            {r.livePools.totalMembers} joining
+                          </span>
+                        ) : bestTier ? (
                           <span className="absolute top-3 left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-lg text-white" style={{ background: "var(--coral)" }}>
                             Up to {bestTier.discount}% off
                           </span>
-                        )}
+                        ) : null}
                         {/* Group deals count — on banner */}
                         {r.groupDealCount > 0 && (
                           <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 text-white" style={{ background: "rgba(0,0,0,0.7)" }}>
@@ -541,23 +546,9 @@ export default function HomePage() {
                         )}
                       </div>
 
-                      {/* Info — below banner, no card wrapper needed */}
+                      {/* Info — below banner */}
                       <div className="pt-2.5 pb-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
-                          {r.livePools.count > 0 && (
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1.5 shrink-0" style={{ background: "var(--coral)", color: "white" }}>
-                              <div className="flex -space-x-1">
-                                {r.livePools.memberNames.slice(0, 3).map((name, i) => (
-                                  <div key={i} className="w-[14px] h-[14px] rounded-full flex items-center justify-center text-[6px] font-bold" style={{ background: ["rgba(255,255,255,0.3)", "rgba(255,255,255,0.2)", "rgba(255,255,255,0.15)"][i], color: "white", border: "1px solid var(--coral)" }}>
-                                    {name.charAt(0)}
-                                  </div>
-                                ))}
-                              </div>
-                              {r.livePools.count} active {r.livePools.count === 1 ? "group" : "groups"} · {r.livePools.totalMembers} {r.livePools.totalMembers === 1 ? "person" : "people"} in
-                            </span>
-                          )}
-                        </div>
+                        <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
                         {/* Delivery metadata row */}
                         <div className="flex items-center gap-1 mt-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
                           {r.lowestPrice > 0 && (
