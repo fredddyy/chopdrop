@@ -185,7 +185,7 @@ export default function HomePage() {
                 border: "1px solid transparent",
                 transition: "all 150ms ease-out",
               }}>
-              <span className="text-[12px] font-bold" style={{ color: active ? "var(--coral)" : "var(--text-secondary)" }}>{c.label}</span>
+              <span className="text-[14px] font-extrabold" style={{ color: active ? "var(--coral)" : "var(--text-secondary)" }}>{c.label}</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={c.img} alt="" className="w-[24px] h-[24px] object-contain" />
             </button>
