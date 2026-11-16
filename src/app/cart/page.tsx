@@ -388,28 +388,18 @@ export default function CartPage() {
             ) : (
               <>
                 {error && <div className="text-[12px] font-bold p-2.5 rounded-[10px] mb-2 text-center" style={{ background: "var(--coral-soft)", color: "var(--coral)" }}>{error}</div>}
-                <div className="flex gap-2.5">
-                  <button type="button"
-                    onClick={() => {
-                      if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; }
-                      if (!validateBeforePay()) return;
-                      setConfirmOpen(true);
-                    }}
-                    disabled={loading}
-                    className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center press-feedback disabled:opacity-50"
-                    style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
-                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>{isAuthenticated === false ? "Log in" : "Pay solo"}</span>
-                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(orderTotal)}</span>
-                  </button>
-                  <button type="button"
-                    onClick={handleChop}
-                    disabled={chopLoading || loading}
-                    className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback disabled:opacity-50"
-                    style={{ background: "var(--coral)" }}>
-                    <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>{chopLoading ? "Creating..." : "Share to Chop"}</span>
-                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>from {formatNaira(Math.round(orderTotal * 0.7))}</span>
-                  </button>
-                </div>
+                <button type="button"
+                  onClick={() => {
+                    if (isAuthenticated === false) { window.location.href = "/auth?returnTo=/cart"; return; }
+                    if (!validateBeforePay()) return;
+                    setConfirmOpen(true);
+                  }}
+                  disabled={loading}
+                  className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback disabled:opacity-50"
+                  style={{ background: isAuthenticated === false ? "var(--dark)" : "var(--coral)" }}>
+                  <span>{loading ? "Processing\u2026" : isAuthenticated === false ? "Log in to pay" : "Pay now"}</span>
+                  <span className="font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(orderTotal)}</span>
+                </button>
                 <div className="flex items-center justify-center gap-3 mt-2">
                   <div className="flex items-center gap-1">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>

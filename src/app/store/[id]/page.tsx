@@ -463,9 +463,7 @@ export default function StorePage() {
 
       {/* ── Sticky cart bar ── */}
       {cart.totalItems > 0 && (() => {
-        const subtotal = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-        const deliveryFee = 50000; // ₦500 flat delivery fee
-        const total = subtotal + deliveryFee;
+        const total = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
         return (
           <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
             <div className="max-w-[480px] mx-auto">
@@ -476,7 +474,7 @@ export default function StorePage() {
                 </div>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(total)}</span>
-                  <span className="text-[10px] font-medium opacity-70">incl. delivery</span>
+                  <span className="text-[10px] font-medium opacity-70">{cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}</span>
                 </div>
               </Link>
             </div>
