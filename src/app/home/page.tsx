@@ -346,8 +346,8 @@ export default function HomePage() {
                         </div>
                       )}
                       {/* Add button — bottom right on image */}
-                      <div className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-full flex items-center justify-center" style={{ background: "var(--coral)" }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                      <div className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-lg flex items-center justify-center" style={{ background: "white" }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                       </div>
                     </div>
                     {/* Info */}
@@ -366,16 +366,16 @@ export default function HomePage() {
                           <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
                         </div>
                       )}
-                      {/* Pool status pill */}
-                      <div className="mt-1.5 mb-1">
-                        <span className="text-[9px] font-bold px-2 py-1 rounded-lg inline-block" style={{
+                      {/* Pool status box — full width */}
+                      <div className="mt-1.5">
+                        <div className="text-[9px] font-bold py-1.5 text-center rounded-lg" style={{
                           background: hasPool ? "rgba(26,125,75,0.1)" : "var(--sand)",
                           color: hasPool ? "var(--emerald)" : "var(--text-muted)",
                         }}>
                           {isChopMode
                             ? `${chopFriendsNeeded} friends to chop`
                             : hasPool ? `${poolMembers} Group Active` : `${item.minPoolSize} needed`}
-                        </span>
+                        </div>
                       </div>
                     </div>
                   </Link>
