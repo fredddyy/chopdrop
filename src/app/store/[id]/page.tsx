@@ -370,9 +370,9 @@ export default function StorePage() {
                       <div key={item.id} className="flex items-center gap-3 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
                         {item.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={item.imageUrl} alt={item.name} className="w-[50px] h-[50px] rounded-full object-cover shrink-0" loading="lazy" />
+                          <img src={item.imageUrl} alt={item.name} className="w-[50px] h-[50px] rounded-[12px] object-cover shrink-0" loading="lazy" />
                         ) : (
-                          <div className="w-[50px] h-[50px] rounded-full shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                          <div className="w-[50px] h-[50px] rounded-[12px] shrink-0 flex items-center justify-center" style={{ background: "var(--sand)" }}>
                             <span className="text-[14px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
                           </div>
                         )}
