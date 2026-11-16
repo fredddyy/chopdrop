@@ -223,6 +223,9 @@ export async function GET(request: Request) {
         createdAt: activeOrder.createdAt.toISOString(),
       });
     } else {
+      // Skip restaurants with no matching products when filtering by category
+      if (category && r._count.products === 0 && (category !== "Food" || r.meals.length === 0)) continue;
+
       inactiveRestaurants.push({
         id: r.id,
         name: r.name,
