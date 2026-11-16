@@ -235,7 +235,7 @@ export default function HomePage() {
           <span className="text-[14px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
         {/* Categories */}
-        <p className="text-[15px] font-extrabold mt-4 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Categories</p>
+        <p className="text-[18px] font-extrabold mt-4 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Categories</p>
         <div className="flex gap-2 overflow-x-auto hide-scrollbar">
           {[
             { label: "Food", img: "/categories/food.png" },
@@ -313,9 +313,6 @@ export default function HomePage() {
           {/* ═══ ITEM CARDS — shown when filtering by deals or live ═══ */}
           {isItemView && filteredItems.length > 0 && (
             <div className="px-5 pt-4">
-              <h2 className="text-[18px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                {filter === "live" ? "Live group deals" : filter === "chop" ? "Chop to free" : "Group deals"}
-              </h2>
               <div className="grid grid-cols-2 gap-3">
                 {filteredItems.map(item => {
                   const poolMembers = item.activePool?.memberCount || 0;
