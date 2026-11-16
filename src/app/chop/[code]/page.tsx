@@ -216,7 +216,7 @@ export default function ChopProgressPage() {
               className="flex-1 h-[48px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold press-feedback"
               style={{ background: "var(--sand)", color: "var(--text)" }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-              {copied ? "Copied!" : "Copy link"}
+              <span key={String(copied)} className={copied ? "celebrate" : ""}>{copied ? "Copied!" : "Copy link"}</span>
             </button>
           </div>
         </div>
@@ -228,7 +228,7 @@ export default function ChopProgressPage() {
           <p className="text-[13px] font-bold mb-2" style={{ color: "var(--text)" }}>Friends who chopped</p>
           <div className="space-y-2">
             {data.choppers.map((c, i) => (
-              <div key={i} className="flex items-center gap-3">
+              <div key={i} className={`flex items-center gap-3 card-enter card-enter-${Math.min(i + 1, 8)}`}>
                 <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[12px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "var(--gold)", "#6366F1", "#EC4899"][i % 5] }}>
                   {c.name.charAt(0).toUpperCase()}
                 </div>

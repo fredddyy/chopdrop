@@ -235,7 +235,7 @@ export default function CartPage() {
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                     )}
                   </button>
-                  <span className="text-[13px] font-bold tabular-nums w-5 text-center" style={{ color: "var(--text)" }}>{item.quantity}</span>
+                  <span key={item.quantity} className="text-[13px] font-bold tabular-nums w-5 text-center pop" style={{ color: "var(--text)" }}>{item.quantity}</span>
                   <button type="button" aria-label="Increase quantity" onClick={() => cart.addItem(item)}
                     className="w-10 h-10 rounded-[12px] flex items-center justify-center press-feedback" style={{ background: "var(--sand)" }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
@@ -367,7 +367,7 @@ export default function CartPage() {
               })()}
               <div className="flex justify-between items-center pt-3" style={{ borderTop: "2px solid var(--border)" }}>
                 <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Total</span>
-                <span className="text-[22px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
+                <span key={orderTotal} className="text-[22px] font-extrabold tabular-nums pop" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
               </div>
             </div>
           </section>

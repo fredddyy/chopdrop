@@ -269,7 +269,7 @@ export default function HomePage() {
 
       {/* ── Loading skeleton ── */}
       {loading && (
-        <div className="px-5 pt-4 space-y-5">
+        <div className="px-5 pt-4 space-y-5 card-enter">
           {[0, 1, 2].map(i => (
             <div key={i}>
               <div className="rounded-[16px]" style={{ height: "160px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 120}ms` }} />
