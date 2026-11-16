@@ -153,13 +153,13 @@ export default function RestaurantsPage() {
           className="text-2xl font-bold text-[#1C1C1E]"
           style={{ fontFamily: "'Bricolage Grotesque', system-ui, sans-serif" }}
         >
-          Restaurants
+          Stores
         </h1>
         <button
           onClick={openAdd}
           className="h-[42px] px-5 rounded-xl bg-[#E84C3D] text-white text-sm font-semibold transition-colors hover:bg-[#DC2626]"
         >
-          Add restaurant
+          Add store
         </button>
       </div>
 

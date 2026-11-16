@@ -378,7 +378,7 @@ export default function HomePage() {
         <div className="py-20 text-center px-8">
           <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Couldn&apos;t load restaurants</h2>
           <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
-          <button type="button" onClick={loadFeed} className="h-11 px-6 rounded-[12px] text-[13px] font-bold text-white cursor-pointer press-feedback" style={{ background: "var(--coral)" }}>
+          <button type="button" onClick={() => loadFeed()} className="h-11 px-6 rounded-[12px] text-[13px] font-bold text-white cursor-pointer press-feedback" style={{ background: "var(--coral)" }}>
             Try again
           </button>
         </div>

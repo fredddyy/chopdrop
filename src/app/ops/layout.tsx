@@ -25,7 +25,7 @@ const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
-    label: "Restaurants",
+    label: "Stores",
     href: "/ops/restaurants",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -46,7 +46,7 @@ const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
-    label: "Products",
+    label: "Catalog",
     href: "/ops/products",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
