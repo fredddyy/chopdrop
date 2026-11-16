@@ -261,19 +261,19 @@ export default function StorePage() {
         </div>
 
         {/* Category tabs — underlined text style */}
-        <div className="relative mt-4" style={{ borderBottom: "2px solid var(--border)" }}>
+        <div className="mt-4" style={{ borderBottom: "2px solid var(--border)" }}>
           <div className="flex overflow-x-auto hide-scrollbar gap-1">
-            {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab) => (
+            {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab) => {
+              const active = currentTab === tab;
+              return (
               <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-                className="px-2.5 pb-2.5 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback"
-                style={{
-                  color: currentTab === tab ? "var(--coral)" : "var(--text-muted)",
-                  borderBottom: currentTab === tab ? "2px solid var(--coral)" : "2px solid transparent",
-                  marginBottom: "-2px",
-                  transition: "color 200ms ease-out, border-color 200ms ease-out",
-                }}
-              >{tab}</button>
-            ))}
+                className="px-2.5 pb-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback relative"
+                style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
+                {tab}
+                {active && <span className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--coral)" }} />}
+              </button>
+              );
+            })}
           </div>
         </div>
 
@@ -298,8 +298,7 @@ export default function StorePage() {
           if (validItems.length === 0) return null;
 
           return (
-            <div key={cat} className="mt-6">
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-3" style={{ color: "var(--coral)" }}>{cat} · {validItems.length} meal{validItems.length !== 1 ? "s" : ""}</p>
+            <div key={cat} className="mt-4">
 
               {/* Group-eligible items — product card grid */}
               {poolItems.length > 0 && (
