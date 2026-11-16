@@ -26,6 +26,9 @@ export default function MealsPage() {
   // Products state
   const [storeProducts, setStoreProducts] = useState<Array<{ id: string; name: string; description: string | null; imageUrl: string | null; subcategory: string | null; retailPrice: number; groupPrice: number; category: string }>>([]);
 
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [editProductForm, setEditProductForm] = useState({ name: "", retailPrice: "", groupPrice: "", description: "", subcategory: "" });
+
   // Menu builder state
   const [categories, setCategories] = useState<Category[]>([]);
   const [catLoading, setCatLoading] = useState(false);
@@ -492,20 +495,55 @@ export default function MealsPage() {
                         <span className="text-[10px] text-[#9CA3AF]">{items.length} items</span>
                       </div>
                       {items.map(p => (
-                        <div key={p.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-[#F3F4F6] last:border-0">
-                          {p.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={p.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />
-                          ) : <div className="w-10 h-10 rounded-lg bg-[#F5F5F0] shrink-0" />}
-                          <div className="flex-1 min-w-0">
-                            <span className="text-sm text-[#1C1C1E] block truncate">{p.name}</span>
-                            {p.description && <span className="text-[10px] text-[#9CA3AF] block truncate">{p.description}</span>}
-                          </div>
-                          <div className="text-right shrink-0">
-                            <span className="text-xs font-bold text-[#E84C3D] tabular-nums block">{fp(p.groupPrice)}</span>
-                            {p.groupPrice < p.retailPrice && <span className="text-[10px] text-[#9CA3AF] tabular-nums line-through">{fp(p.retailPrice)}</span>}
-                          </div>
-                          <a href="/ops/products" className="text-[10px] text-[#6B7280] hover:underline shrink-0">Edit</a>
+                        <div key={p.id} className="border-b border-[#F3F4F6] last:border-0">
+                          {editingProductId === p.id ? (
+                            <div className="px-4 py-2.5 bg-[#FFFBF5] space-y-2">
+                              <div className="flex gap-2">
+                                <input value={editProductForm.name} onChange={e => setEditProductForm({ ...editProductForm, name: e.target.value })} className="flex-1 h-7 px-2 rounded border border-[#E5E7EB] text-sm focus:outline-none" placeholder="Name" />
+                                <input value={editProductForm.subcategory} onChange={e => setEditProductForm({ ...editProductForm, subcategory: e.target.value })} className="w-28 h-7 px-2 rounded border border-[#E5E7EB] text-xs focus:outline-none" placeholder="Subcategory" />
+                              </div>
+                              <div className="flex gap-2">
+                                <input type="number" value={editProductForm.retailPrice} onChange={e => setEditProductForm({ ...editProductForm, retailPrice: e.target.value })} className="w-24 h-7 px-2 rounded border border-[#E5E7EB] text-xs focus:outline-none" placeholder="Retail ₦" />
+                                <input type="number" value={editProductForm.groupPrice} onChange={e => setEditProductForm({ ...editProductForm, groupPrice: e.target.value })} className="w-24 h-7 px-2 rounded border border-[#E5E7EB] text-xs focus:outline-none" placeholder="Group ₦" />
+                                <input value={editProductForm.description} onChange={e => setEditProductForm({ ...editProductForm, description: e.target.value })} className="flex-1 h-7 px-2 rounded border border-[#E5E7EB] text-xs focus:outline-none" placeholder="Description" />
+                              </div>
+                              <div className="flex gap-2">
+                                <button onClick={async () => {
+                                  const retail = parseFloat(editProductForm.retailPrice) || 0;
+                                  await fetch(`/api/admin/products/${p.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: editProductForm.name.trim(), retailPrice: retail, groupPrice: parseFloat(editProductForm.groupPrice) || retail, description: editProductForm.description || null, subcategory: editProductForm.subcategory || null }) });
+                                  setEditingProductId(null);
+                                  const res = await fetch(`/api/admin/products?vendorId=${selectedRestaurant}`);
+                                  const d = await res.json();
+                                  if (d.success) setStoreProducts(d.data);
+                                }} className="text-xs font-bold text-white px-3 h-7 rounded cursor-pointer" style={{ background: "#1C1C1E" }}>Save</button>
+                                <button onClick={() => setEditingProductId(null)} className="text-xs text-[#9CA3AF] cursor-pointer">Cancel</button>
+                                <button onClick={async () => {
+                                  if (!confirm("Delete this product?")) return;
+                                  await fetch(`/api/admin/products/${p.id}`, { method: "DELETE" });
+                                  setEditingProductId(null);
+                                  const res = await fetch(`/api/admin/products?vendorId=${selectedRestaurant}`);
+                                  const d = await res.json();
+                                  if (d.success) setStoreProducts(d.data);
+                                }} className="text-xs text-[#E84C3D] cursor-pointer ml-auto">Delete</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-[#FAFAFA]" onClick={() => { setEditingProductId(p.id); setEditProductForm({ name: p.name, retailPrice: String(p.retailPrice / 100), groupPrice: String(p.groupPrice / 100), description: p.description || "", subcategory: p.subcategory || "" }); }}>
+                              {p.imageUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={p.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                              ) : <div className="w-10 h-10 rounded-lg bg-[#F5F5F0] shrink-0" />}
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm text-[#1C1C1E] block truncate">{p.name}</span>
+                                {p.description && <span className="text-[10px] text-[#9CA3AF] block truncate">{p.description}</span>}
+                              </div>
+                              <div className="text-right shrink-0">
+                                <span className="text-xs font-bold text-[#E84C3D] tabular-nums block">{fp(p.groupPrice)}</span>
+                                {p.groupPrice < p.retailPrice && <span className="text-[10px] text-[#9CA3AF] tabular-nums line-through">{fp(p.retailPrice)}</span>}
+                              </div>
+                              <span className="text-[10px] text-[#9CA3AF] shrink-0">Edit</span>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
