@@ -10,7 +10,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
-      vendor: { select: { id: true, name: true, imageUrl: true, address: true, latitude: true, longitude: true } },
+      vendor: { select: { id: true, name: true, imageUrl: true, address: true, latitude: true, longitude: true, deliveryFee: true, freeDeliveryMin: true, groupDeliveryPct: true } },
     },
   });
 
@@ -22,7 +22,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   const meal = await prisma.meal.findUnique({
     where: { id },
     include: {
-      restaurant: { select: { id: true, name: true, imageUrl: true, address: true, latitude: true, longitude: true } },
+      restaurant: { select: { id: true, name: true, imageUrl: true, address: true, latitude: true, longitude: true, deliveryFee: true, freeDeliveryMin: true, groupDeliveryPct: true } },
     },
   });
 

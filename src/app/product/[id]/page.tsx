@@ -10,7 +10,7 @@ interface ProductData {
   id: string; name: string; description: string | null; imageUrl: string | null;
   category: string; subcategory: string | null; retailPrice: number; groupPrice: number;
   minPoolSize: number; poolTiers: unknown; maxQuantity: number; tags: string | null;
-  vendor: { id: string; name: string; imageUrl: string | null; address: string; latitude: number | null; longitude: number | null };
+  vendor: { id: string; name: string; imageUrl: string | null; address: string; latitude: number | null; longitude: number | null; deliveryFee?: number; freeDeliveryMin?: number; groupDeliveryPct?: number };
 }
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
@@ -411,8 +411,11 @@ export default function ProductDetailPage() {
   const memberCount = pool ? pool.memberCount : 0;
   const poolSize = pool ? pool.minSize : product.minPoolSize;
   const spotsLeft = poolSize - memberCount;
-  const deliveryShare = deliveryOption === "delivery" && deliveryEstimate ? deliveryEstimate.subsidizedFee : 0;
-  const fullDeliveryFee = deliveryOption === "delivery" && deliveryEstimate ? deliveryEstimate.fullFee : 0;
+  // Delivery fee from restaurant settings
+  const restaurantDeliveryFee = product.vendor.deliveryFee ?? 50000;
+  const groupDeliveryPct = product.vendor.groupDeliveryPct ?? 50;
+  const fullDeliveryFee = restaurantDeliveryFee;
+  const deliveryShare = Math.round(restaurantDeliveryFee * groupDeliveryPct / 100);
   const poolUnitTotal = product.groupPrice + deliveryShare;
   const soloTotal = product.retailPrice + fullDeliveryFee;
 
@@ -569,6 +572,9 @@ export default function ProductDetailPage() {
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
               Refundable
             </span>
+          </p>
+          <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
+            Delivery: {fp(fullDeliveryFee)} alone · {fp(deliveryShare)} in group
           </p>
         </div>
       ) : (
