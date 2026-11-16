@@ -550,11 +550,11 @@ export default function ProductDetailPage() {
           <div className="flex items-end gap-4">
             <div>
               <span className="text-[44px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--gold)" }}>{fp(product.groupPrice)}</span>
-              <p className="text-[12px] font-bold mt-1" style={{ color: "var(--gold)" }}>Pool · join others</p>
+              <p className="text-[12px] font-bold mt-1" style={{ color: "var(--gold)" }}>Group order · join others</p>
             </div>
             <div className="pb-0.5">
               <span className="text-[22px] font-extrabold tabular-nums leading-none line-through block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fp(product.retailPrice)}</span>
-              <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>solo</p>
+              <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>buy alone</p>
             </div>
           </div>
           <p className="text-[12px] font-bold mt-1.5 flex items-center gap-3" style={{ color: "var(--emerald)" }}>
@@ -747,7 +747,7 @@ export default function ProductDetailPage() {
               <button type="button" onClick={addSolo}
                 className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[14px] font-bold press-feedback"
                 style={{ background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }}>
-                <span>Order solo instead</span>
+                <span>Buy alone instead</span>
                 <span className="tabular-nums">{fp(soloTotal)}</span>
               </button>
 
@@ -781,13 +781,13 @@ export default function ProductDetailPage() {
                 <button type="button" onClick={addSolo}
                   className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center cursor-pointer press-feedback"
                   style={{ background: "var(--card)", color: "var(--text)", border: "1.5px solid var(--border)" }}>
-                  <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Solo</span>
+                  <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Buy alone</span>
                   <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(soloTotal)}</span>
                 </button>
                 <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
                   className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white cursor-pointer press-feedback disabled:opacity-50"
                   style={{ background: "var(--coral)" }}>
-                  <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Start Pool" : pool ? "Join Pool" : "Start Pool"}</span>
+                  <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Start Group" : pool ? "Join Group" : "Start Group"}</span>
                   <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(poolUnitTotal)}</span>
                 </button>
               </div>
@@ -805,7 +805,7 @@ export default function ProductDetailPage() {
               <button type="button" onClick={addSolo}
                 className="flex-[1.4] h-[50px] rounded-[12px] flex items-center justify-center text-[14px] font-bold text-white cursor-pointer press-feedback"
                 style={{ background: "var(--coral)" }}>
-                Buy Solo {fp(product.retailPrice)}
+                Buy Alone {fp(product.retailPrice)}
               </button>
             </div>
           )}
@@ -988,7 +988,7 @@ export default function ProductDetailPage() {
                   <span className="text-[20px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(poolUnitTotal * quantity)}</span>
                 </div>
                 <p className="text-[11px] mt-1" style={{ color: "var(--text-muted)" }}>
-                  {quantity > 1 ? `${quantity} × ${fp(poolUnitTotal)}` : `Solo is ${fp(soloTotal)}`} · Save {fp((soloTotal - poolUnitTotal) * quantity)} vs solo
+                  {quantity > 1 ? `${quantity} × ${fp(poolUnitTotal)}` : `Alone is ${fp(soloTotal)}`} · Save {fp((soloTotal - poolUnitTotal) * quantity)} with group
                 </p>
               </div>
 
