@@ -405,7 +405,7 @@ export default function StorePage() {
                         <div className="flex-1 min-w-0">
                           <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.retailPrice)}</p>
                           <h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4>
-                          {item.description && <p className="text-[11px] mt-0.5 leading-tight" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
+                          {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                           {/* Add button — bottom right */}
                           <div className="flex justify-end mt-1.5">
                             {inCart > 0 ? (
