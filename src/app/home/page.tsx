@@ -145,10 +145,10 @@ export default function HomePage() {
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
             {/* Greeting + name */}
-            <p className="text-[15px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+            <p className="text-[20px] font-extrabold leading-none tracking-[-0.03em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
               {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}, {(() => { const h = new Date().getHours(); return h < 12 ? "\u{1F44B}" : h < 17 ? "\u2600\uFE0F" : "\u{1F319}"; })()}
             </p>
-            <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{userName.split(" ")[0] || "there"}</p>
+            <p className="text-[14px] font-bold mt-0.5" style={{ color: "var(--text-secondary)" }}>{userName.split(" ")[0] || "there"}</p>
             {/* Delivery address */}
             {(deliveryAddress || userArea) && (
               <div className="flex items-center gap-1 mt-1">
@@ -162,9 +162,9 @@ export default function HomePage() {
           </Link>
         </div>
         {/* Search link */}
-        <Link href="/search" className="mt-2.5 flex items-center h-[38px] px-3.5 rounded-[12px] gap-2" style={{ background: "var(--sand)" }}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-          <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
+        <Link href="/search" className="mt-3 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--sand)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+          <span className="text-[14px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
         {/* Categories — rectangular rounded buttons with image */}
         <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
@@ -203,7 +203,7 @@ export default function HomePage() {
             const active = filter === f.key;
             return (
             <button key={f.key} type="button" onClick={() => setFilter(f.key)}
-              className="h-[28px] px-2.5 text-[12px] font-bold whitespace-nowrap shrink-0 press-feedback"
+              className="h-[30px] px-3 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback"
               style={{
                 color: active ? "var(--coral)" : "var(--text-muted)",
                 borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent",
@@ -504,7 +504,7 @@ export default function HomePage() {
                       {/* Info — below banner, no card wrapper needed */}
                       <div className="pt-2.5 pb-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-[15px] font-bold" style={{ color: "var(--text)" }}>{r.name}</h3>
+                          <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
                           {r.livePools.count > 0 && (
                             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1.5 shrink-0" style={{ background: "var(--coral)", color: "white" }}>
                               <div className="flex -space-x-1">
@@ -522,7 +522,7 @@ export default function HomePage() {
                         <div className="flex items-center gap-1 mt-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
                           {r.lowestPrice > 0 && (
                             <>
-                              <span className="font-bold" style={{ color: "var(--text)" }}>From {fmt(r.lowestPrice)}</span>
+                              <span className="font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>From {fmt(r.lowestPrice)}</span>
                               <span>·</span>
                             </>
                           )}
