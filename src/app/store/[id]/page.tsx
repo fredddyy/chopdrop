@@ -56,7 +56,7 @@ function StoreTabBar({ tabs, active, onChange }: { tabs: string[]; active: strin
   }, [active, tabs]);
 
   return (
-    <div className="relative mt-4">
+    <div className="relative mt-4 pb-[2px]">
       <div ref={scrollRef} className="flex overflow-x-auto hide-scrollbar relative z-10">
         {tabs.filter((v, i, a) => a.indexOf(v) === i).map((tab, i) => {
           const isActive = active === tab;
@@ -64,10 +64,10 @@ function StoreTabBar({ tabs, active, onChange }: { tabs: string[]; active: strin
             <button key={tab} type="button"
               ref={el => { btnRefs.current[i] = el; }}
               onClick={() => onChange(tab)}
-              className={`${i === 0 ? "pr-3" : "px-3"} pb-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback`}
+              className={`${i === 0 ? "pr-3" : "px-3"} pt-1 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback flex flex-col items-start`}
               style={{ color: isActive ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
-              {tab}
-              {isActive && <div className="h-[2px] mt-1.5 rounded-full" style={{ background: "var(--coral)" }} />}
+              <span className="pb-2">{tab}</span>
+              <div className="w-full h-[2px] rounded-full" style={{ background: isActive ? "var(--coral)" : "transparent" }} />
             </button>
           );
         })}
