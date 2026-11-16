@@ -223,7 +223,7 @@ export default function StorePage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={store.bannerUrl} alt={store.name} className="w-full h-full object-cover" />
             {store.imageUrl && (
-              <div className="absolute bottom-3 left-3 w-[40px] h-[40px] rounded-full overflow-hidden" style={{ border: "3px solid white" }}>
+              <div className="absolute bottom-3 left-3 w-[46px] h-[46px] rounded-[12px] overflow-hidden" style={{ border: "3px solid white" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={store.imageUrl} alt="" className="w-full h-full object-cover" />
               </div>
@@ -254,14 +254,17 @@ export default function StorePage() {
           />
         </div>
 
-        {/* Category pills — 44px touch target */}
-        <div className="flex overflow-x-auto hide-scrollbar gap-2 mt-4">
-          {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab) => (
-            <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-              className="h-[36px] px-4 rounded-full text-[12px] font-bold whitespace-nowrap cursor-pointer shrink-0 press-feedback"
-              style={{ background: currentTab === tab ? "var(--dark)" : "var(--sand)", color: currentTab === tab ? "white" : "var(--text-secondary)", transition: "background 150ms, color 150ms" }}
-            >{tab}</button>
-          ))}
+        {/* Category tabs — underlined text style */}
+        <div className="relative mt-4">
+          <div className="flex overflow-x-auto hide-scrollbar gap-1">
+            {menuTabs.filter((v, i, a) => a.indexOf(v) === i).map((tab) => (
+              <button key={tab} type="button" onClick={() => setActiveTab(tab)}
+                className="px-2.5 pb-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback"
+                style={{ color: currentTab === tab ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}
+              ><span style={{ borderBottom: currentTab === tab ? "2px solid var(--coral)" : "2px solid transparent", paddingBottom: "4px", transition: "border-color 200ms ease-out" }}>{tab}</span></button>
+            ))}
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
         </div>
 
         {/* Menu items by category */}
