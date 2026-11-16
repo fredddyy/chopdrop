@@ -148,6 +148,11 @@ export default function HomePage() {
   }, []);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [filter, setFilter] = useState<"all" | "deals" | "live" | "chop" | "popular">("all");
+  const [locationSheet, setLocationSheet] = useState(false);
+  const [locationInput, setLocationInput] = useState("");
+  const [locating, setLocating] = useState(false);
+  const [promptDismissed, setPromptDismissed] = useState(false);
+  const hasAddress = !!(deliveryAddress || userArea);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -160,10 +165,54 @@ export default function HomePage() {
         if (p.name?.trim()) { setUserName(p.name.trim()); setIsReturning(true); }
         if (p.deliveryAddress?.trim()) setDeliveryAddress(p.deliveryAddress.trim());
       }
+      const dismissed = localStorage.getItem("chopdrop-location-prompt-dismissed");
+      if (dismissed) setPromptDismissed(true);
     } catch {}
 
     loadFeed();
   }, []);
+
+  function saveLocation(address: string, area?: string) {
+    setDeliveryAddress(address);
+    if (area) setUserArea(area);
+    try {
+      const stored = localStorage.getItem("chopdrop-customer");
+      const profile = stored ? JSON.parse(stored) : {};
+      localStorage.setItem("chopdrop-customer", JSON.stringify({ ...profile, deliveryAddress: address, areaName: area || profile.areaName }));
+    } catch {}
+    setLocationSheet(false);
+    setLocationInput("");
+  }
+
+  function useMyLocation() {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+          const data = await res.json();
+          const addr = data.display_name?.split(",").slice(0, 3).join(",") || `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+          const area = data.address?.suburb || data.address?.city_district || data.address?.city || "";
+          saveLocation(addr, area);
+          // Also save coordinates
+          try {
+            const stored = localStorage.getItem("chopdrop-customer");
+            const profile = stored ? JSON.parse(stored) : {};
+            localStorage.setItem("chopdrop-customer", JSON.stringify({ ...profile, latitude: pos.coords.latitude, longitude: pos.coords.longitude }));
+          } catch {}
+        } catch { saveLocation(`${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`); }
+        setLocating(false);
+      },
+      () => { setLocating(false); },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  function dismissPrompt() {
+    setPromptDismissed(true);
+    try { localStorage.setItem("chopdrop-location-prompt-dismissed", "1"); } catch {}
+  }
 
   function loadFeed() {
     setLoading(true);
@@ -218,13 +267,14 @@ export default function HomePage() {
               {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}, {(() => { const h = new Date().getHours(); return h < 12 ? "\u{1F44B}" : h < 17 ? "\u2600\uFE0F" : "\u{1F319}"; })()}
             </p>
             <p className="text-[14px] font-bold mt-0.5" style={{ color: "var(--text-secondary)" }}>{userName.split(" ")[0] || "there"}</p>
-            {/* Delivery address */}
-            <div className="flex items-center gap-1 mt-1">
+            {/* Delivery address — tappable */}
+            <button type="button" onClick={() => setLocationSheet(true)} className="flex items-center gap-1 mt-1 press-feedback">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
-              <span className="text-[11px] font-bold truncate" style={{ color: deliveryAddress || userArea ? "var(--coral)" : "var(--text-muted)" }}>
+              <span className="text-[11px] font-bold truncate" style={{ color: hasAddress ? "var(--coral)" : "var(--text-muted)" }}>
                 {deliveryAddress || userArea || "Set your delivery address"}
               </span>
-            </div>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={hasAddress ? "var(--coral)" : "var(--text-muted)"} strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
           </div>
           <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: "var(--sand)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
@@ -235,6 +285,39 @@ export default function HomePage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <span className="text-[14px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
+        {/* Location prompt card — shows when no address saved */}
+        {!hasAddress && !promptDismissed && (
+          <div className="mt-3 rounded-[16px] p-4 card-enter" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--coral)" stroke="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
+                </div>
+                <div>
+                  <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>Where should we deliver?</p>
+                  <p className="text-[12px] mt-0.5 leading-[150%]" style={{ color: "var(--text-muted)" }}>Enter your address to see restaurants and delivery times near you.</p>
+                </div>
+              </div>
+              <button type="button" onClick={dismissPrompt} className="shrink-0 p-1 press-feedback" aria-label="Dismiss">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="flex gap-2 mt-3">
+              <button type="button" onClick={useMyLocation}
+                className="flex-1 h-[40px] rounded-[12px] flex items-center justify-center gap-1.5 text-[12px] font-bold text-white press-feedback"
+                style={{ background: "var(--coral)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v4m0 12v4m10-10h-4M6 12H2" /></svg>
+                {locating ? "Finding..." : "Use my location"}
+              </button>
+              <button type="button" onClick={() => setLocationSheet(true)}
+                className="flex-1 h-[40px] rounded-[12px] flex items-center justify-center text-[12px] font-bold press-feedback"
+                style={{ background: "var(--sand)", color: "var(--text)" }}>
+                Enter address
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Categories */}
         <p className="text-[18px] font-extrabold mt-4 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Categories</p>
         <div className="flex gap-2 overflow-x-auto hide-scrollbar">
@@ -650,6 +733,77 @@ export default function HomePage() {
         </div>
         );
       })()}
+
+      {/* ═══ FULL-SCREEN LOCATION SHEET ═══ */}
+      {locationSheet && (
+        <div className="fixed inset-0 z-[90]" role="dialog" aria-modal="true" aria-label="Set delivery address">
+          <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} onClick={() => setLocationSheet(false)} />
+          <div className="absolute bottom-0 left-0 right-0 sheet-enter" onClick={(e) => e.stopPropagation()}>
+            <div className="max-w-[428px] mx-auto rounded-t-[16px] px-5 pt-5 pb-8" style={{ background: "var(--card)", minHeight: "70vh" }}>
+              {/* Handle */}
+              <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
+
+              {/* Header */}
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-[20px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Delivery address</h2>
+                <button type="button" onClick={() => setLocationSheet(false)} className="w-8 h-8 rounded-full flex items-center justify-center press-feedback" style={{ background: "var(--sand)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                </button>
+              </div>
+
+              {/* Use my location */}
+              <button type="button" onClick={useMyLocation} disabled={locating}
+                className="w-full h-[48px] rounded-[12px] flex items-center gap-3 px-4 press-feedback mb-4 disabled:opacity-50"
+                style={{ background: "var(--coral-soft)" }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v4m0 12v4m10-10h-4M6 12H2" /></svg>
+                <span className="text-[14px] font-bold" style={{ color: "var(--coral)" }}>{locating ? "Finding your location..." : "Use my current location"}</span>
+              </button>
+
+              {/* Divider */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
+                <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>or enter address</span>
+                <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
+              </div>
+
+              {/* Address input */}
+              <div className="relative mb-4">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                <input
+                  type="text"
+                  value={locationInput}
+                  onChange={(e) => setLocationInput(e.target.value)}
+                  placeholder="Search for an address..."
+                  autoFocus
+                  className="w-full h-[48px] pl-11 pr-4 rounded-[12px] text-[14px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)]"
+                  style={{ background: "var(--sand)", color: "var(--text)" }}
+                />
+              </div>
+
+              {/* Popular areas */}
+              <p className="text-[12px] font-bold mb-2" style={{ color: "var(--text-muted)" }}>Popular areas</p>
+              <div className="flex flex-wrap gap-2 mb-6">
+                {["Victoria Island", "Lekki", "Ikeja", "Yaba", "Maryland", "Surulere", "Ikoyi", "Ajah", "Gbagada", "Magodo", "Festac"].map(area => (
+                  <button key={area} type="button" onClick={() => saveLocation(area, area)}
+                    className="h-[34px] px-3.5 rounded-[12px] text-[12px] font-bold press-feedback"
+                    style={{ background: userArea === area ? "var(--coral)" : "var(--sand)", color: userArea === area ? "white" : "var(--text-secondary)" }}>
+                    {area}
+                  </button>
+                ))}
+              </div>
+
+              {/* Confirm manual input */}
+              {locationInput.trim().length > 3 && (
+                <button type="button" onClick={() => saveLocation(locationInput.trim())}
+                  className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white press-feedback"
+                  style={{ background: "var(--coral)" }}>
+                  Confirm address
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </main>
