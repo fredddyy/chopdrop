@@ -406,16 +406,24 @@ export default function StorePage() {
                               -{sav}%
                             </div>
                           )}
-                          {/* Add button on image */}
-                          <button type="button" aria-label={`Add ${item.name}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToPlate(item, store.name); }}
-                            className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-lg flex items-center justify-center z-10"
-                            style={{ background: inCart > 0 ? "var(--coral)" : "white" }}>
-                            {inCart > 0 ? (
-                              <span className="text-[9px] font-bold text-white">{inCart}</span>
-                            ) : (
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                          {/* Add/stepper on image */}
+                          <div className="absolute bottom-1.5 right-1.5 z-10 flex items-center" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                            {inCart > 0 && (
+                              <div className="flex items-center gap-0.5 overflow-hidden" style={{ animation: "cardIn 200ms ease-out" }}>
+                                <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
+                                  className="w-[24px] h-[24px] rounded-lg flex items-center justify-center"
+                                  style={{ background: "white" }}>
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                                </button>
+                                <span className="w-[18px] text-center text-[10px] font-extrabold text-white tabular-nums" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{inCart}</span>
+                              </div>
                             )}
-                          </button>
+                            <button type="button" onClick={() => addToPlate(item, store.name)}
+                              className="w-[24px] h-[24px] rounded-lg flex items-center justify-center"
+                              style={{ background: inCart > 0 ? "var(--coral)" : "white" }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={inCart > 0 ? "white" : "var(--text)"} strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                            </button>
+                          </div>
                         </div>
                         {/* Info */}
                         <div className="pt-1.5">
