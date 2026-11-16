@@ -297,35 +297,43 @@ export default function StorePage() {
         <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
       </div>
 
-      {/* ═══ GROUP ORDER INFO ═══ */}
+      {/* ═══ GROUP ORDER INFO — simple row ═══ */}
       {store.groupTarget > 0 && store.groupDiscount > 0 && (
         <div className="px-5 mt-4">
-          <div className="rounded-[16px] p-4" style={{ background: "var(--dark)" }}>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-extrabold uppercase tracking-wide" style={{ color: "var(--emerald)" }}>Group order</p>
-              <span className="text-[11px] font-bold" style={{ color: "var(--gold)" }}>{store.groupDiscount}% off</span>
+          <div className="flex items-center gap-3">
+            <div className="flex -space-x-2">
+              {Array.from({ length: Math.min(store.groupTarget, 5) }).map((_, i) => (
+                <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
+                  style={{ border: "2px dashed var(--border)", color: "var(--text-muted)", background: "transparent" }}>
+                  ?
+                </div>
+              ))}
             </div>
-            <p className="text-[16px] font-extrabold text-white leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-              {store.groupTarget} people order, everyone saves {store.groupDiscount}%
-            </p>
-            <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>
-              {store.groupWindowMins >= 60 ? `${Math.floor(store.groupWindowMins / 60)}h ${store.groupWindowMins % 60 > 0 ? `${store.groupWindowMins % 60}m` : ""}` : `${store.groupWindowMins}m`} window to fill
-            </p>
-            {/* Empty avatar circles */}
-            <div className="flex items-center gap-2 mt-3">
-              <div className="flex -space-x-1.5">
-                {Array.from({ length: Math.min(store.groupTarget, 10) }).map((_, i) => (
-                  <div key={i} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold"
-                    style={{ border: "2px dashed rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.3)", background: "transparent" }}>
-                    ?
+            <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>
+              {store.groupTarget} people needed · {store.groupDiscount}% off
+            </span>
+            {(() => {
+              const hrs = Math.floor(store.groupWindowMins / 60);
+              const mins = store.groupWindowMins % 60;
+              const label = hrs > 0 ? `${hrs}h${mins > 0 ? ` ${mins}m` : ""}` : `${mins}m`;
+              return (
+                <div className="ml-auto flex items-center gap-1.5">
+                  <div className="relative w-[36px] h-[36px]">
+                    <svg width="36" height="36" viewBox="0 0 40 40" className="block" style={{ transform: "rotate(-90deg)" }}>
+                      <circle cx="20" cy="20" r="18" fill="none" stroke="var(--sand)" strokeWidth="3" />
+                      <circle cx="20" cy="20" r="18" fill="none" stroke="var(--emerald)" strokeWidth="3" strokeDasharray={`${2 * Math.PI * 18}`} strokeDashoffset="0" strokeLinecap="round" />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-[8px] font-extrabold tabular-nums" style={{ color: "var(--emerald)" }}>
+                      {label}
+                    </span>
                   </div>
-                ))}
-              </div>
-              {store.groupTarget > 10 && <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>+{store.groupTarget - 10}</span>}
-            </div>
-            <p className="text-[10px] mt-2" style={{ color: "rgba(255,255,255,0.4)" }}>
-              {store.groupTarget} spots · Build your plate, share with friends, everyone pays less
-            </p>
+                  <div className="text-right">
+                    <span className="text-[12px] font-extrabold tabular-nums block leading-none" style={{ color: "var(--emerald)" }}>{label}</span>
+                    <span className="text-[9px] font-medium block mt-0.5" style={{ color: "var(--text-muted)" }}>window</span>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
