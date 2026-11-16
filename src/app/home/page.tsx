@@ -78,6 +78,7 @@ export default function HomePage() {
   const [userArea, setUserArea] = useState("");
   const [userName, setUserName] = useState("");
   const [isReturning, setIsReturning] = useState(false);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [filter, setFilter] = useState<"all" | "deals" | "live" | "chop" | "popular">("all");
 
   useEffect(() => {
@@ -87,6 +88,7 @@ export default function HomePage() {
         const p = JSON.parse(stored);
         if (p.areaName) setUserArea(p.areaName);
         if (p.name?.trim()) { setUserName(p.name.trim()); setIsReturning(true); }
+        if (p.deliveryAddress?.trim()) setDeliveryAddress(p.deliveryAddress.trim());
       }
     } catch {}
 
@@ -137,33 +139,34 @@ export default function HomePage() {
   return (
     <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* ── Header ── */}
+      {/* ── Header — greeting + delivery ── */}
       <header className="sticky top-0 z-40 px-5 pt-3 pb-2" style={{ background: "var(--bg)" }}>
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-[18px] font-extrabold tracking-[-0.03em] leading-none" style={{ color: "var(--text)", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-              Chop<span style={{ color: "var(--coral)" }}>Drop</span>
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            {userArea && (
-              <span className="text-[11px] font-bold pl-2.5 pr-3 h-[28px] rounded-full flex items-center gap-1" style={{ background: "var(--sand)", color: "var(--text-secondary)" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
-                {userArea}
-              </span>
+        <div className="flex items-start justify-between">
+          <div className="flex-1 min-w-0">
+            {/* Greeting + name */}
+            <p className="text-[15px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+              {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}, {(() => { const h = new Date().getHours(); return h < 12 ? "\u{1F44B}" : h < 17 ? "\u2600\uFE0F" : "\u{1F319}"; })()}
+            </p>
+            <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{userName.split(" ")[0] || "there"}</p>
+            {/* Delivery address */}
+            {(deliveryAddress || userArea) && (
+              <div className="flex items-center gap-1 mt-1">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
+                <span className="text-[11px] truncate" style={{ color: "var(--coral)" }}>{deliveryAddress || userArea}</span>
+              </div>
             )}
-            <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-            </Link>
           </div>
+          <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: "var(--sand)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+          </Link>
         </div>
         {/* Search link */}
         <Link href="/search" className="mt-2.5 flex items-center h-[38px] px-3.5 rounded-[12px] gap-2" style={{ background: "var(--sand)" }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
-        {/* Categories — icon + label, horizontal scroll */}
-        <div className="flex gap-4 mt-3 overflow-x-auto hide-scrollbar">
+        {/* Categories — horizontal pill buttons with image */}
+        <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
           {[
             { label: "Food", img: "/categories/food.png", href: "/home" },
             { label: "Groceries", img: "/categories/groceries.png", href: "/home" },
@@ -171,12 +174,10 @@ export default function HomePage() {
             { label: "Fashion", img: "/categories/fashion.png", href: "/home" },
             { label: "Home", img: "/categories/home.png", href: "/home" },
           ].map(c => (
-            <Link key={c.label} href={c.href} className="flex flex-col items-center gap-1 shrink-0 press-feedback" style={{ minWidth: "56px" }}>
-              <div className="w-[48px] h-[48px] rounded-[16px] flex items-center justify-center overflow-hidden" style={{ background: "var(--sand)" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={c.img} alt={c.label} className="w-[32px] h-[32px] object-contain" />
-              </div>
-              <span className="text-[10px] font-bold" style={{ color: "var(--text-secondary)" }}>{c.label}</span>
+            <Link key={c.label} href={c.href} className="h-[36px] pl-1.5 pr-3 rounded-full flex items-center gap-1.5 shrink-0 press-feedback" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={c.img} alt={c.label} className="w-[26px] h-[26px] object-contain rounded-full" style={{ background: "var(--sand)" }} />
+              <span className="text-[11px] font-bold" style={{ color: "var(--text-secondary)" }}>{c.label}</span>
             </Link>
           ))}
         </div>
@@ -442,19 +443,6 @@ export default function HomePage() {
           {/* ═══ COLD START — social proof + zero-risk + price stories ═══ */}
           {!isItemView && activeOrders.length === 0 && inactiveRestaurants.length > 0 && (
             <div className="px-5 pt-4">
-              {/* Time-based greeting */}
-              <div className="mb-4">
-                <h2 className="text-[22px] font-extrabold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                  {(() => {
-                    const h = new Date().getHours();
-                    const greeting = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
-                    const emoji = h < 12 ? "\u{1F44B}" : h < 17 ? "\u2600\uFE0F" : "\u{1F319}";
-                    const name = userName.split(" ")[0];
-                    return <>{greeting}, {emoji}<br />{name || "there"}</>;
-                  })()}
-                </h2>
-              </div>
-
               {/* Chop to Free promo card */}
               {dealItems.length > 0 && filter === "all" && (
                 <button type="button" onClick={() => setFilter("chop")} className="rounded-[16px] overflow-hidden p-4 text-left press-feedback mb-1" style={{ background: "var(--dark)" }}>
