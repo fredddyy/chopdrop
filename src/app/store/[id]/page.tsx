@@ -16,6 +16,7 @@ interface StoreDetail {
   id: string; name: string; address: string; phone: string;
   imageUrl: string | null; bannerUrl: string | null;
   groupTiers?: unknown;
+  deliveryFee: number; freeDeliveryMin: number; groupDeliveryPct: number;
   categories: string[]; products: Product[];
   combos: Array<{ id: string; name: string; description: string | null; imageUrl: string | null; price: number; originalPrice: number | null }>;
   menuCategories: Array<{ id: string; name: string; items: Array<{ id: string; name: string; description: string | null; imageUrl: string | null; price: number }> }>;
@@ -463,7 +464,10 @@ export default function StorePage() {
 
       {/* ── Sticky cart bar ── */}
       {cart.totalItems > 0 && (() => {
-        const total = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        const subtotal = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        const isFreeDelivery = subtotal >= (store.freeDeliveryMin || 500000);
+        const storeDeliveryFee = isFreeDelivery ? 0 : (store.deliveryFee || 50000);
+        const total = subtotal + storeDeliveryFee;
         return (
           <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
             <div className="max-w-[480px] mx-auto">
@@ -474,7 +478,7 @@ export default function StorePage() {
                 </div>
                 <div className="text-right">
                   <span className="text-[16px] font-extrabold tabular-nums block leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(total)}</span>
-                  <span className="text-[10px] font-medium opacity-70 mt-0.5 block">incl. delivery</span>
+                  <span className="text-[10px] font-medium opacity-70 mt-0.5 block">{isFreeDelivery ? "free delivery" : `incl. ${fp(storeDeliveryFee)} delivery`}</span>
                 </div>
               </Link>
             </div>

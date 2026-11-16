@@ -18,6 +18,9 @@ export async function GET(
       imageUrl: true,
       bannerUrl: true,
       groupTiers: true,
+      deliveryFee: true,
+      freeDeliveryMin: true,
+      groupDeliveryPct: true,
       products: {
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
         select: {

@@ -92,7 +92,7 @@ export default function CartPage() {
     fetch("/api/credits").then(r => r.json()).then(d => { if (d.success && d.data) setCreditBalance(d.data.balance); }).catch(() => {});
   }, []);
 
-  const deliveryFee = deliveryToggle === "delivery" ? (realDeliveryFee !== null ? realDeliveryFee : (deliveryPref?.fee || 0)) : 0;
+  const deliveryFee = realDeliveryFee !== null ? realDeliveryFee : (deliveryPref?.fee || 50000); // default ₦500
   const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
   const serviceFee = packCount * 15000;
   const creditsToApply = 0;

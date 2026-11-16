@@ -11,6 +11,9 @@ interface RestaurantData {
   bannerUrl: string | null;
   isActive: boolean;
   groupTiers?: Array<{ min: number; discount: number }>;
+  deliveryFee?: number;
+  freeDeliveryMin?: number;
+  groupDeliveryPct?: number;
 }
 
 interface FormState {
@@ -20,6 +23,9 @@ interface FormState {
   imageUrl: string;
   bannerUrl: string;
   groupTiers: Array<{ min: number; discount: number }>;
+  deliveryFee: string;
+  freeDeliveryMin: string;
+  groupDeliveryPct: string;
 }
 
 const EMPTY_FORM: FormState = {
@@ -29,6 +35,9 @@ const EMPTY_FORM: FormState = {
   imageUrl: "",
   bannerUrl: "",
   groupTiers: [],
+  deliveryFee: "500",
+  freeDeliveryMin: "5000",
+  groupDeliveryPct: "50",
 };
 
 export default function RestaurantsPage() {
@@ -69,6 +78,9 @@ export default function RestaurantsPage() {
       imageUrl: r.imageUrl || "",
       bannerUrl: r.bannerUrl || "",
       groupTiers: Array.isArray(r.groupTiers) ? r.groupTiers : [],
+      deliveryFee: String((r.deliveryFee || 50000) / 100),
+      freeDeliveryMin: String((r.freeDeliveryMin || 500000) / 100),
+      groupDeliveryPct: String(r.groupDeliveryPct ?? 50),
     });
     setShowModal(true);
   }
@@ -84,6 +96,9 @@ export default function RestaurantsPage() {
         imageUrl: form.imageUrl || null,
         bannerUrl: form.bannerUrl || null,
         groupTiers: validTiers.length > 0 ? validTiers : null,
+        deliveryFee: Math.round(parseFloat(form.deliveryFee || "500") * 100),
+        freeDeliveryMin: Math.round(parseFloat(form.freeDeliveryMin || "5000") * 100),
+        groupDeliveryPct: parseInt(form.groupDeliveryPct || "50", 10),
       };
 
       if (editId) {
@@ -349,6 +364,29 @@ export default function RestaurantsPage() {
                   placeholder="or paste banner URL..."
                 />
               </div>
+            </div>
+
+            {/* Delivery Pricing */}
+            <div className="px-6 py-4 border-t border-[#E5E7EB]">
+              <label className="block text-xs font-medium text-[#6B7280] mb-2">Delivery Pricing</label>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[10px] text-[#9CA3AF] mb-1">Delivery fee (₦)</label>
+                  <input type="number" value={form.deliveryFee} onChange={(e) => setForm({ ...form, deliveryFee: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none" placeholder="500" />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-[#9CA3AF] mb-1">Free above (₦)</label>
+                  <input type="number" value={form.freeDeliveryMin} onChange={(e) => setForm({ ...form, freeDeliveryMin: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none" placeholder="5000" />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-[#9CA3AF] mb-1">Group discount (%)</label>
+                  <input type="number" value={form.groupDeliveryPct} onChange={(e) => setForm({ ...form, groupDeliveryPct: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none" placeholder="50" min="0" max="100" />
+                </div>
+              </div>
+              <p className="text-[10px] text-[#9CA3AF] mt-1">Group orders pay {form.groupDeliveryPct}% of delivery fee. Set 0% for free group delivery.</p>
             </div>
 
             {/* Group Discount Tiers */}
