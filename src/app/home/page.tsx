@@ -391,8 +391,20 @@ export default function HomePage() {
       {/* Tabs — sticky: show subcategories for Groceries, normal tabs for Food */}
       <div className="sticky top-0 z-40 px-5" style={{ background: "var(--bg)" }}>
         {activeCategory === "Groceries" && grocerySubcategories.length > 0 ? (
-          <div className="relative mt-1">
-            <div className="flex overflow-x-auto hide-scrollbar">
+          <div className="relative mt-1"
+            onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              let el = e.target as HTMLElement | null;
+              while (el) { if (el.scrollWidth > el.clientWidth && el.classList.contains("overflow-x-auto")) return; el = el.parentElement; }
+              const dx = e.changedTouches[0].clientX - touchStartX.current;
+              if (Math.abs(dx) > 60) {
+                const allTabs = ["Stores", ...grocerySubcategories];
+                const idx = allTabs.indexOf(activeSubcategory);
+                const next = dx < 0 ? Math.min(idx + 1, allTabs.length - 1) : Math.max(idx - 1, 0);
+                setActiveSubcategory(allTabs[next]);
+              }
+            }}>
+            <div className="flex overflow-x-auto hide-scrollbar" style={{ WebkitOverflowScrolling: "touch" }}>
               {["Stores", ...grocerySubcategories].map((sub, i) => {
                 const active = activeSubcategory === sub;
                 return (
