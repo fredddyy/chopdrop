@@ -92,8 +92,6 @@ const TABS = [
   { key: "all" as const, label: "Stores" },
   { key: "deals" as const, label: "Save more" },
   { key: "chop" as const, label: "Chop Price" },
-  { key: "live" as const, label: "Live" },
-  { key: "popular" as const, label: "Popular" },
 ];
 type FilterKey = typeof TABS[number]["key"];
 
@@ -169,7 +167,7 @@ export default function HomePage() {
     });
   }, []);
   const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [filter, setFilter] = useState<"all" | "deals" | "live" | "chop" | "popular">("all");
+  const [filter, setFilter] = useState<"all" | "deals" | "chop">("all");
   const [locationSheet, setLocationSheet] = useState(false);
   const [locationInput, setLocationInput] = useState("");
   const [locating, setLocating] = useState(false);
@@ -411,17 +409,15 @@ export default function HomePage() {
           const dx = e.changedTouches[0].clientX - touchStartX.current;
           if (Math.abs(dx) > 60) swipeTab(dx < 0 ? "left" : "right");
         };
-        const isItemView = filter === "deals" || filter === "live" || filter === "chop";
+        const isItemView = filter === "deals" || filter === "chop";
         const filteredRestaurants = inactiveRestaurants.filter(r => {
           if (filter === "all") return true;
           if (filter === "deals") return r.groupDealCount > 0;
-          if (filter === "live") return r.livePools.count > 0;
-          if (filter === "popular") return r.recentOrderCount > 0;
           if (filter === "chop") return r.groupDealCount > 0;
           return true;
         });
         const filteredItems = isItemView
-          ? dealItems.filter(d => filter === "live" ? d.activePool !== null : true)
+          ? dealItems
           : [];
         return (
         <div key={filter} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="card-enter">
