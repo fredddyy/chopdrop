@@ -94,8 +94,8 @@ function StoreTabBar({ tabs, active, onChange }: { tabs: string[]; active: strin
           return (
             <button key={tab} type="button"
               onClick={() => onChange(tab)}
-              className={`${i === 0 ? "pr-3" : "px-3"} pb-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0 press-feedback`}
-              style={{ color: isActive ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out", touchAction: "pan-x" }}>
+              className={`${i === 0 ? "pr-3" : "px-3"} pb-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer shrink-0`}
+              style={{ color: isActive ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
               <span ref={el => { textRefs.current[i] = el; }}>{tab}</span>
             </button>
           );
