@@ -442,15 +442,9 @@ export default function HomePage() {
                         </div>
                       )}
                       {/* Ribbon — top left */}
-                      {isChopMode ? (
-                        <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--coral)", borderRadius: "0 0 8px 0" }}>
-                          FREE
-                        </div>
-                      ) : (
-                        <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 8px 0" }}>
-                          -{item.savings}%
-                        </div>
-                      )}
+                      <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: isChopMode ? "var(--coral)" : "var(--emerald)", borderRadius: "0 0 8px 0" }}>
+                        {isChopMode ? "Chop price" : `-${item.savings}%`}
+                      </div>
                       {/* Add button — bottom right on image */}
                       <div className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-lg flex items-center justify-center" style={{ background: "white" }}>
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
@@ -461,17 +455,11 @@ export default function HomePage() {
                       <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                       <p className="text-[9px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
                       {/* Price */}
-                      {isChopMode ? (
-                        <div className="flex items-baseline gap-1 mt-1">
-                          <span className="text-[13px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
-                          <span className="text-[11px] font-extrabold leading-none" style={{ color: "var(--emerald)" }}>FREE</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-baseline gap-1 mt-1">
-                          <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
-                          <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
-                        </div>
-                      )}
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(item.retailPrice)}</span>
+                        {isChopMode && <span className="text-[9px] font-bold" style={{ color: "var(--emerald)" }}>choppable</span>}
+                        {!isChopMode && item.savings > 0 && <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>}
+                      </div>
                       {/* Pool status box — full width */}
                       <div className="mt-1.5">
                         <div className="text-[9px] font-bold py-1.5 text-center rounded-lg" style={{
@@ -479,7 +467,7 @@ export default function HomePage() {
                           color: hasPool ? "var(--emerald)" : "var(--text-muted)",
                         }}>
                           {isChopMode
-                            ? `${chopFriendsNeeded} friends to chop`
+                            ? "Share to chop the price"
                             : hasPool ? `${poolMembers} orders so far` : `${item.minPoolSize} orders to unlock`}
                         </div>
                       </div>
