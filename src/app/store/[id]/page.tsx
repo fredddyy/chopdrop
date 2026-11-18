@@ -335,13 +335,13 @@ export default function StorePage() {
                   <div className="flex items-center gap-2">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                     <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>
-                      {hasLivePool ? "Live group order" : "Group order"}
+                      {hasLivePool ? "Live deal" : `Save ${store.groupDiscount}%`}
                     </span>
                   </div>
                   <p className="text-[13px] text-white/50 mt-1">
                     {hasLivePool
-                      ? <><span className="text-white font-bold">{totalPoolMembers}/{store.groupTarget}</span> joined · <LiveTimer deadline={earliestDeadline!} /></>
-                      : `${store.groupTarget} people · ${Math.floor(store.groupWindowMins / 60)}h window`}
+                      ? <><span className="text-white font-bold">{totalPoolMembers}/{store.groupTarget}</span> orders · <LiveTimer deadline={earliestDeadline!} /></>
+                      : `${store.groupTarget} orders needed · ${Math.floor(store.groupWindowMins / 60)}h`}
                   </p>
                 </div>
                 <div className="text-right">
@@ -380,7 +380,7 @@ export default function StorePage() {
                 </div>
                 {store.groupTarget > 8 && <span className="text-[9px] font-bold text-white/30">+{store.groupTarget - 8}</span>}
                 <span key={spotsLeft} className="text-[10px] font-bold ml-auto pop" style={{ color: hasLivePool ? "var(--emerald)" : "var(--coral)" }}>
-                  {hasLivePool ? `${spotsLeft} spots left` : `${store.groupTarget} spots open`}
+                  {hasLivePool ? `${spotsLeft} more orders to go` : `${store.groupTarget} orders to go`}
                 </span>
               </div>
             </div>
@@ -585,7 +585,7 @@ export default function StorePage() {
                   <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "group"); router.push("/cart"); }}
                     className="flex-[1.4] h-[54px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
-                    <span className="text-[10px] font-medium" style={{ opacity: 0.8 }}>Group order · {store.groupDiscount}% off</span>
+                    <span className="text-[10px] font-medium" style={{ opacity: 0.8 }}>Save {store.groupDiscount}%</span>
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
                   </button>
                 </div>
@@ -661,7 +661,7 @@ export default function StorePage() {
                   <div className="flex items-baseline gap-3">
                     <div>
                       <span className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.groupPrice)}</span>
-                      {hasDiscount && <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>Group · join others</p>}
+                      {hasDiscount && <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>Cheaper with more orders</p>}
                     </div>
                     {hasDiscount && (
                       <div>
@@ -689,7 +689,7 @@ export default function StorePage() {
                   <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>
                     {itemPool && itemPool.memberCount > 0
                       ? `${itemPool.memberCount} of ${item.minPoolSize} joined`
-                      : `${item.minPoolSize} people needed`}
+                      : `${item.minPoolSize} orders to unlock`}
                   </span>
                 </div>
 
@@ -761,7 +761,7 @@ export default function StorePage() {
                     className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback"
                     style={{ background: "var(--coral)" }}
                   >
-                    <span>{itemPool ? "Join Group" : "Start Group"} · {fp(item.groupPrice * sheetQty)}</span>
+                    <span>{itemPool ? "Join & save" : "Order & save"} · {fp(item.groupPrice * sheetQty)}</span>
                     {hasDiscount && <span className="text-[12px] opacity-80">Save {fp(savAmount * sheetQty)}</span>}
                   </button>
                   {/* Solo — secondary */}

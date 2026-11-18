@@ -320,7 +320,7 @@ export default function CartPage() {
                             {hasGroup && (
                               <span className="text-[10px] font-bold mt-0.5 inline-flex items-center gap-1" style={{ color: "var(--emerald)" }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
-                                {groupInfo.groupDiscount}% off in group order
+                                Save {groupInfo.groupDiscount}%
                               </span>
                             )}
                           </div>

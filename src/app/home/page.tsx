@@ -90,7 +90,7 @@ function MiniCountdown({ deadline }: { deadline: string }) {
 
 const TABS = [
   { key: "all" as const, label: "Stores" },
-  { key: "deals" as const, label: "Group Order" },
+  { key: "deals" as const, label: "Save more" },
   { key: "chop" as const, label: "Chop Price" },
   { key: "live" as const, label: "Live" },
   { key: "popular" as const, label: "Popular" },
@@ -486,7 +486,7 @@ export default function HomePage() {
                         }}>
                           {isChopMode
                             ? `${chopFriendsNeeded} friends to chop`
-                            : hasPool ? `${poolMembers} Group Active` : `${item.minPoolSize} needed`}
+                            : hasPool ? `${poolMembers} orders so far` : `${item.minPoolSize} orders to unlock`}
                         </div>
                       </div>
                     </div>
@@ -648,7 +648,7 @@ export default function HomePage() {
                         {r.groupDealCount > 0 && (
                           <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 text-white" style={{ background: "rgba(0,0,0,0.7)" }}>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                            {r.groupDealCount} group {r.groupDealCount === 1 ? "deal" : "deals"}
+                            {r.groupDealCount} {r.groupDealCount === 1 ? "deal" : "deals"}
                           </span>
                         )}
                         {/* Avatar spots — bottom right of banner */}
@@ -693,10 +693,10 @@ export default function HomePage() {
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
                             {hasLive ? (
                               <>
-                                {liveMembers}/{liveSize} joined · {discountPct}% off · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
+                                {liveMembers}/{liveSize} orders · Save {discountPct}% · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
                               </>
                             ) : (
-                              `${spotsNeeded} people · ${discountPct}% off · 2h`
+                              `Save ${discountPct}% · ${spotsNeeded} orders needed · 2h`
                             )}
                           </p>
                           );
@@ -719,7 +719,7 @@ export default function HomePage() {
                         ) : (
                           r.tiers.length === 0 && (
                             <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>
-                              Save up to 30% with group orders
+                              Save up to 30% when more orders come in
                             </p>
                           )
                         )}

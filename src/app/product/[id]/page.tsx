@@ -515,7 +515,7 @@ export default function ProductDetailPage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>{hasPoolPricing ? "Pool deal" : product.vendor.name}</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]" style={{ color: "var(--coral)", lineHeight: "130%" }}>{hasPoolPricing ? "Save more" : product.vendor.name}</p>
           <p className="text-[14px] font-extrabold truncate max-w-[200px]" style={{ color: "var(--text)", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
             {product.name}
           </p>
@@ -559,7 +559,7 @@ export default function ProductDetailPage() {
           <div className="flex items-end gap-4">
             <div>
               <span className="text-[44px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", letterSpacing: "-2px", color: "var(--gold)" }}>{fp(product.groupPrice)}</span>
-              <p className="text-[12px] font-bold mt-1" style={{ color: "var(--gold)" }}>Group order · join others</p>
+              <p className="text-[12px] font-bold mt-1" style={{ color: "var(--gold)" }}>With others · cheaper</p>
             </div>
             <div className="pb-0.5">
               <span className="text-[22px] font-extrabold tabular-nums leading-none line-through block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fp(product.retailPrice)}</span>
@@ -604,7 +604,7 @@ export default function ProductDetailPage() {
                 ? `${memberCount} of ${poolSize} joined`
                 : joinedStatus
                   ? `1 of ${poolSize} joined`
-                  : `${poolSize} people needed`}
+                  : `${poolSize} orders to unlock`}
             </span>
             {(() => {
               const isLive = pool && timeLeft > 0 && memberCount > 0;
@@ -805,7 +805,7 @@ export default function ProductDetailPage() {
                   style={{ background: "var(--coral)" }}>
                   <div className="text-center">
                     <span className="text-[17px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(poolUnitTotal)}</span>
-                    <span className="text-[9px] font-medium leading-none mt-0.5 block" style={{ opacity: 0.7 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Start Group" : pool ? "Join Group" : "Start Group"} · {fp(deliveryShare)} delivery</span>
+                    <span className="text-[9px] font-medium leading-none mt-0.5 block" style={{ opacity: 0.7 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Order & save" : pool ? "Join & save" : "Order & save"} · {fp(deliveryShare)} delivery</span>
                   </div>
                 </button>
               </div>
@@ -924,7 +924,7 @@ export default function ProductDetailPage() {
             <div className="flex flex-col gap-2.5 mt-4">
               {/* WhatsApp share — primary */}
               <a
-                href={`https://wa.me/?text=${encodeURIComponent(`Join my ChopDrop group deal! ${sharePrompt.name} for ${fp(product.groupPrice)} (save ${fp(product.retailPrice - product.groupPrice)}). ${sharePrompt.url}`)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(`This item is cheaper right now on ChopDrop! ${sharePrompt.name} for ${fp(product.groupPrice)} (save ${fp(product.retailPrice - product.groupPrice)}). ${sharePrompt.url}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-[50px] rounded-lg flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback"
