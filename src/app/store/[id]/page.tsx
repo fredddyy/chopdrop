@@ -339,42 +339,46 @@ export default function StorePage() {
                 <span className="text-[13px] font-bold text-white">Order with others & save</span>
               </div>
             </div>
-            {/* Tier avatar rows — 3, 5, 10 people */}
-            <div className="px-4 pb-4 space-y-2.5">
+            {/* Tier rows — compact single-line each */}
+            <div className="px-4 pb-3 space-y-2">
               {[3, 5, store.groupTarget].map((size, ti) => {
                 const tierDiscount = ti === 0 ? 10 : ti === 1 ? 20 : store.groupDiscount;
                 const tierPool = livePools.find(lp => lp.minSize === size);
                 const hasTierPool = tierPool && tierPool.memberCount > 0;
+                const isBest = ti === 2;
+                const showAvatars = Math.min(size, 5);
+                const overflow = size - showAvatars;
                 return (
-                <div key={size}>
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[11px] font-bold text-white">{size} people</span>
-                    <span className="text-[10px] font-extrabold" style={{ color: ti === 2 ? "var(--emerald)" : "var(--coral)" }}>{tierDiscount}% off</span>
-                    {ti === 2 && <span className="text-[8px] font-bold px-1 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
+                <div key={size} className="flex items-center gap-2">
+                  {/* Tier label — icon + number */}
+                  <div className="flex items-center gap-1 shrink-0" style={{ minWidth: "52px" }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isBest ? "var(--emerald)" : "rgba(255,255,255,0.5)"} strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+                    <span className="text-[11px] font-extrabold tabular-nums" style={{ color: isBest ? "var(--emerald)" : "white" }}>{size}</span>
+                    <span className="text-[9px] font-bold" style={{ color: isBest ? "var(--emerald)" : "var(--coral)" }}>-{tierDiscount}%</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex -space-x-1">
-                      {Array.from({ length: size }).map((_, j) => {
-                        const filled = hasTierPool && j < tierPool.memberCount;
-                        return (
-                        <div key={j} className={`w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold ${filled ? "celebrate" : ""}`}
-                          style={{
-                            background: filled ? "var(--coral)" : "rgba(255,255,255,0.05)",
-                            border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.25)",
-                            color: "white",
-                            transition: "all 300ms ease",
-                          }}>
-                          {filled ? String.fromCharCode(65 + j) : "?"}
-                        </div>
-                        );
-                      })}
-                    </div>
-                    <div className="flex items-center gap-1 ml-auto px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.08)" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={hasTierPool ? "var(--emerald)" : "rgba(255,255,255,0.3)"} strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[12px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: hasTierPool ? "var(--emerald)" : "rgba(255,255,255,0.3)" }}>
-                        {hasTierPool ? <LiveTimer deadline={tierPool.deadline} /> : `${Math.floor((store.groupWindowMins || 120) / 60)}:00:00`}
-                      </span>
-                    </div>
+                  {/* Avatars — overlapped, capped at 5 */}
+                  <div className="flex -space-x-2 flex-1">
+                    {Array.from({ length: showAvatars }).map((_, j) => {
+                      const filled = hasTierPool && j < tierPool.memberCount;
+                      return (
+                      <div key={j} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold"
+                        style={{
+                          background: filled ? "var(--coral)" : "rgba(255,255,255,0.05)",
+                          border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.2)",
+                          color: filled ? "white" : "rgba(255,255,255,0.25)",
+                        }}>
+                        {filled ? String.fromCharCode(65 + j) : "?"}
+                      </div>
+                      );
+                    })}
+                    {overflow > 0 && <span className="text-[9px] font-bold self-center ml-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>+{overflow}</span>}
+                  </div>
+                  {/* Timer */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke={hasTierPool ? "var(--emerald)" : "rgba(255,255,255,0.25)"} strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                    <span className="text-[10px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: hasTierPool ? "var(--emerald)" : "rgba(255,255,255,0.25)" }}>
+                      {hasTierPool ? <LiveTimer deadline={tierPool.deadline} /> : `${Math.floor((store.groupWindowMins || 120) / 60)}h`}
+                    </span>
                   </div>
                 </div>
                 );
