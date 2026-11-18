@@ -114,7 +114,28 @@ export default function CartPage() {
   const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
   const serviceFee = packCount * 15000;
   const creditsToApply = 0;
-  const orderTotal = cart.subtotal + deliveryFee + serviceFee;
+  // Apply group discounts per restaurant
+  const groupSavings = (() => {
+    let savings = 0;
+    const restaurants = new Map<string, number>();
+    for (const item of cart.items) {
+      const key = item.restaurantName || "unknown";
+      restaurants.set(key, (restaurants.get(key) || 0) + item.price * item.quantity);
+    }
+    for (const [restName, restSubtotal] of restaurants) {
+      const restId = Object.keys(restaurantInfo).find(rid => {
+        const info = restaurantInfo[rid];
+        return info && cart.items.some(i => i.restaurantName === restName);
+      }) || "";
+      const mode = cart.checkoutModes[restId] || cart.checkoutModes[restName] || "solo";
+      const info = restId ? restaurantInfo[restId] : null;
+      if (mode === "group" && info && info.groupDiscount > 0) {
+        savings += Math.round(restSubtotal * info.groupDiscount / 100);
+      }
+    }
+    return savings;
+  })();
+  const orderTotal = cart.subtotal - groupSavings + deliveryFee + serviceFee;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
 
   async function handleConnectOffice() {
@@ -404,6 +425,12 @@ export default function CartPage() {
                 <span style={{ color: "var(--text-secondary)" }}>Subtotal ({portionCount} item{portionCount !== 1 ? "s" : ""})</span>
                 <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(cart.subtotal)}</span>
               </div>
+              {groupSavings > 0 && (
+                <div className="flex justify-between">
+                  <span style={{ color: "var(--emerald)" }}>Volume discount</span>
+                  <span className="font-bold tabular-nums" style={{ color: "var(--emerald)" }}>-{formatNaira(groupSavings)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
                 <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
