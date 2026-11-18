@@ -579,7 +579,7 @@ export default function StorePage() {
                   <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "group"); router.push("/cart"); }}
                     className="flex-[1.4] h-[54px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
-                    <span className="text-[10px] font-medium" style={{ opacity: 0.8 }}>Save {store.groupDiscount}%</span>
+                    <span className="text-[10px] font-medium" style={{ opacity: 0.8 }}>Join & save · free delivery</span>
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
                   </button>
                 </div>
