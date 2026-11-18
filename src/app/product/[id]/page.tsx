@@ -5,12 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
+import { TierSelectorSheet } from "@/components/tier-selector-sheet";
+
+interface GroupTier { min: number; discount: number; }
 
 interface ProductData {
   id: string; name: string; description: string | null; imageUrl: string | null;
   category: string; subcategory: string | null; retailPrice: number; groupPrice: number;
   minPoolSize: number; poolTiers: unknown; maxQuantity: number; tags: string | null;
-  vendor: { id: string; name: string; imageUrl: string | null; address: string; latitude: number | null; longitude: number | null; deliveryFee?: number; freeDeliveryMin?: number; groupDeliveryPct?: number };
+  vendor: { id: string; name: string; imageUrl: string | null; address: string; latitude: number | null; longitude: number | null; deliveryFee?: number; freeDeliveryMin?: number; groupDeliveryPct?: number; groupTiers?: unknown };
 }
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
@@ -43,6 +46,9 @@ export default function ProductDetailPage() {
   const [retryKey, setRetryKey] = useState(0);
   const [joining, setJoining] = useState(false);
   const [confirmSheet, setConfirmSheet] = useState<{ action: "join" | "create"; poolId?: string } | null>(null);
+  const [tierSheet, setTierSheet] = useState(false);
+  const [tierLoading, setTierLoading] = useState(false);
+  const [tierPools, setTierPools] = useState<Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null>>({});
   const [sharePrompt, setSharePrompt] = useState<{ url: string; name: string } | null>(null);
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number; address?: string } | null>(null);
   const [deliveryOption, setDeliveryOption] = useState<"pickup" | "delivery">("delivery");
@@ -800,12 +806,27 @@ export default function ProductDetailPage() {
                     <span className="text-[9px] font-medium leading-none mt-0.5 block" style={{ color: "var(--text-muted)" }}>Buy alone · {fp(fullDeliveryFee)} delivery</span>
                   </div>
                 </button>
-                <button type="button" onClick={() => setConfirmSheet(isPoolExpired ? { action: "create" } : pool ? { action: "join", poolId: pool.id } : { action: "create" })} disabled={joining}
+                <button type="button" onClick={() => {
+                  // Fetch pools by size for the tier selector
+                  fetch(`/api/pools?productId=${id}`).then(r => r.json()).then(d => {
+                    if (d.success && d.data) {
+                      const bySize: Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null> = {};
+                      for (const p of d.data) {
+                        const existing = bySize[p.minSize];
+                        if (!existing || p.memberCount > existing.memberCount) {
+                          bySize[p.minSize] = { memberCount: p.memberCount, poolId: p.id, spotsLeft: p.spotsLeft };
+                        }
+                      }
+                      setTierPools(bySize);
+                    }
+                  }).catch(() => {});
+                  setTierSheet(true);
+                }} disabled={joining}
                   className="flex-[1.3] h-[48px] rounded-[12px] flex items-center justify-center gap-2 text-white cursor-pointer press-feedback disabled:opacity-50"
                   style={{ background: "var(--coral)" }}>
                   <div className="text-center">
-                    <span className="text-[17px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(poolUnitTotal)}</span>
-                    <span className="text-[9px] font-medium leading-none mt-0.5 block" style={{ opacity: 0.7 }}>{joining ? "Joining\u2026" : isPoolExpired ? "Order & save" : pool ? "Join & save" : "Order & save"} · {fp(deliveryShare)} delivery</span>
+                    <span className="text-[13px] font-bold leading-none block">Order & save</span>
+                    <span className="text-[9px] font-medium leading-none mt-1 block" style={{ opacity: 0.7 }}>Pick group size</span>
                   </div>
                 </button>
               </div>
@@ -953,6 +974,49 @@ export default function ProductDetailPage() {
           </div>
         </div>
       )}
+
+      {/* ═══ TIER SELECTOR SHEET ═══ */}
+      {product && (() => {
+        const vendorTiers: GroupTier[] = Array.isArray(product.vendor.groupTiers)
+          ? (product.vendor.groupTiers as GroupTier[]).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min)
+          : [];
+        return (
+          <TierSelectorSheet
+            open={tierSheet}
+            onClose={() => setTierSheet(false)}
+            onSelect={async (tier) => {
+              setTierLoading(true);
+              try {
+                const res = await fetch("/api/pools/find-or-create", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ productId: id, minSize: tier.min, quantity: 1 }),
+                });
+                const json = await res.json();
+                if (json.success) {
+                  const tierPrice = Math.round(product.retailPrice * (1 - tier.discount / 100));
+                  setJoinedStatus("filling");
+                  setJoinedPrice(tierPrice);
+                  setTierSheet(false);
+                  showToast(json.data.action === "joined" ? "joined" : "created");
+                  // Refresh pools
+                  fetch(`/api/pools?productId=${id}`).then(r => r.json()).then(d => { if (d.success) setPools(d.data); });
+                } else {
+                  showToast("error");
+                }
+              } catch {
+                showToast("error");
+              }
+              setTierLoading(false);
+            }}
+            tiers={vendorTiers}
+            retailPrice={product.retailPrice}
+            productName={product.name}
+            poolsBySize={tierPools}
+            loading={tierLoading}
+          />
+        );
+      })()}
 
       {/* ═══ PAYMENT CONFIRMATION SHEET ═══ */}
       {confirmSheet && product && (
