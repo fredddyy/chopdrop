@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
+import { TierSelectorSheet } from "@/components/tier-selector-sheet";
 
 interface Product {
   id: string; name: string; description: string | null; imageUrl: string | null;
@@ -133,6 +134,10 @@ export default function StorePage() {
   const [sheetQty, setSheetQty] = useState(1);
   const [livePools, setLivePools] = useState<RealPool[]>([]);
   const cart = useCart();
+  const [storeTierSheet, setStoreTierSheet] = useState(false);
+  const [storeTierLoading, setStoreTierLoading] = useState(false);
+  const [storeTierPools, setStoreTierPools] = useState<Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null>>({});
+  const [storeTierProductId, setStoreTierProductId] = useState("");
 
   function addToPlate(item: Product, storeName: string) {
     cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantId: id, restaurantName: storeName, price: item.retailPrice });
@@ -568,8 +573,30 @@ export default function StorePage() {
                     <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Alone</span>
                     <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
                   </button>
-                  <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "group"); router.push("/cart"); }}
-                    className="flex-[1.4] h-[56px] rounded-[12px] flex items-center justify-between px-4 text-white press-feedback"
+                  <button type="button" onClick={() => {
+                    // Pick the first cart item's product ID for the tier selector
+                    const storeItems = cart.items.filter(i => i.restaurantName === store.name);
+                    const firstItem = storeItems[0];
+                    if (firstItem) {
+                      const pid = firstItem.dailyMenuId.replace("instant-", "");
+                      setStoreTierProductId(pid);
+                      // Fetch existing pools for this product
+                      fetch(`/api/pools?productId=${pid}`).then(r => r.json()).then(d => {
+                        if (d.success && d.data) {
+                          const bySize: Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null> = {};
+                          for (const p of d.data) {
+                            const existing = bySize[p.minSize];
+                            if (!existing || p.memberCount > existing.memberCount) {
+                              bySize[p.minSize] = { memberCount: p.memberCount, poolId: p.id, spotsLeft: p.spotsLeft };
+                            }
+                          }
+                          setStoreTierPools(bySize);
+                        }
+                      }).catch(() => {});
+                      setStoreTierSheet(true);
+                    }
+                  }}
+                    className="flex-[1.4] h-[56px] rounded-[12px] flex items-center justify-center text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
                     <span className="text-[13px] font-bold">Join & save</span>
                     <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
@@ -775,6 +802,43 @@ export default function StorePage() {
             </div>
           </>
         );
+      })()}
+
+      {/* ═══ TIER SELECTOR SHEET ═══ */}
+      {store && (() => {
+        const vendorTiers = Array.isArray(store.groupTiers)
+          ? (store.groupTiers as Array<{ min: number; discount: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min)
+          : [];
+        const storeItems = cart.items.filter(i => i.restaurantName === store.name);
+        const firstItemPrice = storeItems[0]?.price || 0;
+        return vendorTiers.length > 0 ? (
+          <TierSelectorSheet
+            open={storeTierSheet}
+            onClose={() => setStoreTierSheet(false)}
+            onSelect={async (tier) => {
+              setStoreTierLoading(true);
+              try {
+                const res = await fetch("/api/pools/find-or-create", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ productId: storeTierProductId, minSize: tier.min, quantity: 1 }),
+                });
+                const json = await res.json();
+                if (json.success) {
+                  setStoreTierSheet(false);
+                  cart.setCheckoutMode(store.name, "group");
+                  router.push("/cart");
+                }
+              } catch {}
+              setStoreTierLoading(false);
+            }}
+            tiers={vendorTiers}
+            retailPrice={firstItemPrice}
+            productName={storeItems[0]?.name || ""}
+            poolsBySize={storeTierPools}
+            loading={storeTierLoading}
+          />
+        ) : null;
       })()}
 
       <BottomNav />
