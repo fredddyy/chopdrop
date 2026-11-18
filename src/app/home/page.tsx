@@ -655,7 +655,7 @@ export default function HomePage() {
                         {(() => {
                           const spots = r.groupTarget || 5;
                           const lm = r.livePools.totalMembers;
-                          const ls = r.livePools.totalSize || spots;
+                          const ls = spots;
                           const hl = r.livePools.count > 0;
                           const count = hl ? ls : spots;
                           return (
@@ -686,7 +686,7 @@ export default function HomePage() {
                           const spotsNeeded = r.groupTarget || 5;
                           const discountPct = r.groupDiscount || 30;
                           const liveMembers = r.livePools.totalMembers;
-                          const liveSize = r.livePools.totalSize || spotsNeeded;
+                          const liveSize = spotsNeeded;
                           const hasLive = r.livePools.count > 0;
                           return (
                           <p className="text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: "var(--text-secondary)" }}>
