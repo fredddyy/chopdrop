@@ -19,6 +19,8 @@ export async function GET(request: Request) {
       imageUrl: true,
       bannerUrl: true,
       groupTiers: true,
+      groupTarget: true,
+      groupDiscount: true,
       sortOrder: true,
       groupOrders: {
         where: {
@@ -107,6 +109,8 @@ export async function GET(request: Request) {
     recentOrderCount: number;
     recentOrderNames: string[];
     groupDealCount: number;
+    groupTarget: number;
+    groupDiscount: number;
     livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; earliestDeadline: string | null };
   }> = [];
 
@@ -243,6 +247,8 @@ export async function GET(request: Request) {
         recentOrderCount: recentActivity.get(r.id)?.count ?? 0,
         recentOrderNames: recentActivity.get(r.id)?.names ?? [],
         groupDealCount: r._count.products,
+        groupTarget: r.groupTarget,
+        groupDiscount: r.groupDiscount,
         livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], earliestDeadline: null },
         tiers,
       });

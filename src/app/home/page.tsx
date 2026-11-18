@@ -39,6 +39,8 @@ interface InactiveRestaurant {
   recentOrderCount: number;
   recentOrderNames: string[];
   groupDealCount: number;
+  groupTarget: number;
+  groupDiscount: number;
   livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; earliestDeadline: string | null };
 }
 
@@ -651,8 +653,7 @@ export default function HomePage() {
                         )}
                         {/* Avatar spots — bottom right of banner */}
                         {(() => {
-                          const ft = r.tiers[0] || { min: 5 };
-                          const spots = ft.min;
+                          const spots = r.groupTarget || 5;
                           const lm = r.livePools.totalMembers;
                           const ls = r.livePools.totalSize || spots;
                           const hl = r.livePools.count > 0;
@@ -682,9 +683,8 @@ export default function HomePage() {
                         <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
                         {/* Group order info — people needed, discount, time */}
                         {(() => {
-                          const firstTier = r.tiers[0] || { min: 5, discount: 10 };
-                          const bestTierDisc = r.tiers.length > 0 ? r.tiers[r.tiers.length - 1] : { min: 10, discount: 30 };
-                          const spotsNeeded = firstTier.min;
+                          const spotsNeeded = r.groupTarget || 5;
+                          const discountPct = r.groupDiscount || 30;
                           const liveMembers = r.livePools.totalMembers;
                           const liveSize = r.livePools.totalSize || spotsNeeded;
                           const hasLive = r.livePools.count > 0;
@@ -693,10 +693,10 @@ export default function HomePage() {
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
                             {hasLive ? (
                               <>
-                                {liveMembers}/{liveSize} joined · {bestTierDisc.discount}% off · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
+                                {liveMembers}/{liveSize} joined · {discountPct}% off · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
                               </>
                             ) : (
-                              `${spotsNeeded} people · ${bestTierDisc.discount}% off · 2h`
+                              `${spotsNeeded} people · ${discountPct}% off · 2h`
                             )}
                           </p>
                           );
