@@ -157,9 +157,10 @@ export default function HomePage() {
   const [isReturning, setIsReturning] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Food");
   const [categories, setCategories] = useState<Array<{ name: string; imageUrl: string | null }>>([]);
-  const [groceryItems, setGroceryItems] = useState<Array<{ id: string; name: string; description: string | null; imageUrl: string | null; subcategory: string | null; retailPrice: number; groupPrice: number }>>([]);
+  const [groceryItems, setGroceryItems] = useState<Array<{ id: string; name: string; description: string | null; imageUrl: string | null; subcategory: string | null; retailPrice: number; groupPrice: number; vendorId: string; vendorName: string }>>([]);
   const [grocerySubcategories, setGrocerySubcategories] = useState<string[]>([]);
-  const [activeSubcategory, setActiveSubcategory] = useState("All");
+  const [groceryStores, setGroceryStores] = useState<Array<{ id: string; name: string; imageUrl: string | null; bannerUrl: string | null; address: string; itemCount: number }>>([]);
+  const [activeSubcategory, setActiveSubcategory] = useState("Stores");
   const touchStartX = useRef(0);
   const swipeTab = useCallback((direction: "left" | "right") => {
     setFilter(prev => {
@@ -205,7 +206,8 @@ export default function HomePage() {
       if (d.success) {
         setGroceryItems(d.data.products);
         setGrocerySubcategories(d.data.subcategories);
-        setActiveSubcategory("All");
+        setGroceryStores(d.data.stores || []);
+        setActiveSubcategory("Stores");
       }
     }).catch(() => {});
   }, [activeCategory]);
@@ -391,7 +393,7 @@ export default function HomePage() {
         {activeCategory === "Groceries" && grocerySubcategories.length > 0 ? (
           <div className="relative mt-1">
             <div className="flex overflow-x-auto hide-scrollbar">
-              {["All", ...grocerySubcategories].map((sub, i) => {
+              {["Stores", ...grocerySubcategories].map((sub, i) => {
                 const active = activeSubcategory === sub;
                 return (
                   <button key={sub} type="button" onClick={() => setActiveSubcategory(sub)}
@@ -436,42 +438,80 @@ export default function HomePage() {
       )}
 
       {/* ═══ GROCERY GRID — shown when Groceries category active ═══ */}
-      {activeCategory === "Groceries" && groceryItems.length > 0 && (
-        <div className="px-5 pt-4 pb-24">
-          {/* Product grid */}
-          <div className="grid grid-cols-2 gap-3">
-            {groceryItems
-              .filter(g => activeSubcategory === "All" || g.subcategory === activeSubcategory)
-              .map(item => (
-              <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[12px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <div className="relative" style={{ aspectRatio: "1", background: "var(--sand)" }}>
-                  {item.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-[28px]" style={{ opacity: 0.3 }}>{item.name.includes("Tomato") ? "🍅" : item.name.includes("Chicken") || item.name.includes("Beef") || item.name.includes("Goat") ? "🥩" : item.name.includes("Rice") || item.name.includes("Garri") || item.name.includes("Yam") ? "🌾" : item.name.includes("Oil") || item.name.includes("Salt") ? "🫒" : item.name.includes("Water") || item.name.includes("Mango") || item.name.includes("Orange") || item.name.includes("Banana") ? "🍊" : item.name.includes("Milk") || item.name.includes("Milo") || item.name.includes("Tea") ? "☕" : "🛒"}</span>
-                    </div>
-                  )}
-                  {item.groupPrice < item.retailPrice && (
-                    <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 8px 0" }}>
-                      -{Math.round(((item.retailPrice - item.groupPrice) / item.retailPrice) * 100)}%
-                    </div>
-                  )}
-                </div>
-                <div className="p-2.5">
-                  <p className="text-[12px] font-bold leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</p>
-                  {item.description && <p className="text-[10px] mt-0.5 leading-tight" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
-                  <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.retailPrice)}</span>
-                    {item.groupPrice < item.retailPrice && (
-                      <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>{fmt(item.groupPrice)} with others</span>
+      {activeCategory === "Groceries" && (groceryItems.length > 0 || groceryStores.length > 0) && (
+        <div className="pt-4 pb-24">
+          {/* Stores view — full-width store cards */}
+          {activeSubcategory === "Stores" && groceryStores.length > 0 && (
+            <div className="px-5 flex flex-col gap-4">
+              {groceryStores.map(store => (
+                <Link key={store.id} href={`/store/${store.id}`} className="press-feedback block">
+                  <div className="relative rounded-[16px] overflow-hidden" style={{ height: store.bannerUrl ? "140px" : "90px", background: "var(--sand)" }}>
+                    {store.bannerUrl ? (
+                      <StoreImg src={store.bannerUrl} fallback={store.name.charAt(0)} />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--emerald)" }}>
+                        <span className="text-[28px] font-extrabold text-white" style={{ opacity: 0.4 }}>{store.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    {store.imageUrl && (
+                      <div className="absolute bottom-3 left-3 w-[40px] h-[40px] rounded-[12px] overflow-hidden" style={{ border: "3px solid white" }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={store.imageUrl} alt="" className="w-full h-full object-cover" />
+                      </div>
                     )}
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                  <div className="pt-2">
+                    <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h3>
+                    <p className="text-[11px] font-bold mt-0.5" style={{ color: "var(--text-muted)" }}>{store.itemCount} items · {store.address}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* Subcategory view — items grouped by store in horizontal scroll */}
+          {activeSubcategory !== "Stores" && (() => {
+            const filtered = groceryItems.filter(g => g.subcategory === activeSubcategory);
+            const byStore = new Map<string, { name: string; id: string; items: typeof filtered }>();
+            for (const item of filtered) {
+              if (!byStore.has(item.vendorId)) byStore.set(item.vendorId, { name: item.vendorName, id: item.vendorId, items: [] });
+              byStore.get(item.vendorId)!.items.push(item);
+            }
+            return (
+              <div className="space-y-6">
+                {Array.from(byStore.values()).map(group => (
+                  <div key={group.id}>
+                    <div className="px-5 flex items-center justify-between mb-2">
+                      <Link href={`/store/${group.id}`} className="press-feedback">
+                        <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{group.name}</h3>
+                      </Link>
+                      <Link href={`/store/${group.id}`} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>See all →</Link>
+                    </div>
+                    <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-2">
+                      {group.items.map(item => (
+                        <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block shrink-0" style={{ width: "140px" }}>
+                          <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                            {item.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <span className="text-[20px]" style={{ opacity: 0.3 }}>🛒</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="pt-1.5">
+                            <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                            <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.retailPrice)}</span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
       )}
 
