@@ -42,6 +42,25 @@ interface RealPool {
 
 const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 
+function LiveTimer({ deadline }: { deadline: string }) {
+  const [left, setLeft] = useState(() => Math.max(0, Math.floor((new Date(deadline).getTime() - Date.now()) / 1000)));
+  useEffect(() => {
+    const iv = setInterval(() => setLeft(Math.max(0, Math.floor((new Date(deadline).getTime() - Date.now()) / 1000))), 1000);
+    return () => clearInterval(iv);
+  }, [deadline]);
+  if (left <= 0) return <span style={{ color: "var(--coral)" }}>expired</span>;
+  const h = Math.floor(left / 3600);
+  const m = Math.floor((left % 3600) / 60);
+  const s = left % 60;
+  const urgent = left < 600;
+  return (
+    <span className="tabular-nums inline-flex items-center gap-1" style={{ color: urgent ? "var(--coral)" : "var(--emerald)", animation: urgent ? "pulse 1.5s ease-in-out infinite" : "none" }}>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+      {h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`}
+    </span>
+  );
+}
+
 function StoreTabBar({ tabs, active, onChange }: { tabs: string[]; active: string; onChange: (t: string) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const textRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -301,7 +320,12 @@ export default function StorePage() {
       </div>
 
       {/* ═══ GROUP ORDER CARD ═══ */}
-      {store.groupTarget > 0 && store.groupDiscount > 0 && (
+      {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
+        const totalPoolMembers = livePools.reduce((s, p) => s + p.memberCount, 0);
+        const hasLivePool = livePools.length > 0 && totalPoolMembers > 0;
+        const earliestDeadline = livePools.length > 0 ? livePools.reduce((earliest, p) => p.deadline < earliest ? p.deadline : earliest, livePools[0].deadline) : null;
+        const spotsLeft = store.groupTarget - totalPoolMembers;
+        return (
         <div className="px-5 mt-4">
           <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--dark)" }}>
             {/* Top section */}
@@ -313,7 +337,9 @@ export default function StorePage() {
                     <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>Group order</span>
                   </div>
                   <p className="text-[13px] text-white/50 mt-1">
-                    {store.groupTarget} people · {Math.floor(store.groupWindowMins / 60)}h window
+                    {hasLivePool
+                      ? <>{totalPoolMembers}/{store.groupTarget} joined · <LiveTimer deadline={earliestDeadline!} /></>
+                      : `${store.groupTarget} people · ${Math.floor(store.groupWindowMins / 60)}h window`}
                   </p>
                 </div>
                 <div className="text-right">
@@ -328,20 +354,31 @@ export default function StorePage() {
             <div className="px-4 pb-4">
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-1">
-                  {Array.from({ length: Math.min(store.groupTarget, 8) }).map((_, i) => (
+                  {Array.from({ length: Math.min(store.groupTarget, 8) }).map((_, i) => {
+                    const filled = hasLivePool && i < totalPoolMembers;
+                    return (
                     <div key={i} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold"
-                      style={{ border: "1.5px dashed rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", transition: "all 300ms ease" }}>
-                      ?
+                      style={{
+                        background: filled ? "var(--coral)" : "rgba(255,255,255,0.05)",
+                        border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.25)",
+                        color: "white",
+                        transition: "all 300ms ease",
+                      }}>
+                      {filled ? String.fromCharCode(65 + i) : "?"}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 {store.groupTarget > 8 && <span className="text-[9px] font-bold text-white/30">+{store.groupTarget - 8}</span>}
-                <span className="text-[10px] font-bold ml-auto" style={{ color: "var(--coral)" }}>{store.groupTarget} spots open</span>
+                <span className="text-[10px] font-bold ml-auto" style={{ color: hasLivePool ? "var(--emerald)" : "var(--coral)" }}>
+                  {hasLivePool ? `${spotsLeft} spots left` : `${store.groupTarget} spots open`}
+                </span>
               </div>
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* ═══ THE FULL MENU ═══ */}
       <section className="px-5 mt-4">
