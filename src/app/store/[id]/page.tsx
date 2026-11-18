@@ -441,61 +441,54 @@ export default function StorePage() {
 
               {/* Group-eligible items — product card grid */}
               {poolItems.length > 0 && (
-                <div className="grid grid-cols-3 gap-2.5 mb-4">
+                <div className="space-y-0 mb-2">
                   {poolItems.map((item) => {
                     const hasDiscount = item.groupPrice < item.retailPrice;
                     const sav = hasDiscount ? Math.round(((item.retailPrice - item.groupPrice) / item.retailPrice) * 100) : 0;
                     const inCart = cart.items.find((c) => c.dailyMenuId === item.id)?.quantity || 0;
-                    const itemPool = livePools.find(lp => lp.productId === item.id);
-                    const activeGroups = itemPool ? 1 : 0;
                     return (
-                      <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-lg overflow-hidden">
-                        {/* Image + badges */}
-                        <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                      <div key={item.id} className="flex items-center gap-3 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                        <Link href={`/product/${item.id}`} className="relative shrink-0 press-feedback">
                           {item.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                            <img src={item.imageUrl} alt={item.name} className="w-[70px] h-[70px] rounded-[12px] object-cover" loading="lazy" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-[18px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
+                            <div className="w-[70px] h-[70px] rounded-[12px] flex items-center justify-center" style={{ background: "var(--sand)" }}>
+                              <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
                             </div>
                           )}
-                          {/* Savings ribbon */}
                           {hasDiscount && (
-                            <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 8px 0" }}>
+                            <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[7px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 8px 0" }}>
                               -{sav}%
                             </div>
                           )}
-                          {/* Add/stepper on image — slides left from + */}
-                          <div className="absolute bottom-1.5 right-1.5 z-10 flex items-center" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                            <div className="flex items-center overflow-hidden" style={{
-                              maxWidth: inCart > 0 ? "50px" : "0px",
-                              opacity: inCart > 0 ? 1 : 0,
-                              transition: "max-width 250ms cubic-bezier(0.4,0,0.2,1), opacity 200ms ease-out",
-                            }}>
-                              <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
-                                className="w-[24px] h-[24px] rounded-lg flex items-center justify-center shrink-0"
-                                style={{ background: "white" }}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="3" strokeLinecap="round"><path d="M5 12h14" /></svg>
-                              </button>
-                              <span className="w-[20px] text-center text-[10px] font-extrabold text-white tabular-nums shrink-0" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{inCart}</span>
-                            </div>
-                            <button type="button" onClick={() => addToPlate(item, store.name)}
-                              className="w-[24px] h-[24px] rounded-lg flex items-center justify-center shrink-0"
-                              style={{ background: inCart > 0 ? "var(--coral)" : "white" }}>
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={inCart > 0 ? "white" : "var(--text)"} strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                        </Link>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.groupPrice)}</p>
+                          <Link href={`/product/${item.id}`}><h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4></Link>
+                          {hasDiscount && <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}><span className="line-through">{fp(item.retailPrice)}</span> · Cheaper with more orders</p>}
+                          {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
+                        </div>
+                        <div className="shrink-0 self-end mb-1 w-[86px] flex justify-end items-center">
+                          <div className="flex items-center overflow-hidden" style={{
+                            maxWidth: inCart > 0 ? "54px" : "0px",
+                            opacity: inCart > 0 ? 1 : 0,
+                            transition: "max-width 250ms cubic-bezier(0.4,0,0.2,1), opacity 200ms ease-out",
+                          }}>
+                            <button type="button" onClick={() => cart.changeQuantity(item.id, -1)}
+                              className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback shrink-0"
+                              style={{ background: "var(--sand)" }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                             </button>
+                            <span className="w-[22px] text-center text-[14px] font-extrabold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{inCart}</span>
                           </div>
+                          <button type="button" onClick={() => addToPlate(item, store.name)}
+                            className="w-[28px] h-[28px] rounded-lg flex items-center justify-center press-feedback shrink-0"
+                            style={{ background: "var(--coral)" }}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                          </button>
                         </div>
-                        {/* Info */}
-                        <div className="pt-1.5">
-                          <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
-                          <div className="flex items-baseline gap-1 mt-0.5">
-                            <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.groupPrice)}</span>
-                            {hasDiscount && <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>}
-                          </div>
-                        </div>
-                      </Link>
+                      </div>
                     );
                   })}
                 </div>
