@@ -457,21 +457,9 @@ export default function StorePage() {
                               <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.3 }}>{item.name.charAt(0)}</span>
                             </div>
                           )}
-                          {hasDiscount && (
-                            <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[7px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 8px 0" }}>
-                              -{sav}%
-                            </div>
-                          )}
                         </Link>
                         <div className="flex-1 min-w-0">
-                          {hasDiscount ? (
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fp(item.groupPrice)} <span className="text-[9px] font-bold">with others</span></span>
-                              <span className="text-[11px] font-bold tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)} <span className="text-[9px] font-normal">alone</span></span>
-                            </div>
-                          ) : (
-                            <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.retailPrice)}</p>
-                          )}
+                          <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.retailPrice)}</p>
                           <Link href={`/product/${item.id}`}><h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4></Link>
                           {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                         </div>
