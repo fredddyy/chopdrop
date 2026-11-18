@@ -386,9 +386,27 @@ export default function HomePage() {
           })}
         </div>
       </header>
-      {/* Tabs — sticky */}
+      {/* Tabs — sticky: show subcategories for Groceries, normal tabs for Food */}
       <div className="sticky top-0 z-40 px-5" style={{ background: "var(--bg)" }}>
-        <TabBar filter={filter} setFilter={setFilter} />
+        {activeCategory === "Groceries" && grocerySubcategories.length > 0 ? (
+          <div className="relative mt-1">
+            <div className="flex overflow-x-auto hide-scrollbar">
+              {["All", ...grocerySubcategories].map((sub, i) => {
+                const active = activeSubcategory === sub;
+                return (
+                  <button key={sub} type="button" onClick={() => setActiveSubcategory(sub)}
+                    className={`${i === 0 ? "pr-2.5" : "px-2.5"} pb-2 text-[13px] font-semibold whitespace-nowrap shrink-0`}
+                    style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
+                    <span style={{ borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent", paddingBottom: "4px", transition: "border-color 200ms ease-out" }}>{sub}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
+          </div>
+        ) : (
+          <TabBar filter={filter} setFilter={setFilter} />
+        )}
       </div>
 
       {/* ── Loading skeleton ── */}
@@ -420,19 +438,6 @@ export default function HomePage() {
       {/* ═══ GROCERY GRID — shown when Groceries category active ═══ */}
       {activeCategory === "Groceries" && groceryItems.length > 0 && (
         <div className="px-5 pt-4 pb-24">
-          {/* Subcategory filters */}
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-4">
-            {["All", ...grocerySubcategories].map(sub => (
-              <button key={sub} type="button" onClick={() => setActiveSubcategory(sub)}
-                className="h-[32px] px-3 rounded-[12px] text-[12px] font-bold whitespace-nowrap shrink-0 press-feedback"
-                style={{
-                  background: activeSubcategory === sub ? "rgba(196,87,42,0.1)" : "var(--sand)",
-                  color: activeSubcategory === sub ? "var(--coral)" : "var(--text-secondary)",
-                }}>
-                {sub}
-              </button>
-            ))}
-          </div>
           {/* Product grid */}
           <div className="grid grid-cols-2 gap-3">
             {groceryItems
