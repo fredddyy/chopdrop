@@ -583,7 +583,7 @@ export default function StorePage() {
                   </div>
                   <div className="text-right">
                     <span className="text-[16px] font-extrabold tabular-nums block leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(soloTotal)}</span>
-                    <span className="text-[10px] font-medium opacity-70 mt-0.5 block">{isFreeDelivery ? "free delivery" : `incl. delivery`}</span>
+                    <span className="text-[10px] font-medium opacity-70 mt-0.5 block">+ delivery</span>
                   </div>
                 </Link>
               )}
