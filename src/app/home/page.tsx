@@ -635,6 +635,32 @@ export default function HomePage() {
                             {r.groupDealCount} group {r.groupDealCount === 1 ? "deal" : "deals"}
                           </span>
                         )}
+                        {/* Avatar spots — bottom right of banner */}
+                        {(() => {
+                          const ft = r.tiers[0] || { min: 5 };
+                          const spots = ft.min;
+                          const lm = r.livePools.totalMembers;
+                          const ls = r.livePools.totalSize || spots;
+                          const hl = r.livePools.count > 0;
+                          const count = hl ? ls : spots;
+                          return (
+                            <div className="absolute bottom-2.5 right-3 flex items-center gap-1.5 px-2 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.6)" }}>
+                              <div className="flex -space-x-1">
+                                {Array.from({ length: Math.min(count, 6) }).map((_, i) => {
+                                  const filled = hl && i < lm;
+                                  return (
+                                    <div key={i} className="w-[16px] h-[16px] rounded-full flex items-center justify-center text-[6px] font-bold"
+                                      style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.2)", border: filled ? "1.5px solid rgba(0,0,0,0.6)" : "1px dashed rgba(255,255,255,0.4)", color: "white" }}>
+                                      {filled ? (r.livePools.memberNames[i]?.charAt(0) || "!") : "?"}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              {count > 6 && <span className="text-[8px] font-bold text-white/70">+{count - 6}</span>}
+                              <span className="text-[8px] font-bold text-white">{hl ? `${count - lm} left` : `${count} spots`}</span>
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* Info — below banner */}
@@ -649,32 +675,11 @@ export default function HomePage() {
                           const liveSize = r.livePools.totalSize || spotsNeeded;
                           const hasLive = r.livePools.count > 0;
                           return (
-                          <div className="mt-2.5">
-                            <p className="text-[11px] font-bold" style={{ color: "var(--text-secondary)" }}>
-                              {hasLive
-                                ? `${liveMembers} of ${liveSize} joined · ${bestTierDisc.discount}% off · 2h window`
-                                : `when ${spotsNeeded} people order together · 2h window`}
-                            </p>
-                            <div className="flex items-center gap-1.5 mt-1.5">
-                              <div className="flex -space-x-1">
-                                {Array.from({ length: Math.min(hasLive ? liveSize : spotsNeeded, 8) }).map((_, i) => {
-                                  const filled = hasLive && i < liveMembers;
-                                  return (
-                                    <div key={i} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-bold"
-                                      style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "1.5px solid white" : "1.5px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
-                                      {filled ? (r.livePools.memberNames[i]?.charAt(0) || "!") : "?"}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                              {(hasLive ? liveSize : spotsNeeded) > 8 && (
-                                <span className="text-[9px] font-bold" style={{ color: "var(--text-muted)" }}>+{(hasLive ? liveSize : spotsNeeded) - 8}</span>
-                              )}
-                              <span className="text-[9px] font-bold" style={{ color: hasLive ? "var(--coral)" : "var(--text-muted)" }}>
-                                {hasLive ? `${liveSize - liveMembers} spots left` : `${spotsNeeded} spots`}
-                              </span>
-                            </div>
-                          </div>
+                          <p className="text-[11px] font-bold mt-1.5" style={{ color: "var(--text-secondary)" }}>
+                            {hasLive
+                              ? `${liveMembers} of ${liveSize} joined · ${bestTierDisc.discount}% off · 2h window`
+                              : `when ${spotsNeeded} people order together · 2h window`}
+                          </p>
                           );
                         })()}
 
