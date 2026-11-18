@@ -327,28 +327,37 @@ export default function StorePage() {
         const spotsLeft = store.groupTarget - totalPoolMembers;
         return (
         <div className="px-5 mt-4">
-          <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--dark)" }}>
+          <div className="rounded-[16px] overflow-hidden card-enter" style={{ background: "var(--dark)" }}>
             {/* Top section */}
             <div className="p-4 pb-3">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                    <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>Group order</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" style={{ animation: hasLivePool ? "pulse 2s ease-in-out infinite" : "none" }}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                    <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>
+                      {hasLivePool ? "Live group order" : "Group order"}
+                    </span>
+                    {hasLivePool && <span className="w-[6px] h-[6px] rounded-full animate-pulse" style={{ background: "var(--coral)" }} />}
                   </div>
                   <p className="text-[13px] text-white/50 mt-1">
                     {hasLivePool
-                      ? <>{totalPoolMembers}/{store.groupTarget} joined · <LiveTimer deadline={earliestDeadline!} /></>
+                      ? <><span className="text-white font-bold">{totalPoolMembers}/{store.groupTarget}</span> joined · <LiveTimer deadline={earliestDeadline!} /></>
                       : `${store.groupTarget} people · ${Math.floor(store.groupWindowMins / 60)}h window`}
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[36px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
+                  <span className="text-[36px] font-extrabold tabular-nums leading-none block savings-reveal" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
                     {store.groupDiscount}%
                   </span>
                   <span className="text-[10px] font-bold text-white/40">off</span>
                 </div>
               </div>
+              {/* Progress bar */}
+              {hasLivePool && (
+                <div className="mt-2.5 h-[3px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+                  <div className="h-full rounded-full" style={{ width: `${Math.round((totalPoolMembers / store.groupTarget) * 100)}%`, background: "var(--emerald)", transition: "width 500ms cubic-bezier(0.16,1,0.3,1)" }} />
+                </div>
+              )}
             </div>
             {/* Avatar progress bar */}
             <div className="px-4 pb-4">
@@ -357,12 +366,13 @@ export default function StorePage() {
                   {Array.from({ length: Math.min(store.groupTarget, 8) }).map((_, i) => {
                     const filled = hasLivePool && i < totalPoolMembers;
                     return (
-                    <div key={i} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold"
+                    <div key={i} className={`w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold ${filled ? "celebrate" : ""}`}
                       style={{
                         background: filled ? "var(--coral)" : "rgba(255,255,255,0.05)",
                         border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.25)",
                         color: "white",
                         transition: "all 300ms ease",
+                        animationDelay: filled ? `${i * 80}ms` : "0ms",
                       }}>
                       {filled ? String.fromCharCode(65 + i) : "?"}
                     </div>
@@ -370,7 +380,7 @@ export default function StorePage() {
                   })}
                 </div>
                 {store.groupTarget > 8 && <span className="text-[9px] font-bold text-white/30">+{store.groupTarget - 8}</span>}
-                <span className="text-[10px] font-bold ml-auto" style={{ color: hasLivePool ? "var(--emerald)" : "var(--coral)" }}>
+                <span key={spotsLeft} className="text-[10px] font-bold ml-auto pop" style={{ color: hasLivePool ? "var(--emerald)" : "var(--coral)" }}>
                   {hasLivePool ? `${spotsLeft} spots left` : `${store.groupTarget} spots open`}
                 </span>
               </div>
