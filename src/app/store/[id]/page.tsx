@@ -494,15 +494,6 @@ export default function StorePage() {
                             <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.groupPrice)}</span>
                             {hasDiscount && <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span>}
                           </div>
-                          {/* Status box */}
-                          <div className="mt-1.5">
-                            <div className="text-[9px] font-bold py-1.5 text-center rounded-lg" style={{
-                              background: activeGroups > 0 ? "rgba(26,125,75,0.1)" : "var(--sand)",
-                              color: activeGroups > 0 ? "var(--emerald)" : "var(--text-muted)",
-                            }}>
-                              {activeGroups > 0 ? `${activeGroups} Group Active` : "0 Groups Active"}
-                            </div>
-                          </div>
                         </div>
                       </Link>
                     );
