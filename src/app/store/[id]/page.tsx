@@ -466,7 +466,7 @@ export default function StorePage() {
                         <div className="flex-1 min-w-0">
                           <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.groupPrice)}</p>
                           <Link href={`/product/${item.id}`}><h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4></Link>
-                          {hasDiscount && <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}><span className="line-through">{fp(item.retailPrice)}</span> · Cheaper with more orders</p>}
+                          {hasDiscount && <p className="text-[11px] mt-0.5"><span className="line-through" style={{ color: "var(--text-muted)" }}>{fp(item.retailPrice)}</span> <span className="font-bold" style={{ color: "var(--emerald)" }}>Save {fp(item.retailPrice - item.groupPrice)}</span></p>}
                           {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                         </div>
                         <div className="shrink-0 self-end mb-1 w-[86px] flex justify-end items-center">
@@ -655,7 +655,7 @@ export default function StorePage() {
                   <div className="flex items-baseline gap-3">
                     <div>
                       <span className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.groupPrice)}</span>
-                      {hasDiscount && <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>Cheaper with more orders</p>}
+                      {hasDiscount && <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--emerald)" }}>Save {fp(item.retailPrice - item.groupPrice)}</p>}
                     </div>
                     {hasDiscount && (
                       <div>
