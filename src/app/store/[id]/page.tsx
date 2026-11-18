@@ -340,7 +340,7 @@ export default function StorePage() {
                   <p className="text-[13px] text-white/50 mt-1">
                     {hasLivePool
                       ? <><span className="text-white font-bold">{totalPoolMembers}/{store.groupTarget}</span> orders · Save {store.groupDiscount}%</>
-                      : `Order with others · ${store.groupTarget} orders to unlock`}
+                      : "Order with others around you"}
                   </p>
                 </div>
                 <div className="text-right">
