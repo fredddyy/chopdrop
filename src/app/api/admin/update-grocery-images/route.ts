@@ -53,19 +53,25 @@ const IMAGE_MAP: Record<string, string> = {
 
 async function uploadToCloudinary(s3Url: string): Promise<string | null> {
   if (!API_KEY || !API_SECRET) return null;
-  // Use PricePally's Next.js image proxy to access the S3 images
+  // Download image via PricePally proxy, convert to base64, upload to Cloudinary
   const proxyUrl = `${PP}${encodeURIComponent(s3Url)}`;
-  const folder = "chopdrop/groceries";
-  const timestamp = Math.floor(Date.now() / 1000).toString();
-  const sigStr = `folder=${folder}&timestamp=${timestamp}${API_SECRET}`;
-  const signature = crypto.createHash("sha1").update(sigStr).digest("hex");
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ file: proxyUrl, api_key: API_KEY, timestamp, signature, folder }),
-  });
-  const result = await res.json();
-  return result.secure_url || null;
+  try {
+    const imgRes = await fetch(proxyUrl);
+    if (!imgRes.ok) return null;
+    const buffer = Buffer.from(await imgRes.arrayBuffer());
+    const base64 = `data:image/jpeg;base64,${buffer.toString("base64")}`;
+    const folder = "chopdrop/groceries";
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const sigStr = `folder=${folder}&timestamp=${timestamp}${API_SECRET}`;
+    const signature = crypto.createHash("sha1").update(sigStr).digest("hex");
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ file: base64, api_key: API_KEY, timestamp, signature, folder }),
+    });
+    const result = await res.json();
+    return result.secure_url || null;
+  } catch { return null; }
 }
 
 export async function POST() {
