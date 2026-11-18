@@ -9,23 +9,29 @@ const API_SECRET = process.env.CLOUDINARY_API_SECRET || "";
 const S3 = "https://pp-new-node-medusa-prod-bucket.s3.us-east-1.amazonaws.com";
 
 const IMAGE_MAP: Record<string, string> = {
-  "Tomatoes (basket)": `${S3}/Tomato%20General(3)-1724760266675.jpg`,
-  "Pepper (Rodo)": `${S3}/Ata%20Rodo%20General(1)-1724760450804.jpg`,
-  "Onions (bag)": `${S3}/Onions%20-%20Red%20General-1724763704377.jpg`,
-  "Carrots (1kg)": `${S3}/Carrot%20General(1)-1724754920238.jpg`,
-  "Frozen Chicken (whole)": `${S3}/Nigerian%20Chicken-1725265461432.jpg`,
-  "Beef (1kg)": `${S3}/Cow%20Beef%20Boneless%20(1kg)-1725267649816.jpg`,
-  "Turkey (whole)": `${S3}/turkey%20full%20wings-1725267108642.jpg`,
-  "Catfish (1kg)": `${S3}/Titus%20General%20(1)-1725278725512.jpg`,
-  "Rice (25kg)": `${S3}/Big%20Bull%20Rice%20(50kg)-1719040298233.jpg`,
-  "Rice (5kg)": `${S3}/Big%20Bull%20Rice%20(50kg)-1719040298233.jpg`,
-  "Beans (5kg)": `${S3}/Beans%20-%20Oloyin%20General(1)-1725022956578.jpg`,
-  "Plantain (bunch)": `${S3}/Plantain%20General(1)-1724756334818.jpg`,
-  "Crayfish (500g)": `${S3}/Crayfish%20General-1724917719103.jpg`,
-  "Fresh Pepper Mix": `${S3}/Pepper-1750444014859.jpg`,
+  // Proteins
+  "Goat Meat (1kg)": `${S3}/hard%20lap%20orobo-1725266010730.jpg`,
+  "Prawns (500g)": `${S3}/Frozen%20shrimps%20general%20picture-1725278930949.jpg`,
+  "Eggs (crate of 30)": `${S3}/image-1723277282212.jpg`,
+  // Grains & Tubers
+  "Yam (tuber)": `${S3}/yam-100tubers-1718791625485.jpg`,
+  "Garri (5kg)": `${S3}/Dried-1726068534862.jpg`,
+  "Semovita (2kg)": `${S3}/Ayoola%20Poundo%20Yam%20(0.9kg)-1719040655627.jpg`,
+  "Wheat Flour (2kg)": `${S3}/flour-1kg-1718875082299.jpg`,
+  // Fruits
   "Pineapple": `${S3}/Pineapple%201%20Piece-1717666038098.jpg`,
   "Bananas (bunch)": `${S3}/native-banana-stemofbunches-1717666397270.jpg`,
-  "Stockfish (medium)": `${S3}/eja-panla-1718650694306.jpg`,
+  "Oranges (12 pcs)": `${S3}/Tangerine%20-%20Clementine%20General-1718875488792.jpg`,
+  "Mangoes (6 pcs)": `${S3}/plum-1718394036429.jpg`,
+  "Watermelon (whole)": `${S3}/WVML2620copy-1717665865756.jpg`,
+  "Avocado (3 pcs)": `${S3}/gx7HpZzVCdK6WhGSQcmHg2dkM1aD54OMT9oGTpnZ-1725786050291.jpg`,
+  // Cooking
+  "Locust Beans (iru)": `${S3}/Soya%20Beans%20General-1725023067820.jpg`,
+  "Tomato Paste (tin)": `${S3}/Tomato%20General(3)-1724760424441.jpg`,
+  // Vegetables
+  "Okra (1kg)": `${S3}/Bell%20Pepper-1718790211639.jpg`,
+  "Fresh Spinach (ugu)": `${S3}/Corn%20-%20White%20General-1726068166131.jpg`,
+  "Cabbage (whole)": `${S3}/Coconut%20General%20Picture(1)-1717666169949.jpg`,
 };
 
 async function uploadToCloudinary(sourceUrl: string, productName: string): Promise<string | null> {
