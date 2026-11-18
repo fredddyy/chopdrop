@@ -335,25 +335,28 @@ export default function StorePage() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
               <span className="text-[12px] font-bold text-white">Order with others & save up to {bestTier.discount}%</span>
             </div>
-            {/* Tier rows */}
-            <div className="space-y-2">
+            {/* Tier rows with overlapping avatars */}
+            <div className="space-y-3">
               {tiers.map((t, i) => {
                 const isBest = i === tiers.length - 1;
                 return (
-                  <div key={t.min} className="flex items-center justify-between px-3 py-2.5 rounded-[10px]" style={{ background: isBest ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)" }}>
-                    <div className="flex items-center gap-2">
-                      <div className="flex -space-x-1">
-                        {Array.from({ length: Math.min(t.min, 4) }).map((_, j) => (
-                          <div key={j} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-bold"
-                            style={{ background: "rgba(255,255,255,0.1)", border: "1px dashed rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.4)" }}>?</div>
-                        ))}
+                  <div key={t.min}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[12px] font-bold text-white">{t.min} people</span>
+                        <span className="text-[11px] font-extrabold" style={{ color: isBest ? "var(--emerald)" : "var(--coral)" }}>{t.discount}% off</span>
+                        {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
                       </div>
-                      <span className="text-[12px] font-bold text-white">{t.min} people</span>
-                      {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
+                      <span className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>{t.min} orders to go</span>
                     </div>
-                    <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isBest ? "var(--emerald)" : "white" }}>
-                      {t.discount}% off
-                    </span>
+                    <div className="flex -space-x-1.5">
+                      {Array.from({ length: t.min }).map((_, j) => (
+                        <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold"
+                          style={{ background: "rgba(255,255,255,0.05)", border: "1.5px dashed rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.3)" }}>
+                          ?
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 );
               })}
