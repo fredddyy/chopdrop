@@ -811,40 +811,84 @@ export default function StorePage() {
       })()}
 
       {/* ═══ TIER SELECTOR SHEET ═══ */}
-      {store && (() => {
-        const vendorTiers = Array.isArray(store.groupTiers)
+      {store && storeTierSheet && (() => {
+        let sheetTiers = Array.isArray(store.groupTiers)
           ? (store.groupTiers as Array<{ min: number; discount: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min)
           : [];
+        if (sheetTiers.length === 0 && store.groupTarget > 0 && store.groupDiscount > 0) {
+          sheetTiers = [
+            { min: 3, discount: Math.round(store.groupDiscount * 0.33) },
+            { min: 5, discount: Math.round(store.groupDiscount * 0.66) },
+            { min: store.groupTarget, discount: store.groupDiscount },
+          ].filter(t => t.discount > 0);
+        }
+        if (sheetTiers.length === 0) {
+          sheetTiers = [{ min: 3, discount: 10 }, { min: 5, discount: 20 }, { min: 10, discount: 30 }];
+        }
         const storeItems = cart.items.filter(i => i.restaurantName === store.name);
         const firstItemPrice = storeItems[0]?.price || 0;
-        return vendorTiers.length > 0 ? (
-          <TierSelectorSheet
-            open={storeTierSheet}
-            onClose={() => setStoreTierSheet(false)}
-            onSelect={async (tier) => {
-              setStoreTierLoading(true);
-              try {
-                const res = await fetch("/api/pools/find-or-create", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ productId: storeTierProductId, minSize: tier.min, quantity: 1 }),
-                });
-                const json = await res.json();
-                if (json.success) {
-                  setStoreTierSheet(false);
-                  cart.setCheckoutMode(store.name, "group");
-                  router.push("/cart");
-                }
-              } catch {}
-              setStoreTierLoading(false);
-            }}
-            tiers={vendorTiers}
-            retailPrice={firstItemPrice}
-            productName={storeItems[0]?.name || ""}
-            poolsBySize={storeTierPools}
-            loading={storeTierLoading}
-          />
-        ) : null;
+        return (
+        <div className="fixed inset-0 z-[80]" role="dialog" aria-modal="true" onClick={() => setStoreTierSheet(false)}>
+          <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
+          <div className="absolute bottom-0 left-0 right-0 sheet-enter" onClick={(e) => e.stopPropagation()}>
+            <div className="max-w-[428px] mx-auto rounded-t-[16px] px-5 pt-5 pb-8" style={{ background: "var(--card)" }}>
+              <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
+              <h3 className="text-[18px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Pick your group size</h3>
+              <p className="text-[12px] mt-0.5 mb-4" style={{ color: "var(--text-muted)" }}>More people = bigger discount for everyone</p>
+
+              <div className="space-y-2">
+                {sheetTiers.map((t, i) => {
+                  const tierPrice = firstItemPrice > 0 ? Math.round(firstItemPrice * (1 - t.discount / 100)) : 0;
+                  const isBest = i === sheetTiers.length - 1;
+                  const pool = storeTierPools[t.min];
+                  return (
+                    <div key={t.min} className="flex items-center gap-3 p-3 rounded-[12px]" style={{ background: isBest ? "rgba(34,197,94,0.06)" : "var(--sand)" }}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{t.min} people</span>
+                          <span className="text-[11px] font-extrabold" style={{ color: isBest ? "var(--emerald)" : "var(--coral)" }}>{t.discount}% off</span>
+                          {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
+                        </div>
+                        {firstItemPrice > 0 && (
+                          <span className="text-[12px] font-medium" style={{ color: "var(--text-muted)" }}>{fp(tierPrice)} per item</span>
+                        )}
+                        {pool && pool.memberCount > 0 && (
+                          <span className="text-[10px] font-bold ml-2" style={{ color: "var(--emerald)" }}>{pool.memberCount} joined</span>
+                        )}
+                      </div>
+                      <button type="button" disabled={storeTierLoading} onClick={async () => {
+                        setStoreTierLoading(true);
+                        try {
+                          const res = await fetch("/api/pools/find-or-create", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ productId: storeTierProductId, minSize: t.min, quantity: 1 }),
+                          });
+                          const json = await res.json();
+                          if (json.success) {
+                            setStoreTierSheet(false);
+                            cart.setCheckoutMode(store.name, "group");
+                            router.push("/cart");
+                          }
+                        } catch {}
+                        setStoreTierLoading(false);
+                      }}
+                        className="h-[36px] px-4 rounded-[10px] text-[12px] font-bold text-white press-feedback shrink-0 disabled:opacity-50"
+                        style={{ background: isBest ? "var(--emerald)" : "var(--coral)" }}>
+                        {storeTierLoading ? "..." : "Join"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <button type="button" onClick={() => setStoreTierSheet(false)} className="w-full h-[40px] flex items-center justify-center text-[13px] font-bold press-feedback mt-3" style={{ color: "var(--text-muted)" }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+        );
       })()}
 
       <BottomNav />
