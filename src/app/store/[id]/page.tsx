@@ -575,19 +575,21 @@ export default function StorePage() {
           <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
             <div className="max-w-[480px] mx-auto">
               {hasGroupDiscount ? (
-                <div className="flex gap-2">
+                <div className="flex gap-2.5">
                   <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "solo"); router.push("/cart"); }}
-                    className="flex-1 h-[54px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
+                    className="flex-1 h-[56px] rounded-[12px] flex items-center justify-between px-4 press-feedback"
                     style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                    <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>Buy alone</span>
-                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
+                    <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Alone</span>
+                    <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
                   </button>
                   <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "group"); router.push("/cart"); }}
-                    className="flex-[1.4] h-[54px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
+                    className="flex-[1.4] h-[56px] rounded-[12px] flex items-center justify-between px-4 text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
-                    <span className="text-[10px] font-medium" style={{ opacity: 0.8 }}>Join & save</span>
-                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
-                    <span className="text-[8px] font-medium mt-0.5" style={{ opacity: 0.6 }}>incl. delivery</span>
+                    <div>
+                      <span className="text-[13px] font-bold block leading-none">Join & save</span>
+                      <span className="text-[9px] font-medium mt-0.5 block" style={{ opacity: 0.7 }}>incl. delivery</span>
+                    </div>
+                    <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
                   </button>
                 </div>
               ) : (
