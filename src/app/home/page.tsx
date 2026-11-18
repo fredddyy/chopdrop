@@ -90,7 +90,6 @@ function MiniCountdown({ deadline }: { deadline: string }) {
 
 const TABS = [
   { key: "all" as const, label: "Stores" },
-  { key: "deals" as const, label: "Save more" },
   { key: "chop" as const, label: "Chop Price" },
 ];
 type FilterKey = typeof TABS[number]["key"];
@@ -167,7 +166,7 @@ export default function HomePage() {
     });
   }, []);
   const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [filter, setFilter] = useState<"all" | "deals" | "chop">("all");
+  const [filter, setFilter] = useState<"all" | "chop">("all");
   const [locationSheet, setLocationSheet] = useState(false);
   const [locationInput, setLocationInput] = useState("");
   const [locating, setLocating] = useState(false);
@@ -409,10 +408,9 @@ export default function HomePage() {
           const dx = e.changedTouches[0].clientX - touchStartX.current;
           if (Math.abs(dx) > 60) swipeTab(dx < 0 ? "left" : "right");
         };
-        const isItemView = filter === "deals" || filter === "chop";
+        const isItemView = filter === "chop";
         const filteredRestaurants = inactiveRestaurants.filter(r => {
           if (filter === "all") return true;
-          if (filter === "deals") return r.groupDealCount > 0;
           if (filter === "chop") return r.groupDealCount > 0;
           return true;
         });
