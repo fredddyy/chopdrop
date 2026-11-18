@@ -694,13 +694,14 @@ export default function HomePage() {
                           const liveSize = r.livePools.totalSize || spotsNeeded;
                           const hasLive = r.livePools.count > 0;
                           return (
-                          <p className="text-[11px] font-bold mt-1.5" style={{ color: "var(--text-secondary)" }}>
+                          <p className="text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: "var(--text-secondary)" }}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
                             {hasLive ? (
                               <>
-                                {liveMembers} of {liveSize} joined · {bestTierDisc.discount}% off · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
+                                {liveMembers}/{liveSize} joined · {bestTierDisc.discount}% off · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
                               </>
                             ) : (
-                              `when ${spotsNeeded} people order together · 2h window`
+                              `${spotsNeeded} people · ${bestTierDisc.discount}% off · 2h`
                             )}
                           </p>
                           );
