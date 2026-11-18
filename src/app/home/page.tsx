@@ -657,9 +657,9 @@ export default function HomePage() {
                           <span>{r.cheapestItemName || r.address.split(",")[0]}</span>
                         </div>
                         {/* Group order info — people needed, discount, time */}
-                        {r.tiers.length > 0 && (() => {
-                          const firstTier = r.tiers[0];
-                          const bestTierDisc = r.tiers[r.tiers.length - 1];
+                        {(() => {
+                          const firstTier = r.tiers[0] || { min: 5, discount: 10 };
+                          const bestTierDisc = r.tiers.length > 0 ? r.tiers[r.tiers.length - 1] : { min: 10, discount: 30 };
                           const spotsNeeded = firstTier.min;
                           const liveMembers = r.livePools.totalMembers;
                           const liveSize = r.livePools.totalSize || spotsNeeded;
