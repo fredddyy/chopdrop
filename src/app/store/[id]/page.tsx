@@ -334,27 +334,10 @@ export default function StorePage() {
           <div className="rounded-[16px] overflow-hidden card-enter" style={{ background: "var(--dark)" }}>
             {/* Top section */}
             <div className="p-4 pb-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                    <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>
-                      {hasLivePool ? "Live deal" : `Save ${store.groupDiscount}%`}
-                    </span>
-                  </div>
-                  <p className="text-[13px] text-white/50 mt-1">
-                    {hasLivePool
-                      ? <><span className="text-white font-bold">{totalPoolMembers}/{store.groupTarget}</span> orders · Save {store.groupDiscount}%</>
-                      : "Order with others around you"}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                <span className="text-[13px] font-bold text-white">Order with others & save</span>
               </div>
-              {/* Progress bar */}
-              {hasLivePool && (
-                <div className="mt-2.5 h-[3px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${Math.round((totalPoolMembers / store.groupTarget) * 100)}%`, background: "var(--emerald)", transition: "width 500ms cubic-bezier(0.16,1,0.3,1)" }} />
-                </div>
-              )}
             </div>
             {/* Tier avatar rows — 3, 5, 10 people */}
             <div className="px-4 pb-4 space-y-2.5">
