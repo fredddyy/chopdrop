@@ -358,29 +358,33 @@ export default function StorePage() {
                 const tierDeadline = tierPool ? tierPool.deadline : new Date(Date.now() + windowHours * 3600000).toISOString();
                 return (
                   <div key={t.min}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[12px] font-bold text-white">{t.min} people</span>
-                        <span className="text-[11px] font-extrabold" style={{ color: isBest ? "var(--emerald)" : "var(--coral)" }}>{t.discount}% off</span>
-                        {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
-                      </div>
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.08)" }}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={tierPool ? "var(--emerald)" : "rgba(255,255,255,0.3)"} strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                        <span className="text-[12px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: tierPool ? "var(--emerald)" : "rgba(255,255,255,0.3)" }}>
-                          <LiveTimer deadline={tierDeadline} />
-                        </span>
-                      </div>
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      <span className="text-[12px] font-bold text-white">{t.min} people</span>
+                      <span className="text-[11px] font-extrabold" style={{ color: isBest ? "var(--emerald)" : "var(--coral)" }}>{t.discount}% off</span>
+                      {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
                     </div>
-                    <div className="flex -space-x-1.5">
-                      {Array.from({ length: t.min }).map((_, j) => {
-                        const filled = tierPool ? j < tierPool.memberCount : false;
-                        return (
-                        <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold"
-                          style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.05)", border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.25)", color: "white", transition: "all 300ms ease" }}>
-                          {filled ? String.fromCharCode(65 + j) : "?"}
+                    <div className="flex items-center justify-between">
+                      <div className="flex -space-x-1.5">
+                        {Array.from({ length: t.min }).map((_, j) => {
+                          const filled = tierPool ? j < tierPool.memberCount : false;
+                          return (
+                          <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold"
+                            style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.05)", border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.25)", color: "white", transition: "all 300ms ease" }}>
+                            {filled ? String.fromCharCode(65 + j) : "?"}
+                          </div>
+                          );
+                        })}
+                      </div>
+                      {tierPool ? (
+                        <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.08)" }}>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                          <span className="text-[12px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
+                            <LiveTimer deadline={tierPool.deadline} />
+                          </span>
                         </div>
-                        );
-                      })}
+                      ) : (
+                        <span className="text-[10px] font-bold" style={{ color: "rgba(255,255,255,0.3)" }}>{windowHours}h window</span>
+                      )}
                     </div>
                   </div>
                 );
