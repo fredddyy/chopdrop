@@ -290,38 +290,50 @@ export default function StorePage() {
   return (
     <main className="flex-1 max-w-[480px] mx-auto w-full pb-40" style={{ background: "var(--bg)" }}>
 
-      {/* ── Header — clean nav ── */}
-      <div className="px-5 pt-4 flex items-center gap-3">
-        <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback shrink-0" style={{ background: "var(--sand)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
-        </button>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-[18px] font-extrabold truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h1>
-          <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{store.address}</p>
-        </div>
-        <button type="button" onClick={() => { const el = document.getElementById("menu-search"); if (el) { el.classList.toggle("hidden"); el.focus(); } }} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-        </button>
-        <Link href="/cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
-        </Link>
-      </div>
-
-      {/* ── Banner + vendor info ── */}
-      {store.bannerUrl && (
-        <div className="px-5 mt-3">
-          <div className="h-[140px] rounded-[16px] overflow-hidden relative" style={{ background: "var(--sand)" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* ── Banner with overlaid nav + store info ── */}
+      <div className="relative" style={{ background: "var(--sand)" }}>
+        {/* Banner image — full bleed */}
+        <div className="h-[180px] overflow-hidden">
+          {store.bannerUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={store.bannerUrl} alt={store.name} className="w-full h-full object-cover" />
-            {store.imageUrl && (
-              <div className="absolute bottom-3 left-3 w-[46px] h-[46px] rounded-[12px] overflow-hidden" style={{ border: "3px solid white" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={store.imageUrl} alt="" className="w-full h-full object-cover" />
-              </div>
-            )}
+          ) : (
+            <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--sand)" }}>
+              <span className="text-[40px] font-extrabold" style={{ color: "var(--text-muted)", opacity: 0.15 }}>{store.name.charAt(0)}</span>
+            </div>
+          )}
+          {/* Dark gradient at top for nav buttons */}
+          <div className="absolute inset-x-0 top-0 h-[70px]" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)" }} />
+        </div>
+        {/* Nav buttons — overlaid on banner */}
+        <div className="absolute top-0 left-0 right-0 px-5 pt-4 flex items-center justify-between">
+          <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback shrink-0" style={{ background: "rgba(255,255,255,0.9)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => { const el = document.getElementById("menu-search"); if (el) { el.classList.toggle("hidden"); el.focus(); } }} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.9)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+            </button>
+            <Link href="/cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.9)" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+            </Link>
           </div>
         </div>
-      )}
+        {/* Store name + logo — overlapping bottom of banner */}
+        <div className="absolute bottom-0 left-0 right-0 px-5 pb-3 flex items-end gap-3">
+          <div className="absolute inset-x-0 bottom-0 h-[60px]" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5), transparent)" }} />
+          {store.imageUrl && (
+            <div className="relative w-[46px] h-[46px] rounded-[12px] overflow-hidden shrink-0" style={{ border: "3px solid white" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={store.imageUrl} alt="" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <div className="relative flex-1 min-w-0">
+            <h1 className="text-[18px] font-extrabold truncate text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{store.name}</h1>
+            <p className="text-[11px] truncate text-white/70">{store.address}</p>
+          </div>
+        </div>
+      </div>
 
       {/* ═══ GROUP ORDER CARD ═══ */}
       {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
