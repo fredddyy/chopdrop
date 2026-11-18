@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Protect admin API routes except auth
-  if (pathname.startsWith("/api/admin") && !pathname.startsWith("/api/admin/auth") && !pathname.startsWith("/api/admin/seed-gadgets") && !pathname.startsWith("/api/admin/apply-grocery-urls") && !pathname.startsWith("/api/admin/update-grocery-images")) {
+  if (pathname.startsWith("/api/admin") && !pathname.startsWith("/api/admin/auth") && !pathname.startsWith("/api/admin/seed-gadgets") && !pathname.startsWith("/api/admin/update-grocery-images")) {
     const token = request.cookies.get(ADMIN_COOKIE)?.value;
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
