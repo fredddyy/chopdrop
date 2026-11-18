@@ -348,23 +348,6 @@ export default function StorePage() {
                       : "Order with others around you"}
                   </p>
                 </div>
-                <div className="text-right">
-                  {hasLivePool ? (
-                    <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-[12px]" style={{ background: "rgba(255,255,255,0.08)" }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                        <LiveTimer deadline={earliestDeadline!} />
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-[12px]" style={{ background: "rgba(255,255,255,0.08)" }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "rgba(255,255,255,0.3)" }}>
-                        {Math.floor(store.groupWindowMins / 60)}:00:00
-                      </span>
-                    </div>
-                  )}
-                </div>
               </div>
               {/* Progress bar */}
               {hasLivePool && (
@@ -394,9 +377,12 @@ export default function StorePage() {
                   })}
                 </div>
                 {store.groupTarget > 8 && <span className="text-[9px] font-bold text-white/30">+{store.groupTarget - 8}</span>}
-                <span key={spotsLeft} className="text-[10px] font-bold ml-auto pop" style={{ color: hasLivePool ? "var(--emerald)" : "var(--coral)" }}>
-                  {hasLivePool ? `${spotsLeft} more orders to go` : `${store.groupTarget} orders to go`}
-                </span>
+                <div className="flex items-center gap-1 ml-auto px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.08)" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={hasLivePool ? "var(--emerald)" : "rgba(255,255,255,0.3)"} strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                  <span className="text-[12px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: hasLivePool ? "var(--emerald)" : "rgba(255,255,255,0.3)" }}>
+                    {hasLivePool ? <LiveTimer deadline={earliestDeadline!} /> : `${Math.floor(store.groupWindowMins / 60)}:00:00`}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
