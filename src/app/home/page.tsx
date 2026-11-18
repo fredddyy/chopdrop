@@ -656,7 +656,45 @@ export default function HomePage() {
                           )}
                           <span>{r.cheapestItemName || r.address.split(",")[0]}</span>
                         </div>
-                        {/* Social proof — recent activity on this restaurant */}
+                        {/* Group order info — people needed, discount, time */}
+                        {r.tiers.length > 0 && (() => {
+                          const firstTier = r.tiers[0];
+                          const bestTierDisc = r.tiers[r.tiers.length - 1];
+                          const spotsNeeded = firstTier.min;
+                          const liveMembers = r.livePools.totalMembers;
+                          const liveSize = r.livePools.totalSize || spotsNeeded;
+                          const hasLive = r.livePools.count > 0;
+                          return (
+                          <div className="mt-2.5">
+                            <p className="text-[11px] font-bold" style={{ color: "var(--text-secondary)" }}>
+                              {hasLive
+                                ? `${liveMembers} of ${liveSize} joined · ${bestTierDisc.discount}% off · 2h window`
+                                : `when ${spotsNeeded} people order together · 2h window`}
+                            </p>
+                            <div className="flex items-center gap-1.5 mt-1.5">
+                              <div className="flex -space-x-1">
+                                {Array.from({ length: Math.min(hasLive ? liveSize : spotsNeeded, 8) }).map((_, i) => {
+                                  const filled = hasLive && i < liveMembers;
+                                  return (
+                                    <div key={i} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-bold"
+                                      style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "1.5px solid white" : "1.5px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
+                                      {filled ? (r.livePools.memberNames[i]?.charAt(0) || "!") : "?"}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              {(hasLive ? liveSize : spotsNeeded) > 8 && (
+                                <span className="text-[9px] font-bold" style={{ color: "var(--text-muted)" }}>+{(hasLive ? liveSize : spotsNeeded) - 8}</span>
+                              )}
+                              <span className="text-[9px] font-bold" style={{ color: hasLive ? "var(--coral)" : "var(--text-muted)" }}>
+                                {hasLive ? `${liveSize - liveMembers} spots left` : `${spotsNeeded} spots`}
+                              </span>
+                            </div>
+                          </div>
+                          );
+                        })()}
+
+                        {/* Social proof — recent activity */}
                         {r.recentOrderCount > 0 ? (
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex -space-x-1.5" aria-hidden="true">
@@ -671,20 +709,7 @@ export default function HomePage() {
                             </span>
                           </div>
                         ) : (
-                          /* No recent orders — show tier chips or generic group line */
-                          r.tiers.length > 0 ? (
-                            <div className="flex items-center gap-1.5 mt-2">
-                              {r.tiers.map((t, i) => (
-                                <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-lg"
-                                  style={{
-                                    background: i === r.tiers.length - 1 ? "var(--emerald)" : "var(--emerald-soft)",
-                                    color: i === r.tiers.length - 1 ? "white" : "var(--emerald)",
-                                  }}>
-                                  {t.min}+ = {t.discount}%
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
+                          r.tiers.length === 0 && (
                             <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>
                               Save up to 30% with group orders
                             </p>
