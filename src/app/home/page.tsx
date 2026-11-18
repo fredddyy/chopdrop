@@ -478,6 +478,12 @@ export default function HomePage() {
       {activeCategory !== "Groceries" && !loading && !error && (() => {
         const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
         const handleTouchEnd = (e: React.TouchEvent) => {
+          // Don't swipe tabs if touch was inside a horizontal scroll container
+          let el = e.target as HTMLElement | null;
+          while (el) {
+            if (el.scrollWidth > el.clientWidth && el.classList.contains("overflow-x-auto")) return;
+            el = el.parentElement;
+          }
           const dx = e.changedTouches[0].clientX - touchStartX.current;
           if (Math.abs(dx) > 60) swipeTab(dx < 0 ? "left" : "right");
         };
