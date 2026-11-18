@@ -39,7 +39,7 @@ interface InactiveRestaurant {
   recentOrderCount: number;
   recentOrderNames: string[];
   groupDealCount: number;
-  livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[] };
+  livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; earliestDeadline: string | null };
 }
 
 interface DealItem {
@@ -64,6 +64,25 @@ function StoreImg({ src, fallback }: { src: string | null; fallback: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" onError={() => setErr(true)} />
+  );
+}
+
+function MiniCountdown({ deadline }: { deadline: string }) {
+  const [left, setLeft] = useState(() => Math.max(0, Math.floor((new Date(deadline).getTime() - Date.now()) / 1000)));
+  useEffect(() => {
+    const iv = setInterval(() => setLeft(Math.max(0, Math.floor((new Date(deadline).getTime() - Date.now()) / 1000))), 1000);
+    return () => clearInterval(iv);
+  }, [deadline]);
+  if (left <= 0) return <span style={{ color: "var(--coral)" }}>expired</span>;
+  const h = Math.floor(left / 3600);
+  const m = Math.floor((left % 3600) / 60);
+  const s = left % 60;
+  const urgent = left < 600;
+  return (
+    <span className="tabular-nums inline-flex items-center gap-1" style={{ color: urgent ? "var(--coral)" : "var(--emerald)", animation: urgent ? "pulse 1.5s ease-in-out infinite" : "none" }}>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+      {h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`}
+    </span>
   );
 }
 
@@ -676,9 +695,13 @@ export default function HomePage() {
                           const hasLive = r.livePools.count > 0;
                           return (
                           <p className="text-[11px] font-bold mt-1.5" style={{ color: "var(--text-secondary)" }}>
-                            {hasLive
-                              ? `${liveMembers} of ${liveSize} joined · ${bestTierDisc.discount}% off · 2h window`
-                              : `when ${spotsNeeded} people order together · 2h window`}
+                            {hasLive ? (
+                              <>
+                                {liveMembers} of {liveSize} joined · {bestTierDisc.discount}% off · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
+                              </>
+                            ) : (
+                              `when ${spotsNeeded} people order together · 2h window`
+                            )}
                           </p>
                           );
                         })()}

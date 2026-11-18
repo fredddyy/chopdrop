@@ -107,7 +107,7 @@ export async function GET(request: Request) {
     recentOrderCount: number;
     recentOrderNames: string[];
     groupDealCount: number;
-    livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[] };
+    livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; earliestDeadline: string | null };
   }> = [];
 
   // Query recent group order activity per restaurant (last 7 days)
@@ -159,15 +159,16 @@ export async function GET(request: Request) {
     where: { status: "OPEN", deadline: { gt: now }, members: { some: {} } },
     select: {
       id: true,
+      deadline: true,
       members: { select: { id: true, user: { select: { firstName: true } } }, take: 5 },
       minSize: true,
       product: { select: { vendorId: true } },
     },
   });
-  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[] }>();
+  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; earliestDeadline: string | null }>();
   for (const p of activePools) {
     const rid = p.product.vendorId;
-    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [] };
+    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], earliestDeadline: null };
     existing.count += 1;
     existing.totalMembers += p.members.length;
     existing.totalSize += p.minSize;
@@ -176,6 +177,8 @@ export async function GET(request: Request) {
         existing.memberNames.push(m.user.firstName);
       }
     }
+    const dl = p.deadline.toISOString();
+    if (!existing.earliestDeadline || dl < existing.earliestDeadline) existing.earliestDeadline = dl;
     const fill = Math.round((p.members.length / p.minSize) * 100);
     if (fill > existing.bestFill) existing.bestFill = fill;
     livePoolsByRestaurant.set(rid, existing);
@@ -240,7 +243,7 @@ export async function GET(request: Request) {
         recentOrderCount: recentActivity.get(r.id)?.count ?? 0,
         recentOrderNames: recentActivity.get(r.id)?.names ?? [],
         groupDealCount: r._count.products,
-        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [] },
+        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], earliestDeadline: null },
         tiers,
       });
     }
