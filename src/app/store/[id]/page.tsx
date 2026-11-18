@@ -295,7 +295,10 @@ export default function StorePage() {
         <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback shrink-0" style={{ background: "var(--sand)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
-        <h1 className="text-[18px] font-extrabold flex-1 truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h1>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-[18px] font-extrabold truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h1>
+          <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{store.address}</p>
+        </div>
         <button type="button" onClick={() => { const el = document.getElementById("menu-search"); if (el) { el.classList.toggle("hidden"); el.focus(); } }} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
         </button>
@@ -319,9 +322,6 @@ export default function StorePage() {
           </div>
         </div>
       )}
-      <div className="px-5 mt-3">
-        <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
-      </div>
 
       {/* ═══ GROUP ORDER CARD ═══ */}
       {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
