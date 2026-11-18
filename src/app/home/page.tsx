@@ -104,7 +104,9 @@ function TabBar({ filter, setFilter }: { filter: FilterKey; setFilter: (f: Filte
     const el = textRefs.current[idx];
     const container = containerRef.current;
     if (el && container) {
-      setIndicator({ left: el.offsetLeft - container.scrollLeft, width: el.offsetWidth });
+      const containerRect = container.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      setIndicator({ left: elRect.left - containerRect.left, width: elRect.width });
     }
   }, [filter]);
 
