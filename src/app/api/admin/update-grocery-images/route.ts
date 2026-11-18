@@ -6,6 +6,7 @@ const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "rigeva3a";
 const API_KEY = process.env.CLOUDINARY_API_KEY || "";
 const API_SECRET = process.env.CLOUDINARY_API_SECRET || "";
 
+const PP = "https://www.pricepally.com/_next/image?w=640&q=80&url=";
 const S3 = "https://pp-new-node-medusa-prod-bucket.s3.us-east-1.amazonaws.com";
 
 const IMAGE_MAP: Record<string, string> = {
@@ -50,8 +51,10 @@ const IMAGE_MAP: Record<string, string> = {
   "Groundnut Oil (4L)": `${S3}/starch-1718707527135.jpg`,
 };
 
-async function uploadToCloudinary(sourceUrl: string): Promise<string | null> {
+async function uploadToCloudinary(s3Url: string): Promise<string | null> {
   if (!API_KEY || !API_SECRET) return null;
+  // Use PricePally's Next.js image proxy to access the S3 images
+  const proxyUrl = `${PP}${encodeURIComponent(s3Url)}`;
   const folder = "chopdrop/groceries";
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const sigStr = `folder=${folder}&timestamp=${timestamp}${API_SECRET}`;
@@ -59,7 +62,7 @@ async function uploadToCloudinary(sourceUrl: string): Promise<string | null> {
   const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ file: sourceUrl, api_key: API_KEY, timestamp, signature, folder }),
+    body: JSON.stringify({ file: proxyUrl, api_key: API_KEY, timestamp, signature, folder }),
   });
   const result = await res.json();
   return result.secure_url || null;
