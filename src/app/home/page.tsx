@@ -586,17 +586,10 @@ export default function HomePage() {
                           <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--coral)", borderRadius: "0 0 8px 0" }}>
                             Chop price
                           </div>
-                          <div className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-lg flex items-center justify-center" style={{ background: "white" }}>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                          </div>
                         </div>
                         <div className="pt-1.5">
                           <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
-                          <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(item.retailPrice)}</span>
-                          <span className="text-[9px] font-bold ml-1" style={{ color: "var(--emerald)" }}>choppable</span>
-                          <div className="text-[9px] font-bold py-1 text-center rounded-lg mt-1" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>
-                            Share to chop
-                          </div>
+                          <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.retailPrice)}</span>
                         </div>
                       </Link>
                     ))}
