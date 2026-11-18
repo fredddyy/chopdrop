@@ -27,8 +27,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Product not found" }, { status: 404 });
   }
 
-  // Validate minSize matches a real tier
-  const tiers = Array.isArray(product.vendor.groupTiers) ? product.vendor.groupTiers as Array<{ min: number; discount: number }> : [];
+  // Validate minSize matches a real tier (with fallback defaults)
+  let tiers = Array.isArray(product.vendor.groupTiers) ? product.vendor.groupTiers as Array<{ min: number; discount: number }> : [];
+  if (tiers.length === 0) {
+    tiers = [{ min: 3, discount: 10 }, { min: 5, discount: 20 }, { min: 10, discount: 30 }];
+  }
   const selectedTier = tiers.find(t => t.min === minSize);
   if (!selectedTier) {
     return NextResponse.json({ success: false, error: `No tier found for ${minSize} people` }, { status: 400 });

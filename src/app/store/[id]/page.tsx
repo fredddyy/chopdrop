@@ -324,7 +324,19 @@ export default function StorePage() {
       )}
       {/* ═══ GROUP TIERS CARD ═══ */}
       {(() => {
-        const tiers = Array.isArray(store.groupTiers) ? (store.groupTiers as Array<{ min: number; discount: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min) : [];
+        let tiers = Array.isArray(store.groupTiers) ? (store.groupTiers as Array<{ min: number; discount: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min) : [];
+        // Fallback: generate tiers from groupTarget/groupDiscount
+        if (tiers.length === 0 && store.groupTarget > 0 && store.groupDiscount > 0) {
+          tiers = [
+            { min: 3, discount: Math.round(store.groupDiscount * 0.33) },
+            { min: 5, discount: Math.round(store.groupDiscount * 0.66) },
+            { min: store.groupTarget, discount: store.groupDiscount },
+          ].filter(t => t.discount > 0);
+        }
+        // Last fallback: default tiers for all restaurants
+        if (tiers.length === 0) {
+          tiers = [{ min: 3, discount: 10 }, { min: 5, discount: 20 }, { min: 10, discount: 30 }];
+        }
         if (tiers.length === 0) return null;
         const bestTier = tiers[tiers.length - 1];
         return (
@@ -768,9 +780,21 @@ export default function StorePage() {
 
       {/* ═══ TIER SELECTOR SHEET ═══ */}
       {store && (() => {
-        const vendorTiers = Array.isArray(store.groupTiers)
+        let vendorTiers = Array.isArray(store.groupTiers)
           ? (store.groupTiers as Array<{ min: number; discount: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min)
           : [];
+        // Fallback: build tiers from groupTarget/groupDiscount if no tiers configured
+        if (vendorTiers.length === 0 && store.groupTarget > 0 && store.groupDiscount > 0) {
+          vendorTiers = [
+            { min: 3, discount: Math.round(store.groupDiscount * 0.33) },
+            { min: 5, discount: Math.round(store.groupDiscount * 0.66) },
+            { min: store.groupTarget, discount: store.groupDiscount },
+          ].filter(t => t.discount > 0);
+        }
+        // Last fallback: default tiers
+        if (vendorTiers.length === 0) {
+          vendorTiers = [{ min: 3, discount: 10 }, { min: 5, discount: 20 }, { min: 10, discount: 30 }];
+        }
         const storeItems = cart.items.filter(i => i.restaurantName === store.name);
         const firstItemPrice = storeItems[0]?.price || 0;
         return vendorTiers.length > 0 ? (
