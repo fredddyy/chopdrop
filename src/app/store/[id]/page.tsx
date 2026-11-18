@@ -367,31 +367,39 @@ export default function StorePage() {
                     {isBest && <span className="text-[7px] font-bold ml-0.5 px-1 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
                   </div>
                   {/* Avatars */}
-                  <div className="flex -space-x-1.5 flex-1">
-                    {Array.from({ length: showMax }).map((_, j) => {
-                      const filled = hasTierPool && j < tierPool.memberCount;
-                      return (
-                      <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold"
-                        style={{
-                          background: filled ? "var(--coral)" : "var(--card)",
-                          border: filled ? "1.5px solid var(--sand)" : "1.5px dashed var(--border)",
-                          color: filled ? "white" : "var(--text-muted)",
-                        }}>
-                        {filled ? String.fromCharCode(65 + j) : "?"}
-                      </div>
-                      );
-                    })}
-                    {overflow > 0 && <span className="text-[8px] font-bold self-center ml-0.5" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
+                  <div className="flex items-center flex-1">
+                    <div className="flex -space-x-1.5">
+                      {Array.from({ length: showMax }).map((_, j) => {
+                        const filled = hasTierPool && j < tierPool.memberCount;
+                        return (
+                        <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold"
+                          style={{
+                            background: filled ? "var(--coral)" : "var(--card)",
+                            border: filled ? "1.5px solid var(--sand)" : "1.5px dashed var(--border)",
+                            color: filled ? "white" : "var(--text-muted)",
+                          }}>
+                          {filled ? String.fromCharCode(65 + j) : "?"}
+                        </div>
+                        );
+                      })}
+                    </div>
+                    {overflow > 0 && <span className="text-[9px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
                   </div>
                   {/* Timer */}
                   {hasTierPool ? (
-                    <span className="text-[10px] font-extrabold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                      <LiveTimer deadline={tierPool.deadline} />
-                    </span>
+                    <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)" }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                      <span className="text-[10px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
+                        <LiveTimer deadline={tierPool.deadline} />
+                      </span>
+                    </div>
                   ) : (
-                    <span className="text-[10px] font-medium shrink-0" style={{ color: "var(--text-muted)" }}>
-                      {Math.floor((store.groupWindowMins || 120) / 60)}h
-                    </span>
+                    <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "var(--card)" }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                      <span className="text-[10px] font-medium tabular-nums" style={{ color: "var(--text-muted)" }}>
+                        {Math.floor((store.groupWindowMins || 120) / 60)}h window
+                      </span>
+                    </div>
                   )}
                 </div>
                 );
