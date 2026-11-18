@@ -640,22 +640,6 @@ export default function HomePage() {
                       {/* Info — below banner */}
                       <div className="pt-2.5 pb-1">
                         <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
-                        {/* Delivery metadata row */}
-                        <div className="flex items-center gap-1 mt-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
-                          {r.lowestPrice > 0 && (
-                            <>
-                              <span className="font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>From {fmt(r.lowestPrice)}</span>
-                              <span>·</span>
-                            </>
-                          )}
-                          {r.rating > 0 && (
-                            <>
-                              <span style={{ color: "var(--emerald)" }}>★ {r.rating.toFixed(1)}</span>
-                              <span>·</span>
-                            </>
-                          )}
-                          <span>{r.cheapestItemName || r.address.split(",")[0]}</span>
-                        </div>
                         {/* Group order info — people needed, discount, time */}
                         {(() => {
                           const firstTier = r.tiers[0] || { min: 5, discount: 10 };
