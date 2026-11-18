@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Protect admin API routes except auth
-  if (pathname.startsWith("/api/admin") && !pathname.startsWith("/api/admin/auth") && !pathname.startsWith("/api/admin/seed-gadgets")) {
+  if (pathname.startsWith("/api/admin") && !pathname.startsWith("/api/admin/auth") && !pathname.startsWith("/api/admin/seed-gadgets") && !pathname.startsWith("/api/admin/seed-groceries")) {
     const token = request.cookies.get(ADMIN_COOKIE)?.value;
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
