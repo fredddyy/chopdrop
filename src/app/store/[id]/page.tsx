@@ -333,11 +333,10 @@ export default function StorePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" style={{ animation: hasLivePool ? "pulse 2s ease-in-out infinite" : "none" }}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                     <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>
                       {hasLivePool ? "Live group order" : "Group order"}
                     </span>
-                    {hasLivePool && <span className="w-[6px] h-[6px] rounded-full animate-pulse" style={{ background: "var(--coral)" }} />}
                   </div>
                   <p className="text-[13px] text-white/50 mt-1">
                     {hasLivePool
