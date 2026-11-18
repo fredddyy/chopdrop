@@ -340,64 +340,47 @@ export default function StorePage() {
         if (tiers.length === 0) return null;
         const bestTier = tiers[tiers.length - 1];
         return (
-        <div className="px-5 mt-4">
-          <div className="rounded-[16px] overflow-hidden p-5 card-enter" style={{ background: "var(--dark)" }}>
-            {/* Header — big discount number + explanation */}
-            <div className="mb-5">
-              <p className="text-[28px] font-extrabold leading-none tracking-[-0.03em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "white" }}>
-                Save up to {bestTier.discount}%
-              </p>
-              <p className="text-[13px] mt-1.5" style={{ color: "rgba(255,255,255,0.5)" }}>
-                Pick a group size below. More people join, everyone saves.
-              </p>
-            </div>
-            {/* Tier rows */}
-            <div className="space-y-4">
-              {tiers.map((t, i) => {
-                const isBest = i === tiers.length - 1;
-                const tierPool = livePools.find(lp => lp.minSize === t.min);
-                const windowHours = Math.max(1, Math.floor((store.groupWindowMins || 120) / 60));
-                return (
-                  <div key={t.min} className="rounded-[12px] p-3" style={{ background: isBest ? "rgba(34,197,94,0.1)" : "rgba(255,255,255,0.04)" }}>
-                    {/* Label row */}
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[22px] font-extrabold leading-none tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isBest ? "var(--emerald)" : "white" }}>{t.discount}%</span>
-                        <div>
-                          <span className="text-[13px] font-bold text-white block leading-tight">{t.min} people</span>
-                          {isBest && <span className="text-[9px] font-bold" style={{ color: "var(--emerald)" }}>Best value</span>}
-                        </div>
+        <div className="px-5 mt-3">
+          {/* Compact horizontal tier strip */}
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar">
+            {tiers.map((t, i) => {
+              const isBest = i === tiers.length - 1;
+              const tierPool = livePools.find(lp => lp.minSize === t.min);
+              return (
+                <div key={t.min} className="shrink-0 w-[130px] rounded-[12px] p-3" style={{ background: isBest ? "var(--dark)" : "var(--sand)" }}>
+                  {/* Discount hero */}
+                  <span className="text-[24px] font-extrabold leading-none tabular-nums block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isBest ? "var(--emerald)" : "var(--text)" }}>
+                    {t.discount}%
+                  </span>
+                  <span className="text-[11px] font-bold block mt-0.5" style={{ color: isBest ? "white" : "var(--text-secondary)" }}>
+                    {t.min} people
+                  </span>
+                  {isBest && <span className="text-[8px] font-bold" style={{ color: "var(--emerald)" }}>Best value</span>}
+                  {/* Avatars */}
+                  <div className="flex -space-x-1 mt-2">
+                    {Array.from({ length: Math.min(t.min, 6) }).map((_, j) => {
+                      const filled = tierPool ? j < tierPool.memberCount : false;
+                      return (
+                      <div key={j} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[6px] font-bold"
+                        style={{ background: filled ? "var(--coral)" : isBest ? "rgba(255,255,255,0.08)" : "var(--border)", border: filled ? "1px solid " + (isBest ? "var(--dark)" : "var(--sand)") : "1px dashed " + (isBest ? "rgba(255,255,255,0.2)" : "var(--text-muted)"), color: filled ? "white" : isBest ? "rgba(255,255,255,0.3)" : "var(--text-muted)" }}>
+                        {filled ? "!" : "?"}
                       </div>
-                      {tierPool ? (
-                        <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(34,197,94,0.15)" }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                          <span className="text-[11px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                            <LiveTimer deadline={tierPool.deadline} />
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-[11px] font-medium px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.35)" }}>{windowHours}h window</span>
-                      )}
-                    </div>
-                    {/* Avatar row */}
-                    <div className="flex -space-x-1.5">
-                      {Array.from({ length: t.min }).map((_, j) => {
-                        const filled = tierPool ? j < tierPool.memberCount : false;
-                        return (
-                        <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[8px] font-bold"
-                          style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.04)", border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.2)", color: filled ? "white" : "rgba(255,255,255,0.25)", transition: "all 300ms ease" }}>
-                          {filled ? String.fromCharCode(65 + j) : "?"}
-                        </div>
-                        );
-                      })}
-                      {tierPool && tierPool.memberCount > 0 && (
-                        <span className="text-[9px] font-bold self-center ml-2" style={{ color: "var(--emerald)" }}>{tierPool.memberCount} joined</span>
-                      )}
-                    </div>
+                      );
+                    })}
+                    {t.min > 6 && <span className="text-[8px] font-bold self-center ml-0.5" style={{ color: isBest ? "rgba(255,255,255,0.4)" : "var(--text-muted)" }}>+{t.min - 6}</span>}
                   </div>
-                );
-              })}
-            </div>
+                  {/* Status */}
+                  {tierPool ? (
+                    <div className="flex items-center gap-1 mt-2">
+                      <span className="w-[5px] h-[5px] rounded-full" style={{ background: "var(--emerald)" }} />
+                      <span className="text-[9px] font-bold" style={{ color: "var(--emerald)" }}>{tierPool.memberCount} joined</span>
+                    </div>
+                  ) : (
+                    <p className="text-[9px] font-medium mt-2" style={{ color: isBest ? "rgba(255,255,255,0.35)" : "var(--text-muted)" }}>Start this group</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
         );
