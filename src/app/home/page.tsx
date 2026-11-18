@@ -651,9 +651,9 @@ export default function HomePage() {
                             {r.groupDealCount} {r.groupDealCount === 1 ? "deal" : "deals"}
                           </span>
                         )}
-                        {/* Avatar spots — bottom right of banner */}
-                        {(() => {
-                          const spots = r.groupTarget || 5;
+                        {/* Avatar spots — bottom right of banner, only when deal configured */}
+                        {r.groupTarget > 0 && r.groupDiscount > 0 && (() => {
+                          const spots = r.groupTarget;
                           const lm = r.livePools.totalMembers;
                           const ls = spots;
                           const hl = r.livePools.count > 0;
@@ -661,7 +661,7 @@ export default function HomePage() {
                           return (
                             <div className="absolute bottom-2.5 right-3 flex items-center gap-1.5 px-2 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.6)" }}>
                               <div className="flex -space-x-1">
-                                {Array.from({ length: Math.min(count, 6) }).map((_, i) => {
+                                {Array.from({ length: Math.min(count, 10) }).map((_, i) => {
                                   const filled = hl && i < lm;
                                   return (
                                     <div key={i} className="w-[16px] h-[16px] rounded-full flex items-center justify-center text-[6px] font-bold"
@@ -671,7 +671,7 @@ export default function HomePage() {
                                   );
                                 })}
                               </div>
-                              {count > 6 && <span className="text-[8px] font-bold text-white/70">+{count - 6}</span>}
+                              {count > 10 && <span className="text-[8px] font-bold text-white/70">+{count - 10}</span>}
                               <span className="text-[8px] font-bold text-white">{hl ? `${count - lm} left` : `${count} spots`}</span>
                             </div>
                           );
@@ -681,10 +681,10 @@ export default function HomePage() {
                       {/* Info — below banner */}
                       <div className="pt-2.5 pb-1">
                         <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
-                        {/* Group order info — people needed, discount, time */}
-                        {(() => {
-                          const spotsNeeded = r.groupTarget || 5;
-                          const discountPct = r.groupDiscount || 30;
+                        {/* Deal info — only when restaurant has a deal configured */}
+                        {r.groupTarget > 0 && r.groupDiscount > 0 && (() => {
+                          const spotsNeeded = r.groupTarget;
+                          const discountPct = r.groupDiscount;
                           const liveMembers = r.livePools.totalMembers;
                           const liveSize = spotsNeeded;
                           const hasLive = r.livePools.count > 0;
