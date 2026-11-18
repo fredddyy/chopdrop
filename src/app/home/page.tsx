@@ -493,64 +493,61 @@ export default function HomePage() {
         return (
         <div key={filter} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="card-enter">
           {/* ═══ ITEM CARDS — shown when filtering by deals or live ═══ */}
-          {isItemView && filteredItems.length > 0 && (
-            <div className="px-5 pt-4">
-              <div className="grid grid-cols-3 gap-2.5">
-                {filteredItems.map(item => {
-                  const poolMembers = item.activePool?.memberCount || 0;
-                  const spotsLeft = item.minPoolSize - poolMembers;
-                  const hasPool = item.activePool && poolMembers > 0;
-                  const isChopMode = filter === "chop";
-                  const chopFriendsNeeded = Math.ceil(item.retailPrice / 10000); // each friend chops ₦100
-                  return (
-                  <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-lg overflow-hidden">
-                    {/* Image + add button */}
-                    <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
-                      {item.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
+          {isItemView && filteredItems.length > 0 && (() => {
+            // Group items by restaurant
+            const byRestaurant = new Map<string, { name: string; id: string; items: typeof filteredItems }>();
+            for (const item of filteredItems) {
+              const key = item.restaurantId;
+              if (!byRestaurant.has(key)) byRestaurant.set(key, { name: item.restaurantName, id: item.restaurantId, items: [] });
+              byRestaurant.get(key)!.items.push(item);
+            }
+            return (
+            <div className="pt-4 space-y-6">
+              {Array.from(byRestaurant.values()).map(group => (
+                <div key={group.id}>
+                  {/* Restaurant header */}
+                  <div className="px-5 flex items-center justify-between mb-2">
+                    <Link href={`/store/${group.id}`} className="press-feedback">
+                      <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{group.name}</h3>
+                    </Link>
+                    <Link href={`/store/${group.id}`} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>See all →</Link>
+                  </div>
+                  {/* Horizontal scroll */}
+                  <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-2">
+                    {group.items.map(item => (
+                      <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block shrink-0" style={{ width: "140px" }}>
+                        <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                          {item.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
+                            </div>
+                          )}
+                          <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--coral)", borderRadius: "0 0 8px 0" }}>
+                            Chop price
+                          </div>
+                          <div className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-lg flex items-center justify-center" style={{ background: "white" }}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                          </div>
                         </div>
-                      )}
-                      {/* Ribbon — top left */}
-                      <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: isChopMode ? "var(--coral)" : "var(--emerald)", borderRadius: "0 0 8px 0" }}>
-                        {isChopMode ? "Chop price" : `-${item.savings}%`}
-                      </div>
-                      {/* Add button — bottom right on image */}
-                      <div className="absolute bottom-1.5 right-1.5 w-[24px] h-[24px] rounded-lg flex items-center justify-center" style={{ background: "white" }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                      </div>
-                    </div>
-                    {/* Info */}
-                    <div className="pt-1.5">
-                      <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
-                      <p className="text-[9px] truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
-                      {/* Price */}
-                      <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(item.retailPrice)}</span>
-                        {isChopMode && <span className="text-[9px] font-bold" style={{ color: "var(--emerald)" }}>choppable</span>}
-                        {!isChopMode && item.savings > 0 && <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>}
-                      </div>
-                      {/* Pool status box — full width */}
-                      <div className="mt-1.5">
-                        <div className="text-[9px] font-bold py-1.5 text-center rounded-lg" style={{
-                          background: hasPool ? "rgba(26,125,75,0.1)" : "var(--sand)",
-                          color: hasPool ? "var(--emerald)" : "var(--text-muted)",
-                        }}>
-                          {isChopMode
-                            ? "Share to chop the price"
-                            : hasPool ? `${poolMembers} orders so far` : `${item.minPoolSize} orders to unlock`}
+                        <div className="pt-1.5">
+                          <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                          <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fmt(item.retailPrice)}</span>
+                          <span className="text-[9px] font-bold ml-1" style={{ color: "var(--emerald)" }}>choppable</span>
+                          <div className="text-[9px] font-bold py-1 text-center rounded-lg mt-1" style={{ background: "var(--sand)", color: "var(--text-muted)" }}>
+                            Share to chop
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </Link>
-                  );
-                })}
-              </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+            );
+          })()}
           {/* ═══ LIVE ORDERS — restaurants with active group orders ═══ */}
           {!isItemView && activeOrders.length > 0 && (
             <div className="px-5 pt-4">
