@@ -300,44 +300,48 @@ export default function StorePage() {
         <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
       </div>
 
-      {/* ═══ GROUP ORDER INFO ═══ */}
-      {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
-        const hrs = Math.floor(store.groupWindowMins / 60);
-        const mins = store.groupWindowMins % 60;
-        const windowLabel = hrs > 0 ? `${hrs}h${mins > 0 ? `${mins}m` : ""}` : `${mins}m`;
-        return (
+      {/* ═══ GROUP ORDER CARD ═══ */}
+      {store.groupTarget > 0 && store.groupDiscount > 0 && (
         <div className="px-5 mt-4">
-          <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
-            {/* Top row: headline + discount badge */}
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>Group order</p>
-                <p className="text-[18px] font-extrabold leading-tight mt-1" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-                  Save {store.groupDiscount}%
-                </p>
-                <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-                  when {store.groupTarget} people order together · {windowLabel} window
-                </p>
+          <div className="rounded-[16px] overflow-hidden" style={{ background: "var(--dark)" }}>
+            {/* Top section */}
+            <div className="p-4 pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                    <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>Group order</span>
+                  </div>
+                  <p className="text-[13px] text-white/50 mt-1">
+                    {store.groupTarget} people · {Math.floor(store.groupWindowMins / 60)}h window
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="text-[36px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
+                    {store.groupDiscount}%
+                  </span>
+                  <span className="text-[10px] font-bold text-white/40">off</span>
+                </div>
               </div>
-              <span className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                {store.groupDiscount}%
-              </span>
             </div>
-            {/* Avatar row */}
-            <div className="flex items-center gap-2.5 mt-3">
-              <div className="flex -space-x-1.5">
-                {Array.from({ length: Math.min(store.groupTarget, 8) }).map((_, i) => (
-                  <div key={i} className="w-[26px] h-[26px] rounded-full"
-                    style={{ border: "2px dashed var(--border)", background: "var(--card)" }} />
-                ))}
+            {/* Avatar progress bar */}
+            <div className="px-4 pb-4">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-1">
+                  {Array.from({ length: Math.min(store.groupTarget, 8) }).map((_, i) => (
+                    <div key={i} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold"
+                      style={{ border: "1.5px dashed rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", transition: "all 300ms ease" }}>
+                      ?
+                    </div>
+                  ))}
+                </div>
+                {store.groupTarget > 8 && <span className="text-[9px] font-bold text-white/30">+{store.groupTarget - 8}</span>}
+                <span className="text-[10px] font-bold ml-auto" style={{ color: "var(--coral)" }}>{store.groupTarget} spots open</span>
               </div>
-              {store.groupTarget > 8 && <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>+{store.groupTarget - 8}</span>}
-              <span className="text-[10px] font-bold" style={{ color: "var(--text-muted)" }}>{store.groupTarget} spots</span>
             </div>
           </div>
         </div>
-        );
-      })()}
+      )}
 
       {/* ═══ THE FULL MENU ═══ */}
       <section className="px-5 mt-4">
