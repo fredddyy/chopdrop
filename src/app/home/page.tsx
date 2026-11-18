@@ -157,6 +157,9 @@ export default function HomePage() {
   const [isReturning, setIsReturning] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Food");
   const [categories, setCategories] = useState<Array<{ name: string; imageUrl: string | null }>>([]);
+  const [groceryItems, setGroceryItems] = useState<Array<{ id: string; name: string; description: string | null; imageUrl: string | null; subcategory: string | null; retailPrice: number; groupPrice: number }>>([]);
+  const [grocerySubcategories, setGrocerySubcategories] = useState<string[]>([]);
+  const [activeSubcategory, setActiveSubcategory] = useState("All");
   const touchStartX = useRef(0);
   const swipeTab = useCallback((direction: "left" | "right") => {
     setFilter(prev => {
@@ -194,6 +197,18 @@ export default function HomePage() {
 
   // Reload feed when category changes
   useEffect(() => { loadFeed(activeCategory); }, [activeCategory]);
+
+  // Fetch grocery items when Groceries category is active
+  useEffect(() => {
+    if (activeCategory !== "Groceries") return;
+    fetch("/api/grocery-items").then(r => r.json()).then(d => {
+      if (d.success) {
+        setGroceryItems(d.data.products);
+        setGrocerySubcategories(d.data.subcategories);
+        setActiveSubcategory("All");
+      }
+    }).catch(() => {});
+  }, [activeCategory]);
 
   function saveLocation(address: string, area?: string) {
     setDeliveryAddress(address);
@@ -402,7 +417,60 @@ export default function HomePage() {
         </div>
       )}
 
-      {!loading && !error && (() => {
+      {/* ═══ GROCERY GRID — shown when Groceries category active ═══ */}
+      {activeCategory === "Groceries" && groceryItems.length > 0 && (
+        <div className="px-5 pt-4 pb-24">
+          {/* Subcategory filters */}
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-4">
+            {["All", ...grocerySubcategories].map(sub => (
+              <button key={sub} type="button" onClick={() => setActiveSubcategory(sub)}
+                className="h-[32px] px-3 rounded-[12px] text-[12px] font-bold whitespace-nowrap shrink-0 press-feedback"
+                style={{
+                  background: activeSubcategory === sub ? "rgba(196,87,42,0.1)" : "var(--sand)",
+                  color: activeSubcategory === sub ? "var(--coral)" : "var(--text-secondary)",
+                }}>
+                {sub}
+              </button>
+            ))}
+          </div>
+          {/* Product grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {groceryItems
+              .filter(g => activeSubcategory === "All" || g.subcategory === activeSubcategory)
+              .map(item => (
+              <Link key={item.id} href={`/product/${item.id}`} className="press-feedback block rounded-[12px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="relative" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                  {item.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-[28px]" style={{ opacity: 0.3 }}>{item.name.includes("Tomato") ? "🍅" : item.name.includes("Chicken") || item.name.includes("Beef") || item.name.includes("Goat") ? "🥩" : item.name.includes("Rice") || item.name.includes("Garri") || item.name.includes("Yam") ? "🌾" : item.name.includes("Oil") || item.name.includes("Salt") ? "🫒" : item.name.includes("Water") || item.name.includes("Mango") || item.name.includes("Orange") || item.name.includes("Banana") ? "🍊" : item.name.includes("Milk") || item.name.includes("Milo") || item.name.includes("Tea") ? "☕" : "🛒"}</span>
+                    </div>
+                  )}
+                  {item.groupPrice < item.retailPrice && (
+                    <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--emerald)", borderRadius: "0 0 8px 0" }}>
+                      -{Math.round(((item.retailPrice - item.groupPrice) / item.retailPrice) * 100)}%
+                    </div>
+                  )}
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[12px] font-bold leading-tight" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</p>
+                  {item.description && <p className="text-[10px] mt-0.5 leading-tight" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
+                  <div className="flex items-baseline gap-1.5 mt-1">
+                    <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.retailPrice)}</span>
+                    {item.groupPrice < item.retailPrice && (
+                      <span className="text-[10px] font-bold" style={{ color: "var(--emerald)" }}>{fmt(item.groupPrice)} with others</span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeCategory !== "Groceries" && !loading && !error && (() => {
         const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
         const handleTouchEnd = (e: React.TouchEvent) => {
           const dx = e.changedTouches[0].clientX - touchStartX.current;
