@@ -54,9 +54,8 @@ function LiveTimer({ deadline }: { deadline: string }) {
   const s = left % 60;
   const urgent = left < 600;
   return (
-    <span className="tabular-nums inline-flex items-center gap-1" style={{ color: urgent ? "var(--coral)" : "var(--emerald)", animation: urgent ? "pulse 1.5s ease-in-out infinite" : "none" }}>
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-      {h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`}
+    <span className="tabular-nums" style={{ color: urgent ? "var(--coral)" : "var(--emerald)" }}>
+      {h > 0 ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : `${m}:${String(s).padStart(2, "0")}`}
     </span>
   );
 }
@@ -340,15 +339,26 @@ export default function StorePage() {
                   </div>
                   <p className="text-[13px] text-white/50 mt-1">
                     {hasLivePool
-                      ? <><span className="text-white font-bold">{totalPoolMembers}/{store.groupTarget}</span> orders · <LiveTimer deadline={earliestDeadline!} /></>
-                      : `${store.groupTarget} orders needed · ${Math.floor(store.groupWindowMins / 60)}h`}
+                      ? <><span className="text-white font-bold">{totalPoolMembers}/{store.groupTarget}</span> orders · Save {store.groupDiscount}%</>
+                      : `${store.groupTarget} orders needed · Save ${store.groupDiscount}%`}
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[36px] font-extrabold tabular-nums leading-none block savings-reveal" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                    {store.groupDiscount}%
-                  </span>
-                  <span className="text-[10px] font-bold text-white/40">off</span>
+                  {hasLivePool ? (
+                    <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-[12px]" style={{ background: "rgba(255,255,255,0.08)" }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                      <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
+                        <LiveTimer deadline={earliestDeadline!} />
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-[12px]" style={{ background: "rgba(255,255,255,0.08)" }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                      <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "rgba(255,255,255,0.3)" }}>
+                        {Math.floor(store.groupWindowMins / 60)}:00:00
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               {/* Progress bar */}
@@ -365,7 +375,7 @@ export default function StorePage() {
                   {Array.from({ length: Math.min(store.groupTarget, 8) }).map((_, i) => {
                     const filled = hasLivePool && i < totalPoolMembers;
                     return (
-                    <div key={i} className={`w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold ${filled ? "celebrate" : ""}`}
+                    <div key={i} className={`w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold ${filled ? "celebrate" : ""}`}
                       style={{
                         background: filled ? "var(--coral)" : "rgba(255,255,255,0.05)",
                         border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.25)",
