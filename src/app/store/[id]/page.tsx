@@ -295,7 +295,10 @@ export default function StorePage() {
         <button type="button" onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer press-feedback shrink-0" style={{ background: "var(--sand)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
         </button>
-        <h1 className="text-[18px] font-extrabold flex-1 truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h1>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-[18px] font-extrabold truncate" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h1>
+          <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{store.address}</p>
+        </div>
         <button type="button" onClick={() => { const el = document.getElementById("menu-search"); if (el) { el.classList.toggle("hidden"); el.focus(); } }} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
         </button>
@@ -319,85 +322,41 @@ export default function StorePage() {
           </div>
         </div>
       )}
-      <div className="px-5 mt-3">
-        <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>{store.address}</p>
-      </div>
-
-      {/* ═══ GROUP ORDER CARD ═══ */}
-      {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
-        const totalPoolMembers = livePools.reduce((s, p) => s + p.memberCount, 0);
-        const hasLivePool = livePools.length > 0 && totalPoolMembers > 0;
-        const earliestDeadline = livePools.length > 0 ? livePools.reduce((earliest, p) => p.deadline < earliest ? p.deadline : earliest, livePools[0].deadline) : null;
-        const spotsLeft = store.groupTarget - totalPoolMembers;
+      {/* ═══ GROUP TIERS CARD ═══ */}
+      {(() => {
+        const tiers = Array.isArray(store.groupTiers) ? (store.groupTiers as Array<{ min: number; discount: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min) : [];
+        if (tiers.length === 0) return null;
+        const bestTier = tiers[tiers.length - 1];
         return (
         <div className="px-5 mt-4">
-          <div className="rounded-[16px] overflow-hidden card-enter" style={{ background: "var(--dark)" }}>
-            {/* Top section */}
-            <div className="p-4 pb-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                    <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: "var(--coral)" }}>
-                      {hasLivePool ? "Live deal" : `Save ${store.groupDiscount}%`}
+          <div className="rounded-[16px] overflow-hidden p-4 card-enter" style={{ background: "var(--dark)" }}>
+            {/* Header */}
+            <div className="flex items-center gap-2 mb-3">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+              <span className="text-[12px] font-bold text-white">Order with others & save up to {bestTier.discount}%</span>
+            </div>
+            {/* Tier rows */}
+            <div className="space-y-2">
+              {tiers.map((t, i) => {
+                const isBest = i === tiers.length - 1;
+                return (
+                  <div key={t.min} className="flex items-center justify-between px-3 py-2.5 rounded-[10px]" style={{ background: isBest ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)" }}>
+                    <div className="flex items-center gap-2">
+                      <div className="flex -space-x-1">
+                        {Array.from({ length: Math.min(t.min, 4) }).map((_, j) => (
+                          <div key={j} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-bold"
+                            style={{ background: "rgba(255,255,255,0.1)", border: "1px dashed rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.4)" }}>?</div>
+                        ))}
+                      </div>
+                      <span className="text-[12px] font-bold text-white">{t.min} people</span>
+                      {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
+                    </div>
+                    <span className="text-[14px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isBest ? "var(--emerald)" : "white" }}>
+                      {t.discount}% off
                     </span>
                   </div>
-                  <p className="text-[13px] text-white/50 mt-1">
-                    {hasLivePool
-                      ? <><span className="text-white font-bold">{totalPoolMembers}/{store.groupTarget}</span> orders · Save {store.groupDiscount}%</>
-                      : "Order with others around you"}
-                  </p>
-                </div>
-                <div className="text-right">
-                  {hasLivePool ? (
-                    <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-[12px]" style={{ background: "rgba(255,255,255,0.08)" }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                        <LiveTimer deadline={earliestDeadline!} />
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-[12px]" style={{ background: "rgba(255,255,255,0.08)" }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "rgba(255,255,255,0.3)" }}>
-                        {Math.floor(store.groupWindowMins / 60)}:00:00
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              {/* Progress bar */}
-              {hasLivePool && (
-                <div className="mt-2.5 h-[3px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${Math.round((totalPoolMembers / store.groupTarget) * 100)}%`, background: "var(--emerald)", transition: "width 500ms cubic-bezier(0.16,1,0.3,1)" }} />
-                </div>
-              )}
-            </div>
-            {/* Avatar progress bar */}
-            <div className="px-4 pb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-1">
-                  {Array.from({ length: Math.min(store.groupTarget, 8) }).map((_, i) => {
-                    const filled = hasLivePool && i < totalPoolMembers;
-                    return (
-                    <div key={i} className={`w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold ${filled ? "celebrate" : ""}`}
-                      style={{
-                        background: filled ? "var(--coral)" : "rgba(255,255,255,0.05)",
-                        border: filled ? "1.5px solid var(--dark)" : "1.5px dashed rgba(255,255,255,0.25)",
-                        color: "white",
-                        transition: "all 300ms ease",
-                        animationDelay: filled ? `${i * 80}ms` : "0ms",
-                      }}>
-                      {filled ? String.fromCharCode(65 + i) : "?"}
-                    </div>
-                    );
-                  })}
-                </div>
-                {store.groupTarget > 8 && <span className="text-[9px] font-bold text-white/30">+{store.groupTarget - 8}</span>}
-                <span key={spotsLeft} className="text-[10px] font-bold ml-auto pop" style={{ color: hasLivePool ? "var(--emerald)" : "var(--coral)" }}>
-                  {hasLivePool ? `${spotsLeft} more orders to go` : `${store.groupTarget} orders to go`}
-                </span>
-              </div>
+                );
+              })}
             </div>
           </div>
         </div>
