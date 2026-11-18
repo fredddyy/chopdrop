@@ -554,10 +554,8 @@ export default function StorePage() {
         if (storeItems.length === 0) return null;
         const storeItemCount = storeItems.reduce((s, i) => s + i.quantity, 0);
         const subtotal = storeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-        const isFreeDelivery = subtotal >= (store.freeDeliveryMin || 500000);
-        const storeDeliveryFee = isFreeDelivery ? 0 : (store.deliveryFee || 50000);
-        const soloTotal = subtotal + storeDeliveryFee;
-        const groupTotal = Math.round(subtotal * (1 - (store.groupDiscount || 0) / 100)) + storeDeliveryFee;
+        const soloTotal = subtotal;
+        const groupTotal = Math.round(subtotal * (1 - (store.groupDiscount || 0) / 100));
         const hasGroupDiscount = store.groupTarget > 0 && store.groupDiscount > 0;
         return (
           <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
@@ -573,10 +571,7 @@ export default function StorePage() {
                   <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "group"); router.push("/cart"); }}
                     className="flex-[1.4] h-[56px] rounded-[12px] flex items-center justify-between px-4 text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
-                    <div>
-                      <span className="text-[13px] font-bold block leading-none">Join & save</span>
-                      <span className="text-[9px] font-medium mt-0.5 block" style={{ opacity: 0.7 }}>incl. delivery</span>
-                    </div>
+                    <span className="text-[13px] font-bold">Join & save</span>
                     <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
                   </button>
                 </div>
