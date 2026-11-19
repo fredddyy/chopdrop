@@ -81,9 +81,9 @@ function MiniCountdown({ deadline }: { deadline: string }) {
   const s = left % 60;
   const urgent = left < 600;
   return (
-    <span className="tabular-nums inline-flex items-center gap-1" style={{ color: urgent ? "var(--coral)" : "var(--emerald)", animation: urgent ? "pulse 1.5s ease-in-out infinite" : "none" }}>
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-      {h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`}
+    <span className="text-[8px] font-medium tabular-nums inline-flex items-center gap-0.5" style={{ color: urgent ? "var(--coral)" : "var(--text-muted)", animation: urgent ? "pulse 1.5s ease-in-out infinite" : "none" }}>
+      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+      {h > 0 ? `${h}h${m}m` : `${m}m`}
     </span>
   );
 }
