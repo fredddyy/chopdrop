@@ -383,7 +383,7 @@ export default function HomePage() {
 
         {/* Categories */}
         <p className="text-[18px] font-extrabold mt-4 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Categories</p>
-        <div className="flex gap-2 overflow-x-auto hide-scrollbar">
+        <div className="flex gap-1.5 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
           {(categories.length > 0 ? categories : [
             { name: "Food", imageUrl: "/categories/food.png" },
             { name: "Groceries", imageUrl: "/categories/groceries.png" },
@@ -394,13 +394,16 @@ export default function HomePage() {
             const active = activeCategory === c.name;
             return (
             <button key={c.name} type="button" onClick={() => setActiveCategory(c.name)}
-              className="h-[36px] px-3 flex items-center gap-1.5 shrink-0 press-feedback"
-              style={{ transition: "color 150ms ease-out" }}>
+              className="h-[38px] px-3.5 rounded-full flex items-center gap-2 shrink-0 press-feedback"
+              style={{
+                background: active ? "var(--dark)" : "transparent",
+                transition: "background 200ms ease-out, color 200ms ease-out",
+              }}>
               {c.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.imageUrl} alt="" className="w-[20px] h-[20px] object-contain" />
+                <img src={c.imageUrl} alt="" className="object-contain" style={{ width: active ? "22px" : "18px", height: active ? "22px" : "18px", transition: "width 200ms ease-out, height 200ms ease-out" }} />
               )}
-              <span className={`text-[12px] ${active ? "font-bold" : "font-medium"}`} style={{ color: active ? "var(--text)" : "var(--text-muted)", borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent", paddingBottom: "2px" }}>{c.name}</span>
+              <span className="text-[12px] font-bold" style={{ color: active ? "white" : "var(--text-muted)", transition: "color 200ms ease-out" }}>{c.name}</span>
             </button>
             );
           })}
