@@ -445,19 +445,20 @@ export default function RestaurantsPage() {
                     setForm({ ...form, groupTiers: updated });
                   }} className="w-20 h-9 px-2 rounded-lg border border-[#E5E7EB] text-sm text-center" placeholder="%" />
                   <span className="text-xs text-[#9CA3AF]">% off</span>
-                  <input type="number" min={1} max={72} value={tier.duration || 2} onChange={(e) => {
+                  <input type="number" min={5} max={1440} value={tier.duration || (i === 0 ? 25 : i === 1 ? 45 : 60)} onChange={(e) => {
                     const updated = [...form.groupTiers];
-                    updated[i] = { ...updated[i], duration: parseInt(e.target.value) || 2 };
+                    updated[i] = { ...updated[i], duration: parseInt(e.target.value) || 25 };
                     setForm({ ...form, groupTiers: updated });
-                  }} className="w-16 h-9 px-2 rounded-lg border border-[#E5E7EB] text-sm text-center" placeholder="hrs" />
-                  <span className="text-xs text-[#9CA3AF]">hrs</span>
+                  }} className="w-16 h-9 px-2 rounded-lg border border-[#E5E7EB] text-sm text-center" placeholder="min" />
+                  <span className="text-xs text-[#9CA3AF]">min</span>
                   <button type="button" onClick={() => {
                     setForm({ ...form, groupTiers: form.groupTiers.filter((_, j) => j !== i) });
                   }} className="text-[#E84C3D] text-xs font-bold ml-auto">Remove</button>
                 </div>
               ))}
               <button type="button" onClick={() => {
-                setForm({ ...form, groupTiers: [...form.groupTiers, { min: form.groupTiers.length === 0 ? 3 : (form.groupTiers[form.groupTiers.length - 1]?.min || 3) + 2, discount: form.groupTiers.length === 0 ? 10 : (form.groupTiers[form.groupTiers.length - 1]?.discount || 10) + 10, duration: 2 }] });
+                const tierCount = form.groupTiers.length;
+                setForm({ ...form, groupTiers: [...form.groupTiers, { min: tierCount === 0 ? 3 : (form.groupTiers[tierCount - 1]?.min || 3) + 2, discount: tierCount === 0 ? 10 : (form.groupTiers[tierCount - 1]?.discount || 10) + 10, duration: tierCount === 0 ? 25 : tierCount === 1 ? 45 : 60 }] });
               }} className="text-[13px] font-semibold text-[#E84C3D] mt-1">+ Add tier</button>
             </div>
 

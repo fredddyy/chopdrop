@@ -24,7 +24,7 @@ interface StoreDetail {
   menuCategories: Array<{ id: string; name: string; items: Array<{ id: string; name: string; description: string | null; imageUrl: string | null; price: number }> }>;
 }
 
-interface GroupTier { min: number; discount: number; duration?: number; }
+interface GroupTier { min: number; discount: number; duration?: number; } // duration in minutes
 function parseStoreTiers(raw: unknown): GroupTier[] {
   if (!raw || !Array.isArray(raw)) return [];
   return raw.filter((t): t is GroupTier => typeof t === "object" && t !== null && typeof t.min === "number" && typeof t.discount === "number" && t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min);
@@ -869,7 +869,7 @@ export default function StorePage() {
                           </span>
                           <span className="text-[9px] font-bold flex items-center gap-0.5" style={{ color: "var(--coral)" }}>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                            {t.duration ? `${t.duration}h` : "2h"} window
+                            {(() => { const m = t.duration || 25; return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 > 0 ? ` ${m % 60}m` : ""}` : `${m}m`; })()} window
                           </span>
                         </div>
                       </div>
