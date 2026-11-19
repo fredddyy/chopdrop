@@ -397,7 +397,7 @@ export default function StorePage() {
                     <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "var(--card)" }}>
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
                       <span className="text-[10px] font-medium tabular-nums" style={{ color: "var(--text-muted)" }}>
-                        {Math.floor((store.groupWindowMins || 120) / 60)}h window
+                        {(() => { const m = ti === 0 ? 25 : ti === 1 ? 45 : 60; return m >= 60 ? `${Math.floor(m / 60)}h` : `${m}m`; })()} window
                       </span>
                     </div>
                   )}
