@@ -328,6 +328,25 @@ export default function HomePage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
           <span className="text-[14px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
         </Link>
+        {/* Segmented control — Stores / Deals */}
+        <div className="mt-3 h-[40px] rounded-[12px] flex p-[3px]" style={{ background: "var(--sand)" }}>
+          {(["all", "deals"] as const).map(key => {
+            const active = filter === key;
+            const label = key === "all" ? "Stores" : "Deals";
+            return (
+              <button key={key} type="button" onClick={() => setFilter(key)}
+                className="flex-1 h-full rounded-[10px] text-[13px] font-bold press-feedback"
+                style={{
+                  background: active ? "var(--card)" : "transparent",
+                  color: active ? "var(--text)" : "var(--text-muted)",
+                  transition: "all 200ms ease-out",
+                }}>
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Location prompt card — shows when no address saved */}
         {!hasAddress && !promptDismissed && (
           <div className="mt-3 rounded-[16px] p-4 card-enter" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
@@ -390,22 +409,10 @@ export default function HomePage() {
           })}
         </div>
       </header>
-      {/* Tabs — sticky: show subcategories for Groceries, normal tabs for Food */}
-      <div className="sticky top-0 z-40 px-5" style={{ background: "var(--bg)" }}>
-        {activeCategory === "Groceries" && grocerySubcategories.length > 0 ? (
-          <div className="relative mt-1"
-            onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-            onTouchEnd={(e) => {
-              let el = e.target as HTMLElement | null;
-              while (el) { if (el.scrollWidth > el.clientWidth && el.classList.contains("overflow-x-auto")) return; el = el.parentElement; }
-              const dx = e.changedTouches[0].clientX - touchStartX.current;
-              if (Math.abs(dx) > 60) {
-                const allTabs = ["Stores", ...grocerySubcategories];
-                const idx = allTabs.indexOf(activeSubcategory);
-                const next = dx < 0 ? Math.min(idx + 1, allTabs.length - 1) : Math.max(idx - 1, 0);
-                setActiveSubcategory(allTabs[next]);
-              }
-            }}>
+      {/* Subcategory tabs — only for Groceries */}
+      {activeCategory === "Groceries" && grocerySubcategories.length > 0 && (
+        <div className="sticky top-0 z-40 px-5" style={{ background: "var(--bg)" }}>
+          <div className="relative mt-1">
             <div className="flex overflow-x-auto hide-scrollbar" style={{ WebkitOverflowScrolling: "touch" }}>
               {["Stores", ...grocerySubcategories].map((sub, i) => {
                 const active = activeSubcategory === sub;
@@ -420,10 +427,8 @@ export default function HomePage() {
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
           </div>
-        ) : (
-          <TabBar filter={filter} setFilter={setFilter} />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* ── Loading skeleton ── */}
       {loading && (
