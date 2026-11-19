@@ -758,33 +758,31 @@ export default function HomePage() {
                               : `${r.groupDealCount} ${r.groupDealCount === 1 ? "deal" : "deals"}`}
                           </span>
                         )}
-                      </div>
-
-                      {/* Pool rows — bottom-right of banner */}
-                      {r.livePools.pools.length > 0 && (
-                        <div className="absolute bottom-2 right-2 flex flex-col gap-0.5 items-end">
-                          {r.livePools.pools.slice(0, 3).map((pool, pi) => (
-                            <div key={pi} className="flex items-center gap-1 px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.65)" }}>
-                              <div className="flex -space-x-1">
-                                {Array.from({ length: Math.min(pool.minSize, 5) }).map((_, j) => {
-                                  const filled = j < pool.memberCount;
-                                  return (
-                                    <div key={j} className="w-[14px] h-[14px] rounded-full flex items-center justify-center overflow-hidden"
-                                      style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.15)", border: filled ? "1px solid rgba(0,0,0,0.6)" : "1px dashed rgba(255,255,255,0.3)" }}>
-                                      {filled && pool.memberAvatars[j]
-                                        ? <img src={pool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                                        : filled ? <span className="text-[5px] font-bold text-white">{pool.memberNames[j]?.charAt(0) || "!"}</span>
-                                        : null}
-                                    </div>
-                                  );
-                                })}
+                        {/* Pool rows — bottom-right of banner */}
+                        {r.livePools.pools.length > 0 && (
+                          <div className="absolute bottom-2 right-2 flex flex-col gap-0.5 items-end">
+                            {r.livePools.pools.slice(0, 3).map((pool, pi) => (
+                              <div key={pi} className="flex items-center gap-1 px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.65)" }}>
+                                <div className="flex -space-x-1">
+                                  {Array.from({ length: Math.min(pool.minSize, 5) }).map((_, j) => {
+                                    const filled = j < pool.memberCount;
+                                    return (
+                                      <div key={j} className="w-[14px] h-[14px] rounded-full flex items-center justify-center overflow-hidden"
+                                        style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.15)", border: filled ? "1px solid rgba(0,0,0,0.6)" : "1px dashed rgba(255,255,255,0.3)" }}>
+                                        {filled && pool.memberAvatars[j]
+                                          ? <img src={pool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                                          : filled ? <span className="text-[5px] font-bold text-white">{pool.memberNames[j]?.charAt(0) || "!"}</span>
+                                          : null}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                <span className="text-[7px] font-bold text-white tabular-nums">{pool.memberCount}/{pool.minSize}</span>
+                                <MiniCountdown deadline={pool.deadline} />
                               </div>
-                              <span className="text-[7px] font-bold text-white tabular-nums">{pool.memberCount}/{pool.minSize}</span>
-                              <MiniCountdown deadline={pool.deadline} />
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       {/* Info — below banner */}
