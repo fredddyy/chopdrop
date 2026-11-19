@@ -34,22 +34,34 @@ export default function CartPage() {
   const [deliveryToggle, setDeliveryToggle] = useState<"pickup" | "delivery">("pickup");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [chopLoading, setChopLoading] = useState(false);
-  const [restaurantInfo, setRestaurantInfo] = useState<Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number }>>({});
+  const [restaurantInfo, setRestaurantInfo] = useState<Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number; groupTiers: Array<{ min: number; discount: number }>; deliveryFee: number; groupDeliveryPct: number; poolMemberCount: number }>>({});
 
-  // Fetch group order info for restaurants in cart
+  // Fetch group order info + pool data for restaurants in cart
   useEffect(() => {
     const restIds = [...new Set(cart.items.map(i => i.restaurantId).filter(Boolean))] as string[];
     if (restIds.length === 0) return;
-    Promise.all(restIds.map(rid =>
-      fetch(`/api/stores/${rid}`).then(r => r.ok ? r.json() : null).then(d => d?.success ? { id: rid, name: d.data.name, groupTarget: d.data.groupTarget || 0, groupDiscount: d.data.groupDiscount || 0, groupWindowMins: d.data.groupWindowMins || 0 } : null).catch(() => null)
-    )).then(results => {
-      const info: Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number }> = {};
+    Promise.all(restIds.map(async (rid) => {
+      const [storeRes, poolRes] = await Promise.all([
+        fetch(`/api/stores/${rid}`).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch(`/api/pools?productId=`).then(r => r.ok ? r.json() : null).catch(() => null),
+      ]);
+      if (!storeRes?.success) return null;
+      const d = storeRes.data;
+      const tiers = Array.isArray(d.groupTiers) ? d.groupTiers : [];
+      return {
+        id: rid, name: d.name,
+        groupTarget: d.groupTarget || 0, groupDiscount: d.groupDiscount || 0, groupWindowMins: d.groupWindowMins || 0,
+        groupTiers: tiers, deliveryFee: d.deliveryFee || 50000, groupDeliveryPct: d.groupDeliveryPct ?? 25,
+        poolMemberCount: 0, // will be updated from pool data
+      };
+    })).then(results => {
+      const info: Record<string, typeof results[0] & Record<string, unknown>> = {};
       for (const r of results) {
         if (!r) continue;
-        info[r.id] = { groupTarget: r.groupTarget, groupDiscount: r.groupDiscount, groupWindowMins: r.groupWindowMins };
-        if (r.name) info[r.name] = info[r.id]; // also index by name for items without restaurantId
+        info[r.id] = r as typeof results[0] & Record<string, unknown>;
+        if (r.name) info[r.name] = info[r.id];
       }
-      setRestaurantInfo(info);
+      setRestaurantInfo(info as Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number; groupTiers: Array<{ min: number; discount: number }>; deliveryFee: number; groupDeliveryPct: number; poolMemberCount: number }>);
     });
   }, [cart.items.length]);
 
@@ -124,13 +136,22 @@ export default function CartPage() {
     fetch("/api/credits").then(r => r.json()).then(d => { if (d.success && d.data) setCreditBalance(d.data.balance); }).catch(() => {});
   }, []);
 
-  const deliveryFee = realDeliveryFee !== null ? realDeliveryFee : (deliveryPref?.fee || 50000); // default ₦500
+  // Calculate delivery and discounts using restaurant settings
   const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
   const serviceFee = packCount * 15000;
   const creditsToApply = 0;
-  // Apply group discounts per restaurant
-  const groupSavings = (() => {
+
+  // Find the first restaurant info for delivery fee
+  const firstRestInfo = Object.values(restaurantInfo)[0];
+  const baseDeliveryFee = realDeliveryFee !== null ? realDeliveryFee : (firstRestInfo?.deliveryFee || (deliveryPref?.fee || 50000));
+
+  // Apply group discounts per restaurant using tier system
+  const { groupSavings, isGroupMode, groupMemberCount, groupDeliveryFee } = (() => {
     let savings = 0;
+    let isGroup = false;
+    let memberCount = 3; // default assumption for group
+    let groupDelFee = baseDeliveryFee;
+
     const restaurants = new Map<string, number>();
     for (const item of cart.items) {
       const key = item.restaurantName || "unknown";
@@ -138,17 +159,31 @@ export default function CartPage() {
     }
     for (const [restName, restSubtotal] of restaurants) {
       const restId = Object.keys(restaurantInfo).find(rid => {
-        const info = restaurantInfo[rid];
-        return info && cart.items.some(i => i.restaurantName === restName);
+        return restaurantInfo[rid] && cart.items.some(i => i.restaurantName === restName);
       }) || "";
       const mode = cart.checkoutModes[restId] || cart.checkoutModes[restName] || "solo";
       const info = restId ? restaurantInfo[restId] : null;
-      if (mode === "group" && info && info.groupDiscount > 0) {
-        savings += Math.round(restSubtotal * info.groupDiscount / 100);
+      if (mode === "group" && info) {
+        isGroup = true;
+        // Use tier system: find the matching tier for the group size
+        const tiers = info.groupTiers || [];
+        let tierDiscount = 0;
+        for (const t of tiers) {
+          if (memberCount >= t.min) tierDiscount = t.discount;
+        }
+        // Fallback to flat groupDiscount if no tiers
+        const discount = tierDiscount > 0 ? tierDiscount : (info.groupDiscount || 0);
+        if (discount > 0) {
+          savings += Math.round(restSubtotal * discount / 100);
+        }
+        // Split delivery by group size
+        groupDelFee = Math.round(baseDeliveryFee / memberCount);
       }
     }
-    return savings;
+    return { groupSavings: savings, isGroupMode: isGroup, groupMemberCount: memberCount, groupDeliveryFee: groupDelFee };
   })();
+
+  const deliveryFee = isGroupMode ? groupDeliveryFee : baseDeliveryFee;
   const orderTotal = cart.subtotal - groupSavings + deliveryFee + serviceFee;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
 
@@ -345,7 +380,12 @@ export default function CartPage() {
                   const restSubtotal = restUnpacked.reduce((s, i) => s + i.price * i.quantity, 0);
                   const groupInfo = restaurantInfo[restId] || restaurantInfo[restName];
                   const chosenMode = cart.checkoutModes[restId] || cart.checkoutModes[restName] || "solo";
-                  const hasGroup = chosenMode === "group" && groupInfo && groupInfo.groupTarget > 0 && groupInfo.groupDiscount > 0;
+                  // Calculate tier-based discount for this group
+                  const tiers = groupInfo?.groupTiers || [];
+                  let tierDiscount = 0;
+                  for (const t of tiers) { if (groupMemberCount >= t.min) tierDiscount = t.discount; }
+                  const effectiveDiscount = tierDiscount > 0 ? tierDiscount : (groupInfo?.groupDiscount || 0);
+                  const hasGroup = chosenMode === "group" && groupInfo && effectiveDiscount > 0;
                   return (
                     <section key={restKey} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                       <div className="px-4 py-3" style={{ background: "var(--sand)" }}>
@@ -355,7 +395,7 @@ export default function CartPage() {
                             {hasGroup && (
                               <span className="text-[10px] font-bold mt-0.5 inline-flex items-center gap-1" style={{ color: "var(--emerald)" }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
-                                Save {groupInfo.groupDiscount}%
+                                Save {effectiveDiscount}%
                               </span>
                             )}
                           </div>
@@ -364,7 +404,7 @@ export default function CartPage() {
                               <>
                                 <span className="text-[11px] tabular-nums line-through block leading-none" style={{ color: "var(--text-muted)" }}>{formatNaira(restSubtotal)}</span>
                                 <span className="text-[16px] font-extrabold tabular-nums block leading-none mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                                  {formatNaira(Math.round(restSubtotal * (1 - groupInfo.groupDiscount / 100)))}
+                                  {formatNaira(Math.round(restSubtotal * (1 - effectiveDiscount / 100)))}
                                 </span>
                               </>
                             ) : (
