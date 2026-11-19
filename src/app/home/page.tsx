@@ -41,7 +41,7 @@ interface InactiveRestaurant {
   groupDealCount: number;
   groupTarget: number;
   groupDiscount: number;
-  livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; earliestDeadline: string | null };
+  livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; earliestDeadline: string | null };
 }
 
 interface DealItem {
@@ -749,11 +749,13 @@ export default function HomePage() {
                             Up to {bestTier.discount}% off
                           </span>
                         )}
-                        {/* Group deals count — on banner */}
-                        {r.groupDealCount > 0 && (
-                          <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 text-white" style={{ background: "rgba(0,0,0,0.7)" }}>
+                        {/* Group activity — on banner */}
+                        {(r.livePools.count > 0 || r.groupDealCount > 0) && (
+                          <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 text-white" style={{ background: r.livePools.count > 0 ? "var(--coral)" : "rgba(0,0,0,0.7)" }}>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                            {r.groupDealCount} {r.groupDealCount === 1 ? "deal" : "deals"}
+                            {r.livePools.count > 0
+                              ? `${r.livePools.count} ${r.livePools.count === 1 ? "group" : "groups"} buying`
+                              : `${r.groupDealCount} ${r.groupDealCount === 1 ? "deal" : "deals"}`}
                           </span>
                         )}
                         {/* Avatar spots — bottom right of banner, only when deal configured */}
@@ -769,15 +771,17 @@ export default function HomePage() {
                                 {Array.from({ length: Math.min(count, 10) }).map((_, i) => {
                                   const filled = hl && i < lm;
                                   return (
-                                    <div key={i} className="w-[16px] h-[16px] rounded-full flex items-center justify-center text-[6px] font-bold"
+                                    <div key={i} className="w-[16px] h-[16px] rounded-full flex items-center justify-center text-[6px] font-bold overflow-hidden"
                                       style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.2)", border: filled ? "1.5px solid rgba(0,0,0,0.6)" : "1px dashed rgba(255,255,255,0.4)", color: "white" }}>
-                                      {filled ? (r.livePools.memberNames[i]?.charAt(0) || "!") : "?"}
+                                      {filled && r.livePools.memberAvatars?.[i]
+                                        ? <img src={r.livePools.memberAvatars[i]} alt="" className="w-full h-full object-cover" />
+                                        : filled ? (r.livePools.memberNames[i]?.charAt(0) || "!") : "?"}
                                     </div>
                                   );
                                 })}
                               </div>
                               {count > 10 && <span className="text-[8px] font-bold text-white/70">+{count - 10}</span>}
-                              <span className="text-[8px] font-bold text-white">{hl ? `${count - lm} left` : `${count} spots`}</span>
+                              <span className="text-[8px] font-bold text-white">{hl ? `${r.livePools.totalSize - lm} left` : `${count} spots`}</span>
                             </div>
                           );
                         })()}

@@ -111,7 +111,7 @@ export async function GET(request: Request) {
     groupDealCount: number;
     groupTarget: number;
     groupDiscount: number;
-    livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; earliestDeadline: string | null };
+    livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; earliestDeadline: string | null };
   }> = [];
 
   // Query recent group order activity per restaurant (last 7 days)
@@ -164,21 +164,27 @@ export async function GET(request: Request) {
     select: {
       id: true,
       deadline: true,
-      members: { select: { id: true, user: { select: { firstName: true } } }, take: 5 },
+      members: { select: { id: true, user: { select: { firstName: true, avatarUrl: true } } }, take: 5 },
       minSize: true,
       product: { select: { vendorId: true } },
     },
   });
-  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; earliestDeadline: string | null }>();
+  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; earliestDeadline: string | null }>();
   for (const p of activePools) {
     const rid = p.product.vendorId;
-    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], earliestDeadline: null };
+    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], memberAvatars: [], earliestDeadline: null };
     existing.count += 1;
-    existing.totalMembers += p.members.length;
-    existing.totalSize += p.minSize;
+    // Use the most active pool's size (not sum) — shows "1/3" not "1/13"
+    if (p.members.length > existing.totalMembers || existing.totalMembers === 0) {
+      existing.totalMembers = p.members.length;
+      existing.totalSize = p.minSize;
+    }
     for (const m of p.members) {
       if (existing.memberNames.length < 3 && !existing.memberNames.includes(m.user.firstName)) {
         existing.memberNames.push(m.user.firstName);
+      }
+      if (existing.memberAvatars.length < 3 && m.user.avatarUrl) {
+        existing.memberAvatars.push(m.user.avatarUrl);
       }
     }
     const dl = p.deadline.toISOString();
@@ -249,7 +255,7 @@ export async function GET(request: Request) {
         groupDealCount: r._count.products,
         groupTarget: r.groupTarget,
         groupDiscount: r.groupDiscount,
-        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], earliestDeadline: null },
+        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], memberAvatars: [], earliestDeadline: null },
         tiers,
       });
     }
