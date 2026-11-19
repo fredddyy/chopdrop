@@ -310,7 +310,7 @@ export default function HomePage() {
             <p className="text-[20px] font-extrabold leading-none tracking-[-0.03em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
               {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}, {(() => { const h = new Date().getHours(); return h < 12 ? "\u{1F44B}" : h < 17 ? "\u2600\uFE0F" : "\u{1F319}"; })()}
             </p>
-            <p className="text-[14px] font-bold mt-0.5" style={{ color: "var(--text-secondary)" }}>{userName.split(" ")[0] || "there"}</p>
+            <p className="text-[14px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>{userName.split(" ")[0] || "there"}</p>
             {/* Delivery address — tappable */}
             <button type="button" onClick={() => setLocationSheet(true)} className="flex items-center gap-1 mt-1 press-feedback">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
@@ -382,7 +382,7 @@ export default function HomePage() {
         )}
 
         {/* Categories */}
-        <p className="text-[18px] font-extrabold mt-4 mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Categories</p>
+        <p className="text-[14px] font-bold mt-4 mb-2" style={{ color: "var(--text-muted)" }}>Categories</p>
         <div className="flex gap-1.5 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
           {(categories.length > 0 ? categories : [
             { name: "Food", imageUrl: "/categories/food.png" },
@@ -448,7 +448,7 @@ export default function HomePage() {
       {/* ── Error + retry ── */}
       {!loading && error && (
         <div className="py-20 text-center px-8">
-          <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Couldn&apos;t load restaurants</h2>
+          <h2 className="text-[16px] font-extrabold mb-1" style={{ color: "var(--text)" }}>Couldn&apos;t load restaurants</h2>
           <p className="text-[13px] mb-4" style={{ color: "var(--text-muted)" }}>Check your connection and try again.</p>
           <button type="button" onClick={() => loadFeed()} className="h-11 px-6 rounded-[12px] text-[13px] font-bold text-white cursor-pointer press-feedback" style={{ background: "var(--coral)" }}>
             Try again
@@ -480,7 +480,7 @@ export default function HomePage() {
                     )}
                   </div>
                   <div className="pt-2">
-                    <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h3>
+                    <h3 className="text-[16px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{store.name}</h3>
                     <p className="text-[11px] font-bold mt-0.5" style={{ color: "var(--text-muted)" }}>{store.itemCount} items · {store.address}</p>
                   </div>
                 </Link>
@@ -502,7 +502,7 @@ export default function HomePage() {
                   <div key={group.id}>
                     <div className="px-5 flex items-center justify-between mb-2">
                       <Link href={`/store/${group.id}`} className="press-feedback">
-                        <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{group.name}</h3>
+                        <h3 className="text-[16px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{group.name}</h3>
                       </Link>
                       <Link href={`/store/${group.id}`} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>See all →</Link>
                     </div>
@@ -520,8 +520,8 @@ export default function HomePage() {
                             )}
                           </div>
                           <div className="pt-1.5">
-                            <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
-                            <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.retailPrice)}</span>
+                            <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                            <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.retailPrice)}</span>
                           </div>
                         </Link>
                       ))}
@@ -586,7 +586,7 @@ export default function HomePage() {
                           </div>
                         </div>
                         <div className="pt-1.5">
-                          <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                          <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                           <div className="flex items-baseline gap-1 mt-0.5">
                             <span className="text-[13px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
                             <span className="text-[11px] font-extrabold leading-none" style={{ color: "var(--emerald)" }}>FREE</span>
@@ -629,13 +629,13 @@ export default function HomePage() {
                           </div>
                         </div>
                         <div className="pt-1.5">
-                          <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                          <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                           <div className="flex items-baseline gap-1 mt-0.5">
-                            <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
-                            <span className="text-[9px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                            <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(item.groupPrice)}</span>
+                            <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
                           </div>
                           <div className="mt-1">
-                            <div className="text-[9px] font-bold py-1 text-center rounded-lg" style={{
+                            <div className="text-[10px] font-bold py-1 text-center rounded-lg" style={{
                               background: hasPool ? "rgba(34,197,94,0.1)" : "var(--sand)",
                               color: hasPool ? "var(--emerald)" : "var(--text-muted)",
                             }}>
@@ -681,7 +681,7 @@ export default function HomePage() {
               {/* Empty state */}
               {filteredItems.length === 0 && (
                 <div className="text-center py-10">
-                  <p className="text-[15px] font-bold" style={{ color: "var(--text)" }}>No deals right now</p>
+                  <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>No deals right now</p>
                   <p className="text-[12px] mt-1" style={{ color: "var(--text-muted)" }}>Check back soon — new deals drop daily.</p>
                 </div>
               )}
@@ -695,7 +695,7 @@ export default function HomePage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--coral)" }} />
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ background: "var(--coral)" }} />
                 </span>
-                <h2 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+                <h2 className="text-[16px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
                   Live now · {totalActive} order{totalActive !== 1 ? "s" : ""}
                 </h2>
               </div>
@@ -741,7 +741,7 @@ export default function HomePage() {
                         <div className="flex items-center gap-2.5 mt-3">
                           <div className="flex -space-x-2">
                             {order.memberNames.slice(0, 4).map((name, i) => (
-                              <div key={i} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "#D4A24E", "#6366F1", "#EC4899"][i % 5], border: "2px solid white" }}>
+                              <div key={i} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "#D4A24E", "#6366F1", "#EC4899"][i % 5], border: "2px solid white" }}>
                                 {name.charAt(0)}
                               </div>
                             ))}
@@ -873,7 +873,7 @@ export default function HomePage() {
 
                       {/* Info — below banner */}
                       <div className="pt-2.5 pb-1">
-                        <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
+                        <h3 className="text-[16px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
                         {/* Deal info — only when restaurant has a deal configured */}
                         {r.groupTarget > 0 && r.groupDiscount > 0 && (() => {
                           const spotsNeeded = r.groupTarget;
@@ -918,7 +918,7 @@ export default function HomePage() {
           {/* ═══ RESTAURANTS BELOW ACTIVE ORDERS — compact grid ═══ */}
           {!isItemView && activeOrders.length > 0 && inactiveRestaurants.length > 0 && (
             <div className="px-5 mt-6">
-              <h2 className="text-[15px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
+              <h2 className="text-[14px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
                 Start a new order
               </h2>
               <div className="grid grid-cols-2 gap-3">
@@ -951,7 +951,7 @@ export default function HomePage() {
           {/* ═══ EMPTY STATE ═══ */}
           {activeOrders.length === 0 && inactiveRestaurants.length === 0 && (
             <div className="py-20 text-center px-8">
-              <h2 className="text-[17px] font-extrabold mb-1" style={{ color: "var(--text)" }}>No restaurants yet</h2>
+              <h2 className="text-[16px] font-extrabold mb-1" style={{ color: "var(--text)" }}>No restaurants yet</h2>
               <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>We&apos;re adding restaurants in your area. Check back soon.</p>
             </div>
           )}
@@ -1020,7 +1020,7 @@ export default function HomePage() {
               {/* Confirm manual input */}
               {locationInput.trim().length > 3 && (
                 <button type="button" onClick={() => saveLocation(locationInput.trim())}
-                  className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white press-feedback"
+                  className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[14px] font-bold text-white press-feedback"
                   style={{ background: "var(--coral)" }}>
                   Confirm address
                 </button>
