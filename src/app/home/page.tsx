@@ -784,6 +784,7 @@ export default function HomePage() {
                                     })}
                                   </div>
                                   <span className="text-[9px] font-bold tabular-nums" style={{ color: "var(--text-muted)" }}>{pool.memberCount}/{pool.minSize}</span>
+                                  <MiniCountdown deadline={pool.deadline} />
                                 </div>
                               ))}
                             </div>
@@ -797,11 +798,9 @@ export default function HomePage() {
                           const liveSize = spotsNeeded;
                           const hasLive = r.livePools.count > 0;
                           return hasLive ? (
-                          <div className="mt-1.5">
-                            <p className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
-                              {liveMembers}/{r.livePools.totalSize} joined · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
-                            </p>
-                          </div>
+                          <p className="text-[10px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>
+                            Up to {discountPct}% off · {r.livePools.count} {r.livePools.count === 1 ? "group" : "groups"} active
+                          </p>
                           ) : (
                           <p className="text-[10px] font-medium mt-1.5" style={{ color: "var(--text-muted)" }}>
                             Up to {discountPct}% off with {spotsNeeded}+ people
