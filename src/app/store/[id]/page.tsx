@@ -173,7 +173,7 @@ export default function StorePage() {
         if (r.success && r.data) {
           for (const p of r.data) {
             if (new Date(p.deadline).getTime() > now && p.status === "OPEN") {
-              active.push({ id: p.id, memberCount: p.memberCount, spotsLeft: p.minSize - p.memberCount, deadline: p.deadline, minSize: p.minSize, productId: p.productId || "", memberNames: p.memberNames || [], memberAvatars: (p.members || []).map((m: { user?: { avatarUrl?: string } }) => m?.user?.avatarUrl).filter(Boolean) || [] });
+              active.push({ id: p.id, memberCount: p.memberCount, spotsLeft: p.minSize - p.memberCount, deadline: p.deadline, minSize: p.minSize, productId: p.productId || "", memberNames: p.memberNames || [], memberAvatars: p.memberAvatars || [] });
             }
           }
         }

@@ -74,6 +74,7 @@ export async function GET(request: NextRequest) {
       minSize: p.minSize,
       memberCount: p.members.length,
       memberNames: p.members.slice(0, 5).map(m => m.user.firstName),
+      memberAvatars: p.members.slice(0, 5).map(m => m.user.avatarUrl).filter(Boolean),
       totalQuantity: p.members.reduce((sum, m) => sum + m.quantity, 0),
       spotsLeft: p.minSize - p.members.length,
       deadline: p.deadline,
