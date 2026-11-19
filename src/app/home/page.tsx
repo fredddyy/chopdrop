@@ -797,40 +797,33 @@ export default function HomePage() {
                           const liveMembers = r.livePools.totalMembers;
                           const liveSize = spotsNeeded;
                           const hasLive = r.livePools.count > 0;
-                          return (
-                          <p className="text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: "var(--text-secondary)" }}>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
-                            {hasLive ? (
-                              <>
-                                {liveMembers}/{liveSize} orders · Save {discountPct}% · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
-                              </>
-                            ) : (
-                              `Save ${discountPct}% · ${spotsNeeded} orders needed · 2h`
-                            )}
+                          return hasLive ? (
+                          <div className="mt-1.5">
+                            <p className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
+                              {liveMembers}/{r.livePools.totalSize} joined · <MiniCountdown deadline={r.livePools.earliestDeadline!} />
+                            </p>
+                          </div>
+                          ) : (
+                          <p className="text-[10px] font-medium mt-1.5" style={{ color: "var(--text-muted)" }}>
+                            Up to {discountPct}% off with {spotsNeeded}+ people
                           </p>
                           );
                         })()}
 
                         {/* Social proof — recent activity */}
-                        {r.recentOrderCount > 0 ? (
-                          <div className="flex items-center gap-2 mt-2">
+                        {r.recentOrderCount > 0 && (
+                          <div className="flex items-center gap-2 mt-1.5">
                             <div className="flex -space-x-1.5" aria-hidden="true">
                               {r.recentOrderNames.slice(0, 3).map((name, i) => (
-                                <div key={i} className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "#D4A24E"][i % 3], border: "1.5px solid white" }}>
+                                <div key={i} className="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-bold text-white" style={{ background: ["var(--coral)", "var(--emerald)", "#D4A24E"][i % 3], border: "1.5px solid white" }}>
                                   {name.charAt(0)}
                                 </div>
                               ))}
                             </div>
-                            <span className="text-[10px] font-bold" style={{ color: "var(--text-secondary)" }}>
+                            <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>
                               {r.recentOrderCount} {r.recentOrderCount === 1 ? "order" : "orders"} this week
                             </span>
                           </div>
-                        ) : (
-                          r.tiers.length === 0 && (
-                            <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--emerald)" }}>
-                              Save up to 30% when more orders come in
-                            </p>
-                          )
                         )}
                       </div>
                     </Link>
