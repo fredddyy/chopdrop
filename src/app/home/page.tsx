@@ -164,13 +164,14 @@ export default function HomePage() {
   const [groceryStores, setGroceryStores] = useState<Array<{ id: string; name: string; imageUrl: string | null; bannerUrl: string | null; address: string; itemCount: number }>>([]);
   const [activeSubcategory, setActiveSubcategory] = useState("Stores");
   const touchStartX = useRef(0);
-  const swipeTab = useCallback((direction: "left" | "right") => {
-    setFilter(prev => {
-      const idx = TABS.findIndex(t => t.key === prev);
-      const next = direction === "left" ? Math.min(idx + 1, TABS.length - 1) : Math.max(idx - 1, 0);
-      return TABS[next].key;
+  const swipeCategory = useCallback((direction: "left" | "right") => {
+    setActiveCategory(prev => {
+      const catList = categories.length > 0 ? categories.map(c => c.name) : ["Food", "Groceries", "Gadgets", "Fashion", "Home"];
+      const idx = catList.indexOf(prev);
+      const next = direction === "left" ? Math.min(idx + 1, catList.length - 1) : Math.max(idx - 1, 0);
+      return catList[next];
     });
-  }, []);
+  }, [categories]);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [filter, setFilter] = useState<"all" | "deals">("all");
   const [locationSheet, setLocationSheet] = useState(false);
@@ -393,17 +394,13 @@ export default function HomePage() {
             const active = activeCategory === c.name;
             return (
             <button key={c.name} type="button" onClick={() => setActiveCategory(c.name)}
-              className="h-[40px] px-3 rounded-[12px] flex items-center gap-2 shrink-0 press-feedback"
-              style={{
-                background: active ? "rgba(196,87,42,0.1)" : "var(--sand)",
-                border: "1px solid transparent",
-                transition: "all 150ms ease-out",
-              }}>
-              <span className="text-[14px] font-extrabold" style={{ color: active ? "var(--coral)" : "var(--text-secondary)" }}>{c.name}</span>
+              className="h-[36px] px-3 flex items-center gap-1.5 shrink-0 press-feedback"
+              style={{ transition: "color 150ms ease-out" }}>
               {c.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.imageUrl} alt="" className="w-[24px] h-[24px] object-contain" />
+                <img src={c.imageUrl} alt="" className="w-[20px] h-[20px] object-contain" />
               )}
+              <span className={`text-[12px] ${active ? "font-bold" : "font-medium"}`} style={{ color: active ? "var(--text)" : "var(--text-muted)", borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent", paddingBottom: "2px" }}>{c.name}</span>
             </button>
             );
           })}
@@ -544,7 +541,7 @@ export default function HomePage() {
             el = el.parentElement;
           }
           const dx = e.changedTouches[0].clientX - touchStartX.current;
-          if (Math.abs(dx) > 60) swipeTab(dx < 0 ? "left" : "right");
+          if (Math.abs(dx) > 60) swipeCategory(dx < 0 ? "left" : "right");
         };
         const isItemView = filter === "deals";
         const filteredRestaurants = inactiveRestaurants.filter(r => {
