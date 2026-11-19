@@ -167,13 +167,21 @@ export default function CartPage() {
       if (mode === "group" && info) {
         isGroup = true;
         // Use tier system: find the matching tier for the group size
-        const tiers = info.groupTiers || [];
+        // If no tiers in DB, generate from groupDiscount/groupTarget
+        let tiers = info.groupTiers || [];
+        if (tiers.length === 0 && info.groupDiscount > 0) {
+          const maxDisc = info.groupDiscount;
+          tiers = [
+            { min: 3, discount: Math.round(maxDisc / 3) },
+            { min: 5, discount: Math.round(maxDisc * 2 / 3) },
+            { min: info.groupTarget || 10, discount: maxDisc },
+          ];
+        }
         let tierDiscount = 0;
         for (const t of tiers) {
           if (memberCount >= t.min) tierDiscount = t.discount;
         }
-        // Fallback to flat groupDiscount if no tiers
-        const discount = tierDiscount > 0 ? tierDiscount : (info.groupDiscount || 0);
+        const discount = tierDiscount;
         if (discount > 0) {
           savings += Math.round(restSubtotal * discount / 100);
         }
@@ -382,10 +390,18 @@ export default function CartPage() {
                   const groupInfo = restaurantInfo[restId] || restaurantInfo[restName];
                   const chosenMode = cart.checkoutModes[restId] || cart.checkoutModes[restName] || "solo";
                   // Calculate tier-based discount for this group
-                  const tiers = groupInfo?.groupTiers || [];
+                  let displayTiers = groupInfo?.groupTiers || [];
+                  if (displayTiers.length === 0 && groupInfo?.groupDiscount) {
+                    const maxD = groupInfo.groupDiscount;
+                    displayTiers = [
+                      { min: 3, discount: Math.round(maxD / 3) },
+                      { min: 5, discount: Math.round(maxD * 2 / 3) },
+                      { min: groupInfo.groupTarget || 10, discount: maxD },
+                    ];
+                  }
                   let tierDiscount = 0;
-                  for (const t of tiers) { if (groupMemberCount >= t.min) tierDiscount = t.discount; }
-                  const effectiveDiscount = tierDiscount > 0 ? tierDiscount : (groupInfo?.groupDiscount || 0);
+                  for (const t of displayTiers) { if (groupMemberCount >= t.min) tierDiscount = t.discount; }
+                  const effectiveDiscount = tierDiscount;
                   const hasGroup = chosenMode === "group" && groupInfo && effectiveDiscount > 0;
                   return (
                     <section key={restKey} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
