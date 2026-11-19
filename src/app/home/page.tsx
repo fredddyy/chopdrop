@@ -760,36 +760,36 @@ export default function HomePage() {
                         )}
                       </div>
 
+                      {/* Pool rows — bottom-right of banner */}
+                      {r.livePools.pools.length > 0 && (
+                        <div className="absolute bottom-2 right-2 flex flex-col gap-0.5 items-end">
+                          {r.livePools.pools.slice(0, 3).map((pool, pi) => (
+                            <div key={pi} className="flex items-center gap-1 px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.65)" }}>
+                              <div className="flex -space-x-1">
+                                {Array.from({ length: Math.min(pool.minSize, 5) }).map((_, j) => {
+                                  const filled = j < pool.memberCount;
+                                  return (
+                                    <div key={j} className="w-[14px] h-[14px] rounded-full flex items-center justify-center overflow-hidden"
+                                      style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.15)", border: filled ? "1px solid rgba(0,0,0,0.6)" : "1px dashed rgba(255,255,255,0.3)" }}>
+                                      {filled && pool.memberAvatars[j]
+                                        ? <img src={pool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                                        : filled ? <span className="text-[5px] font-bold text-white">{pool.memberNames[j]?.charAt(0) || "!"}</span>
+                                        : null}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              <span className="text-[7px] font-bold text-white tabular-nums">{pool.memberCount}/{pool.minSize}</span>
+                              <MiniCountdown deadline={pool.deadline} />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      </div>
+
                       {/* Info — below banner */}
                       <div className="pt-2.5 pb-1">
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
-                          {/* Per-pool avatar rows — right of name */}
-                          {r.livePools.pools.length > 0 && (
-                            <div className="flex flex-col gap-1 items-end shrink-0 mt-0.5">
-                              {r.livePools.pools.slice(0, 3).map((pool, pi) => (
-                                <div key={pi} className="flex items-center gap-1">
-                                  <div className="flex -space-x-1">
-                                    {Array.from({ length: Math.min(pool.minSize, 5) }).map((_, j) => {
-                                      const filled = j < pool.memberCount;
-                                      return (
-                                        <div key={j} className="w-[16px] h-[16px] rounded-full flex items-center justify-center overflow-hidden"
-                                          style={{ background: filled ? "var(--coral)" : "var(--sand)", border: filled ? "1.5px solid white" : "1.5px dashed var(--border)" }}>
-                                          {filled && pool.memberAvatars[j]
-                                            ? <img src={pool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                                            : filled ? <span className="text-[6px] font-bold text-white">{pool.memberNames[j]?.charAt(0) || "!"}</span>
-                                            : null}
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                  <span className="text-[9px] font-bold tabular-nums" style={{ color: "var(--text-muted)" }}>{pool.memberCount}/{pool.minSize}</span>
-                                  <MiniCountdown deadline={pool.deadline} />
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                        <h3 className="text-[17px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{r.name}</h3>
                         {/* Deal info — only when restaurant has a deal configured */}
                         {r.groupTarget > 0 && r.groupDiscount > 0 && (() => {
                           const spotsNeeded = r.groupTarget;
