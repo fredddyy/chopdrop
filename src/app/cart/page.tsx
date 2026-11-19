@@ -483,8 +483,11 @@ export default function CartPage() {
               {deliveryFee === 0 && !deliveryPref && !deliveryAddress.trim() && (
                 <p className="text-[11px] mt-1.5" style={{ color: "var(--text-muted)" }}>Enter your address for a delivery quote</p>
               )}
-              {deliveryFee > 0 && (
-                <p className="text-[11px] mt-1.5 font-bold" style={{ color: "var(--text)" }}>Delivery fee: {formatNaira(deliveryFee)}</p>
+              {deliveryFee > 0 && isGroupMode && (
+                <p className="text-[11px] mt-1.5" style={{ color: "var(--emerald)" }}>Split delivery between {groupMemberCount} people</p>
+              )}
+              {deliveryFee > 0 && !isGroupMode && (
+                <p className="text-[11px] mt-1.5 font-bold" style={{ color: "var(--text)" }}>Delivery: {formatNaira(deliveryFee)}</p>
               )}
             </div>
           </section>
@@ -498,7 +501,7 @@ export default function CartPage() {
               </div>
               {groupSavings > 0 && (
                 <div className="flex justify-between">
-                  <span style={{ color: "var(--emerald)" }}>Volume discount</span>
+                  <span style={{ color: "var(--emerald)" }}>Group discount</span>
                   <span className="font-bold tabular-nums" style={{ color: "var(--emerald)" }}>-{formatNaira(groupSavings)}</span>
                 </div>
               )}
@@ -567,7 +570,7 @@ export default function CartPage() {
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
                     <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Money-back guarantee</span>
                   </div>
-                  <span className="text-[11px]" style={{ color: "var(--border)" }}>\u00B7</span>
+                  <span className="text-[11px]" style={{ color: "var(--border)" }}>·</span>
                   <div className="flex items-center gap-1">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                     <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Paystack secured</span>

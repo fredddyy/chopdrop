@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 export function formatNaira(kobo: number): string {
-  return `₦${(kobo / 100).toLocaleString("en-NG")}`;
+  return `₦${Math.round(kobo / 100).toLocaleString("en-NG")}`;
 }
 
 export function isSlotExpired(cutoffTime: string): boolean {
