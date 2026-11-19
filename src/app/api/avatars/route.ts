@@ -4,7 +4,7 @@ import { getUserFromCookie } from "@/lib/user-auth";
 
 // GET — list all available avatars
 export async function GET() {
-  const avatars = Array.from({ length: 45 }, (_, i) => `/avatars/${i + 1}.png`);
+  const avatars = Array.from({ length: 9 }, (_, i) => `/avatars/${i + 1}.png`);
   return NextResponse.json({ success: true, data: avatars });
 }
 
