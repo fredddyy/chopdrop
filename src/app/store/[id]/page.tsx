@@ -39,6 +39,8 @@ interface RealPool {
   deadline: string;
   minSize: number;
   productId: string;
+  memberNames: string[];
+  memberAvatars: string[];
 }
 
 const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
@@ -171,7 +173,7 @@ export default function StorePage() {
         if (r.success && r.data) {
           for (const p of r.data) {
             if (new Date(p.deadline).getTime() > now && p.status === "OPEN") {
-              active.push({ id: p.id, memberCount: p.memberCount, spotsLeft: p.minSize - p.memberCount, deadline: p.deadline, minSize: p.minSize, productId: p.productId || "" });
+              active.push({ id: p.id, memberCount: p.memberCount, spotsLeft: p.minSize - p.memberCount, deadline: p.deadline, minSize: p.minSize, productId: p.productId || "", memberNames: p.memberNames || [], memberAvatars: (p.members || []).map((m: { user?: { avatarUrl?: string } }) => m?.user?.avatarUrl).filter(Boolean) || [] });
             }
           }
         }
@@ -372,13 +374,15 @@ export default function StorePage() {
                       {Array.from({ length: showMax }).map((_, j) => {
                         const filled = hasTierPool && j < tierPool.memberCount;
                         return (
-                        <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold"
+                        <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
                           style={{
                             background: filled ? "var(--coral)" : "var(--card)",
                             border: filled ? "1.5px solid var(--sand)" : "1.5px dashed var(--border)",
                             color: filled ? "white" : "var(--text-muted)",
                           }}>
-                          {filled ? String.fromCharCode(65 + j) : "?"}
+                          {filled && tierPool.memberAvatars?.[j]
+                            ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                            : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
                         </div>
                         );
                       })}
