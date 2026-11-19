@@ -866,10 +866,9 @@ export default function StorePage() {
                         <span className="text-[11px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>
                           {t.discount}% off {tierPrice > 0 ? `· Save ${fp(firstItemPrice - tierPrice)}` : ""}
                         </span>
-                        <span className="text-[9px] font-bold flex items-center gap-0.5 mt-0.5" style={{ color: "var(--coral)" }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                          {(() => { const m = t.duration || 25; return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 > 0 ? ` ${m % 60}m` : ""}` : `${m}m`; })()} window
-                        </span>
+                        <p className="text-[9px] font-bold mt-1" style={{ color: "var(--coral)" }}>
+                          ⏱ {(() => { const m = t.duration || 25; return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 > 0 ? ` ${m % 60}m` : ""}` : `${m}min`; })()} window
+                        </p>
                       </div>
                       {/* Join button with amount */}
                       <button type="button" disabled={storeTierLoading} onClick={async () => {
