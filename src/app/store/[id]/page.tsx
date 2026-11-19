@@ -24,7 +24,7 @@ interface StoreDetail {
   menuCategories: Array<{ id: string; name: string; items: Array<{ id: string; name: string; description: string | null; imageUrl: string | null; price: number }> }>;
 }
 
-interface GroupTier { min: number; discount: number; }
+interface GroupTier { min: number; discount: number; duration?: number; }
 function parseStoreTiers(raw: unknown): GroupTier[] {
   if (!raw || !Array.isArray(raw)) return [];
   return raw.filter((t): t is GroupTier => typeof t === "object" && t !== null && typeof t.min === "number" && typeof t.discount === "number" && t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min);
@@ -856,16 +856,22 @@ export default function StorePage() {
                           );
                         })}
                       </div>
-                      {/* Middle — name + discount */}
+                      {/* Middle — name + discount + timer */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                           <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{t.min} people</span>
                           {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best deal</span>}
                         </div>
-                        <span className="text-[11px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>
-                          {t.discount}% off {tierPrice > 0 ? `· Save ${fp(firstItemPrice - tierPrice)}` : ""}
-                        </span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
+                            {t.discount}% off {tierPrice > 0 ? `· Save ${fp(firstItemPrice - tierPrice)}` : ""}
+                          </span>
+                          <span className="text-[9px] font-bold flex items-center gap-0.5" style={{ color: "var(--coral)" }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                            {t.duration ? `${t.duration}h` : "2h"} window
+                          </span>
+                        </div>
                       </div>
                       {/* Join button with amount */}
                       <button type="button" disabled={storeTierLoading} onClick={async () => {

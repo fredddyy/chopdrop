@@ -25,7 +25,7 @@ interface FormState {
   phone: string;
   imageUrl: string;
   bannerUrl: string;
-  groupTiers: Array<{ min: number; discount: number }>;
+  groupTiers: Array<{ min: number; discount: number; duration?: number }>;
   deliveryFee: string;
   freeDeliveryMin: string;
   groupDeliveryPct: string;
@@ -445,13 +445,19 @@ export default function RestaurantsPage() {
                     setForm({ ...form, groupTiers: updated });
                   }} className="w-20 h-9 px-2 rounded-lg border border-[#E5E7EB] text-sm text-center" placeholder="%" />
                   <span className="text-xs text-[#9CA3AF]">% off</span>
+                  <input type="number" min={1} max={72} value={tier.duration || 2} onChange={(e) => {
+                    const updated = [...form.groupTiers];
+                    updated[i] = { ...updated[i], duration: parseInt(e.target.value) || 2 };
+                    setForm({ ...form, groupTiers: updated });
+                  }} className="w-16 h-9 px-2 rounded-lg border border-[#E5E7EB] text-sm text-center" placeholder="hrs" />
+                  <span className="text-xs text-[#9CA3AF]">hrs</span>
                   <button type="button" onClick={() => {
                     setForm({ ...form, groupTiers: form.groupTiers.filter((_, j) => j !== i) });
                   }} className="text-[#E84C3D] text-xs font-bold ml-auto">Remove</button>
                 </div>
               ))}
               <button type="button" onClick={() => {
-                setForm({ ...form, groupTiers: [...form.groupTiers, { min: form.groupTiers.length === 0 ? 3 : (form.groupTiers[form.groupTiers.length - 1]?.min || 3) + 2, discount: form.groupTiers.length === 0 ? 10 : (form.groupTiers[form.groupTiers.length - 1]?.discount || 10) + 10 }] });
+                setForm({ ...form, groupTiers: [...form.groupTiers, { min: form.groupTiers.length === 0 ? 3 : (form.groupTiers[form.groupTiers.length - 1]?.min || 3) + 2, discount: form.groupTiers.length === 0 ? 10 : (form.groupTiers[form.groupTiers.length - 1]?.discount || 10) + 10, duration: 2 }] });
               }} className="text-[13px] font-semibold text-[#E84C3D] mt-1">+ Add tier</button>
             </div>
 
