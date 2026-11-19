@@ -77,6 +77,7 @@ export async function POST(
     });
 
     const newMemberCount = pool.members.length + 1;
+    const paidMembers = pool.members.filter((m: { paymentStatus?: string }) => m.paymentStatus === "SUCCESS").length;
 
     // Reset deadline if this is the first member (pool was empty)
     if (pool.members.length === 0) {
@@ -87,8 +88,9 @@ export async function POST(
       });
     }
 
-    // If pool is now filled, update status
-    if (newMemberCount >= pool.minSize) {
+    // Don't auto-fill based on member count — wait for payment webhook to confirm fill
+    // Only mark filled if ALL members have paid (handled by webhook)
+    if (paidMembers + 1 >= pool.minSize) {
       await tx.pool.update({
         where: { id },
         data: { status: "FILLED" },

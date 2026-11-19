@@ -252,18 +252,10 @@ export default function ProductDetailPage() {
           window.location.href = checkoutData.data.authorizationUrl;
           return;
         }
-        // Checkout failed but join succeeded — mark joined
-        markJoined(id, product.groupPrice);
-        showToast("joined");
-        const poolsRes = await fetch(`/api/pools?productId=${id}`);
-        const poolsData = await poolsRes.json();
-        if (poolsData.success) setPools(poolsData.data);
+        // Checkout failed — remove the unpaid member
+        await fetch(`/api/pools/${poolId}/leave`, { method: "POST" }).catch(() => {});
+        showToast("Payment failed. Try again.");
       } else {
-        // If already joined, mark as joined and update CTA
-        const err = (data.error || "").toLowerCase();
-        if (err.includes("already") || err.includes("already joined")) {
-          markJoined(id, product.groupPrice);
-        }
         showToast(data.error || "Couldn't join");
       }
     } catch {
@@ -299,13 +291,9 @@ export default function ProductDetailPage() {
           window.location.href = checkoutData.data.authorizationUrl;
           return;
         }
-        // Checkout failed but pool created — mark joined
-        markJoined(id, product.groupPrice);
-        const shareUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/product/${product.id}?pool=${data.data.poolId}`;
-        setSharePrompt({ url: shareUrl, name: product.name });
-        const poolsRes = await fetch(`/api/pools?productId=${id}`);
-        const poolsData = await poolsRes.json();
-        if (poolsData.success) setPools(poolsData.data);
+        // Checkout failed — remove unpaid pool/member
+        await fetch(`/api/pools/${data.data.poolId}/leave`, { method: "POST" }).catch(() => {});
+        showToast("Payment failed. Try again.");
       } else {
         showToast(data.error === "Not authenticated" ? "Log in to start a group" : (data.error || "Couldn't create"));
       }

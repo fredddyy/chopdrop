@@ -65,6 +65,20 @@ export default function CartPage() {
     } catch {}
   }, []);
 
+  // Restore cart from backup if empty (user returned from failed Paystack payment)
+  useEffect(() => {
+    if (cart.items.length === 0) {
+      try {
+        const backup = sessionStorage.getItem("chopdrop-cart-backup");
+        if (backup) {
+          const items = JSON.parse(backup);
+          for (const item of items) cart.addItem(item);
+          sessionStorage.removeItem("chopdrop-cart-backup");
+        }
+      } catch {}
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Fetch delivery estimate
   useEffect(() => {
     if (deliveryToggle !== "delivery" || cart.items.length === 0) { setRealDeliveryFee(null); return; }
