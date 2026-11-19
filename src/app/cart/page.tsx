@@ -285,8 +285,8 @@ export default function CartPage() {
       {/* Header */}
       <div className="px-5 pt-6 pb-4 flex items-center justify-between">
         <div>
-          <h1 className="text-[24px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>Checkout</h1>
-          <p className="text-[14px] mt-0.5" style={{ color: "var(--text-muted)" }}>{portionCount} item{portionCount !== 1 ? "s" : ""} · {formatNaira(orderTotal)}</p>
+          <h1 className="text-[20px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Checkout</h1>
+          <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{portionCount} item{portionCount !== 1 ? "s" : ""} · {formatNaira(orderTotal)}</p>
         </div>
         <Link href="/home" className="text-[13px] font-bold" style={{ color: "var(--coral)" }}>+ Add more</Link>
       </div>
@@ -328,11 +328,11 @@ export default function CartPage() {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-[13px] font-bold leading-tight" style={{ color: item.isPackItem ? "var(--text-secondary)" : "var(--text)" }}>{cleanName(item.name)}</h3>
                   {item.restaurantName && !item.isPackItem && <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>}
-                  <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
+                  <span className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button type="button" aria-label={item.quantity === 1 ? "Remove item" : "Decrease quantity"} onClick={() => cart.changeQuantity(item.dailyMenuId, -1)}
-                    className="w-10 h-10 rounded-[12px] flex items-center justify-center press-feedback"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center press-feedback"
                     style={{ background: "var(--sand)" }}>
                     {item.quantity === 1 ? (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14H6L5 6" /></svg>
@@ -405,29 +405,14 @@ export default function CartPage() {
                   const hasGroup = chosenMode === "group" && groupInfo && effectiveDiscount > 0;
                   return (
                     <section key={restKey} className="rounded-[16px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                      <div className="px-4 py-3" style={{ background: "var(--sand)" }}>
+                      <div className="px-4 pt-3 pb-1">
                         <div className="flex items-center justify-between">
-                          <div className="min-w-0">
-                            <span className="text-[14px] font-extrabold truncate block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{restName}</span>
-                            {hasGroup && (
-                              <span className="text-[10px] font-bold mt-0.5 inline-flex items-center gap-1" style={{ color: "var(--emerald)" }}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
-                                Save {effectiveDiscount}%
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-right shrink-0 ml-3">
-                            {hasGroup ? (
-                              <>
-                                <span className="text-[11px] tabular-nums line-through block leading-none" style={{ color: "var(--text-muted)" }}>{formatNaira(restSubtotal)}</span>
-                                <span className="text-[16px] font-extrabold tabular-nums block leading-none mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                                  {formatNaira(Math.round(restSubtotal * (1 - effectiveDiscount / 100)))}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-[15px] font-extrabold tabular-nums block leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{formatNaira(restSubtotal)}</span>
-                            )}
-                          </div>
+                          <span className="text-[14px] font-bold truncate" style={{ color: "var(--text)" }}>{restName}</span>
+                          {hasGroup && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ml-2" style={{ background: "rgba(34,197,94,0.1)", color: "var(--emerald)" }}>
+                              -{effectiveDiscount}%
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="px-4">
@@ -474,7 +459,7 @@ export default function CartPage() {
 
           {/* ═══ DELIVERY DETAILS ═══ */}
           <section className="rounded-[16px] p-4" data-delivery-section style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] mb-2" style={{ color: "var(--text-muted)" }}>Delivery details</p>
+            <p className="text-[12px] font-bold mb-2" style={{ color: "var(--text-muted)" }}>Delivery</p>
             <div>
               <input type="text" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Enter delivery address"
                 aria-label="Delivery address" autoComplete="street-address"
@@ -562,8 +547,11 @@ export default function CartPage() {
                   disabled={loading}
                   className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback disabled:opacity-50"
                   style={{ background: isAuthenticated === false ? "var(--dark)" : "var(--coral)" }}>
-                  <span>{loading ? "Processing\u2026" : isAuthenticated === false ? "Log in to pay" : isGroupMode ? "Pay · Group order" : "Pay now"}</span>
-                  <span className="font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(orderTotal)}</span>
+                  <div>
+                    <span className="block">{loading ? "Processing\u2026" : isAuthenticated === false ? "Log in to pay" : isGroupMode ? "Pay · Group order" : "Pay now"}</span>
+                    {isGroupMode && groupSavings > 0 && <span className="text-[10px] font-medium block opacity-70">Saving {formatNaira(groupSavings)}</span>}
+                  </div>
+                  <span className="font-extrabold tabular-nums text-[16px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(orderTotal)}</span>
                 </button>
                 <div className="flex items-center justify-center gap-3 mt-2">
                   <div className="flex items-center gap-1">
