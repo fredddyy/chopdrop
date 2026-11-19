@@ -348,8 +348,8 @@ export default function StorePage() {
           <div className="rounded-[16px] overflow-hidden p-4 card-enter" style={{ background: "var(--sand)" }}>
             {/* Header */}
             <div className="flex items-center gap-2 mb-3">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-              <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Order with others & save</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Order with others &amp; save</span>
             </div>
             {/* Tier rows */}
             <div className="space-y-2">
@@ -365,8 +365,8 @@ export default function StorePage() {
                   {/* Label */}
                   <div className="shrink-0" style={{ minWidth: "58px" }}>
                     <span className="text-[11px] font-bold" style={{ color: "var(--text)" }}>{size} people</span>
-                    <span className="text-[9px] font-extrabold ml-1" style={{ color: isBest ? "var(--emerald)" : "var(--coral)" }}>{tierDiscount}%</span>
-                    {isBest && <span className="text-[7px] font-bold ml-0.5 px-1 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
+                    <span className="text-[10px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>{tierDiscount}%</span>
+                    {isBest && <span className="text-[8px] font-bold ml-0.5 px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
                   </div>
                   {/* Avatars */}
                   <div className="flex items-center flex-1">
@@ -474,7 +474,7 @@ export default function StorePage() {
                           )}
                         </Link>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.retailPrice)}</p>
+                          <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.retailPrice)}</p>
                           <Link href={`/product/${item.id}`}><h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4></Link>
                           {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                         </div>
@@ -519,7 +519,7 @@ export default function StorePage() {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(item.retailPrice)}</p>
+                          <p className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(item.retailPrice)}</p>
                           <h4 className="text-[14px] font-bold leading-tight mt-0.5" style={{ color: "var(--text)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</h4>
                           {item.description && <p className="text-[11px] mt-0.5 leading-[145%]" style={{ color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.description}</p>}
                         </div>
@@ -578,10 +578,10 @@ export default function StorePage() {
               {hasGroupDiscount ? (
                 <div className="flex gap-2.5">
                   <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "solo"); router.push("/cart"); }}
-                    className="flex-1 h-[56px] rounded-[12px] flex items-center justify-between px-4 press-feedback"
+                    className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
                     style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                    <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Alone</span>
-                    <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
+                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Alone</span>
+                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
                   </button>
                   <button type="button" onClick={() => {
                     // Pick the first cart item's product ID for the tier selector
@@ -606,10 +606,10 @@ export default function StorePage() {
                       setStoreTierSheet(true);
                     }
                   }}
-                    className="flex-[1.4] h-[56px] rounded-[12px] flex items-center justify-center text-white press-feedback"
+                    className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
-                    <span className="text-[13px] font-bold">Join & save</span>
-                    <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
+                    <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>Join &amp; save</span>
+                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
                   </button>
                 </div>
               ) : (
