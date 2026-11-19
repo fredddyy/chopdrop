@@ -863,26 +863,27 @@ export default function StorePage() {
                         <span className="text-[9px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>save {fp(savings)}</span>
                       </div>
                       {/* Right — join */}
-                      <button type="button" disabled={storeTierLoading} onClick={async () => {
-                          setStoreTierLoading(true);
-                          try {
-                            const res = await fetch("/api/pools/find-or-create", {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ productId: storeTierProductId, minSize: t.min, quantity: 1 }),
+                      <button type="button" onClick={() => {
+                          // Add item to cart at tier price, set group mode, go to checkout
+                          const tierItem = store.products.find(p => p.id === storeTierProductId) || store.menuCategories.flatMap(c => c.items).find(m => m.id === storeTierProductId);
+                          if (tierItem) {
+                            cart.addItem({
+                              dailyMenuId: `instant-${tierItem.id}`,
+                              name: tierItem.name,
+                              description: "",
+                              imageUrl: tierItem.imageUrl || null,
+                              restaurantName: store.name,
+                              price: tierPrice,
                             });
-                            const json = await res.json();
-                            if (json.success) {
-                              setStoreTierSheet(false);
-                              cart.setCheckoutMode(store.name, "group");
-                              router.push("/cart");
-                            }
-                          } catch {}
-                          setStoreTierLoading(false);
+                          }
+                          cart.setCheckoutMode(store.id, "group");
+                          cart.setCheckoutMode(store.name, "group");
+                          setStoreTierSheet(false);
+                          router.push("/cart");
                         }}
-                          className="h-[36px] px-4 rounded-[12px] text-[12px] font-bold text-white press-feedback shrink-0 disabled:opacity-50"
+                          className="h-[36px] px-4 rounded-[12px] text-[12px] font-bold text-white press-feedback shrink-0"
                           style={{ background: "var(--coral)" }}>
-                          {storeTierLoading ? "..." : hasPool ? `Join` : "Join"}
+                          Join
                         </button>
                     </div>
                   );
