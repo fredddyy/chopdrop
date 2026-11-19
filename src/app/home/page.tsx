@@ -556,7 +556,44 @@ export default function HomePage() {
           {isItemView && (
             <div className="pt-4 space-y-6 px-5">
 
-              {/* Section 1: Group Buy Deals — items with active pools or group pricing */}
+              {/* Section 1: Price Chop — share to bargain price */}
+              {filteredItems.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+                    <h3 className="text-[16px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Price Chop</h3>
+                    <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>Share to bargain price</span>
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto hide-scrollbar">
+                    {filteredItems.slice(0, 6).map(item => (
+                      <Link key={`chop-${item.id}`} href={`/product/${item.id}`} className="press-feedback block shrink-0" style={{ width: "130px" }}>
+                        <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
+                          {item.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
+                            </div>
+                          )}
+                          <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--coral)", borderRadius: "0 0 8px 0" }}>
+                            FREE
+                          </div>
+                        </div>
+                        <div className="pt-1.5">
+                          <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
+                          <div className="flex items-baseline gap-1 mt-0.5">
+                            <span className="text-[13px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
+                            <span className="text-[11px] font-extrabold leading-none" style={{ color: "var(--emerald)" }}>FREE</span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Section 2: Group Buy Deals — items with active pools or group pricing */}
               {filteredItems.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
@@ -635,42 +672,6 @@ export default function HomePage() {
                 ) : null;
               })()}
 
-              {/* Section 3: Price Chop — share to get it free */}
-              {filteredItems.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
-                    <h3 className="text-[16px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Price Chop</h3>
-                    <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>Share to get it free</span>
-                  </div>
-                  <div className="flex gap-3 overflow-x-auto hide-scrollbar">
-                    {filteredItems.slice(0, 6).map(item => (
-                      <Link key={`chop-${item.id}`} href={`/product/${item.id}`} className="press-feedback block shrink-0" style={{ width: "130px" }}>
-                        <div className="relative rounded-[12px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
-                          {item.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-[20px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
-                            </div>
-                          )}
-                          <div className="absolute top-0 left-0 px-1.5 py-0.5 text-[8px] font-extrabold text-white" style={{ background: "var(--coral)", borderRadius: "0 0 8px 0" }}>
-                            FREE
-                          </div>
-                        </div>
-                        <div className="pt-1.5">
-                          <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
-                          <div className="flex items-baseline gap-1 mt-0.5">
-                            <span className="text-[13px] font-extrabold leading-none line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
-                            <span className="text-[11px] font-extrabold leading-none" style={{ color: "var(--emerald)" }}>FREE</span>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* Empty state */}
               {filteredItems.length === 0 && (
