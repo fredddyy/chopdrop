@@ -438,7 +438,9 @@ export default function HomePage() {
 
       {/* ═══ GROCERY GRID — shown when Groceries category active ═══ */}
       {activeCategory === "Groceries" && (groceryItems.length > 0 || groceryStores.length > 0) && (
-        <div className="pt-4 pb-24">
+        <div className="pt-4 pb-24"
+          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+          onTouchEnd={(e) => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 60) swipeCategory(dx < 0 ? "left" : "right"); }}>
           {/* Stores view — full-width store cards */}
           {activeSubcategory === "Stores" && groceryStores.length > 0 && (
             <div className="px-5 flex flex-col gap-4">
