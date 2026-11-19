@@ -68,30 +68,23 @@ export function TierSelectorSheet({ open, onClose, onSelect, tiers, retailPrice,
 
               return (
                 <div key={tier.min} className="flex items-center gap-3 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
-                  {/* Number circle with group icon */}
-                  <div className="w-[40px] h-[40px] rounded-full flex flex-col items-center justify-center shrink-0" style={{ background: isBest ? "var(--emerald)" : "var(--sand)" }}>
-                    <span className="text-[14px] font-extrabold leading-none" style={{ color: isBest ? "white" : "var(--text)" }}>{tier.min}</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isBest ? "white" : "var(--text-muted)"} strokeWidth="2.5" strokeLinecap="round" className="-mt-0.5">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
-                    </svg>
-                  </div>
-
-                  {/* Avatars */}
+                  {/* Avatars in front */}
                   <div className="flex -space-x-1.5 shrink-0">
-                    {Array.from({ length: Math.min(tier.min, 4) }).map((_, j) => {
+                    {Array.from({ length: Math.min(tier.min, 5) }).map((_, j) => {
                       const filled = pool ? j < pool.memberCount : false;
                       return (
-                        <div key={j} className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-[7px] font-bold"
-                          style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "1.5px solid white" : "1.5px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
-                          {filled ? "!" : "?"}
+                        <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[8px] font-bold"
+                          style={{ background: filled ? "var(--coral)" : "var(--sand)", border: filled ? "1.5px solid white" : "1.5px solid var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
+                          {filled ? "!" : ""}
                         </div>
                       );
                     })}
                   </div>
 
-                  {/* Name + price */}
+                  {/* Name + discount */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                       <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{tier.min} people</span>
                       {isBest && (
                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
@@ -99,18 +92,18 @@ export function TierSelectorSheet({ open, onClose, onSelect, tiers, retailPrice,
                         </span>
                       )}
                     </div>
-                    <div className="flex items-baseline gap-1.5 mt-0.5">
-                      <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(tierPrice)}</span>
-                      <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(retailPrice)}</span>
-                    </div>
+                    <span className="text-[11px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>
+                      {tier.discount}% off · Save {fp(savings)}
+                    </span>
                   </div>
 
-                  {/* Join button with amount */}
+                  {/* Join button with amount inside */}
                   <button type="button"
                     onClick={() => { setSelected(tier.min); onSelect(tier); }}
-                    className="h-[36px] px-3.5 rounded-[12px] flex items-center justify-center text-[12px] font-bold text-white press-feedback shrink-0"
+                    className="h-[38px] px-3 rounded-[12px] flex flex-col items-center justify-center text-white press-feedback shrink-0"
                     style={{ background: "var(--emerald)" }}>
-                    Join {fp(tierPrice)}
+                    <span className="text-[10px] font-medium leading-none" style={{ opacity: 0.8 }}>Join</span>
+                    <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(tierPrice)}</span>
                   </button>
                 </div>
               );
