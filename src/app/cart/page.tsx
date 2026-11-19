@@ -149,7 +149,8 @@ export default function CartPage() {
   const { groupSavings, isGroupMode, groupMemberCount, groupDeliveryFee } = (() => {
     let savings = 0;
     let isGroup = false;
-    let memberCount = 3; // default assumption for group
+    let memberCount = 3;
+    try { const stored = localStorage.getItem("chopdrop-group-size"); if (stored) memberCount = parseInt(stored, 10) || 3; } catch {}
     let groupDelFee = baseDeliveryFee;
 
     const restaurants = new Map<string, number>();

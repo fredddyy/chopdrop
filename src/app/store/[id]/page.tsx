@@ -864,20 +864,11 @@ export default function StorePage() {
                       </div>
                       {/* Right — join */}
                       <button type="button" onClick={() => {
-                          // Add item to cart at tier price, set group mode, go to checkout
-                          const tierItem = store.products.find(p => p.id === storeTierProductId) || store.menuCategories.flatMap(c => c.items).find(m => m.id === storeTierProductId);
-                          if (tierItem) {
-                            cart.addItem({
-                              dailyMenuId: `instant-${tierItem.id}`,
-                              name: tierItem.name,
-                              description: "",
-                              imageUrl: tierItem.imageUrl || null,
-                              restaurantName: store.name,
-                              price: tierPrice,
-                            });
-                          }
+                          // Set group mode + tier size, then go to checkout — item is already in cart
                           cart.setCheckoutMode(store.id, "group");
                           cart.setCheckoutMode(store.name, "group");
+                          // Store the selected tier size for the cart to use
+                          try { localStorage.setItem("chopdrop-group-size", String(t.min)); } catch {}
                           setStoreTierSheet(false);
                           router.push("/cart");
                         }}
