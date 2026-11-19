@@ -16,6 +16,7 @@ model User {
   role         UserRole @default(USER)
   firstName    String
   lastName     String
+  avatarUrl    String?  // /avatars/1.png through /avatars/45.png
   officeId     String?
   createdAt    DateTime @default(now())
 
