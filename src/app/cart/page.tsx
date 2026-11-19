@@ -286,9 +286,9 @@ export default function CartPage() {
       <div className="px-5 pt-6 pb-4 flex items-center justify-between">
         <div>
           <h1 className="text-[24px] font-extrabold tracking-[-0.02em]" style={{ color: "var(--text)" }}>Checkout</h1>
-          <p className="text-[14px] mt-0.5" style={{ color: "var(--text-muted)" }}>{portionCount} item{portionCount !== 1 ? "s" : ""} · {formatNaira(cart.subtotal)}</p>
+          <p className="text-[14px] mt-0.5" style={{ color: "var(--text-muted)" }}>{portionCount} item{portionCount !== 1 ? "s" : ""} · {formatNaira(orderTotal)}</p>
         </div>
-        <Link href="/discover" className="text-[14px] font-bold" style={{ color: "var(--coral)" }}>+ Add more</Link>
+        <Link href="/home" className="text-[13px] font-bold" style={{ color: "var(--coral)" }}>+ Add more</Link>
       </div>
 
       {cart.items.length === 0 ? (
@@ -301,7 +301,7 @@ export default function CartPage() {
           <Link href="/discover" className="h-[50px] px-6 rounded-[12px] text-[14px] font-bold text-white inline-flex items-center" style={{ background: "var(--coral)" }}>Browse deals</Link>
         </div>
       ) : (
-        <div className="px-5 space-y-5">
+        <div className="px-5 space-y-3">
           {/* ═══ ITEMS — grouped by restaurant ═══ */}
           {(() => {
             // Group items by restaurant
@@ -329,13 +329,16 @@ export default function CartPage() {
                   <h3 className="text-[13px] font-bold leading-tight" style={{ color: item.isPackItem ? "var(--text-secondary)" : "var(--text)" }}>{cleanName(item.name)}</h3>
                   {item.restaurantName && !item.isPackItem && <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>}
                   <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
+                  {isGroupMode && groupSavings > 0 && (
+                    <span className="text-[10px] font-bold ml-1.5" style={{ color: "var(--emerald)" }}>group price</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button type="button" aria-label={item.quantity === 1 ? "Remove item" : "Decrease quantity"} onClick={() => cart.changeQuantity(item.dailyMenuId, -1)}
                     className="w-10 h-10 rounded-[12px] flex items-center justify-center press-feedback"
-                    style={{ background: item.quantity === 1 ? "var(--coral-soft)" : "var(--sand)" }}>
+                    style={{ background: "var(--sand)" }}>
                     {item.quantity === 1 ? (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14H6L5 6" /></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14H6L5 6" /></svg>
                     ) : (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14" /></svg>
                     )}
@@ -510,7 +513,7 @@ export default function CartPage() {
                 <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
               </div>
               <div className="flex justify-between">
-                <span style={{ color: "var(--text-secondary)" }}>Service fee <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>({packCount} {packCount === 1 ? "pack" : "packs"})</span></span>
+                <span style={{ color: "var(--text-secondary)" }}>Service fee</span>
                 <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
               </div>
               {/* Pool savings callout */}
@@ -562,7 +565,7 @@ export default function CartPage() {
                   disabled={loading}
                   className="w-full h-[50px] rounded-[12px] flex items-center justify-between px-5 text-[15px] font-bold text-white press-feedback disabled:opacity-50"
                   style={{ background: isAuthenticated === false ? "var(--dark)" : "var(--coral)" }}>
-                  <span>{loading ? "Processing\u2026" : isAuthenticated === false ? "Log in to pay" : "Pay now"}</span>
+                  <span>{loading ? "Processing\u2026" : isAuthenticated === false ? "Log in to pay" : isGroupMode ? "Pay · Group order" : "Pay now"}</span>
                   <span className="font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(orderTotal)}</span>
                 </button>
                 <div className="flex items-center justify-center gap-3 mt-2">
