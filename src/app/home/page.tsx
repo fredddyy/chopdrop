@@ -41,7 +41,7 @@ interface InactiveRestaurant {
   groupDealCount: number;
   groupTarget: number;
   groupDiscount: number;
-  livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; earliestDeadline: string | null };
+  livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; pools: Array<{ minSize: number; memberCount: number; memberNames: string[]; memberAvatars: string[]; deadline: string }>; earliestDeadline: string | null };
 }
 
 interface DealItem {
@@ -758,33 +758,30 @@ export default function HomePage() {
                               : `${r.groupDealCount} ${r.groupDealCount === 1 ? "deal" : "deals"}`}
                           </span>
                         )}
-                        {/* Avatar spots — bottom right of banner, only when deal configured */}
-                        {r.groupTarget > 0 && r.groupDiscount > 0 && (() => {
-                          const spots = r.groupTarget;
-                          const lm = r.livePools.totalMembers;
-                          const ls = spots;
-                          const hl = r.livePools.count > 0;
-                          const count = hl ? ls : spots;
-                          return (
-                            <div className="absolute bottom-2.5 right-3 flex items-center gap-1.5 px-2 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.6)" }}>
-                              <div className="flex -space-x-1">
-                                {Array.from({ length: Math.min(count, 10) }).map((_, i) => {
-                                  const filled = hl && i < lm;
-                                  return (
-                                    <div key={i} className="w-[16px] h-[16px] rounded-full flex items-center justify-center text-[6px] font-bold overflow-hidden"
-                                      style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.2)", border: filled ? "1.5px solid rgba(0,0,0,0.6)" : "1px dashed rgba(255,255,255,0.4)", color: "white" }}>
-                                      {filled && r.livePools.memberAvatars?.[i]
-                                        ? <img src={r.livePools.memberAvatars[i]} alt="" className="w-full h-full object-cover" />
-                                        : filled ? (r.livePools.memberNames[i]?.charAt(0) || "!") : "?"}
-                                    </div>
-                                  );
-                                })}
+                        {/* Stacked pool rows — one per active pool */}
+                        {r.livePools.pools.length > 0 && (
+                          <div className="absolute bottom-2 right-2 flex flex-col gap-1 items-end">
+                            {r.livePools.pools.slice(0, 3).map((pool, pi) => (
+                              <div key={pi} className="flex items-center gap-1 px-1.5 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.6)" }}>
+                                <div className="flex -space-x-1">
+                                  {Array.from({ length: Math.min(pool.minSize, 5) }).map((_, j) => {
+                                    const filled = j < pool.memberCount;
+                                    return (
+                                      <div key={j} className="w-[14px] h-[14px] rounded-full flex items-center justify-center overflow-hidden"
+                                        style={{ background: filled ? "var(--coral)" : "rgba(255,255,255,0.15)", border: filled ? "1px solid rgba(0,0,0,0.6)" : "1px dashed rgba(255,255,255,0.3)" }}>
+                                        {filled && pool.memberAvatars[j]
+                                          ? <img src={pool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                                          : filled ? <span className="text-[5px] font-bold text-white">{pool.memberNames[j]?.charAt(0) || "!"}</span>
+                                          : null}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                <span className="text-[7px] font-bold text-white tabular-nums">{pool.memberCount}/{pool.minSize}</span>
                               </div>
-                              {count > 10 && <span className="text-[8px] font-bold text-white/70">+{count - 10}</span>}
-                              <span className="text-[8px] font-bold text-white">{hl ? `${r.livePools.totalSize - lm} left` : `${count} spots`}</span>
-                            </div>
-                          );
-                        })()}
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       {/* Info — below banner */}

@@ -111,7 +111,7 @@ export async function GET(request: Request) {
     groupDealCount: number;
     groupTarget: number;
     groupDiscount: number;
-    livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; earliestDeadline: string | null };
+    livePools: { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; earliestDeadline: string | null; pools: Array<{ minSize: number; memberCount: number; memberNames: string[]; memberAvatars: string[]; deadline: string }> };
   }> = [];
 
   // Query recent group order activity per restaurant (last 7 days)
@@ -169,16 +169,25 @@ export async function GET(request: Request) {
       product: { select: { vendorId: true } },
     },
   });
-  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; earliestDeadline: string | null }>();
+  interface PoolSummary { minSize: number; memberCount: number; memberNames: string[]; memberAvatars: string[]; deadline: string; }
+  const livePoolsByRestaurant = new Map<string, { count: number; totalMembers: number; totalSize: number; bestFill: number; memberNames: string[]; memberAvatars: string[]; earliestDeadline: string | null; pools: PoolSummary[] }>();
   for (const p of activePools) {
     const rid = p.product.vendorId;
-    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], memberAvatars: [], earliestDeadline: null };
+    const existing = livePoolsByRestaurant.get(rid) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], memberAvatars: [], earliestDeadline: null, pools: [] };
     existing.count += 1;
-    // Use the most active pool's size (not sum) — shows "1/3" not "1/13"
+    // Use the most active pool's size (not sum)
     if (p.members.length > existing.totalMembers || existing.totalMembers === 0) {
       existing.totalMembers = p.members.length;
       existing.totalSize = p.minSize;
     }
+    // Add per-pool summary
+    existing.pools.push({
+      minSize: p.minSize,
+      memberCount: p.members.length,
+      memberNames: p.members.slice(0, 5).map(m => m.user.firstName),
+      memberAvatars: p.members.slice(0, 5).map(m => m.user.avatarUrl).filter(Boolean) as string[],
+      deadline: p.deadline.toISOString(),
+    });
     for (const m of p.members) {
       if (existing.memberNames.length < 3 && !existing.memberNames.includes(m.user.firstName)) {
         existing.memberNames.push(m.user.firstName);
@@ -255,7 +264,7 @@ export async function GET(request: Request) {
         groupDealCount: r._count.products,
         groupTarget: r.groupTarget,
         groupDiscount: r.groupDiscount,
-        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], memberAvatars: [], earliestDeadline: null },
+        livePools: livePoolsByRestaurant.get(r.id) || { count: 0, totalMembers: 0, totalSize: 0, bestFill: 0, memberNames: [], memberAvatars: [], earliestDeadline: null, pools: [] },
         tiers,
       });
     }
