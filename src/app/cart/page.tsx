@@ -329,9 +329,6 @@ export default function CartPage() {
                   <h3 className="text-[13px] font-bold leading-tight" style={{ color: item.isPackItem ? "var(--text-secondary)" : "var(--text)" }}>{cleanName(item.name)}</h3>
                   {item.restaurantName && !item.isPackItem && <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>}
                   <span className="text-[14px] font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(item.price * item.quantity)}</span>
-                  {isGroupMode && groupSavings > 0 && (
-                    <span className="text-[10px] font-bold ml-1.5" style={{ color: "var(--emerald)" }}>group price</span>
-                  )}
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button type="button" aria-label={item.quantity === 1 ? "Remove item" : "Decrease quantity"} onClick={() => cart.changeQuantity(item.dailyMenuId, -1)}
