@@ -813,7 +813,7 @@ export default function StorePage() {
       {/* ═══ TIER SELECTOR SHEET ═══ */}
       {store && storeTierSheet && (() => {
         let sheetTiers = Array.isArray(store.groupTiers)
-          ? (store.groupTiers as Array<{ min: number; discount: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min)
+          ? (store.groupTiers as Array<{ min: number; discount: number; duration?: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min)
           : [];
         if (sheetTiers.length === 0 && store.groupTarget > 0 && store.groupDiscount > 0) {
           sheetTiers = [
