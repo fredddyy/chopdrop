@@ -409,26 +409,6 @@ export default function HomePage() {
           })}
         </div>
       </header>
-      {/* Subcategory tabs — only for Groceries */}
-      {activeCategory === "Groceries" && grocerySubcategories.length > 0 && (
-        <div className="sticky top-0 z-40 px-5" style={{ background: "var(--bg)" }}>
-          <div className="relative mt-1">
-            <div className="flex overflow-x-auto hide-scrollbar" style={{ WebkitOverflowScrolling: "touch" }}>
-              {["Stores", ...grocerySubcategories].map((sub, i) => {
-                const active = activeSubcategory === sub;
-                return (
-                  <button key={sub} type="button" onClick={() => setActiveSubcategory(sub)}
-                    className={`${i === 0 ? "pr-2.5" : "px-2.5"} pb-2 text-[13px] font-semibold whitespace-nowrap shrink-0`}
-                    style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
-                    <span style={{ borderBottom: active ? "2px solid var(--coral)" : "2px solid transparent", paddingBottom: "4px", transition: "border-color 200ms ease-out" }}>{sub}</span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
-          </div>
-        </div>
-      )}
 
       {/* ── Loading skeleton ── */}
       {loading && (
