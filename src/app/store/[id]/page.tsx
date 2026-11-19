@@ -844,23 +844,30 @@ export default function StorePage() {
                   const hasPool = pool && pool.memberCount > 0;
                   return (
                     <div key={t.min} className="flex items-center gap-3 py-3" style={{ borderBottom: i < sheetTiers.length - 1 ? "1px solid var(--border)" : "none" }}>
-                      {/* Left — discount as hero number */}
-                      <div className="w-[44px] h-[44px] rounded-[12px] flex items-center justify-center shrink-0" style={{ background: isBest ? "var(--emerald)" : "var(--sand)" }}>
-                        <span className="text-[16px] font-extrabold leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isBest ? "white" : "var(--text)" }}>{t.discount}%</span>
+                      {/* Avatars */}
+                      <div className="flex -space-x-1.5 shrink-0">
+                        {Array.from({ length: Math.min(t.min, 5) }).map((_, j) => {
+                          const filled = hasPool && j < pool.memberCount;
+                          return (
+                            <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[8px] font-bold"
+                              style={{ background: filled ? "var(--coral)" : "var(--sand)", border: filled ? "1.5px solid white" : "1.5px solid var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
+                              {filled ? "!" : ""}
+                            </div>
+                          );
+                        })}
                       </div>
-                      {/* Middle — text */}
+                      {/* Middle — name + discount */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                           <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{t.min} people</span>
-                          {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best value</span>}
+                          {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best deal</span>}
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          {tierPrice > 0 && <span className="text-[13px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(tierPrice)}</span>}
-                          {tierPrice > 0 && firstItemPrice > tierPrice && <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(firstItemPrice)}</span>}
-                          {hasPool && <span className="text-[9px] font-bold" style={{ color: "var(--emerald)" }}>· {pool.memberCount} joined</span>}
-                        </div>
+                        <span className="text-[11px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>
+                          {t.discount}% off {tierPrice > 0 ? `· Save ${fp(firstItemPrice - tierPrice)}` : ""}
+                        </span>
                       </div>
-                      {/* Right — join button */}
+                      {/* Join button with amount */}
                       <button type="button" disabled={storeTierLoading} onClick={async () => {
                           setStoreTierLoading(true);
                           try {
@@ -878,9 +885,10 @@ export default function StorePage() {
                           } catch {}
                           setStoreTierLoading(false);
                         }}
-                          className="h-[40px] px-5 rounded-[10px] text-[13px] font-bold text-white press-feedback shrink-0 disabled:opacity-50"
-                          style={{ background: isBest ? "var(--emerald)" : "var(--coral)" }}>
-                          {storeTierLoading ? "..." : "Join"}
+                          className="h-[38px] px-3 rounded-[12px] flex flex-col items-center justify-center text-white press-feedback shrink-0 disabled:opacity-50"
+                          style={{ background: "var(--emerald)" }}>
+                          <span className="text-[10px] font-medium leading-none" style={{ opacity: 0.8 }}>{storeTierLoading ? "..." : "Join"}</span>
+                          {tierPrice > 0 && <span className="text-[13px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(tierPrice)}</span>}
                         </button>
                     </div>
                   );
