@@ -45,10 +45,10 @@ export function TierSelectorSheet({ open, onClose, onSelect, tiers, retailPrice,
 
           {/* Header */}
           <h3 className="text-[18px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-            Pick your group size
+            Order with others
           </h3>
           <p className="text-[13px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-            More people = bigger discount
+            Pick a group size. Doesn&apos;t fill? You still pay regular price.
           </p>
 
           {/* Solo reference */}
@@ -67,76 +67,58 @@ export function TierSelectorSheet({ open, onClose, onSelect, tiers, retailPrice,
               const isBest = tier.min === bestTier?.min;
 
               return (
-                <button
-                  key={tier.min}
-                  type="button"
-                  onClick={() => setSelected(tier.min)}
-                  className="w-full rounded-[12px] p-3.5 text-left press-feedback"
-                  style={{
-                    background: isSelected ? "rgba(232,76,61,0.06)" : "var(--card)",
-                    border: isSelected ? "2px solid var(--coral)" : "1.5px solid var(--border)",
-                    transition: "all 150ms ease-out",
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    {/* Left — size + discount */}
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center" style={{ background: isSelected ? "var(--coral)" : "var(--sand)" }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isSelected ? "white" : "var(--text-muted)"} strokeWidth="2" strokeLinecap="round">
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{tier.min} people</span>
-                          {isBest && (
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
-                              Best value
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
-                          {tier.discount}% off · Save {fp(savings)}
-                        </span>
-                      </div>
-                    </div>
+                <div key={tier.min} className="flex items-center gap-3 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                  {/* Number circle with group icon */}
+                  <div className="w-[40px] h-[40px] rounded-full flex flex-col items-center justify-center shrink-0" style={{ background: isBest ? "var(--emerald)" : "var(--sand)" }}>
+                    <span className="text-[14px] font-extrabold leading-none" style={{ color: isBest ? "white" : "var(--text)" }}>{tier.min}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isBest ? "white" : "var(--text-muted)"} strokeWidth="2.5" strokeLinecap="round" className="-mt-0.5">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                    </svg>
+                  </div>
 
-                    {/* Right — price + pool status */}
-                    <div className="text-right">
-                      <span className="text-[18px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isSelected ? "var(--coral)" : "var(--text)" }}>
-                        {fp(tierPrice)}
-                      </span>
-                      {pool && pool.memberCount > 0 ? (
-                        <span className="text-[10px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>
-                          {pool.memberCount}/{tier.min} joined
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-medium mt-0.5 block" style={{ color: "var(--text-muted)" }}>
-                          Start new
+                  {/* Avatars */}
+                  <div className="flex -space-x-1.5 shrink-0">
+                    {Array.from({ length: Math.min(tier.min, 4) }).map((_, j) => {
+                      const filled = pool ? j < pool.memberCount : false;
+                      return (
+                        <div key={j} className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-[7px] font-bold"
+                          style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "1.5px solid white" : "1.5px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
+                          {filled ? "!" : "?"}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Name + price */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{tier.min} people</span>
+                      {isBest && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald-soft)", color: "var(--emerald)" }}>
+                          Best deal
                         </span>
                       )}
                     </div>
+                    <div className="flex items-baseline gap-1.5 mt-0.5">
+                      <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(tierPrice)}</span>
+                      <span className="text-[10px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(retailPrice)}</span>
+                    </div>
                   </div>
-                </button>
+
+                  {/* Join button with amount */}
+                  <button type="button"
+                    onClick={() => { setSelected(tier.min); onSelect(tier); }}
+                    className="h-[36px] px-3.5 rounded-[12px] flex items-center justify-center text-[12px] font-bold text-white press-feedback shrink-0"
+                    style={{ background: "var(--emerald)" }}>
+                    Join {fp(tierPrice)}
+                  </button>
+                </div>
               );
             })}
           </div>
 
-          {/* CTA */}
-          <button
-            type="button"
-            disabled={!selected || loading}
-            onClick={() => {
-              const tier = sortedTiers.find(t => t.min === selected);
-              if (tier) onSelect(tier);
-            }}
-            className="w-full h-[50px] rounded-[12px] flex items-center justify-center text-[15px] font-bold text-white press-feedback mt-5 disabled:opacity-40"
-            style={{ background: "var(--coral)" }}
-          >
-            {loading ? "Finding group..." : selected ? `Join · ${fp(Math.round(retailPrice * (1 - (sortedTiers.find(t => t.min === selected)?.discount || 0) / 100)))} · ${selected} people` : "Select a group size"}
-          </button>
-
-          <button type="button" onClick={onClose} className="w-full h-[40px] flex items-center justify-center text-[13px] font-bold press-feedback mt-2" style={{ color: "var(--text-muted)" }}>
+          {/* Cancel */}
+          <button type="button" onClick={onClose} className="w-full h-[40px] flex items-center justify-center text-[13px] font-bold press-feedback mt-3" style={{ color: "var(--text-muted)" }}>
             Cancel
           </button>
         </div>
