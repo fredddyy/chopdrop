@@ -832,11 +832,11 @@ export default function StorePage() {
           <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
           <div className="absolute bottom-0 left-0 right-0 sheet-enter" onClick={(e) => e.stopPropagation()}>
             <div className="max-w-[428px] mx-auto rounded-t-[16px] px-5 pt-5 pb-8" style={{ background: "var(--card)" }}>
-              <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: "var(--border)" }} />
-              <h3 className="text-[22px] font-extrabold tracking-[-0.03em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Save more together</h3>
-              <p className="text-[13px] mt-1 mb-6 leading-[150%]" style={{ color: "var(--text-muted)" }}>Share with friends. Everyone pays less. No one joins? You pay regular price.</p>
+              <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
+              <h3 className="text-[18px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Save more together</h3>
+              <p className="text-[12px] mt-0.5 mb-4" style={{ color: "var(--text-muted)" }}>Share with friends. No one joins? Regular price.</p>
 
-              <div className="space-y-0">
+              <div>
                 {sheetTiers.map((t, i) => {
                   const tierPrice = firstItemPrice > 0 ? Math.round(firstItemPrice * (1 - t.discount / 100)) : 0;
                   const savings = firstItemPrice - tierPrice;
@@ -846,46 +846,40 @@ export default function StorePage() {
                   const mins = t.duration || (i === 0 ? 25 : i === 1 ? 45 : 60);
                   const timeLabel = mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? `${mins % 60}m` : ""}` : `${mins}m`;
                   return (
-                    <div key={t.min} className="rounded-[12px] p-3.5 mb-2" style={{ background: isBest ? "rgba(34,197,94,0.06)" : "var(--card)", border: isBest ? "1.5px solid var(--emerald)" : "1.5px solid var(--border)" }}>
-                      {/* Top row — people count + timer + join button */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[18px] font-extrabold leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{t.min}</span>
-                          <div>
-                            <span className="text-[13px] font-bold block leading-none" style={{ color: "var(--text)" }}>people</span>
-                            <span className="text-[10px] font-medium block mt-0.5" style={{ color: "var(--text-muted)" }}>{timeLabel} to fill</span>
-                          </div>
-                          {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full ml-1" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
-                        </div>
-                        <button type="button" disabled={storeTierLoading} onClick={async () => {
-                            setStoreTierLoading(true);
-                            try {
-                              const res = await fetch("/api/pools/find-or-create", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ productId: storeTierProductId, minSize: t.min, quantity: 1 }),
-                              });
-                              const json = await res.json();
-                              if (json.success) {
-                                setStoreTierSheet(false);
-                                cart.setCheckoutMode(store.name, "group");
-                                router.push("/cart");
-                              }
-                            } catch {}
-                            setStoreTierLoading(false);
-                          }}
-                            className="h-[42px] px-4 rounded-[12px] flex flex-col items-center justify-center text-white press-feedback shrink-0 disabled:opacity-50"
-                            style={{ background: isBest ? "var(--emerald)" : "var(--coral)" }}>
-                            <span className="text-[9px] font-medium leading-none" style={{ opacity: 0.8 }}>{storeTierLoading ? "..." : hasPool ? `Join · ${pool.memberCount} in` : "Start group"}</span>
-                            {tierPrice > 0 && <span className="text-[15px] font-extrabold tabular-nums leading-none mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(tierPrice)}</span>}
-                          </button>
+                    <div key={t.min} className="flex items-center gap-3 py-3" style={{ borderBottom: i < sheetTiers.length - 1 ? "1px solid var(--border)" : "none" }}>
+                      {/* Left — people count */}
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{t.min} people</span>
+                        <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{timeLabel}</span>
+                        {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--emerald)" }}>Best</span>}
                       </div>
-                      {/* Bottom row — savings + strikethrough */}
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[12px] font-extrabold" style={{ color: "var(--emerald)" }}>Save {fp(savings)}</span>
-                        <span className="text-[11px] line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(firstItemPrice)}</span>
-                        {hasPool && <span className="text-[9px] font-bold ml-auto" style={{ color: "var(--emerald)" }}>{pool.memberCount}/{t.min} joined</span>}
+                      {/* Middle — price + savings */}
+                      <div className="text-right mr-2">
+                        <span className="text-[14px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(tierPrice)}</span>
+                        <span className="text-[9px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>save {fp(savings)}</span>
                       </div>
+                      {/* Right — join */}
+                      <button type="button" disabled={storeTierLoading} onClick={async () => {
+                          setStoreTierLoading(true);
+                          try {
+                            const res = await fetch("/api/pools/find-or-create", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ productId: storeTierProductId, minSize: t.min, quantity: 1 }),
+                            });
+                            const json = await res.json();
+                            if (json.success) {
+                              setStoreTierSheet(false);
+                              cart.setCheckoutMode(store.name, "group");
+                              router.push("/cart");
+                            }
+                          } catch {}
+                          setStoreTierLoading(false);
+                        }}
+                          className="h-[36px] px-4 rounded-[12px] text-[12px] font-bold text-white press-feedback shrink-0 disabled:opacity-50"
+                          style={{ background: "var(--coral)" }}>
+                          {storeTierLoading ? "..." : hasPool ? `Join` : "Join"}
+                        </button>
                     </div>
                   );
                 })}
