@@ -867,7 +867,7 @@ export default function StorePage() {
                           {t.discount}% off {tierPrice > 0 ? `· Save ${fp(firstItemPrice - tierPrice)}` : ""}
                         </span>
                         <p className="text-[9px] font-bold mt-1" style={{ color: "var(--coral)" }}>
-                          ⏱ {(() => { const m = t.duration || 25; return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 > 0 ? ` ${m % 60}m` : ""}` : `${m}min`; })()} window
+                          ⏱ {(() => { const m = t.duration || (i === 0 ? 25 : i === 1 ? 45 : 60); return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 > 0 ? ` ${m % 60}m` : ""}` : `${m}min`; })()} window
                         </p>
                       </div>
                       {/* Join button with amount */}
