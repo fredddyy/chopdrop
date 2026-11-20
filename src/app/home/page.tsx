@@ -126,6 +126,7 @@ export default function HomePage() {
   const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
   const [inactiveRestaurants, setInactiveRestaurants] = useState<InactiveRestaurant[]>([]);
   const [dealItems, setDealItems] = useState<DealItem[]>([]);
+  const [allDealItems, setAllDealItems] = useState<DealItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [totalActive, setTotalActive] = useState(0);
@@ -174,6 +175,8 @@ export default function HomePage() {
 
     loadFeed();
     fetch("/api/categories").then(r => r.json()).then(d => { if (d.success) setCategories(d.data); }).catch(() => {});
+    // Load all deals once (no category filter) for the Deals tab
+    fetch("/api/feed").then(r => r.json()).then(d => { if (d.success) setAllDealItems(d.data.dealItems || []); }).catch(() => {});
     fetch("/api/auth/me").then(r => r.json()).then(d => {
       if (d.success && d.data) {
         if (d.data.avatarUrl) setUserAvatar(d.data.avatarUrl);
@@ -520,7 +523,7 @@ export default function HomePage() {
           return true;
         });
         const filteredItems = isItemView
-          ? dealItems
+          ? allDealItems
           : [];
         return (
         <div key={filter} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="card-enter">
