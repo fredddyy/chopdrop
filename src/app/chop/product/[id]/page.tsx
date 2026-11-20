@@ -334,13 +334,7 @@ export default function ChopProductPage() {
             <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>
               {chopsDone} of {chopTarget} chops
             </span>
-            {timeLeft > 0 && (
-              <span className="text-[11px] font-bold flex items-center gap-1" style={{ color: "var(--coral)" }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                {mins}m {secs}s left &mdash; share now
-              </span>
-            )}
-            {!pool && (
+            {!pool && !chopSession && (
               <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Share to start the timer</span>
             )}
           </div>
