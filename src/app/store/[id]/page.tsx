@@ -346,11 +346,6 @@ export default function StorePage() {
         ];
         return (
         <div className="mt-4">
-          {/* Header */}
-          <div className="px-5 flex items-center gap-2 mb-3">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-            <span className="text-[13px] font-bold" style={{ color: "var(--text-secondary)" }}>Order with others &amp; save</span>
-          </div>
           {/* Horizontal scroll tier cards */}
           <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3" style={{ touchAction: "pan-x" }}>
             {tierConfigs.map((tier, ti) => {
@@ -365,8 +360,12 @@ export default function StorePage() {
                 <div className="absolute -bottom-6 -left-6 w-[50px] h-[50px] rounded-full" style={{ background: tier.blob2, opacity: 0.2 }} />
                 <div className="absolute top-12 right-6 w-[24px] h-[24px] rounded-full" style={{ background: tier.blob1, opacity: 0.15 }} />
 
-                {/* Top section — label + discount */}
+                {/* Top section — header + label + discount */}
                 <div className="relative px-5 pt-4 pb-3">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={tier.text} strokeWidth="2" strokeLinecap="round" style={{ opacity: 0.5 }}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                    <span className="text-[11px] font-bold" style={{ color: tier.text, opacity: 0.5 }}>Order with others &amp; save</span>
+                  </div>
                   <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: `${tier.accent}30`, color: tier.text }}>{tier.label}</span>
                   <div className="mt-2.5 flex items-baseline gap-1">
                     <span className="text-[13px] font-bold" style={{ color: tier.text, opacity: 0.7 }}>Save</span>
