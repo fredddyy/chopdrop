@@ -345,12 +345,12 @@ export default function StorePage() {
         const spotsLeft = store.groupTarget - totalPoolMembers;
         return (
         <div className="px-5 mt-4">
+          {/* Header — outside card */}
+          <div className="flex items-center gap-2 mb-2.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+            <span className="text-[13px] font-bold" style={{ color: "var(--text-secondary)" }}>Order with others &amp; save</span>
+          </div>
           <div className="rounded-[16px] overflow-hidden p-4 card-enter" style={{ background: "var(--sand)" }}>
-            {/* Header */}
-            <div className="flex items-center gap-2 mb-3">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Order with others &amp; save</span>
-            </div>
             {/* Tier rows */}
             <div className="space-y-2">
               {[3, 5, store.groupTarget].map((size, ti) => {
