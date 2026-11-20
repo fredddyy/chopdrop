@@ -20,7 +20,8 @@ export function BottomNav() {
   const isCartPage = pathname === "/cart";
   const isProductPage = pathname.startsWith("/product/");
   const isStorePage = pathname.startsWith("/store/");
-  const hideCartBar = isCartPage || isProductPage || isStorePage;
+  const isChopPage = pathname.startsWith("/chop/");
+  const hideCartBar = isCartPage || isProductPage || isStorePage || isChopPage;
 
   return (
     <>
