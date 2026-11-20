@@ -194,7 +194,30 @@ export default function ChopProductPage() {
 
       {/* ── Chop Progress ── */}
       <div className="px-5 mt-6">
-        <h3 className="text-[14px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Chop Progress</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-[14px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Chop Progress</h3>
+          <div className="flex items-center gap-1">
+            {(() => {
+              const h = Math.floor(timeLeft / 3600);
+              const m = Math.floor((timeLeft % 3600) / 60);
+              const s = timeLeft % 60;
+              const segments = h > 0
+                ? [{ val: h, unit: "h" }, { val: m, unit: "m" }, { val: s, unit: "s" }]
+                : [{ val: m, unit: "m" }, { val: s, unit: "s" }];
+              return timeLeft > 0 ? segments.map((seg, si) => (
+                <div key={si} className="flex items-center">
+                  {si > 0 && <span className="text-[9px] font-bold mx-0.5" style={{ color: "var(--text-muted)" }}>:</span>}
+                  <span className="text-[13px] font-extrabold tabular-nums px-1.5 py-0.5 rounded-[5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)", background: "var(--sand)" }}>
+                    {String(seg.val).padStart(2, "0")}
+                  </span>
+                  <span className="text-[8px] font-bold ml-0.5" style={{ color: "var(--text-muted)" }}>{seg.unit}</span>
+                </div>
+              )) : (
+                <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Not started</span>
+              );
+            })()}
+          </div>
+        </div>
 
         <div className="rounded-[14px] p-4" style={{ background: "var(--sand)" }}>
           <div className="flex items-center justify-between mb-2">
