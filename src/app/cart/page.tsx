@@ -185,14 +185,18 @@ export default function CartPage() {
         if (discount > 0) {
           savings += Math.round(restSubtotal * discount / 100);
         }
-        // Split delivery by group size
-        groupDelFee = Math.round(baseDeliveryFee / memberCount);
+        // Split delivery by group size — round to whole naira (nearest 100 kobo)
+        groupDelFee = Math.round(baseDeliveryFee / memberCount / 100) * 100;
       }
     }
+    // Round savings to whole naira
+    savings = Math.round(savings / 100) * 100;
     return { groupSavings: savings, isGroupMode: isGroup, groupMemberCount: memberCount, groupDeliveryFee: groupDelFee };
   })();
 
   const deliveryFee = isGroupMode ? groupDeliveryFee : baseDeliveryFee;
+  const deliverySavings = isGroupMode ? baseDeliveryFee - deliveryFee : 0;
+  const totalSavings = groupSavings + deliverySavings;
   const orderTotal = cart.subtotal - groupSavings + deliveryFee + serviceFee;
   const portionCount = cart.items.reduce((s, i) => s + i.quantity, 0);
 
@@ -551,7 +555,7 @@ export default function CartPage() {
                   style={{ background: isAuthenticated === false ? "var(--dark)" : "var(--coral)" }}>
                   <div>
                     <span className="block">{loading ? "Processing\u2026" : isAuthenticated === false ? "Log in to pay" : isGroupMode ? "Pay · Group order" : "Pay now"}</span>
-                    {isGroupMode && groupSavings > 0 && <span className="text-[10px] font-medium block opacity-70">Saving {formatNaira(groupSavings)}</span>}
+                    {isGroupMode && totalSavings > 0 && <span className="text-[10px] font-medium block opacity-70">Saving {formatNaira(totalSavings)}</span>}
                   </div>
                   <span className="font-extrabold tabular-nums text-[16px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{formatNaira(orderTotal)}</span>
                 </button>
