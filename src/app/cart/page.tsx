@@ -476,29 +476,29 @@ export default function CartPage() {
 
           {/* ═══ ORDER SUMMARY ═══ */}
           <section className="rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <div className="space-y-3 text-[14px]">
-              <div className="flex justify-between">
-                <span style={{ color: "var(--text-secondary)" }}>Subtotal ({portionCount} item{portionCount !== 1 ? "s" : ""})</span>
-                <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(cart.subtotal)}</span>
+            <div className="space-y-2.5 text-[13px]">
+              <div className="flex justify-between items-center">
+                <span className="font-medium" style={{ color: "var(--text-muted)" }}>Subtotal ({portionCount} {portionCount !== 1 ? "items" : "item"})</span>
+                <span className="font-bold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(cart.subtotal)}</span>
               </div>
               {groupSavings > 0 && (
-                <div className="flex justify-between">
-                  <span style={{ color: "var(--emerald)" }}>Group discount</span>
-                  <span className="font-bold tabular-nums" style={{ color: "var(--emerald)" }}>-{formatNaira(groupSavings)}</span>
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold" style={{ color: "var(--emerald)" }}>Group discount ({isGroupMode ? `${groupMemberCount} people` : ""})</span>
+                  <span className="font-bold tabular-nums" style={{ color: "var(--emerald)" }}>&minus;{formatNaira(groupSavings)}</span>
                 </div>
               )}
-              <div className="flex justify-between">
+              <div className="flex justify-between items-start">
                 <div>
-                  <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
+                  <span className="font-medium" style={{ color: "var(--text-muted)" }}>Delivery</span>
                   {deliveryFee > 0 && isGroupMode && (
-                    <p className="text-[10px] mt-0.5" style={{ color: "var(--emerald)" }}>Split between {groupMemberCount} people</p>
+                    <p className="text-[10px] font-medium mt-0.5" style={{ color: "var(--emerald)" }}>Split between {groupMemberCount} people</p>
                   )}
                 </div>
-                <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
+                <span className="font-bold tabular-nums" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "Free" : formatNaira(deliveryFee)}</span>
               </div>
-              <div className="flex justify-between">
-                <span style={{ color: "var(--text-secondary)" }}>Service fee</span>
-                <span className="font-semibold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
+              <div className="flex justify-between items-center">
+                <span className="font-medium" style={{ color: "var(--text-muted)" }}>Service fee</span>
+                <span className="font-bold tabular-nums" style={{ color: "var(--text)" }}>{formatNaira(serviceFee)}</span>
               </div>
               {/* Pool savings callout */}
               {cart.items.some(item => {
@@ -517,9 +517,9 @@ export default function CartPage() {
                   </div>
                 ) : null;
               })()}
-              <div className="flex justify-between items-center pt-3" style={{ borderTop: "2px solid var(--border)" }}>
-                <span className="text-[15px] font-bold" style={{ color: "var(--text)" }}>Total</span>
-                <span key={orderTotal} className="text-[22px] font-extrabold tabular-nums pop" style={{ color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
+              <div className="flex justify-between items-center pt-3 mt-1" style={{ borderTop: "1.5px solid var(--border)" }}>
+                <span className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>Total</span>
+                <span key={orderTotal} className="text-[22px] font-extrabold tabular-nums pop" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{formatNaira(orderTotal)}</span>
               </div>
             </div>
           </section>
