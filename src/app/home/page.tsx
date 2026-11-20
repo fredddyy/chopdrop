@@ -503,10 +503,12 @@ export default function HomePage() {
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
                     <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Price Chop</h3>
                   </div>
-                  <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Invite friends to drop price to {"\u20A6"}0</p>
+                  <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Invite friends to chop the price down</p>
                   <div className="grid grid-cols-3 gap-2.5">
-                    {filteredItems.slice(0, 9).map(item => {
-                      const chopTarget = Math.max(3, Math.ceil(item.retailPrice / 50000));
+                    {filteredItems.slice(0, 9).map((item, idx) => {
+                      const chopDiscounts = [30, 40, 50, 25, 35, 45, 20, 55, 10];
+                      const chopPct = chopDiscounts[idx % chopDiscounts.length];
+                      const chopPrice = Math.round(item.retailPrice * (1 - chopPct / 100));
                       return (
                       <Link key={`chop-${item.id}`} href={`/chop/product/${item.id}`} className="press-feedback block">
                         <div className="relative rounded-[10px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
@@ -518,7 +520,7 @@ export default function HomePage() {
                               <span className="text-[16px] font-bold" style={{ color: "var(--text-muted)", opacity: 0.2 }}>{item.name.charAt(0)}</span>
                             </div>
                           )}
-                          <span className="absolute top-1.5 left-1.5 text-[8px] font-extrabold px-1.5 py-0.5 rounded-full text-white" style={{ background: "var(--coral)" }}>FREE</span>
+                          <span className="absolute top-1.5 left-1.5 text-[8px] font-extrabold px-1.5 py-0.5 rounded-full text-white" style={{ background: "var(--coral)" }}>-{chopPct}%</span>
                           <div className="absolute bottom-1.5 left-1.5 w-[26px] h-[26px] rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.9)" }}>
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
                           </div>
@@ -527,8 +529,8 @@ export default function HomePage() {
                           <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                           <p className="text-[9px] font-medium truncate mt-0.5" style={{ color: "var(--text-muted)" }}>{item.restaurantName}</p>
                           <div className="flex items-baseline gap-0.5 mt-1">
-                            <span className="text-[11px] font-extrabold line-through tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
-                            <span className="text-[11px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{"\u20A6"}0</span>
+                            <span className="text-[11px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fmt(chopPrice)}</span>
+                            <span className="text-[9px] font-bold line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fmt(item.retailPrice)}</span>
                           </div>
                         </div>
                       </Link>
