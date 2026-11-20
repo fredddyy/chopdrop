@@ -356,43 +356,41 @@ export default function StorePage() {
             {tierConfigs.map((tier, ti) => {
               const tierPool = livePools.find(lp => lp.minSize === tier.size);
               const hasTierPool = tierPool && tierPool.memberCount > 0;
-              const showMax = Math.min(tier.size, 5);
-              const isBest = ti === 2;
+              const showMax = Math.min(tier.size, 7);
+              const overflow = tier.size - showMax;
               return (
-              <div key={tier.size} className="shrink-0 rounded-[16px] p-4 relative overflow-hidden card-enter" style={{ width: "220px", background: tier.bg, minHeight: "140px" }}>
+              <div key={tier.size} className="shrink-0 rounded-[20px] relative overflow-hidden card-enter flex flex-col" style={{ width: "300px", background: tier.bg }}>
                 {/* Decorative blobs */}
-                <div className="absolute -top-6 -right-6 w-[60px] h-[60px] rounded-full" style={{ background: tier.blob1, opacity: 0.3 }} />
-                <div className="absolute -bottom-4 -left-4 w-[40px] h-[40px] rounded-full" style={{ background: tier.blob2, opacity: 0.25 }} />
-                <div className="absolute top-8 right-4 w-[20px] h-[20px] rounded-full" style={{ background: tier.blob1, opacity: 0.2 }} />
+                <div className="absolute -top-8 -right-8 w-[80px] h-[80px] rounded-full" style={{ background: tier.blob1, opacity: 0.25 }} />
+                <div className="absolute -bottom-6 -left-6 w-[50px] h-[50px] rounded-full" style={{ background: tier.blob2, opacity: 0.2 }} />
+                <div className="absolute top-12 right-6 w-[24px] h-[24px] rounded-full" style={{ background: tier.blob1, opacity: 0.15 }} />
 
-                {/* Top — label + emoji */}
-                <div className="relative flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${tier.accent}40`, color: tier.text }}>{tier.label}</span>
-                  <span className="text-[20px]">{tier.emoji}</span>
+                {/* Top section — label + discount */}
+                <div className="relative px-5 pt-4 pb-3">
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: `${tier.accent}30`, color: tier.text }}>{tier.label}</span>
+                  <div className="mt-2.5 flex items-baseline gap-1">
+                    <span className="text-[13px] font-bold" style={{ color: tier.text, opacity: 0.7 }}>Save</span>
+                    <span className="text-[32px] font-extrabold leading-none tracking-[-0.03em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: tier.text }}>{tier.discount}%</span>
+                  </div>
+                  <p className="text-[12px] font-semibold mt-0.5" style={{ color: tier.text, opacity: 0.6 }}>with {tier.size} people ordering</p>
                 </div>
 
-                {/* Discount — big number */}
-                <div className="relative">
-                  <span className="text-[36px] font-extrabold leading-none tracking-[-0.03em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: tier.text }}>{tier.discount}%</span>
-                  <span className="text-[12px] font-bold ml-1" style={{ color: tier.text, opacity: 0.7 }}>off</span>
-                </div>
-
-                {/* People + window */}
-                <p className="relative text-[11px] font-bold mt-1" style={{ color: tier.text, opacity: 0.8 }}>
-                  {tier.size} people · {tier.mins >= 60 ? `${Math.floor(tier.mins / 60)}h` : `${tier.mins}m`} window
-                </p>
-
-                {/* Avatar row */}
-                <div className="relative flex items-center gap-1.5 mt-3">
-                  <div className="flex -space-x-1.5">
+                {/* Centre — large overlapping avatars */}
+                <div className="relative flex justify-center py-3">
+                  <div className="flex" style={{ marginLeft: `${showMax * 6}px` }}>
                     {Array.from({ length: showMax }).map((_, j) => {
                       const filled = hasTierPool && j < tierPool.memberCount;
                       return (
-                      <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
+                      <div key={j} className="rounded-full flex items-center justify-center overflow-hidden"
                         style={{
-                          background: filled ? "rgba(255,255,255,0.9)" : `${tier.accent}30`,
-                          border: filled ? "none" : `1.5px dashed ${tier.text}30`,
-                          color: filled ? tier.bg : `${tier.text}50`,
+                          width: "38px", height: "38px",
+                          marginLeft: j === 0 ? "0" : "-12px",
+                          background: filled ? "rgba(255,255,255,0.95)" : `${tier.accent}25`,
+                          border: filled ? `2.5px solid ${tier.bg}` : `2px dashed ${tier.text}25`,
+                          color: filled ? tier.bg : `${tier.text}40`,
+                          fontSize: "12px", fontWeight: 700,
+                          zIndex: showMax - j,
+                          position: "relative",
                         }}>
                         {filled && tierPool.memberAvatars?.[j]
                           ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
@@ -400,16 +398,40 @@ export default function StorePage() {
                       </div>
                       );
                     })}
+                    {overflow > 0 && (
+                      <div className="rounded-full flex items-center justify-center text-[10px] font-bold relative"
+                        style={{ width: "38px", height: "38px", marginLeft: "-12px", background: `${tier.accent}35`, color: tier.text, opacity: 0.8, zIndex: 0 }}>
+                        +{overflow}
+                      </div>
+                    )}
                   </div>
-                  {hasTierPool ? (
-                    <span className="text-[9px] font-extrabold tabular-nums" style={{ color: tier.text, opacity: 0.9 }}>
-                      {tierPool.memberCount}/{tier.size} joined
-                    </span>
-                  ) : (
-                    <span className="text-[9px] font-bold" style={{ color: tier.text, opacity: 0.5 }}>
-                      {tier.size} spots open
-                    </span>
-                  )}
+                </div>
+
+                {/* Bottom — digital clock timer */}
+                <div className="relative px-5 pb-4 pt-1">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={tier.text} strokeWidth="2" strokeLinecap="round" style={{ opacity: 0.5 }}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                    <div className="flex items-center gap-1">
+                      {(() => {
+                        const h = Math.floor(tier.mins / 60);
+                        const m = tier.mins % 60;
+                        const segments = h > 0
+                          ? [{ val: h, unit: "Hrs" }, { val: m, unit: "Min" }]
+                          : [{ val: m, unit: "Min" }];
+                        return segments.map((seg, si) => (
+                          <div key={si} className="flex items-center gap-1">
+                            {si > 0 && <span className="text-[10px] font-bold mx-0.5" style={{ color: tier.text, opacity: 0.3 }}>:</span>}
+                            <span className="text-[16px] font-extrabold tabular-nums leading-none px-1.5 py-1 rounded-[6px]" style={{
+                              fontFamily: "'Bricolage Grotesque', sans-serif",
+                              color: tier.text,
+                              background: `${tier.accent}20`,
+                            }}>{String(seg.val).padStart(2, "0")}</span>
+                            <span className="text-[8px] font-bold uppercase tracking-[0.05em]" style={{ color: tier.text, opacity: 0.45 }}>{seg.unit}</span>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </div>
                 </div>
               </div>
               );
