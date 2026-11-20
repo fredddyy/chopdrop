@@ -390,7 +390,7 @@ export default function StorePage() {
               {/* Left — icon + details */}
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                  <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{sel.size}</span>
                 </div>
                 <div className="min-w-0">
                   <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{sel.size}-Person Group</p>
