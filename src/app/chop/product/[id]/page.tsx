@@ -246,7 +246,7 @@ export default function ChopProductPage() {
   const visibleSlots = Math.min(chopTarget, chopsDone + 2);
 
   return (
-    <main className="flex-1 max-w-[480px] mx-auto w-full pb-40" style={{ background: "var(--bg)" }}>
+    <main className="flex-1 max-w-[480px] mx-auto w-full pb-[180px]" style={{ background: "var(--bg)" }}>
 
       {/* ── Header ── */}
       <div className="sticky top-0 z-30 px-5 h-[56px] flex items-center justify-between" style={{ background: "var(--bg)" }}>
@@ -421,14 +421,36 @@ export default function ChopProductPage() {
       )}
 
       {/* ── Sticky bottom CTAs ── */}
-      <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
-        <div className="max-w-[480px] mx-auto space-y-2">
-          <button type="button" onClick={handleChop} disabled={chopping}
-            className="w-full h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback disabled:opacity-50"
-            style={{ background: "var(--coral)" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
-            {chopping ? "Chopping..." : "Chop the price"}
-          </button>
+      <div className="fixed bottom-[60px] left-0 right-0 z-50 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
+        <div className="max-w-[480px] mx-auto">
+          {chopSession && chopsDone > 0 ? (
+            <div className="flex gap-2.5">
+              {/* Buy now at chopped price */}
+              <button type="button" onClick={() => {
+                cart.addItem({ dailyMenuId: product.id, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantId: product.vendor.id, restaurantName: product.vendor.name, price: currentPrice });
+                router.push("/cart");
+              }}
+                className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
+                style={{ background: "var(--coral)" }}>
+                <span className="text-[13px] font-bold">Buy now · {fp(currentPrice)}</span>
+                <span className="text-[9px] font-medium opacity-70">Saved {fp(product.retailPrice - currentPrice)} so far</span>
+              </button>
+              {/* Share to chop more */}
+              <button type="button" onClick={handleShare}
+                className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
+                style={{ background: "var(--sand)" }}>
+                <span className="text-[12px] font-bold" style={{ color: "var(--text)" }}>Share</span>
+                <span className="text-[9px] font-medium" style={{ color: "var(--text-muted)" }}>{chopsLeft} chops left</span>
+              </button>
+            </div>
+          ) : (
+            <button type="button" onClick={handleChop} disabled={chopping}
+              className="w-full h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback disabled:opacity-50"
+              style={{ background: "var(--coral)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+              {chopping ? "Chopping..." : "Chop the price"}
+            </button>
+          )}
         </div>
       </div>
 
