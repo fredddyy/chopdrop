@@ -356,52 +356,81 @@ export default function StorePage() {
           </div>
           <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Pick a group size to unlock your discount:</p>
 
-          {/* 3 selectable tier cards */}
-          <div className="flex gap-2">
+          {/* Horizontal scroll wide tier cards */}
+          <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-5 px-5" style={{ touchAction: "pan-x" }}>
             {tierList.map((tier, ti) => {
               const isBest = ti === tierList.length - 1;
               const tierPool = livePools.find(lp => lp.minSize === tier.size);
               const hasTierPool = tierPool && tierPool.memberCount > 0;
-              const showMax = Math.min(tier.size, 4);
+              const showMax = Math.min(tier.size, 5);
               const overflow = tier.size - showMax;
+              const fillPct = hasTierPool ? Math.round((tierPool.memberCount / tier.size) * 100) : 0;
+              // Dynamic price from cart
+              const storeCartItems = cart.items.filter(ci => ci.restaurantId === id || ci.restaurantName === store.name);
+              const cartSubtotal = storeCartItems.reduce((s, ci) => s + ci.price * ci.quantity, 0);
+              const tierPrice = cartSubtotal > 0 ? Math.round(cartSubtotal * (1 - tier.discount / 100)) : 0;
               return (
-              <div key={tier.size} className="flex-1 rounded-[14px] p-3 card-enter" style={{ background: "var(--sand)", border: "1.5px solid var(--border)" }}>
-                {/* People + discount */}
-                <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{tier.size} People</p>
-                <p className="text-[15px] font-extrabold tracking-[-0.02em] mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{tier.discount}% OFF</p>
-
-                {/* Avatars */}
-                <div className="flex -space-x-1.5 mt-2.5">
-                  {Array.from({ length: showMax }).map((_, j) => {
-                    const filled = hasTierPool && j < tierPool.memberCount;
-                    return (
-                    <div key={j} className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
-                      style={{
-                        background: filled ? "var(--coral)" : "var(--card)",
-                        border: filled ? "1.5px solid var(--sand)" : "1.5px dashed var(--border)",
-                        color: filled ? "white" : "var(--text-muted)",
-                      }}>
-                      {filled && tierPool.memberAvatars?.[j]
-                        ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                        : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
+              <div key={tier.size} className="shrink-0 rounded-[16px] p-4 card-enter" style={{ width: "280px", background: "var(--sand)", border: "1.5px solid var(--border)" }}>
+                {/* Top row — name + discount | price */}
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{tier.size} People</p>
+                      {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)", color: "var(--emerald)" }}>Best</span>}
                     </div>
-                    );
-                  })}
-                  {overflow > 0 && <span className="text-[7px] font-bold ml-0.5 self-center" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
+                    <p className="text-[11px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>{tier.discount}% off · {tier.mins >= 60 ? `${Math.floor(tier.mins / 60)}h` : `${tier.mins}m`} window</p>
+                  </div>
+                  {/* Dynamic price — updates with cart */}
+                  <div className="text-right">
+                    {cartSubtotal > 0 ? (
+                      <>
+                        <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fp(tierPrice)}</p>
+                        <p className="text-[9px] font-bold mt-0.5" style={{ color: "var(--text-muted)" }}>you pay</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{tier.discount}%</p>
+                        <p className="text-[9px] font-bold mt-0.5" style={{ color: "var(--text-muted)" }}>off</p>
+                      </>
+                    )}
+                  </div>
                 </div>
 
-                {/* Timer */}
-                <div className="flex items-center gap-1 mt-2">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                  <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>
-                    {tier.mins >= 60 ? `${Math.floor(tier.mins / 60)}h` : `${tier.mins}m`} window
-                  </span>
+                {/* Avatars + progress */}
+                <div className="flex items-center justify-between mt-3.5">
+                  <div className="flex -space-x-2">
+                    {Array.from({ length: showMax }).map((_, j) => {
+                      const filled = hasTierPool && j < tierPool.memberCount;
+                      return (
+                      <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold overflow-hidden"
+                        style={{
+                          background: filled ? "var(--coral)" : "var(--card)",
+                          border: filled ? "2px solid var(--sand)" : "2px dashed var(--border)",
+                          color: filled ? "white" : "var(--text-muted)",
+                        }}>
+                        {filled && tierPool.memberAvatars?.[j]
+                          ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                          : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
+                      </div>
+                      );
+                    })}
+                    {overflow > 0 && <span className="text-[9px] font-bold ml-1 self-center" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
+                  </div>
+                  {/* Circular progress */}
+                  <div className="relative w-[38px] h-[38px] flex items-center justify-center">
+                    <svg width="38" height="38" viewBox="0 0 38 38" className="absolute inset-0">
+                      <circle cx="19" cy="19" r="16" fill="none" stroke="var(--border)" strokeWidth="3" />
+                      <circle cx="19" cy="19" r="16" fill="none" stroke={hasTierPool ? "var(--emerald)" : "var(--border)"} strokeWidth="3"
+                        strokeDasharray={`${2 * Math.PI * 16}`}
+                        strokeDashoffset={`${2 * Math.PI * 16 * (1 - fillPct / 100)}`}
+                        strokeLinecap="round"
+                        style={{ transform: "rotate(-90deg)", transformOrigin: "center", transition: "stroke-dashoffset 400ms ease-out" }} />
+                    </svg>
+                    <span className="text-[9px] font-extrabold tabular-nums" style={{ color: hasTierPool ? "var(--emerald)" : "var(--text-muted)" }}>
+                      {hasTierPool ? `${fillPct}%` : "0%"}
+                    </span>
+                  </div>
                 </div>
-
-                {/* Best value badge */}
-                {isBest && (
-                  <span className="inline-block mt-1.5 text-[8px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)", color: "var(--emerald)" }}>Best value</span>
-                )}
               </div>
               );
             })}
