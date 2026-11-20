@@ -387,10 +387,25 @@ export default function StorePage() {
           {/* Selected tier detail card */}
           <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
             <div className="flex items-center justify-between">
-              {/* Left — icon + details */}
+              {/* Left — overlapping avatars + details */}
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                  <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{sel.size}</span>
+                <div className="flex -space-x-2 shrink-0">
+                  {Array.from({ length: selShowMax }).map((_, j) => {
+                    const filled = hasSelPool && j < selMembers;
+                    return (
+                    <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-medium overflow-hidden"
+                      style={{
+                        background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
+                        border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--border)",
+                        color: filled ? "white" : "var(--border)",
+                      }}>
+                      {filled && selPool?.memberAvatars?.[j]
+                        ? <img src={selPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                        : filled ? (selPool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
+                    </div>
+                    );
+                  })}
+                  {selOverflow > 0 && <span className="text-[9px] font-bold ml-1 self-center" style={{ color: "var(--text-muted)" }}>+{selOverflow}</span>}
                 </div>
                 <div className="min-w-0">
                   <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{sel.size}-Person Group</p>
@@ -429,27 +444,6 @@ export default function StorePage() {
               </div>
             </div>
 
-            {/* Overlapping avatars row */}
-            <div className="flex items-center mt-3">
-              <div className="flex -space-x-2">
-                {Array.from({ length: selShowMax }).map((_, j) => {
-                  const filled = hasSelPool && j < selMembers;
-                  return (
-                  <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-medium overflow-hidden"
-                    style={{
-                      background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
-                      border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--border)",
-                      color: filled ? "white" : "var(--border)",
-                    }}>
-                    {filled && selPool?.memberAvatars?.[j]
-                      ? <img src={selPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                      : filled ? (selPool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
-                  </div>
-                  );
-                })}
-              </div>
-              {selOverflow > 0 && <span className="text-[10px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>+{selOverflow}</span>}
-            </div>
           </div>
         </div>
         );
