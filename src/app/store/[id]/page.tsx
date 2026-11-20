@@ -369,22 +369,33 @@ export default function StorePage() {
           <div className="flex gap-2 mb-3 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
             {tierList.map((tier, ti) => {
               const isActive = selectedTierIdx === ti;
+              const isBest = ti === tierList.length - 1;
               return (
               <button key={tier.size} type="button" onClick={() => setSelectedTierIdx(ti)}
-                className="h-[32px] px-3 rounded-[10px] flex items-center gap-2 text-[11px] font-bold press-feedback shrink-0"
+                className="h-[34px] px-3 rounded-[10px] flex items-center gap-2 text-[11px] font-bold press-feedback shrink-0"
                 style={{
                   background: isActive ? "var(--coral-soft)" : "var(--sand)",
                   color: isActive ? "var(--coral)" : "var(--text-secondary)",
                   border: isActive ? "1.5px solid var(--coral)" : "1.5px solid transparent",
+                  transform: isActive ? "scale(1.03)" : "scale(1)",
+                  transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                }}>
+                {/* Radio → checkmark on select */}
+                <div className="w-[16px] h-[16px] rounded-full flex items-center justify-center shrink-0" style={{
+                  background: isActive ? "var(--coral)" : "transparent",
+                  border: isActive ? "none" : "2px solid var(--border)",
                   transition: "all 200ms ease-out",
                 }}>
-                {/* Radio circle */}
-                <div className="w-[14px] h-[14px] rounded-full flex items-center justify-center shrink-0" style={{
-                  border: isActive ? "2px solid var(--coral)" : "2px solid var(--border)",
-                }}>
-                  {isActive && <div className="w-[6px] h-[6px] rounded-full" style={{ background: "var(--coral)" }} />}
+                  {isActive && (
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7" /></svg>
+                  )}
                 </div>
-                {tier.size} People · {tier.discount}%
+                <span>{tier.size} People</span>
+                <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full" style={{
+                  background: isActive ? "var(--coral)" : "var(--border)",
+                  color: isActive ? "white" : "var(--text-muted)",
+                  transition: "all 200ms ease-out",
+                }}>{tier.discount}%</span>
               </button>
               );
             })}
