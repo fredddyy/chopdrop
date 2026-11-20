@@ -365,17 +365,6 @@ export default function StorePage() {
             <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How it works</button>
           </div>
 
-          {/* How it works — collapsible */}
-          {howItWorksOpen && (
-            <div className="rounded-[12px] p-3.5 mb-3 card-enter" style={{ background: "var(--sand)" }}>
-              <div className="space-y-2 text-[11px] leading-[155%]" style={{ color: "var(--text-secondary)" }}>
-                <p><span className="font-bold" style={{ color: "var(--text)" }}>1.</span> Pick a group size and add items to your plate.</p>
-                <p><span className="font-bold" style={{ color: "var(--text)" }}>2.</span> Pay at the group price. Share your link so others can join.</p>
-                <p><span className="font-bold" style={{ color: "var(--text)" }}>3.</span> Group fills? Everyone saves. Doesn&apos;t fill? Full refund, no risk.</p>
-              </div>
-            </div>
-          )}
-
           {/* Tier pill selectors */}
           <div className="flex gap-2 mb-3 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
             {tierList.map((tier, ti) => {
@@ -962,6 +951,47 @@ export default function StorePage() {
         </div>
         );
       })()}
+
+      {/* ═══ HOW IT WORKS MODAL ═══ */}
+      {howItWorksOpen && (
+        <div className="fixed inset-0 z-[90]" role="dialog" aria-modal="true" onClick={() => setHowItWorksOpen(false)}>
+          <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
+          <div className="absolute bottom-0 left-0 right-0 sheet-enter" onClick={(e) => e.stopPropagation()}>
+            <div className="max-w-[480px] mx-auto rounded-t-[16px] px-5 pt-5 pb-8" style={{ background: "var(--card)" }}>
+              <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: "var(--border)" }} />
+              <h3 className="text-[18px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>How group ordering works</h3>
+              <div className="mt-4 space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center shrink-0 text-[12px] font-extrabold text-white" style={{ background: "var(--coral)" }}>1</div>
+                  <div>
+                    <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Pick a group size</p>
+                    <p className="text-[11px] mt-0.5 leading-[155%]" style={{ color: "var(--text-muted)" }}>Choose 3, 5, or 10 people. Bigger group = bigger discount.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center shrink-0 text-[12px] font-extrabold text-white" style={{ background: "var(--coral)" }}>2</div>
+                  <div>
+                    <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Pay the group price</p>
+                    <p className="text-[11px] mt-0.5 leading-[155%]" style={{ color: "var(--text-muted)" }}>You pay the discounted price upfront. Share your invite link on WhatsApp so friends can join.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-[28px] h-[28px] rounded-full flex items-center justify-center shrink-0 text-[12px] font-extrabold text-white" style={{ background: "var(--emerald)" }}>3</div>
+                  <div>
+                    <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Everyone saves — or full refund</p>
+                    <p className="text-[11px] mt-0.5 leading-[155%]" style={{ color: "var(--text-muted)" }}>Group fills within the time window? Everyone gets the discount. Doesn&apos;t fill? You get a full refund. Zero risk.</p>
+                  </div>
+                </div>
+              </div>
+              <button type="button" onClick={() => setHowItWorksOpen(false)}
+                className="w-full h-[48px] rounded-[12px] flex items-center justify-center text-[14px] font-bold text-white press-feedback mt-6"
+                style={{ background: "var(--coral)" }}>
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </main>
