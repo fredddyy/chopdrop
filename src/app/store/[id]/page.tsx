@@ -365,7 +365,7 @@ export default function StorePage() {
           </div>
 
           {/* Tier pill selectors */}
-          <div className="flex gap-2 mb-3">
+          <div className="flex gap-2 mb-3 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
             {tierList.map((tier, ti) => {
               const isActive = selectedTierIdx === ti;
               return (
