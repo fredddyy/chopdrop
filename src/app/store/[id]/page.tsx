@@ -395,6 +395,7 @@ export default function StorePage() {
                   <span className="text-[7px] font-bold leading-none mt-0.5" style={{ color: "var(--text-muted)" }}>ppl</span>
                 </div>
                 <div className="min-w-0">
+                  <p className="text-[13px] font-bold mb-1" style={{ color: "var(--text)" }}>{sel.size}-Person Group</p>
                   {/* Overlapping avatars */}
                   <div className="flex items-center">
                     <div className="flex -space-x-1.5">
