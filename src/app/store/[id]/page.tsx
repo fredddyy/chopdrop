@@ -337,78 +337,74 @@ export default function StorePage() {
         </div>
       </div>
 
-      {/* ═══ GROUP ORDER CARD ═══ */}
+      {/* ═══ GROUP ORDER SECTION ═══ */}
       {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
-        const totalPoolMembers = livePools.reduce((s, p) => s + p.memberCount, 0);
-        const hasLivePool = livePools.length > 0 && totalPoolMembers > 0;
-        const earliestDeadline = livePools.length > 0 ? livePools.reduce((earliest, p) => p.deadline < earliest ? p.deadline : earliest, livePools[0].deadline) : null;
-        const spotsLeft = store.groupTarget - totalPoolMembers;
+        const tierList = [
+          { size: 3, discount: 10, mins: 25 },
+          { size: 5, discount: 20, mins: 45 },
+          { size: store.groupTarget, discount: store.groupDiscount, mins: 60 },
+        ];
         return (
         <div className="px-5 mt-4">
-          <div className="rounded-[16px] overflow-hidden p-4 card-enter" style={{ background: "var(--sand)" }}>
-            {/* Header */}
-            <div className="flex items-center gap-2 mb-3">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Order with others &amp; save</span>
+          {/* Header */}
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+              <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Order with others &amp; save</span>
             </div>
-            {/* Tier rows */}
-            <div className="space-y-2">
-              {[3, 5, store.groupTarget].map((size, ti) => {
-                const tierDiscount = ti === 0 ? 10 : ti === 1 ? 20 : store.groupDiscount;
-                const tierPool = livePools.find(lp => lp.minSize === size);
-                const hasTierPool = tierPool && tierPool.memberCount > 0;
-                const isBest = ti === 2;
-                const showMax = Math.min(size, 6);
-                const overflow = size - showMax;
-                return (
-                <div key={size} className="flex items-center gap-2">
-                  {/* Label */}
-                  <div className="shrink-0" style={{ minWidth: "58px" }}>
-                    <span className="text-[11px] font-bold" style={{ color: "var(--text)" }}>{size} people</span>
-                    <span className="text-[10px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>{tierDiscount}%</span>
-                    {isBest && <span className="text-[8px] font-bold ml-0.5 px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
-                  </div>
-                  {/* Avatars */}
-                  <div className="flex items-center flex-1">
-                    <div className="flex -space-x-1.5">
-                      {Array.from({ length: showMax }).map((_, j) => {
-                        const filled = hasTierPool && j < tierPool.memberCount;
-                        return (
-                        <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
-                          style={{
-                            background: filled ? "var(--coral)" : "var(--card)",
-                            border: filled ? "1.5px solid var(--sand)" : "1.5px dashed var(--border)",
-                            color: filled ? "white" : "var(--text-muted)",
-                          }}>
-                          {filled && tierPool.memberAvatars?.[j]
-                            ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                            : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
-                        </div>
-                        );
-                      })}
+            <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>How it works</span>
+          </div>
+          <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Pick a group size to unlock your discount:</p>
+
+          {/* 3 selectable tier cards */}
+          <div className="flex gap-2">
+            {tierList.map((tier, ti) => {
+              const isBest = ti === tierList.length - 1;
+              const tierPool = livePools.find(lp => lp.minSize === tier.size);
+              const hasTierPool = tierPool && tierPool.memberCount > 0;
+              const showMax = Math.min(tier.size, 4);
+              const overflow = tier.size - showMax;
+              return (
+              <div key={tier.size} className="flex-1 rounded-[14px] p-3 card-enter" style={{ background: "var(--sand)", border: "1.5px solid var(--border)" }}>
+                {/* People + discount */}
+                <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{tier.size} People</p>
+                <p className="text-[15px] font-extrabold tracking-[-0.02em] mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{tier.discount}% OFF</p>
+
+                {/* Avatars */}
+                <div className="flex -space-x-1.5 mt-2.5">
+                  {Array.from({ length: showMax }).map((_, j) => {
+                    const filled = hasTierPool && j < tierPool.memberCount;
+                    return (
+                    <div key={j} className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
+                      style={{
+                        background: filled ? "var(--coral)" : "var(--card)",
+                        border: filled ? "1.5px solid var(--sand)" : "1.5px dashed var(--border)",
+                        color: filled ? "white" : "var(--text-muted)",
+                      }}>
+                      {filled && tierPool.memberAvatars?.[j]
+                        ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                        : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
                     </div>
-                    {overflow > 0 && <span className="text-[9px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
-                  </div>
-                  {/* Timer */}
-                  {hasTierPool ? (
-                    <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[10px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                        <LiveTimer deadline={tierPool.deadline} />
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "var(--card)" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[10px] font-medium tabular-nums" style={{ color: "var(--text-muted)" }}>
-                        {(() => { const m = ti === 0 ? 25 : ti === 1 ? 45 : 60; return m >= 60 ? `${Math.floor(m / 60)}h` : `${m}m`; })()} window
-                      </span>
-                    </div>
-                  )}
+                    );
+                  })}
+                  {overflow > 0 && <span className="text-[7px] font-bold ml-0.5 self-center" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
                 </div>
-                );
-              })}
-            </div>
+
+                {/* Timer */}
+                <div className="flex items-center gap-1 mt-2">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                  <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>
+                    {tier.mins >= 60 ? `${Math.floor(tier.mins / 60)}h` : `${tier.mins}m`} window
+                  </span>
+                </div>
+
+                {/* Best value badge */}
+                {isBest && (
+                  <span className="inline-block mt-1.5 text-[8px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)", color: "var(--emerald)" }}>Best value</span>
+                )}
+              </div>
+              );
+            })}
           </div>
         </div>
         );
