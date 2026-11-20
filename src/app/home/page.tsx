@@ -508,8 +508,8 @@ export default function HomePage() {
                     {filteredItems.slice(0, 6).map(item => {
                       const chopTarget = Math.max(3, Math.ceil(item.retailPrice / 50000));
                       return (
-                      <div key={`chop-${item.id}`} className="rounded-[14px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                        <div className="relative" style={{ height: "110px", background: "var(--sand)" }}>
+                      <div key={`chop-${item.id}`}>
+                        <div className="relative rounded-[12px] overflow-hidden" style={{ height: "110px", background: "var(--sand)" }}>
                           {item.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
@@ -520,7 +520,7 @@ export default function HomePage() {
                           )}
                           <span className="absolute top-2 left-2 text-[9px] font-extrabold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--coral)" }}>FREE</span>
                         </div>
-                        <div className="p-3">
+                        <div className="pt-2.5">
                           <p className="text-[13px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                           <div className="flex items-center gap-1 mt-0.5">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M3 3h18v18H3z" /><path d="M12 8v8M8 12h8" /></svg>
@@ -558,8 +558,8 @@ export default function HomePage() {
                       const hasPool = item.activePool && poolMembers > 0;
                       const fillPct = hasPool ? Math.round((poolMembers / poolSize) * 100) : 0;
                       return (
-                      <div key={item.id} className="rounded-[14px] overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                        <div className="relative" style={{ height: "110px", background: "var(--sand)" }}>
+                      <div key={item.id}>
+                        <div className="relative rounded-[12px] overflow-hidden" style={{ height: "110px", background: "var(--sand)" }}>
                           {item.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
@@ -570,7 +570,7 @@ export default function HomePage() {
                           )}
                           <span className="absolute top-2 left-2 text-[9px] font-extrabold px-2 py-0.5 rounded-full text-white" style={{ background: "var(--emerald)" }}>-{item.savings}%</span>
                         </div>
-                        <div className="p-3">
+                        <div className="pt-2.5">
                           <p className="text-[13px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
                           <div className="flex items-center gap-1 mt-0.5">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M3 3h18v18H3z" /><path d="M12 8v8M8 12h8" /></svg>
