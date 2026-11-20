@@ -627,27 +627,11 @@ export default function StorePage() {
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
                   </button>
                   <button type="button" onClick={() => {
-                    // Pick the first cart item's product ID for the tier selector
-                    const storeItems = cart.items.filter(i => i.restaurantName === store.name);
-                    const firstItem = storeItems[0];
-                    if (firstItem) {
-                      const pid = firstItem.dailyMenuId.replace("instant-", "");
-                      setStoreTierProductId(pid);
-                      // Fetch existing pools for this product
-                      fetch(`/api/pools?productId=${pid}`).then(r => r.json()).then(d => {
-                        if (d.success && d.data) {
-                          const bySize: Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null> = {};
-                          for (const p of d.data) {
-                            const existing = bySize[p.minSize];
-                            if (!existing || p.memberCount > existing.memberCount) {
-                              bySize[p.minSize] = { memberCount: p.memberCount, poolId: p.id, spotsLeft: p.spotsLeft };
-                            }
-                          }
-                          setStoreTierPools(bySize);
-                        }
-                      }).catch(() => {});
-                      setStoreTierSheet(true);
-                    }
+                    const tierSize = selectedTierIdx !== undefined ? [3, 5, store.groupTarget][selectedTierIdx] || store.groupTarget : store.groupTarget;
+                    cart.setCheckoutMode(store.id, "group");
+                    cart.setCheckoutMode(store.name, "group");
+                    try { localStorage.setItem("chopdrop-group-size", String(tierSize)); } catch {}
+                    router.push("/cart");
                   }}
                     className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
@@ -857,102 +841,6 @@ export default function StorePage() {
         );
       })()}
 
-      {/* ═══ TIER SELECTOR SHEET ═══ */}
-      {store && storeTierSheet && (() => {
-        let sheetTiers = Array.isArray(store.groupTiers)
-          ? (store.groupTiers as Array<{ min: number; discount: number; duration?: number }>).filter(t => t.min > 0 && t.discount > 0).sort((a, b) => a.min - b.min)
-          : [];
-        if (sheetTiers.length === 0 && store.groupTarget > 0 && store.groupDiscount > 0) {
-          sheetTiers = [
-            { min: 3, discount: Math.round(store.groupDiscount * 0.33) },
-            { min: 5, discount: Math.round(store.groupDiscount * 0.66) },
-            { min: store.groupTarget, discount: store.groupDiscount },
-          ].filter(t => t.discount > 0);
-        }
-        if (sheetTiers.length === 0) {
-          sheetTiers = [{ min: 3, discount: 10 }, { min: 5, discount: 20 }, { min: 10, discount: 30 }];
-        }
-        const storeItems = cart.items.filter(i => i.restaurantName === store.name);
-        const firstItemPrice = storeItems[0]?.price || 0;
-        return (
-        <div className="fixed inset-0 z-[80]" role="dialog" aria-modal="true" onClick={() => setStoreTierSheet(false)}>
-          <div className="absolute inset-0 backdrop-enter" style={{ background: "rgba(0,0,0,0.4)" }} />
-          <div className="absolute bottom-0 left-0 right-0 sheet-enter" onClick={(e) => e.stopPropagation()}>
-            <div className="max-w-[428px] mx-auto rounded-t-[16px] px-5 pt-5 pb-8" style={{ background: "var(--card)" }}>
-              <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: "var(--border)" }} />
-              <h3 className="text-[18px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Save more together</h3>
-              <p className="text-[12px] mt-0.5 mb-4" style={{ color: "var(--text-muted)" }}>Share with friends. No one joins? Regular price.</p>
-
-              <div>
-                {sheetTiers.map((t, i) => {
-                  const tierPrice = firstItemPrice > 0 ? Math.round(firstItemPrice * (1 - t.discount / 100)) : 0;
-                  const savings = firstItemPrice - tierPrice;
-                  const isBest = i === sheetTiers.length - 1;
-                  const pool = storeTierPools[t.min];
-                  const hasPool = pool && pool.memberCount > 0;
-                  const mins = t.duration || (i === 0 ? 25 : i === 1 ? 45 : 60);
-                  const timeLabel = mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? `${mins % 60}m` : ""}` : `${mins}m`;
-                  return (
-                    <div key={t.min} className="flex items-center gap-2.5 py-3.5" style={{ borderBottom: i < sheetTiers.length - 1 ? "1px solid var(--border)" : "none" }}>
-                      {/* Left — people count */}
-                      <div className="shrink-0" style={{ minWidth: "70px" }}>
-                        <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{t.min} people</span>
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{timeLabel}</span>
-                          {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--emerald)" }}>Best</span>}
-                        </div>
-                      </div>
-                      {/* Overlapping avatars */}
-                      <div className="flex items-center flex-1">
-                        <div className="flex -space-x-1.5">
-                          {Array.from({ length: Math.min(t.min, 6) }).map((_, j) => {
-                            const filled = hasPool && j < pool.memberCount;
-                            return (
-                            <div key={j} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold overflow-hidden"
-                              style={{
-                                background: filled ? "var(--coral)" : "var(--sand)",
-                                border: filled ? "1.5px solid white" : "1.5px dashed var(--border)",
-                                color: filled ? "white" : "var(--text-muted)",
-                              }}>
-                              {filled ? String.fromCharCode(65 + j) : "?"}
-                            </div>
-                            );
-                          })}
-                          {t.min > 6 && <span className="text-[8px] font-bold ml-0.5" style={{ color: "var(--text-muted)" }}>+{t.min - 6}</span>}
-                        </div>
-                      </div>
-                      {/* Price + savings */}
-                      <div className="text-right shrink-0 mr-1.5">
-                        <span className="text-[14px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(tierPrice)}</span>
-                        <span className="text-[9px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>save {fp(savings)}</span>
-                      </div>
-                      {/* Join button */}
-                      <button type="button" onClick={() => {
-                          // Set group mode + tier size, then go to checkout — item is already in cart
-                          cart.setCheckoutMode(store.id, "group");
-                          cart.setCheckoutMode(store.name, "group");
-                          // Store the selected tier size for the cart to use
-                          try { localStorage.setItem("chopdrop-group-size", String(t.min)); } catch {}
-                          setStoreTierSheet(false);
-                          router.push("/cart");
-                        }}
-                          className="h-[36px] px-4 rounded-[12px] text-[12px] font-bold text-white press-feedback shrink-0"
-                          style={{ background: "var(--coral)" }}>
-                          Join
-                        </button>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <button type="button" onClick={() => setStoreTierSheet(false)} className="w-full h-[40px] flex items-center justify-center text-[13px] font-bold press-feedback mt-3" style={{ color: "var(--text-muted)" }}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-        );
-      })()}
 
       {/* ═══ HOW IT WORKS MODAL ═══ */}
       {howItWorksOpen && (
