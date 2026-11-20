@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { User } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
 import { TierSelectorSheet } from "@/components/tier-selector-sheet";
@@ -426,7 +427,7 @@ export default function StorePage() {
                           }}>
                           {filled && selPool?.memberAvatars?.[j]
                             ? <img src={selPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                            : filled ? (selPool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
+                            : filled ? (selPool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={10} />}
                         </div>
                         );
                       })}
@@ -747,7 +748,7 @@ export default function StorePage() {
                       return (
                         <div key={i} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold"
                           style={{ background: filled ? "var(--coral)" : "transparent", border: filled ? "2px solid var(--card)" : "2px dashed var(--border)", color: filled ? "white" : "var(--text-muted)" }}>
-                          {filled ? String.fromCharCode(65 + i) : "?"}
+                          {filled ? String.fromCharCode(65 + i) : <User size={10} />}
                         </div>
                       );
                     })}

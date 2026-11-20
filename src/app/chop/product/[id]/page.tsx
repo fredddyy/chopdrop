@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { User } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
 
@@ -384,7 +385,9 @@ export default function ChopProductPage() {
           {Array.from({ length: Math.min(chopsLeft, 2) }).map((_, i) => (
             <div key={`empty-${i}`} className="flex items-center gap-3 py-2.5" style={{ borderBottom: i < Math.min(chopsLeft, 2) - 1 ? "1px solid var(--border)" : "none" }}>
               <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-medium shrink-0"
-                style={{ background: "var(--sand)", border: "1.5px dashed var(--text-muted)", color: "var(--text-muted)" }}>?</div>
+                style={{ background: "var(--sand)", border: "1.5px dashed var(--text-muted)", color: "var(--text-muted)" }}>
+                <User size={12} />
+              </div>
               <p className="text-[13px] font-medium" style={{ color: "var(--text-muted)" }}>Waiting for someone...</p>
             </div>
           ))}
