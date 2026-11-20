@@ -390,17 +390,17 @@ export default function StorePage() {
             <div className="flex items-center justify-between">
               {/* Left — number circle + avatars + details */}
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                  <span className="text-[16px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{sel.size}</span>
+                <div className="w-[40px] h-[40px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
+                  <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.size}</span>
                 </div>
                 <div className="min-w-0">
-                  {/* Overlapping avatars replace title */}
+                  {/* Overlapping avatars */}
                   <div className="flex items-center">
                     <div className="flex -space-x-1.5">
                       {Array.from({ length: selShowMax }).map((_, j) => {
                         const filled = hasSelPool && j < selMembers;
                         return (
-                        <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-medium overflow-hidden"
+                        <div key={j} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-medium overflow-hidden"
                           style={{
                             background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
                             border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--text-muted)",
@@ -413,9 +413,9 @@ export default function StorePage() {
                         );
                       })}
                     </div>
-                    {selOverflow > 0 && <span className="text-[9px] font-extrabold ml-1" style={{ color: "var(--text-secondary)" }}>+{selOverflow}</span>}
+                    {selOverflow > 0 && <span className="text-[10px] font-extrabold ml-1" style={{ color: "var(--text-secondary)" }}>+{selOverflow}</span>}
                   </div>
-                  <p className="text-[11px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>{sel.discount}% off · {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`} window</p>
+                  <p className="text-[11px] mt-1"><span className="font-bold" style={{ color: "var(--text-secondary)" }}>{sel.discount}% off</span><span className="font-medium" style={{ color: "var(--text-muted)" }}> · {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`} window</span></p>
                 </div>
               </div>
               {/* Right — dynamic price + progress ring */}
@@ -423,13 +423,13 @@ export default function StorePage() {
                 <div className="text-right">
                   {cartSubtotal > 0 ? (
                     <>
-                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(selPrice)}</p>
-                      <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>you pay</p>
+                      <p className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(selPrice)}</p>
+                      <p className="text-[10px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>you pay</p>
                     </>
                   ) : (
                     <>
-                      <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.discount}% off</p>
-                      <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>add items</p>
+                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.discount}%</p>
+                      <p className="text-[10px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>off</p>
                     </>
                   )}
                 </div>
@@ -443,7 +443,7 @@ export default function StorePage() {
                       strokeLinecap="round"
                       style={{ transform: "rotate(-90deg)", transformOrigin: "center" }} />
                   </svg>
-                  <span className="text-[8px] font-extrabold tabular-nums leading-none" style={{ color: "var(--text-muted)" }}>
+                  <span className="text-[10px] font-extrabold tabular-nums leading-none" style={{ color: "var(--text-secondary)" }}>
                     {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`}
                   </span>
                 </div>
