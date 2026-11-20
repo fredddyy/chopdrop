@@ -37,6 +37,7 @@ export default function ChopProductPage() {
   const [chopResult, setChopResult] = useState<string | null>(null);
   const [userName, setUserName] = useState("");
   const [chopSession, setChopSession] = useState<{ currentTotal: number; currentChopCount: number; maxChops: number; chopAmountPerClick: number; expiresAt: string; choppers: Array<{ name: string; amount: number; createdAt: string }> } | null>(null);
+  const [isVisitor, setIsVisitor] = useState(false);
 
   // Load user name + restore existing chop session code (from localStorage or URL param)
   useEffect(() => {
@@ -46,11 +47,15 @@ export default function ChopProductPage() {
         const p = JSON.parse(stored);
         if (p.name) setUserName(p.name);
       }
-      // Check URL for shared code first
+      // Check URL for shared code first — means this user is a visitor
       const urlParams = new URLSearchParams(window.location.search);
       const urlCode = urlParams.get("code");
       if (urlCode) {
         setChopCode(urlCode);
+        // Only mark as visitor if they didn't create this session themselves
+        const savedCodes = localStorage.getItem("chopdrop-chop-codes");
+        const existingCode = savedCodes ? JSON.parse(savedCodes)[id] : null;
+        if (existingCode !== urlCode) setIsVisitor(true);
         // Save it locally too
         try {
           const saved = localStorage.getItem("chopdrop-chop-codes");
@@ -437,9 +442,9 @@ export default function ChopProductPage() {
       {/* ── Sticky bottom CTAs ── */}
       <div className="fixed bottom-[60px] left-0 right-0 z-50 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto">
-          {chopSession && chopsDone > 0 ? (
+          {chopSession && chopsDone > 0 && !isVisitor ? (
+            /* Owner view — can buy at current price or share more */
             <div className="flex gap-2.5">
-              {/* Buy now at chopped price */}
               <button type="button" onClick={() => {
                 cart.addItem({ dailyMenuId: product.id, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantId: product.vendor.id, restaurantName: product.vendor.name, price: currentPrice });
                 router.push("/cart");
@@ -449,7 +454,6 @@ export default function ChopProductPage() {
                 <span className="text-[13px] font-bold">Buy now · {fp(currentPrice)}</span>
                 <span className="text-[9px] font-medium opacity-70">Saved {fp(product.retailPrice - currentPrice)} so far</span>
               </button>
-              {/* Share to chop more */}
               <button type="button" onClick={handleShare}
                 className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
                 style={{ background: "var(--sand)" }}>
@@ -458,6 +462,7 @@ export default function ChopProductPage() {
               </button>
             </div>
           ) : (
+            /* Visitor view or first chop — always show "Chop the price" */
             <button type="button" onClick={handleChop} disabled={chopping}
               className="w-full h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback disabled:opacity-50"
               style={{ background: "var(--coral)" }}>
