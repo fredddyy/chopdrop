@@ -365,20 +365,25 @@ export default function StorePage() {
             <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How it works</button>
           </div>
 
-          {/* Tier pill selectors */}
+          {/* Tier radio selectors */}
           <div className="flex gap-2 mb-3 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
             {tierList.map((tier, ti) => {
               const isActive = selectedTierIdx === ti;
               return (
               <button key={tier.size} type="button" onClick={() => setSelectedTierIdx(ti)}
-                className="h-[32px] px-3 rounded-full flex items-center gap-1.5 text-[11px] font-bold press-feedback shrink-0"
+                className="h-[32px] px-3 rounded-[10px] flex items-center gap-2 text-[11px] font-bold press-feedback shrink-0"
                 style={{
-                  background: isActive ? "var(--text)" : "transparent",
-                  color: isActive ? "white" : "var(--text-secondary)",
-                  border: isActive ? "1px solid var(--text)" : "1px solid var(--border)",
+                  background: isActive ? "var(--coral-soft)" : "var(--sand)",
+                  color: isActive ? "var(--coral)" : "var(--text-secondary)",
+                  border: isActive ? "1.5px solid var(--coral)" : "1.5px solid transparent",
                   transition: "all 200ms ease-out",
                 }}>
-                <div className="w-[6px] h-[6px] rounded-full" style={{ background: isActive ? "var(--emerald)" : "var(--border)" }} />
+                {/* Radio circle */}
+                <div className="w-[14px] h-[14px] rounded-full flex items-center justify-center shrink-0" style={{
+                  border: isActive ? "2px solid var(--coral)" : "2px solid var(--border)",
+                }}>
+                  {isActive && <div className="w-[6px] h-[6px] rounded-full" style={{ background: "var(--coral)" }} />}
+                </div>
                 {tier.size} People · {tier.discount}%
               </button>
               );
