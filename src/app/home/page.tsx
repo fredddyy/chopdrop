@@ -519,6 +519,9 @@ export default function HomePage() {
                             </div>
                           )}
                           <span className="absolute top-1.5 left-1.5 text-[8px] font-extrabold px-1.5 py-0.5 rounded-full text-white" style={{ background: "var(--coral)" }}>FREE</span>
+                          <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (navigator.share) { navigator.share({ title: item.name, text: `Chop the price of ${item.name} to ₦0 on ChopDrop!`, url: `${window.location.origin}/product/${item.id}` }).catch(() => {}); } }} className="absolute bottom-1.5 left-1.5 w-[26px] h-[26px] rounded-full flex items-center justify-center press-feedback" style={{ background: "rgba(255,255,255,0.9)" }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
+                          </button>
                         </div>
                         <div className="pt-1.5">
                           <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--text)" }}>{item.name}</p>
