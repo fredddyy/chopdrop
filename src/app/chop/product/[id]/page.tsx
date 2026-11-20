@@ -38,7 +38,7 @@ export default function ChopProductPage() {
   const [userName, setUserName] = useState("");
   const [chopSession, setChopSession] = useState<{ currentTotal: number; currentChopCount: number; maxChops: number; chopAmountPerClick: number; expiresAt: string; choppers: Array<{ name: string; amount: number; createdAt: string }> } | null>(null);
 
-  // Load user name + restore existing chop session code
+  // Load user name + restore existing chop session code (from localStorage or URL param)
   useEffect(() => {
     try {
       const stored = localStorage.getItem("chopdrop-customer");
@@ -46,10 +46,24 @@ export default function ChopProductPage() {
         const p = JSON.parse(stored);
         if (p.name) setUserName(p.name);
       }
-      const savedCodes = localStorage.getItem("chopdrop-chop-codes");
-      if (savedCodes) {
-        const codes: Record<string, string> = JSON.parse(savedCodes);
-        if (codes[id]) setChopCode(codes[id]);
+      // Check URL for shared code first
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCode = urlParams.get("code");
+      if (urlCode) {
+        setChopCode(urlCode);
+        // Save it locally too
+        try {
+          const saved = localStorage.getItem("chopdrop-chop-codes");
+          const codes: Record<string, string> = saved ? JSON.parse(saved) : {};
+          codes[id] = urlCode;
+          localStorage.setItem("chopdrop-chop-codes", JSON.stringify(codes));
+        } catch {}
+      } else {
+        const savedCodes = localStorage.getItem("chopdrop-chop-codes");
+        if (savedCodes) {
+          const codes: Record<string, string> = JSON.parse(savedCodes);
+          if (codes[id]) setChopCode(codes[id]);
+        }
       }
     } catch {}
   }, [id]);
@@ -137,7 +151,7 @@ export default function ChopProductPage() {
       } catch {}
     }
 
-    const url = code ? `${window.location.origin}/chop/${code}` : `${window.location.origin}/chop/product/${id}`;
+    const url = code ? `${window.location.origin}/chop/product/${id}?code=${code}` : `${window.location.origin}/chop/product/${id}`;
     const text = `Chop the price of ${product.name} on ChopDrop!`;
     if (navigator.share) {
       try { await navigator.share({ title: `Chop: ${product.name}`, text, url }); } catch {}
