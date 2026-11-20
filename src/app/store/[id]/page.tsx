@@ -375,7 +375,7 @@ export default function StorePage() {
                   <p className="text-[12px] font-semibold mt-0.5" style={{ color: tier.text, opacity: 0.6 }}>with {tier.size} people ordering</p>
                 </div>
 
-                {/* Centre — large overlapping avatars */}
+                {/* Centre — large overlapping avatars (dark) */}
                 <div className="relative flex justify-center py-3">
                   <div className="flex" style={{ marginLeft: `${showMax * 6}px` }}>
                     {Array.from({ length: showMax }).map((_, j) => {
@@ -385,9 +385,9 @@ export default function StorePage() {
                         style={{
                           width: "38px", height: "38px",
                           marginLeft: j === 0 ? "0" : "-12px",
-                          background: filled ? "rgba(255,255,255,0.95)" : `${tier.accent}25`,
-                          border: filled ? `2.5px solid ${tier.bg}` : `2px dashed ${tier.text}25`,
-                          color: filled ? tier.bg : `${tier.text}40`,
+                          background: filled ? "#1C1C1E" : "rgba(0,0,0,0.2)",
+                          border: filled ? `2.5px solid ${tier.bg}` : `2px dashed rgba(0,0,0,0.15)`,
+                          color: filled ? "#FFFFFF" : "rgba(0,0,0,0.25)",
                           fontSize: "12px", fontWeight: 700,
                           zIndex: showMax - j,
                           position: "relative",
@@ -400,17 +400,17 @@ export default function StorePage() {
                     })}
                     {overflow > 0 && (
                       <div className="rounded-full flex items-center justify-center text-[10px] font-bold relative"
-                        style={{ width: "38px", height: "38px", marginLeft: "-12px", background: `${tier.accent}35`, color: tier.text, opacity: 0.8, zIndex: 0 }}>
+                        style={{ width: "38px", height: "38px", marginLeft: "-12px", background: "rgba(0,0,0,0.2)", color: "rgba(0,0,0,0.4)", zIndex: 0 }}>
                         +{overflow}
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Bottom — digital clock timer */}
-                <div className="relative px-5 pb-4 pt-1">
+                {/* Bottom — digital clock timer on dark strip */}
+                <div className="relative mx-3 mb-3 mt-1 rounded-[12px] py-2.5 px-4" style={{ background: "#1C1C1E" }}>
                   <div className="flex items-center justify-center gap-1.5">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={tier.text} strokeWidth="2" strokeLinecap="round" style={{ opacity: 0.5 }}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" style={{ opacity: 0.4 }}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
                     <div className="flex items-center gap-1">
                       {(() => {
                         const h = Math.floor(tier.mins / 60);
@@ -420,13 +420,13 @@ export default function StorePage() {
                           : [{ val: m, unit: "Min" }];
                         return segments.map((seg, si) => (
                           <div key={si} className="flex items-center gap-1">
-                            {si > 0 && <span className="text-[10px] font-bold mx-0.5" style={{ color: tier.text, opacity: 0.3 }}>:</span>}
-                            <span className="text-[16px] font-extrabold tabular-nums leading-none px-1.5 py-1 rounded-[6px]" style={{
+                            {si > 0 && <span className="text-[10px] font-bold mx-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>:</span>}
+                            <span className="text-[16px] font-extrabold tabular-nums leading-none px-2 py-1 rounded-[6px]" style={{
                               fontFamily: "'Bricolage Grotesque', sans-serif",
-                              color: tier.text,
-                              background: `${tier.accent}20`,
+                              color: "#FFFFFF",
+                              background: "rgba(255,255,255,0.1)",
                             }}>{String(seg.val).padStart(2, "0")}</span>
-                            <span className="text-[8px] font-bold uppercase tracking-[0.05em]" style={{ color: tier.text, opacity: 0.45 }}>{seg.unit}</span>
+                            <span className="text-[8px] font-bold uppercase tracking-[0.05em]" style={{ color: "rgba(255,255,255,0.4)" }}>{seg.unit}</span>
                           </div>
                         ));
                       })()}
