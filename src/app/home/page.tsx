@@ -508,7 +508,7 @@ export default function HomePage() {
                     {filteredItems.slice(0, 9).map(item => {
                       const chopTarget = Math.max(3, Math.ceil(item.retailPrice / 50000));
                       return (
-                      <Link key={`chop-${item.id}`} href={`/product/${item.id}`} className="press-feedback block">
+                      <Link key={`chop-${item.id}`} href={`/chop/product/${item.id}`} className="press-feedback block">
                         <div className="relative rounded-[10px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
                           {item.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -520,7 +520,7 @@ export default function HomePage() {
                           )}
                           <span className="absolute top-1.5 left-1.5 text-[8px] font-extrabold px-1.5 py-0.5 rounded-full text-white" style={{ background: "var(--coral)" }}>FREE</span>
                           <div className="absolute bottom-1.5 left-1.5 w-[26px] h-[26px] rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.9)" }}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
                           </div>
                         </div>
                         <div className="pt-1.5">
