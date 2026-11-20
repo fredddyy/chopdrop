@@ -140,6 +140,7 @@ export default function StorePage() {
   const [storeTierLoading, setStoreTierLoading] = useState(false);
   const [storeTierPools, setStoreTierPools] = useState<Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null>>({});
   const [storeTierProductId, setStoreTierProductId] = useState("");
+  const [selectedTierIdx, setSelectedTierIdx] = useState(2);
 
   function addToPlate(item: Product, storeName: string) {
     cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantId: id, restaurantName: storeName, price: item.retailPrice });
@@ -344,96 +345,111 @@ export default function StorePage() {
           { size: 5, discount: 20, mins: 45 },
           { size: store.groupTarget, discount: store.groupDiscount, mins: 60 },
         ];
+        const sel = tierList[selectedTierIdx] || tierList[2];
+        const selPool = livePools.find(lp => lp.minSize === sel.size);
+        const hasSelPool = selPool && selPool.memberCount > 0;
+        const selMembers = hasSelPool ? selPool.memberCount : 0;
+        const selShowMax = Math.min(sel.size, 4);
+        const selOverflow = sel.size - selShowMax;
+        const storeCartItems = cart.items.filter(ci => ci.restaurantId === id || ci.restaurantName === store.name);
+        const cartSubtotal = storeCartItems.reduce((s, ci) => s + ci.price * ci.quantity, 0);
+        const selPrice = cartSubtotal > 0 ? Math.round(cartSubtotal * (1 - sel.discount / 100)) : 0;
+        const fillPct = hasSelPool ? Math.round((selMembers / sel.size) * 100) : 0;
+        const AVATAR_BG = ["#E84C3D", "#F39C12", "#3498DB", "#1ABC9C", "#9B59B6", "#E67E22", "#2ECC71"];
         return (
-        <div className="px-5 mt-4">
+        <div className="px-5 mt-5">
           {/* Header */}
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-              <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Order with others &amp; save</span>
-            </div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Order with others &amp; save</h3>
             <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>How it works</span>
           </div>
-          <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Pick a group size to unlock your discount:</p>
 
-          {/* Horizontal scroll wide tier cards */}
-          <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-5 px-5" style={{ touchAction: "pan-x" }}>
+          {/* Tier pill selectors */}
+          <div className="flex gap-2 mb-3">
             {tierList.map((tier, ti) => {
-              const isBest = ti === tierList.length - 1;
-              const tierPool = livePools.find(lp => lp.minSize === tier.size);
-              const hasTierPool = tierPool && tierPool.memberCount > 0;
-              const showMax = Math.min(tier.size, 5);
-              const overflow = tier.size - showMax;
-              const fillPct = hasTierPool ? Math.round((tierPool.memberCount / tier.size) * 100) : 0;
-              // Dynamic price from cart
-              const storeCartItems = cart.items.filter(ci => ci.restaurantId === id || ci.restaurantName === store.name);
-              const cartSubtotal = storeCartItems.reduce((s, ci) => s + ci.price * ci.quantity, 0);
-              const tierPrice = cartSubtotal > 0 ? Math.round(cartSubtotal * (1 - tier.discount / 100)) : 0;
+              const isActive = selectedTierIdx === ti;
               return (
-              <div key={tier.size} className="shrink-0 rounded-[16px] p-4 card-enter" style={{ width: "280px", background: "var(--sand)", border: "1.5px solid var(--border)" }}>
-                {/* Top row — name + discount | price */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{tier.size} People</p>
-                      {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)", color: "var(--emerald)" }}>Best</span>}
-                    </div>
-                    <p className="text-[11px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>{tier.discount}% off · {tier.mins >= 60 ? `${Math.floor(tier.mins / 60)}h` : `${tier.mins}m`} window</p>
-                  </div>
-                  {/* Dynamic price — updates with cart */}
-                  <div className="text-right">
-                    {cartSubtotal > 0 ? (
-                      <>
-                        <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fp(tierPrice)}</p>
-                        <p className="text-[9px] font-bold mt-0.5" style={{ color: "var(--text-muted)" }}>you pay</p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{tier.discount}%</p>
-                        <p className="text-[9px] font-bold mt-0.5" style={{ color: "var(--text-muted)" }}>off</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Avatars + progress */}
-                <div className="flex items-center justify-between mt-3.5">
-                  <div className="flex -space-x-2">
-                    {Array.from({ length: showMax }).map((_, j) => {
-                      const filled = hasTierPool && j < tierPool.memberCount;
-                      return (
-                      <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-bold overflow-hidden"
-                        style={{
-                          background: filled ? "var(--coral)" : "var(--card)",
-                          border: filled ? "2px solid var(--sand)" : "2px dashed var(--border)",
-                          color: filled ? "white" : "var(--text-muted)",
-                        }}>
-                        {filled && tierPool.memberAvatars?.[j]
-                          ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                          : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
-                      </div>
-                      );
-                    })}
-                    {overflow > 0 && <span className="text-[9px] font-bold ml-1 self-center" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
-                  </div>
-                  {/* Circular progress */}
-                  <div className="relative w-[38px] h-[38px] flex items-center justify-center">
-                    <svg width="38" height="38" viewBox="0 0 38 38" className="absolute inset-0">
-                      <circle cx="19" cy="19" r="16" fill="none" stroke="var(--border)" strokeWidth="3" />
-                      <circle cx="19" cy="19" r="16" fill="none" stroke={hasTierPool ? "var(--emerald)" : "var(--border)"} strokeWidth="3"
-                        strokeDasharray={`${2 * Math.PI * 16}`}
-                        strokeDashoffset={`${2 * Math.PI * 16 * (1 - fillPct / 100)}`}
-                        strokeLinecap="round"
-                        style={{ transform: "rotate(-90deg)", transformOrigin: "center", transition: "stroke-dashoffset 400ms ease-out" }} />
-                    </svg>
-                    <span className="text-[9px] font-extrabold tabular-nums" style={{ color: hasTierPool ? "var(--emerald)" : "var(--text-muted)" }}>
-                      {hasTierPool ? `${fillPct}%` : "0%"}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <button key={tier.size} type="button" onClick={() => setSelectedTierIdx(ti)}
+                className="h-[32px] px-3 rounded-full flex items-center gap-1.5 text-[11px] font-bold press-feedback shrink-0"
+                style={{
+                  background: isActive ? "var(--text)" : "transparent",
+                  color: isActive ? "white" : "var(--text-secondary)",
+                  border: isActive ? "1px solid var(--text)" : "1px solid var(--border)",
+                  transition: "all 200ms ease-out",
+                }}>
+                <div className="w-[6px] h-[6px] rounded-full" style={{ background: isActive ? "var(--emerald)" : "var(--border)" }} />
+                {tier.size} People · {tier.discount}%
+              </button>
               );
             })}
+          </div>
+
+          {/* Selected tier detail card */}
+          <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
+            <div className="flex items-center justify-between">
+              {/* Left — icon + details */}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-[40px] h-[40px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{sel.size}-Person Group</p>
+                  <p className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>{sel.discount}% off · {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`} window</p>
+                </div>
+              </div>
+              {/* Right — dynamic price + progress ring */}
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="text-right">
+                  {cartSubtotal > 0 ? (
+                    <>
+                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fp(selPrice)}</p>
+                      <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>you pay</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{sel.discount}%</p>
+                      <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>off</p>
+                    </>
+                  )}
+                </div>
+                {/* Circular progress */}
+                <div className="relative w-[40px] h-[40px] flex items-center justify-center">
+                  <svg width="40" height="40" viewBox="0 0 40 40" className="absolute inset-0">
+                    <circle cx="20" cy="20" r="17" fill="none" stroke="var(--border)" strokeWidth="3" />
+                    <circle cx="20" cy="20" r="17" fill="none" stroke={hasSelPool ? "var(--emerald)" : "var(--border)"} strokeWidth="3"
+                      strokeDasharray={`${2 * Math.PI * 17}`}
+                      strokeDashoffset={`${2 * Math.PI * 17 * (1 - fillPct / 100)}`}
+                      strokeLinecap="round"
+                      style={{ transform: "rotate(-90deg)", transformOrigin: "center", transition: "stroke-dashoffset 400ms ease-out" }} />
+                  </svg>
+                  <span className="text-[8px] font-extrabold tabular-nums leading-none" style={{ color: hasSelPool ? "var(--emerald)" : "var(--text-muted)" }}>
+                    {selMembers}/{sel.size}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Overlapping avatars row */}
+            <div className="flex items-center mt-3">
+              <div className="flex -space-x-2">
+                {Array.from({ length: selShowMax }).map((_, j) => {
+                  const filled = hasSelPool && j < selMembers;
+                  return (
+                  <div key={j} className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden"
+                    style={{
+                      background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
+                      border: filled ? "2.5px solid var(--sand)" : "2px dashed var(--border)",
+                      color: filled ? "white" : "var(--text-muted)",
+                    }}>
+                    {filled && selPool?.memberAvatars?.[j]
+                      ? <img src={selPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                      : filled ? (selPool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
+                  </div>
+                  );
+                })}
+              </div>
+              {selOverflow > 0 && <span className="text-[10px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>+{selOverflow}</span>}
+            </div>
           </div>
         </div>
         );
