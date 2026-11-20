@@ -850,19 +850,40 @@ export default function StorePage() {
                   const mins = t.duration || (i === 0 ? 25 : i === 1 ? 45 : 60);
                   const timeLabel = mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? `${mins % 60}m` : ""}` : `${mins}m`;
                   return (
-                    <div key={t.min} className="flex items-center gap-3 py-3" style={{ borderBottom: i < sheetTiers.length - 1 ? "1px solid var(--border)" : "none" }}>
+                    <div key={t.min} className="flex items-center gap-2.5 py-3.5" style={{ borderBottom: i < sheetTiers.length - 1 ? "1px solid var(--border)" : "none" }}>
                       {/* Left — people count */}
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <div className="shrink-0" style={{ minWidth: "70px" }}>
                         <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{t.min} people</span>
-                        <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{timeLabel}</span>
-                        {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--emerald)" }}>Best</span>}
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{timeLabel}</span>
+                          {isBest && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--sand)", color: "var(--emerald)" }}>Best</span>}
+                        </div>
                       </div>
-                      {/* Middle — price + savings */}
-                      <div className="text-right mr-2">
+                      {/* Overlapping avatars */}
+                      <div className="flex items-center flex-1">
+                        <div className="flex -space-x-1.5">
+                          {Array.from({ length: Math.min(t.min, 6) }).map((_, j) => {
+                            const filled = hasPool && j < pool.memberCount;
+                            return (
+                            <div key={j} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-bold overflow-hidden"
+                              style={{
+                                background: filled ? "var(--coral)" : "var(--sand)",
+                                border: filled ? "1.5px solid white" : "1.5px dashed var(--border)",
+                                color: filled ? "white" : "var(--text-muted)",
+                              }}>
+                              {filled ? String.fromCharCode(65 + j) : "?"}
+                            </div>
+                            );
+                          })}
+                          {t.min > 6 && <span className="text-[8px] font-bold ml-0.5" style={{ color: "var(--text-muted)" }}>+{t.min - 6}</span>}
+                        </div>
+                      </div>
+                      {/* Price + savings */}
+                      <div className="text-right shrink-0 mr-1.5">
                         <span className="text-[14px] font-extrabold tabular-nums leading-none block" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(tierPrice)}</span>
                         <span className="text-[9px] font-bold mt-0.5 block" style={{ color: "var(--emerald)" }}>save {fp(savings)}</span>
                       </div>
-                      {/* Right — join */}
+                      {/* Join button */}
                       <button type="button" onClick={() => {
                           // Set group mode + tier size, then go to checkout — item is already in cart
                           cart.setCheckoutMode(store.id, "group");
