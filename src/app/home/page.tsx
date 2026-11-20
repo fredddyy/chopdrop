@@ -116,6 +116,7 @@ export default function HomePage() {
       return catList[next];
     });
   }, [categories]);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [filter, setFilter] = useState<"all" | "deals">("all");
   const [locationSheet, setLocationSheet] = useState(false);
@@ -141,6 +142,12 @@ export default function HomePage() {
 
     loadFeed();
     fetch("/api/categories").then(r => r.json()).then(d => { if (d.success) setCategories(d.data); }).catch(() => {});
+    fetch("/api/auth/me").then(r => r.json()).then(d => {
+      if (d.success && d.data) {
+        if (d.data.avatarUrl) setUserAvatar(d.data.avatarUrl);
+        if (d.data.name?.trim() && !userName) { setUserName(d.data.name.trim()); setIsReturning(true); }
+      }
+    }).catch(() => {});
   }, []);
 
   // Reload feed when category changes
@@ -248,32 +255,42 @@ export default function HomePage() {
 
       {/* ── Header ── */}
       <header className="px-5 pt-3 pb-2">
-        {/* Top row — delivery + cart */}
+        {/* Top row — avatar + greeting + cart */}
         <div className="flex items-center justify-between">
-          <button type="button" onClick={() => setLocationSheet(true)} className="flex items-center gap-1 press-feedback min-w-0">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
-            <span className="text-[13px] font-bold truncate" style={{ color: hasAddress ? "var(--text)" : "var(--text-muted)" }}>
-              {deliveryAddress || userArea || "Set delivery address"}
-            </span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m6 9 6 6 6-6" /></svg>
-          </button>
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/account" className="shrink-0 press-feedback">
+              <div className="w-[44px] h-[44px] rounded-full overflow-hidden flex items-center justify-center" style={{ background: "var(--sand)", border: "2px solid var(--border)" }}>
+                {userAvatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={userAvatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[18px] font-bold" style={{ color: "var(--text-muted)" }}>{userName ? userName.charAt(0).toUpperCase() : "?"}</span>
+                )}
+              </div>
+            </Link>
+            <div className="min-w-0">
+              <p className="text-[12px] font-medium" style={{ color: "var(--text-muted)" }}>Hey,</p>
+              <p className="text-[16px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>{userName.split(" ")[0] || "there"}.</p>
+            </div>
+          </div>
           <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
           </Link>
         </div>
 
-        {/* Top tabs — Stores / Deals */}
+        {/* Top tabs — Stores / Deals — with underline on active */}
         <div className="flex gap-6 mt-4">
           {(["all", "deals"] as const).map(key => {
             const active = filter === key;
             const label = key === "all" ? "STORES" : "DEALS";
             return (
               <button key={key} type="button" onClick={() => setFilter(key)}
-                className="text-[15px] tracking-[0.02em] press-feedback pb-0.5"
+                className="text-[14px] tracking-[0.04em] press-feedback pb-2"
                 style={{
                   fontWeight: active ? 800 : 500,
                   color: active ? "var(--text)" : "var(--text-muted)",
-                  transition: "color 200ms ease-out",
+                  borderBottom: active ? "2px solid var(--text)" : "2px solid transparent",
+                  transition: "color 200ms ease-out, border-color 200ms ease-out",
                 }}>
                 {label}
               </button>
