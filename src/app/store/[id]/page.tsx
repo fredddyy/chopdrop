@@ -140,6 +140,8 @@ export default function StorePage() {
   const [storeTierLoading, setStoreTierLoading] = useState(false);
   const [storeTierPools, setStoreTierPools] = useState<Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null>>({});
   const [storeTierProductId, setStoreTierProductId] = useState("");
+  const [selectedTierSize, setSelectedTierSize] = useState(0);
+  const [howItWorksOpen, setHowItWorksOpen] = useState(false);
 
   function addToPlate(item: Product, storeName: string) {
     cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantId: id, restaurantName: storeName, price: item.retailPrice });
@@ -332,84 +334,108 @@ export default function StorePage() {
           )}
           <div className="relative flex-1 min-w-0">
             <h1 className="text-[18px] font-extrabold truncate text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{store.name}</h1>
-            <p className="text-[11px] truncate text-white/70">{store.address}</p>
+            <p className="text-[11px] truncate text-white/70">{store.address} · Pickup</p>
           </div>
         </div>
       </div>
 
-      {/* ═══ GROUP ORDER CARD ═══ */}
+      {/* ═══ GROUP ORDER SECTION ═══ */}
       {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
-        const totalPoolMembers = livePools.reduce((s, p) => s + p.memberCount, 0);
-        const hasLivePool = livePools.length > 0 && totalPoolMembers > 0;
-        const earliestDeadline = livePools.length > 0 ? livePools.reduce((earliest, p) => p.deadline < earliest ? p.deadline : earliest, livePools[0].deadline) : null;
-        const spotsLeft = store.groupTarget - totalPoolMembers;
+        const tierList = [
+          { size: 3, discount: 10, mins: 25 },
+          { size: 5, discount: 20, mins: 45 },
+          { size: store.groupTarget, discount: store.groupDiscount, mins: 60 },
+        ];
+        const activeTier = selectedTierSize || store.groupTarget;
         return (
         <div className="px-5 mt-4">
-          <div className="rounded-[16px] overflow-hidden p-4 card-enter" style={{ background: "var(--sand)" }}>
-            {/* Header */}
-            <div className="flex items-center gap-2 mb-3">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-              <span className="text-[12px] font-bold" style={{ color: "var(--text-muted)" }}>Order with others &amp; save</span>
+          {/* Header row */}
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+              <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Order with others &amp; save</span>
             </div>
-            {/* Tier rows */}
-            <div className="space-y-2">
-              {[3, 5, store.groupTarget].map((size, ti) => {
-                const tierDiscount = ti === 0 ? 10 : ti === 1 ? 20 : store.groupDiscount;
-                const tierPool = livePools.find(lp => lp.minSize === size);
-                const hasTierPool = tierPool && tierPool.memberCount > 0;
-                const isBest = ti === 2;
-                const showMax = Math.min(size, 6);
-                const overflow = size - showMax;
-                return (
-                <div key={size} className="flex items-center gap-2">
-                  {/* Label */}
-                  <div className="shrink-0" style={{ minWidth: "58px" }}>
-                    <span className="text-[11px] font-bold" style={{ color: "var(--text)" }}>{size} people</span>
-                    <span className="text-[10px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>{tierDiscount}%</span>
-                    {isBest && <span className="text-[8px] font-bold ml-0.5 px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
-                  </div>
-                  {/* Avatars */}
-                  <div className="flex items-center flex-1">
-                    <div className="flex -space-x-1.5">
-                      {Array.from({ length: showMax }).map((_, j) => {
-                        const filled = hasTierPool && j < tierPool.memberCount;
-                        return (
-                        <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
-                          style={{
-                            background: filled ? "var(--coral)" : "var(--card)",
-                            border: filled ? "1.5px solid var(--sand)" : "1.5px dashed var(--border)",
-                            color: filled ? "white" : "var(--text-muted)",
-                          }}>
-                          {filled && tierPool.memberAvatars?.[j]
-                            ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                            : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
-                        </div>
-                        );
-                      })}
-                    </div>
-                    {overflow > 0 && <span className="text-[9px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
-                  </div>
-                  {/* Timer */}
-                  {hasTierPool ? (
-                    <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[10px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                        <LiveTimer deadline={tierPool.deadline} />
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "var(--card)" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[10px] font-medium tabular-nums" style={{ color: "var(--text-muted)" }}>
-                        {(() => { const m = ti === 0 ? 25 : ti === 1 ? 45 : 60; return m >= 60 ? `${Math.floor(m / 60)}h` : `${m}m`; })()} window
-                      </span>
-                    </div>
-                  )}
-                </div>
-                );
-              })}
-            </div>
+            <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>
+              How it works
+            </button>
           </div>
+          <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Pick a group size to unlock your discount:</p>
+
+          {/* How it works — collapsible */}
+          {howItWorksOpen && (
+            <div className="rounded-[12px] p-3.5 mb-3 card-enter" style={{ background: "var(--sand)" }}>
+              <div className="space-y-2 text-[11px] leading-[155%]" style={{ color: "var(--text-secondary)" }}>
+                <p><span className="font-bold" style={{ color: "var(--text)" }}>1.</span> Pick a group size and add items to your plate.</p>
+                <p><span className="font-bold" style={{ color: "var(--text)" }}>2.</span> Pay at the group price. Share your link so others can join.</p>
+                <p><span className="font-bold" style={{ color: "var(--text)" }}>3.</span> Group fills? Everyone saves. Doesn&apos;t fill? Full refund, no risk.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Tier cards — selectable, horizontal */}
+          <div className="flex gap-2.5">
+            {tierList.map((tier, ti) => {
+              const isSelected = activeTier === tier.size;
+              const isBest = ti === tierList.length - 1;
+              const tierPool = livePools.find(lp => lp.minSize === tier.size);
+              const hasTierPool = tierPool && tierPool.memberCount > 0;
+              const showMax = Math.min(tier.size, 5);
+              const mins = tier.mins;
+              return (
+              <button key={tier.size} type="button" onClick={() => setSelectedTierSize(tier.size)}
+                className="flex-1 rounded-[14px] p-3 press-feedback text-left relative overflow-hidden"
+                style={{
+                  background: isSelected ? "var(--text)" : "var(--sand)",
+                  border: isSelected ? "1.5px solid var(--text)" : "1.5px solid var(--border)",
+                  transition: "all 200ms ease-out",
+                }}>
+                {/* Selected dot */}
+                {isSelected && <div className="absolute top-2.5 right-2.5 w-[8px] h-[8px] rounded-full" style={{ background: "var(--coral)" }} />}
+
+                <p className="text-[13px] font-bold" style={{ color: isSelected ? "white" : "var(--text)" }}>{tier.size} People</p>
+                <p className="text-[18px] font-extrabold leading-tight tracking-[-0.02em] mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: isSelected ? "white" : "var(--coral)" }}>{tier.discount}% OFF</p>
+
+                {/* Avatars */}
+                <div className="flex -space-x-1.5 mt-2">
+                  {Array.from({ length: showMax }).map((_, j) => {
+                    const filled = hasTierPool && j < tierPool.memberCount;
+                    return (
+                    <div key={j} className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
+                      style={{
+                        background: filled ? "var(--coral)" : isSelected ? "rgba(255,255,255,0.15)" : "var(--card)",
+                        border: filled ? (isSelected ? "1.5px solid var(--text)" : "1.5px solid var(--sand)") : (isSelected ? "1.5px dashed rgba(255,255,255,0.25)" : "1.5px dashed var(--border)"),
+                        color: filled ? "white" : isSelected ? "rgba(255,255,255,0.3)" : "var(--text-muted)",
+                      }}>
+                      {filled && tierPool.memberAvatars?.[j]
+                        ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                        : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
+                    </div>
+                    );
+                  })}
+                </div>
+
+                {/* Timer + Best badge */}
+                <div className="flex items-center gap-1 mt-2">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={isSelected ? "rgba(255,255,255,0.5)" : "var(--text-muted)"} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                  <span className="text-[10px] font-medium" style={{ color: isSelected ? "rgba(255,255,255,0.6)" : "var(--text-muted)" }}>
+                    {mins >= 60 ? `${Math.floor(mins / 60)}h` : `${mins}m`} window
+                  </span>
+                </div>
+                {isBest && (
+                  <span className="inline-block mt-1.5 text-[8px] font-bold px-2 py-0.5 rounded-full" style={{
+                    background: isSelected ? "var(--emerald)" : "rgba(34,197,94,0.1)",
+                    color: isSelected ? "white" : "var(--emerald)",
+                  }}>Best value</span>
+                )}
+              </button>
+              );
+            })}
+          </div>
+
+          {/* Selected state */}
+          <p className="text-[11px] font-medium mt-2.5" style={{ color: "var(--text-muted)" }}>
+            Selected: {activeTier}-person group · Invite {activeTier - 1} {activeTier - 1 === 1 ? "friend" : "friends"} after pay
+          </p>
         </div>
         );
       })()}
@@ -557,9 +583,10 @@ export default function StorePage() {
       </section>
 
       {/* ── Trust copy ── */}
-      <div className="px-5 mt-8 mb-4">
+      <div className="px-5 mt-8 mb-4 flex items-start gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>
         <p className="text-[11px] leading-[155%]" style={{ color: "var(--text-muted)" }}>
-          Pickup only · Pickup instructions are on every order. Wait for the vendor&apos;s ready alert before you set off.
+          Pickup only · Wait for the vendor&apos;s ready alert before heading to {store.address.split(",")[0] || "the pickup point"}.
         </p>
       </div>
 
@@ -575,44 +602,36 @@ export default function StorePage() {
         return (
           <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
             <div className="max-w-[480px] mx-auto">
-              {hasGroupDiscount ? (
+              {hasGroupDiscount ? (() => {
+                const tierSize = selectedTierSize || store.groupTarget;
+                const tierDiscount = tierSize === 3 ? 10 : tierSize === 5 ? 20 : store.groupDiscount;
+                const tierGroupTotal = Math.round(subtotal * (1 - tierDiscount / 100));
+                const tierSavings = subtotal - tierGroupTotal;
+                return (
                 <div className="flex gap-2.5">
                   <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "solo"); router.push("/cart"); }}
-                    className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
+                    className="flex-1 h-[54px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
                     style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Alone</span>
-                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
+                    <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>Order Alone</span>
+                    <span className="text-[15px] font-extrabold tabular-nums leading-none mt-0.5" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
                   </button>
                   <button type="button" onClick={() => {
-                    // Pick the first cart item's product ID for the tier selector
-                    const storeItems = cart.items.filter(i => i.restaurantName === store.name);
-                    const firstItem = storeItems[0];
-                    if (firstItem) {
-                      const pid = firstItem.dailyMenuId.replace("instant-", "");
-                      setStoreTierProductId(pid);
-                      // Fetch existing pools for this product
-                      fetch(`/api/pools?productId=${pid}`).then(r => r.json()).then(d => {
-                        if (d.success && d.data) {
-                          const bySize: Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null> = {};
-                          for (const p of d.data) {
-                            const existing = bySize[p.minSize];
-                            if (!existing || p.memberCount > existing.memberCount) {
-                              bySize[p.minSize] = { memberCount: p.memberCount, poolId: p.id, spotsLeft: p.spotsLeft };
-                            }
-                          }
-                          setStoreTierPools(bySize);
-                        }
-                      }).catch(() => {});
-                      setStoreTierSheet(true);
-                    }
+                    cart.setCheckoutMode(store.id, "group");
+                    cart.setCheckoutMode(store.name, "group");
+                    try { localStorage.setItem("chopdrop-group-size", String(tierSize)); } catch {}
+                    router.push("/cart");
                   }}
-                    className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
+                    className="flex-[1.4] h-[54px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
                     style={{ background: "var(--coral)" }}>
-                    <span className="text-[11px] font-medium" style={{ opacity: 0.8 }}>Join &amp; save</span>
-                    <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(groupTotal)}</span>
+                    <span className="text-[10px] font-medium" style={{ opacity: 0.8 }}>Start {tierSize}-Person Group</span>
+                    <div className="flex items-baseline gap-1.5 mt-0.5">
+                      <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{fp(tierGroupTotal)}</span>
+                      <span className="text-[9px] font-bold" style={{ opacity: 0.7 }}>(Save {fp(tierSavings)})</span>
+                    </div>
                   </button>
                 </div>
-              ) : (
+                );
+              })() : (
                 <Link href="/cart" className="w-full h-[54px] rounded-[12px] flex items-center justify-between px-5 text-white press-feedback" style={{ background: "var(--coral)" }}>
                   <div>
                     <span className="text-[15px] font-bold block leading-none">Checkout</span>
