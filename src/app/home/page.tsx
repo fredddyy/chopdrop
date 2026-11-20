@@ -88,63 +88,7 @@ function MiniCountdown({ deadline }: { deadline: string }) {
   );
 }
 
-const TABS = [
-  { key: "all" as const, label: "Stores" },
-  { key: "deals" as const, label: "Deals" },
-];
-type FilterKey = typeof TABS[number]["key"];
 
-function TabBar({ filter, setFilter }: { filter: FilterKey; setFilter: (f: FilterKey) => void }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const textRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
-
-  const updateIndicator = useCallback(() => {
-    const idx = TABS.findIndex(t => t.key === filter);
-    const el = textRefs.current[idx];
-    const container = containerRef.current;
-    if (el && container) {
-      const containerRect = container.getBoundingClientRect();
-      const elRect = el.getBoundingClientRect();
-      setIndicator({ left: elRect.left - containerRect.left, width: elRect.width });
-    }
-  }, [filter]);
-
-  useEffect(() => { updateIndicator(); }, [updateIndicator]);
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", updateIndicator, { passive: true });
-    return () => el.removeEventListener("scroll", updateIndicator);
-  }, [updateIndicator]);
-
-  return (
-    <div className="relative mt-3">
-      <div ref={containerRef} className="flex gap-1 overflow-x-auto hide-scrollbar">
-        {TABS.map((f, i) => {
-          const active = filter === f.key;
-          return (
-            <button key={f.key} type="button"
-              onClick={() => setFilter(f.key)}
-              className={`${i === 0 ? "pr-2.5" : "px-2.5"} pb-2 text-[13px] font-semibold whitespace-nowrap shrink-0 press-feedback`}
-              style={{ color: active ? "var(--coral)" : "var(--text-muted)", transition: "color 200ms ease-out" }}>
-              <span ref={el => { textRefs.current[i] = el; }}>{f.label}</span>
-            </button>
-          );
-        })}
-      </div>
-      {/* Full-width track line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "var(--border)" }} />
-      {/* Sliding active underline */}
-      <div className="absolute bottom-0 h-[2px] rounded-full z-10" style={{
-        left: `${indicator.left}px`,
-        width: `${indicator.width}px`,
-        background: "var(--coral)",
-        transition: "left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1)",
-      }} />
-    </div>
-  );
-}
 
 export default function HomePage() {
   const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
@@ -302,45 +246,34 @@ export default function HomePage() {
   return (
     <main className="flex-1 max-w-[428px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
 
-      {/* ── Header — greeting + delivery ── */}
+      {/* ── Header ── */}
       <header className="px-5 pt-3 pb-2">
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            {/* Greeting + name */}
-            <p className="text-[20px] font-extrabold leading-none tracking-[-0.03em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>
-              {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}, {(() => { const h = new Date().getHours(); return h < 12 ? "\u{1F44B}" : h < 17 ? "\u2600\uFE0F" : "\u{1F319}"; })()}
-            </p>
-            <p className="text-[14px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>{userName.split(" ")[0] || "there"}</p>
-            {/* Delivery address — tappable */}
-            <button type="button" onClick={() => setLocationSheet(true)} className="flex items-center gap-1 mt-1 press-feedback">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
-              <span className="text-[11px] font-bold truncate" style={{ color: hasAddress ? "var(--coral)" : "var(--text-muted)" }}>
-                {deliveryAddress || userArea || "Set your delivery address"}
-              </span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={hasAddress ? "var(--coral)" : "var(--text-muted)"} strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m6 9 6 6 6-6" /></svg>
-            </button>
-          </div>
-          <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: "var(--sand)" }}>
+        {/* Top row — delivery + cart */}
+        <div className="flex items-center justify-between">
+          <button type="button" onClick={() => setLocationSheet(true)} className="flex items-center gap-1 press-feedback min-w-0">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--coral)" stroke="none" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" /></svg>
+            <span className="text-[13px] font-bold truncate" style={{ color: hasAddress ? "var(--text)" : "var(--text-muted)" }}>
+              {deliveryAddress || userArea || "Set delivery address"}
+            </span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
           </Link>
         </div>
-        {/* Search link */}
-        <Link href="/search" className="mt-3 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--sand)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-          <span className="text-[14px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
-        </Link>
-        {/* Segmented control — Stores / Deals */}
-        <div className="mt-3 h-[40px] rounded-[12px] flex p-[3px]" style={{ background: "var(--sand)" }}>
+
+        {/* Top tabs — Stores / Deals */}
+        <div className="flex gap-6 mt-4">
           {(["all", "deals"] as const).map(key => {
             const active = filter === key;
-            const label = key === "all" ? "Stores" : "Deals";
+            const label = key === "all" ? "STORES" : "DEALS";
             return (
               <button key={key} type="button" onClick={() => setFilter(key)}
-                className="flex-1 h-full rounded-[10px] text-[13px] font-bold press-feedback"
+                className="text-[15px] tracking-[0.02em] press-feedback pb-0.5"
                 style={{
-                  background: active ? "var(--card)" : "transparent",
+                  fontWeight: active ? 800 : 500,
                   color: active ? "var(--text)" : "var(--text-muted)",
-                  transition: "all 200ms ease-out",
+                  transition: "color 200ms ease-out",
                 }}>
                 {label}
               </button>
@@ -348,7 +281,13 @@ export default function HomePage() {
           })}
         </div>
 
-        {/* Location prompt card — shows when no address saved */}
+        {/* Search */}
+        <Link href="/search" className="mt-3 flex items-center h-[42px] px-4 rounded-[12px] gap-2.5" style={{ background: "var(--sand)" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+          <span className="text-[14px]" style={{ color: "var(--text-muted)" }}>Search restaurants, food...</span>
+        </Link>
+
+        {/* Location prompt — shows when no address saved */}
         {!hasAddress && !promptDismissed && (
           <div className="mt-3 rounded-[16px] p-4 card-enter" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <div className="flex items-start justify-between">
@@ -381,30 +320,27 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Categories */}
-        <p className="text-[14px] font-bold mt-4 mb-2" style={{ color: "var(--text-muted)" }}>Categories</p>
-        <div className="flex gap-1.5 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
+        {/* Category pills */}
+        <div className="flex gap-2 mt-4 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
           {(categories.length > 0 ? categories : [
-            { name: "Food", imageUrl: "/categories/food.png" },
-            { name: "Groceries", imageUrl: "/categories/groceries.png" },
-            { name: "Gadgets", imageUrl: "/categories/gadgets.png" },
-            { name: "Fashion", imageUrl: "/categories/fashion.png" },
-            { name: "Home", imageUrl: "/categories/home.png" },
+            { name: "Food", imageUrl: null },
+            { name: "Groceries", imageUrl: null },
+            { name: "Gadgets", imageUrl: null },
+            { name: "Fashion", imageUrl: null },
+            { name: "Home", imageUrl: null },
           ]).map(c => {
             const active = activeCategory === c.name;
             return (
-            <button key={c.name} type="button" onClick={() => setActiveCategory(c.name)}
-              className="h-[38px] px-3.5 rounded-full flex items-center gap-2 shrink-0 press-feedback"
-              style={{
-                background: active ? "var(--dark)" : "transparent",
-                transition: "background 200ms ease-out, color 200ms ease-out",
-              }}>
-              {c.imageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.imageUrl} alt="" className="object-contain" style={{ width: active ? "22px" : "18px", height: active ? "22px" : "18px", transition: "width 200ms ease-out, height 200ms ease-out" }} />
-              )}
-              <span className="text-[12px] font-bold" style={{ color: active ? "white" : "var(--text-muted)", transition: "color 200ms ease-out" }}>{c.name}</span>
-            </button>
+              <button key={c.name} type="button" onClick={() => setActiveCategory(c.name)}
+                className="h-[34px] px-4 rounded-full shrink-0 press-feedback text-[13px] font-semibold"
+                style={{
+                  background: active ? "var(--text)" : "transparent",
+                  color: active ? "white" : "var(--text-secondary)",
+                  border: active ? "none" : "1px solid var(--border)",
+                  transition: "all 200ms ease-out",
+                }}>
+                {c.name}
+              </button>
             );
           })}
         </div>
