@@ -337,78 +337,83 @@ export default function StorePage() {
         </div>
       </div>
 
-      {/* ═══ GROUP ORDER CARD ═══ */}
+      {/* ═══ GROUP ORDER TIERS ═══ */}
       {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
-        const totalPoolMembers = livePools.reduce((s, p) => s + p.memberCount, 0);
-        const hasLivePool = livePools.length > 0 && totalPoolMembers > 0;
-        const earliestDeadline = livePools.length > 0 ? livePools.reduce((earliest, p) => p.deadline < earliest ? p.deadline : earliest, livePools[0].deadline) : null;
-        const spotsLeft = store.groupTarget - totalPoolMembers;
+        const tierConfigs = [
+          { size: 3, discount: 10, mins: 25, bg: "#F8CB57", text: "#1C1C1E", accent: "#E8A817", label: "Starter", emoji: "🤝", blob1: "#FFE082", blob2: "#F9A825" },
+          { size: 5, discount: 20, mins: 45, bg: "#7C4DFF", text: "#FFFFFF", accent: "#B388FF", label: "Squad", emoji: "🔥", blob1: "#B388FF", blob2: "#651FFF" },
+          { size: store.groupTarget, discount: store.groupDiscount, mins: 60, bg: "#1C1C1E", text: "#FFFFFF", accent: "#22C55E", label: "Max savings", emoji: "💰", blob1: "#374151", blob2: "#111827" },
+        ];
         return (
-        <div className="px-5 mt-4">
-          {/* Header — outside card */}
-          <div className="flex items-center gap-2 mb-2.5">
+        <div className="mt-4">
+          {/* Header */}
+          <div className="px-5 flex items-center gap-2 mb-3">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
             <span className="text-[13px] font-bold" style={{ color: "var(--text-secondary)" }}>Order with others &amp; save</span>
           </div>
-          <div className="rounded-[16px] overflow-hidden p-4 card-enter" style={{ background: "var(--sand)" }}>
-            {/* Tier rows */}
-            <div className="space-y-2">
-              {[3, 5, store.groupTarget].map((size, ti) => {
-                const tierDiscount = ti === 0 ? 10 : ti === 1 ? 20 : store.groupDiscount;
-                const tierPool = livePools.find(lp => lp.minSize === size);
-                const hasTierPool = tierPool && tierPool.memberCount > 0;
-                const isBest = ti === 2;
-                const showMax = Math.min(size, 6);
-                const overflow = size - showMax;
-                return (
-                <div key={size} className="flex items-center gap-2">
-                  {/* Label */}
-                  <div className="shrink-0" style={{ minWidth: "58px" }}>
-                    <span className="text-[11px] font-bold" style={{ color: "var(--text)" }}>{size} people</span>
-                    <span className="text-[10px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>{tierDiscount}%</span>
-                    {isBest && <span className="text-[8px] font-bold ml-0.5 px-1.5 py-0.5 rounded-full" style={{ background: "var(--emerald)", color: "white" }}>Best</span>}
+          {/* Horizontal scroll tier cards */}
+          <div className="flex gap-3 overflow-x-auto hide-scrollbar pl-5 pr-3" style={{ touchAction: "pan-x" }}>
+            {tierConfigs.map((tier, ti) => {
+              const tierPool = livePools.find(lp => lp.minSize === tier.size);
+              const hasTierPool = tierPool && tierPool.memberCount > 0;
+              const showMax = Math.min(tier.size, 5);
+              const isBest = ti === 2;
+              return (
+              <div key={tier.size} className="shrink-0 rounded-[16px] p-4 relative overflow-hidden card-enter" style={{ width: "220px", background: tier.bg, minHeight: "140px" }}>
+                {/* Decorative blobs */}
+                <div className="absolute -top-6 -right-6 w-[60px] h-[60px] rounded-full" style={{ background: tier.blob1, opacity: 0.3 }} />
+                <div className="absolute -bottom-4 -left-4 w-[40px] h-[40px] rounded-full" style={{ background: tier.blob2, opacity: 0.25 }} />
+                <div className="absolute top-8 right-4 w-[20px] h-[20px] rounded-full" style={{ background: tier.blob1, opacity: 0.2 }} />
+
+                {/* Top — label + emoji */}
+                <div className="relative flex items-center justify-between mb-3">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${tier.accent}40`, color: tier.text }}>{tier.label}</span>
+                  <span className="text-[20px]">{tier.emoji}</span>
+                </div>
+
+                {/* Discount — big number */}
+                <div className="relative">
+                  <span className="text-[36px] font-extrabold leading-none tracking-[-0.03em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: tier.text }}>{tier.discount}%</span>
+                  <span className="text-[12px] font-bold ml-1" style={{ color: tier.text, opacity: 0.7 }}>off</span>
+                </div>
+
+                {/* People + window */}
+                <p className="relative text-[11px] font-bold mt-1" style={{ color: tier.text, opacity: 0.8 }}>
+                  {tier.size} people · {tier.mins >= 60 ? `${Math.floor(tier.mins / 60)}h` : `${tier.mins}m`} window
+                </p>
+
+                {/* Avatar row */}
+                <div className="relative flex items-center gap-1.5 mt-3">
+                  <div className="flex -space-x-1.5">
+                    {Array.from({ length: showMax }).map((_, j) => {
+                      const filled = hasTierPool && j < tierPool.memberCount;
+                      return (
+                      <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
+                        style={{
+                          background: filled ? "rgba(255,255,255,0.9)" : `${tier.accent}30`,
+                          border: filled ? "none" : `1.5px dashed ${tier.text}30`,
+                          color: filled ? tier.bg : `${tier.text}50`,
+                        }}>
+                        {filled && tierPool.memberAvatars?.[j]
+                          ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                          : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
+                      </div>
+                      );
+                    })}
                   </div>
-                  {/* Avatars */}
-                  <div className="flex items-center flex-1">
-                    <div className="flex -space-x-1.5">
-                      {Array.from({ length: showMax }).map((_, j) => {
-                        const filled = hasTierPool && j < tierPool.memberCount;
-                        return (
-                        <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-bold overflow-hidden"
-                          style={{
-                            background: filled ? "var(--coral)" : "var(--card)",
-                            border: filled ? "1.5px solid var(--sand)" : "1.5px dashed var(--border)",
-                            color: filled ? "white" : "var(--text-muted)",
-                          }}>
-                          {filled && tierPool.memberAvatars?.[j]
-                            ? <img src={tierPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                            : filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : "?"}
-                        </div>
-                        );
-                      })}
-                    </div>
-                    {overflow > 0 && <span className="text-[9px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
-                  </div>
-                  {/* Timer */}
                   {hasTierPool ? (
-                    <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "rgba(34,197,94,0.1)" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[10px] font-extrabold tabular-nums" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                        <LiveTimer deadline={tierPool.deadline} />
-                      </span>
-                    </div>
+                    <span className="text-[9px] font-extrabold tabular-nums" style={{ color: tier.text, opacity: 0.9 }}>
+                      {tierPool.memberCount}/{tier.size} joined
+                    </span>
                   ) : (
-                    <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full" style={{ background: "var(--card)" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[10px] font-medium tabular-nums" style={{ color: "var(--text-muted)" }}>
-                        {(() => { const m = ti === 0 ? 25 : ti === 1 ? 45 : 60; return m >= 60 ? `${Math.floor(m / 60)}h` : `${m}m`; })()} window
-                      </span>
-                    </div>
+                    <span className="text-[9px] font-bold" style={{ color: tier.text, opacity: 0.5 }}>
+                      {tier.size} spots open
+                    </span>
                   )}
                 </div>
-                );
-              })}
-            </div>
+              </div>
+              );
+            })}
           </div>
         </div>
         );
