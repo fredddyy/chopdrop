@@ -506,9 +506,8 @@ export default function HomePage() {
                   <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>Invite friends to chop the price down</p>
                   <div className="grid grid-cols-3 gap-2.5">
                     {filteredItems.slice(0, 9).map((item, idx) => {
-                      const chopDiscounts = [30, 40, 50, 25, 35, 45, 20, 55, 10];
-                      const chopPct = chopDiscounts[idx % chopDiscounts.length];
-                      const chopPrice = Math.round(item.retailPrice * (1 - chopPct / 100));
+                      const chopPrice = item.groupPrice < item.retailPrice ? item.groupPrice : Math.round(item.retailPrice * 0.7);
+                      const chopPct = Math.round(((item.retailPrice - chopPrice) / item.retailPrice) * 100);
                       return (
                       <Link key={`chop-${item.id}`} href={`/chop/product/${item.id}`} className="press-feedback block">
                         <div className="relative rounded-[10px] overflow-hidden" style={{ aspectRatio: "1", background: "var(--sand)" }}>
