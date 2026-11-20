@@ -389,8 +389,8 @@ export default function StorePage() {
             <div className="flex items-center justify-between">
               {/* Left — icon + details */}
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-[40px] h-[40px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--coral-soft)" }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                 </div>
                 <div className="min-w-0">
                   <p className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{sel.size}-Person Group</p>
@@ -402,23 +402,23 @@ export default function StorePage() {
                 <div className="text-right">
                   {cartSubtotal > 0 ? (
                     <>
-                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>{fp(selPrice)}</p>
+                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(selPrice)}</p>
                       <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>you pay</p>
                     </>
                   ) : (
                     <>
-                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{sel.discount}%</p>
-                      <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>off</p>
+                      <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.discount}% off</p>
+                      <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>add items</p>
                     </>
                   )}
                 </div>
                 {/* Circular progress */}
-                <div className="relative w-[40px] h-[40px] flex items-center justify-center">
-                  <svg width="40" height="40" viewBox="0 0 40 40" className="absolute inset-0">
-                    <circle cx="20" cy="20" r="17" fill="none" stroke="var(--border)" strokeWidth="3" />
-                    <circle cx="20" cy="20" r="17" fill="none" stroke={hasSelPool ? "var(--emerald)" : "var(--border)"} strokeWidth="3"
-                      strokeDasharray={`${2 * Math.PI * 17}`}
-                      strokeDashoffset={`${2 * Math.PI * 17 * (1 - fillPct / 100)}`}
+                <div className="relative w-[38px] h-[38px] flex items-center justify-center">
+                  <svg width="38" height="38" viewBox="0 0 38 38" className="absolute inset-0">
+                    <circle cx="19" cy="19" r="16" fill="none" stroke="var(--border)" strokeWidth="2.5" />
+                    <circle cx="19" cy="19" r="16" fill="none" stroke={hasSelPool ? "var(--emerald)" : "var(--text-muted)"} strokeWidth="2.5"
+                      strokeDasharray={`${2 * Math.PI * 16}`}
+                      strokeDashoffset={`${2 * Math.PI * 16 * (1 - fillPct / 100)}`}
                       strokeLinecap="round"
                       style={{ transform: "rotate(-90deg)", transformOrigin: "center", transition: "stroke-dashoffset 400ms ease-out" }} />
                   </svg>
@@ -435,11 +435,11 @@ export default function StorePage() {
                 {Array.from({ length: selShowMax }).map((_, j) => {
                   const filled = hasSelPool && j < selMembers;
                   return (
-                  <div key={j} className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden"
+                  <div key={j} className="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[9px] font-medium overflow-hidden"
                     style={{
                       background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
-                      border: filled ? "2.5px solid var(--sand)" : "2px dashed var(--border)",
-                      color: filled ? "white" : "var(--text-muted)",
+                      border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--border)",
+                      color: filled ? "white" : "var(--border)",
                     }}>
                     {filled && selPool?.memberAvatars?.[j]
                       ? <img src={selPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
