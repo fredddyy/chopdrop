@@ -468,9 +468,6 @@ export default function CartPage() {
               {deliveryFee === 0 && !deliveryPref && !deliveryAddress.trim() && (
                 <p className="text-[11px] mt-1.5" style={{ color: "var(--text-muted)" }}>Enter your address for a delivery quote</p>
               )}
-              {deliveryFee > 0 && isGroupMode && (
-                <p className="text-[11px] mt-1.5" style={{ color: "var(--emerald)" }}>Split delivery between {groupMemberCount} people</p>
-              )}
               {deliveryFee > 0 && !isGroupMode && (
                 <p className="text-[11px] mt-1.5 font-bold" style={{ color: "var(--text)" }}>Delivery: {formatNaira(deliveryFee)}</p>
               )}
@@ -491,7 +488,12 @@ export default function CartPage() {
                 </div>
               )}
               <div className="flex justify-between">
-                <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
+                <div>
+                  <span style={{ color: "var(--text-secondary)" }}>Delivery</span>
+                  {deliveryFee > 0 && isGroupMode && (
+                    <p className="text-[10px] mt-0.5" style={{ color: "var(--emerald)" }}>Split between {groupMemberCount} people</p>
+                  )}
+                </div>
                 <span className="font-bold" style={{ color: deliveryFee === 0 ? "var(--emerald)" : "var(--text)" }}>{deliveryFee === 0 ? "FREE" : formatNaira(deliveryFee)}</span>
               </div>
               <div className="flex justify-between">
