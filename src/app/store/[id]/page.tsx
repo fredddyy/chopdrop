@@ -366,101 +366,109 @@ export default function StorePage() {
             <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How it works</button>
           </div>
 
-          {/* Carousel tier cards */}
-          <div className="relative flex items-center justify-center" style={{ height: "140px" }}>
+          {/* Tier radio selectors */}
+          <div className="flex gap-2 mb-3 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
             {tierList.map((tier, ti) => {
-              const offset = ti - selectedTierIdx;
-              const isCenter = offset === 0;
-              const tierPool = livePools.find(lp => lp.minSize === tier.size);
-              const hasTierPool = tierPool && tierPool.memberCount > 0;
-              const showMax = Math.min(tier.size, 4);
-              const overflow = tier.size - showMax;
-              const tierPrice = cartSubtotal > 0 ? Math.round(cartSubtotal * (1 - tier.discount / 100)) : 0;
+              const isActive = selectedTierIdx === ti;
+              const isBest = ti === tierList.length - 1;
               return (
               <button key={tier.size} type="button" onClick={() => setSelectedTierIdx(ti)}
-                className="absolute rounded-[16px] p-4 press-feedback"
+                className="h-[34px] px-3 rounded-[10px] flex items-center gap-2 text-[11px] font-bold press-feedback shrink-0"
                 style={{
-                  width: "85%",
-                  background: isCenter ? "var(--sand)" : "var(--card)",
-                  border: isCenter ? "1.5px solid var(--border)" : "1px solid var(--border)",
-                  transform: `translateX(${offset * 70}px) scale(${isCenter ? 1 : 0.82})`,
-                  opacity: isCenter ? 1 : 0.5,
-                  zIndex: isCenter ? 10 : 5 - Math.abs(offset),
-                  transition: "all 350ms cubic-bezier(0.16, 1, 0.3, 1)",
-                  pointerEvents: isCenter ? "auto" : "auto",
+                  background: isActive ? "var(--coral-soft)" : "var(--sand)",
+                  color: isActive ? "var(--coral)" : "var(--text-secondary)",
+                  border: isActive ? "1.5px solid var(--coral)" : "1.5px solid transparent",
+                  transform: isActive ? "scale(1.03)" : "scale(1)",
+                  transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)",
                 }}>
-                <div className="flex items-center justify-between">
-                  {/* Left — number + title + avatars */}
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-[38px] h-[38px] rounded-full flex flex-col items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                      <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{tier.size}</span>
-                      <span className="text-[7px] font-bold leading-none mt-0.5" style={{ color: "var(--text-muted)" }}>ppl</span>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-bold" style={{ color: "var(--text)" }}>{tier.size}-Person Group</p>
-                      <div className="flex -space-x-1.5 mt-1">
-                        {Array.from({ length: showMax }).map((_, j) => {
-                          const filled = hasTierPool && j < tierPool.memberCount;
-                          return (
-                          <div key={j} className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-[7px] font-medium overflow-hidden"
-                            style={{
-                              background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
-                              border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--text-muted)",
-                              color: filled ? "white" : "var(--text-muted)",
-                            }}>
-                            {filled ? (tierPool.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={8} />}
-                          </div>
-                          );
-                        })}
-                        {overflow > 0 && <span className="text-[8px] font-bold ml-1 self-center" style={{ color: "var(--text-muted)" }}>+{overflow}</span>}
-                      </div>
-                      <p className="text-[10px] mt-1"><span className="font-bold" style={{ color: "var(--text-secondary)" }}>Save {tier.discount}%</span><span className="font-medium" style={{ color: "var(--text-muted)" }}> · {tier.mins >= 60 ? `${Math.floor(tier.mins / 60)}h` : `${tier.mins}m`}</span></p>
-                    </div>
-                  </div>
-                  {/* Right — price + timer */}
-                  <div className="flex items-center gap-2.5 shrink-0">
-                    <div className="text-right">
-                      {cartSubtotal > 0 ? (
-                        <>
-                          <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(tierPrice)}</p>
-                          <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{tier.discount}%</p>
-                          <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>off</p>
-                        </>
-                      )}
-                    </div>
-                    <div className="relative w-[34px] h-[34px] flex items-center justify-center">
-                      <svg width="34" height="34" viewBox="0 0 34 34" className="absolute inset-0">
-                        <circle cx="17" cy="17" r="14" fill="none" stroke="var(--border)" strokeWidth="2" />
-                        <circle cx="17" cy="17" r="14" fill="none" stroke="var(--text-muted)" strokeWidth="2"
-                          strokeDasharray={`${2 * Math.PI * 14}`}
-                          strokeDashoffset={`${2 * Math.PI * 14 * 0.25}`}
-                          strokeLinecap="round"
-                          style={{ transform: "rotate(-90deg)", transformOrigin: "center" }} />
-                      </svg>
-                      <span className="text-[9px] font-extrabold tabular-nums leading-none" style={{ color: "var(--text-secondary)" }}>
-                        {tier.mins >= 60 ? `${Math.floor(tier.mins / 60)}h` : `${tier.mins}m`}
-                      </span>
-                    </div>
-                  </div>
+                {/* Radio → checkmark on select */}
+                <div className="w-[16px] h-[16px] rounded-full flex items-center justify-center shrink-0" style={{
+                  background: isActive ? "var(--coral)" : "transparent",
+                  border: isActive ? "none" : "2px solid var(--border)",
+                  transition: "all 200ms ease-out",
+                }}>
+                  {isActive && (
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7" /></svg>
+                  )}
                 </div>
+                <span>{tier.size} People</span>
+                <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full" style={{
+                  background: isActive ? "var(--coral)" : "var(--border)",
+                  color: isActive ? "white" : "var(--text-muted)",
+                  transition: "all 200ms ease-out",
+                }}>{tier.discount}%</span>
               </button>
               );
             })}
           </div>
-          {/* Dot indicators */}
-          <div className="flex items-center justify-center gap-1.5 mt-2">
-            {tierList.map((_, ti) => (
-              <div key={ti} className="rounded-full" style={{
-                width: selectedTierIdx === ti ? "16px" : "5px",
-                height: "5px",
-                background: selectedTierIdx === ti ? "var(--coral)" : "var(--border)",
-                transition: "all 300ms cubic-bezier(0.16, 1, 0.3, 1)",
-              }} />
-            ))}
+
+          {/* Selected tier detail card */}
+          <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
+            <div className="flex items-center justify-between">
+              {/* Left — number circle + avatars + details */}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-[40px] h-[40px] rounded-full flex flex-col items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
+                  <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.size}</span>
+                  <span className="text-[7px] font-bold leading-none mt-0.5" style={{ color: "var(--text-muted)" }}>ppl</span>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-bold mb-1" style={{ color: "var(--text)" }}>{sel.size}-Person Group</p>
+                  {/* Overlapping avatars */}
+                  <div className="flex items-center">
+                    <div className="flex -space-x-1.5">
+                      {Array.from({ length: selShowMax }).map((_, j) => {
+                        const filled = hasSelPool && j < selMembers;
+                        return (
+                        <div key={j} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-medium overflow-hidden"
+                          style={{
+                            background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
+                            border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--text-muted)",
+                            color: filled ? "white" : "var(--text-muted)",
+                          }}>
+                          {filled && selPool?.memberAvatars?.[j]
+                            ? <img src={selPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                            : filled ? (selPool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={10} />}
+                        </div>
+                        );
+                      })}
+                    </div>
+                    {selOverflow > 0 && <span className="text-[10px] font-extrabold ml-1" style={{ color: "var(--text-secondary)" }}>+{selOverflow} spots</span>}
+                  </div>
+                  <p className="text-[11px] mt-1"><span className="font-bold" style={{ color: "var(--text-secondary)" }}>Save {sel.discount}%</span><span className="font-medium" style={{ color: "var(--text-muted)" }}> · Closes in {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`}</span></p>
+                </div>
+              </div>
+              {/* Right — dynamic price + progress ring */}
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="text-right">
+                  {cartSubtotal > 0 ? (
+                    <>
+                      <p className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(selPrice)}</p>
+                      <p className="text-[10px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.discount}%</p>
+                      <p className="text-[10px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>off</p>
+                    </>
+                  )}
+                </div>
+                {/* Time window circle */}
+                <div className="relative w-[38px] h-[38px] flex items-center justify-center">
+                  <svg width="38" height="38" viewBox="0 0 38 38" className="absolute inset-0">
+                    <circle cx="19" cy="19" r="16" fill="none" stroke="var(--border)" strokeWidth="2.5" />
+                    <circle cx="19" cy="19" r="16" fill="none" stroke="var(--text-muted)" strokeWidth="2.5"
+                      strokeDasharray={`${2 * Math.PI * 16}`}
+                      strokeDashoffset={`${2 * Math.PI * 16 * 0.25}`}
+                      strokeLinecap="round"
+                      style={{ transform: "rotate(-90deg)", transformOrigin: "center" }} />
+                  </svg>
+                  <span className="text-[10px] font-extrabold tabular-nums leading-none" style={{ color: "var(--text-secondary)" }}>
+                    {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`}
+                  </span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
         );
