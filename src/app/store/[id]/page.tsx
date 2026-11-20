@@ -432,18 +432,18 @@ export default function StorePage() {
                     </>
                   )}
                 </div>
-                {/* Circular progress */}
+                {/* Time window circle */}
                 <div className="relative w-[38px] h-[38px] flex items-center justify-center">
                   <svg width="38" height="38" viewBox="0 0 38 38" className="absolute inset-0">
                     <circle cx="19" cy="19" r="16" fill="none" stroke="var(--border)" strokeWidth="2.5" />
-                    <circle cx="19" cy="19" r="16" fill="none" stroke={hasSelPool ? "var(--emerald)" : "var(--text-muted)"} strokeWidth="2.5"
+                    <circle cx="19" cy="19" r="16" fill="none" stroke="var(--text-muted)" strokeWidth="2.5"
                       strokeDasharray={`${2 * Math.PI * 16}`}
-                      strokeDashoffset={`${2 * Math.PI * 16 * (1 - fillPct / 100)}`}
+                      strokeDashoffset={`${2 * Math.PI * 16 * 0.25}`}
                       strokeLinecap="round"
-                      style={{ transform: "rotate(-90deg)", transformOrigin: "center", transition: "stroke-dashoffset 400ms ease-out" }} />
+                      style={{ transform: "rotate(-90deg)", transformOrigin: "center" }} />
                   </svg>
-                  <span className="text-[8px] font-extrabold tabular-nums leading-none" style={{ color: hasSelPool ? "var(--emerald)" : "var(--text-muted)" }}>
-                    {selMembers}/{sel.size}
+                  <span className="text-[8px] font-extrabold tabular-nums leading-none" style={{ color: "var(--text-muted)" }}>
+                    {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`}
                   </span>
                 </div>
               </div>
