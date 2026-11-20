@@ -269,23 +269,23 @@ export default function HomePage() {
               </div>
             </Link>
             <div className="min-w-0">
-              <p className="text-[12px] font-medium" style={{ color: "var(--text-muted)" }}>Hey,</p>
-              <p className="text-[16px] font-extrabold leading-tight truncate" style={{ color: "var(--text)" }}>{userName.split(" ")[0] || "there"}.</p>
+              <p className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Hey,</p>
+              <p className="text-[20px] font-extrabold leading-tight truncate tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{userName.split(" ")[0] || "there"}.</p>
             </div>
           </div>
-          <Link href="/cart" aria-label="Cart" className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+          <Link href="/cart" aria-label="Cart" className="w-[44px] h-[44px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--sand)" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="1.8" strokeLinecap="round"><path d="M6 7h12l1 14H5L6 7Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
           </Link>
         </div>
 
         {/* Top tabs — Stores / Deals — with underline on active */}
-        <div className="flex gap-6 mt-4">
+        <div className="flex gap-6 mt-5">
           {(["all", "deals"] as const).map(key => {
             const active = filter === key;
             const label = key === "all" ? "STORES" : "DEALS";
             return (
               <button key={key} type="button" onClick={() => setFilter(key)}
-                className="text-[14px] tracking-[0.04em] press-feedback pb-2"
+                className="text-[13px] tracking-[0.06em] press-feedback pb-2"
                 style={{
                   fontWeight: active ? 800 : 500,
                   color: active ? "var(--text)" : "var(--text-muted)",
@@ -338,7 +338,7 @@ export default function HomePage() {
         )}
 
         {/* Category pills */}
-        <div className="flex gap-2 mt-4 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
+        <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
           {(categories.length > 0 ? categories : [
             { name: "Food", imageUrl: null },
             { name: "Groceries", imageUrl: null },
@@ -349,11 +349,11 @@ export default function HomePage() {
             const active = activeCategory === c.name;
             return (
               <button key={c.name} type="button" onClick={() => setActiveCategory(c.name)}
-                className="h-[34px] px-4 rounded-full shrink-0 press-feedback text-[13px] font-semibold"
+                className="h-[34px] px-4 rounded-full shrink-0 press-feedback text-[12px] font-semibold"
                 style={{
                   background: active ? "var(--text)" : "transparent",
                   color: active ? "white" : "var(--text-secondary)",
-                  border: active ? "none" : "1px solid var(--border)",
+                  border: active ? "1px solid var(--text)" : "1px solid var(--border)",
                   transition: "all 200ms ease-out",
                 }}>
                 {c.name}
