@@ -35,6 +35,7 @@ export default function ChopProductPage() {
   const [chopping, setChopping] = useState(false);
   const [chopResult, setChopResult] = useState<string | null>(null);
   const [userName, setUserName] = useState("");
+  const [chopSession, setChopSession] = useState<{ currentTotal: number; currentChopCount: number; maxChops: number; chopAmountPerClick: number; expiresAt: string; choppers: Array<{ name: string; amount: number; createdAt: string }> } | null>(null);
 
   // Load user name + check for existing chop session
   useEffect(() => {
@@ -71,19 +72,33 @@ export default function ChopProductPage() {
   }, [product, id]);
 
   useEffect(() => {
-    if (!pool?.deadline) return;
-    const deadline = new Date(pool.deadline).getTime();
+    const deadlineStr = chopSession?.expiresAt || pool?.deadline;
+    if (!deadlineStr) return;
+    const deadline = new Date(deadlineStr).getTime();
     const tick = () => setTimeLeft(Math.max(0, Math.floor((deadline - Date.now()) / 1000)));
     tick();
     const iv = setInterval(tick, 1000);
     return () => clearInterval(iv);
-  }, [pool]);
+  }, [pool, chopSession]);
 
   // Stable "mins ago" values — no Math.random in render
   const memberTimesAgo = useMemo(() => {
     if (!pool) return [];
     return pool.memberNames.map((_, i) => (i + 1) * 3 + (i * 7 % 5));
   }, [pool]);
+
+  // Fetch chop session data when we have a code
+  useEffect(() => {
+    if (!chopCode) return;
+    function fetchSession() {
+      fetch(`/api/chop/${chopCode}`).then(r => r.json()).then(d => {
+        if (d.success && d.data) setChopSession(d.data);
+      }).catch(() => {});
+    }
+    fetchSession();
+    const iv = setInterval(fetchSession, 5000);
+    return () => clearInterval(iv);
+  }, [chopCode]);
 
   async function handleShare() {
     if (!product) return;
@@ -150,8 +165,10 @@ export default function ChopProductPage() {
         if (clickData.success) {
           setChopResult(`You chopped ${fp(clickData.data.chopAmount)} off!`);
           setTimeout(() => setChopResult(null), 3000);
-          // Redirect to the chop session page
-          router.push(`/chop/${code}`);
+          // Refresh session data in-place
+          fetch(`/api/chop/${code}`).then(r => r.json()).then(d => {
+            if (d.success && d.data) setChopSession(d.data);
+          }).catch(() => {});
         } else {
           setChopResult(clickData.error || "Could not chop");
           setTimeout(() => setChopResult(null), 3000);
@@ -198,13 +215,16 @@ export default function ChopProductPage() {
 
   const savings = product.retailPrice - product.groupPrice;
   const savPct = Math.round((savings / product.retailPrice) * 100);
-  const chopTarget = product.minPoolSize || 5;
-  const chopsDone = pool?.memberCount || 0;
+  // Use chop session data when available, fall back to pool/product data
+  const chopTarget = chopSession?.maxChops || product.minPoolSize || 5;
+  const chopsDone = chopSession?.currentChopCount || pool?.memberCount || 0;
   const chopsLeft = Math.max(0, chopTarget - chopsDone);
   const chopPct = Math.round((chopsDone / chopTarget) * 100);
+  const currentPrice = chopSession ? chopSession.currentTotal : product.retailPrice;
+  const chopAmountEach = chopSession?.chopAmountPerClick || Math.round(product.retailPrice / chopTarget);
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
-  const chopAmountEach = Math.round(product.retailPrice / chopTarget);
+  const choppers = chopSession?.choppers || [];
 
   // Show filled rows + max 2 empty slots
   const visibleSlots = Math.min(chopTarget, chopsDone + 2);
@@ -252,8 +272,8 @@ export default function ChopProductPage() {
         {/* Price comparison */}
         <div className="flex items-baseline gap-3 mt-3">
           <div>
-            <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(product.groupPrice)}</p>
-            <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--coral)" }}>With others</p>
+            <p className="text-[28px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>{fp(chopSession ? currentPrice : product.groupPrice)}</p>
+            <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--coral)" }}>{chopSession ? "Current price" : "With others"}</p>
           </div>
           <div>
             <p className="text-[18px] font-extrabold tabular-nums leading-none line-through" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)" }}>{fp(product.retailPrice)}</p>
@@ -261,7 +281,9 @@ export default function ChopProductPage() {
           </div>
         </div>
         <div className="flex items-center gap-3 mt-1.5">
-          <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>Save {fp(savings)}</span>
+          <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
+            {chopSession ? `Saved ${fp(product.retailPrice - currentPrice)} so far` : `Save ${fp(savings)}`}
+          </span>
           <span className="text-[11px] font-medium flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
             Refundable
@@ -330,40 +352,33 @@ export default function ChopProductPage() {
         <h3 className="text-[14px] font-extrabold mb-3" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Chop History</h3>
 
         <div className="space-y-0">
-          {Array.from({ length: visibleSlots }).map((_, i) => {
-            const filled = pool && i < pool.memberCount;
-            const name = filled ? (pool.memberNames[i] || `Friend ${i + 1}`) : null;
-            const minsAgo = filled ? (memberTimesAgo[i] || (i + 1) * 4) : 0;
+          {/* Real choppers from session */}
+          {choppers.map((c, i) => {
+            const ago = Math.max(1, Math.round((Date.now() - new Date(c.createdAt).getTime()) / 60000));
             return (
-              <div key={i} className="flex items-center gap-3 py-2.5" style={{ borderBottom: i < visibleSlots - 1 ? "1px solid var(--border)" : "none" }}>
-                <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 overflow-hidden"
-                  style={{
-                    background: filled ? AVATAR_BG[i % AVATAR_BG.length] : "var(--sand)",
-                    border: filled ? "none" : "1.5px dashed var(--text-muted)",
-                    color: filled ? "white" : "var(--text-muted)",
-                  }}>
-                  {filled && pool.memberAvatars?.[i]
-                    ? <img src={pool.memberAvatars[i]} alt="" className="w-full h-full object-cover" />
-                    : filled ? name?.charAt(0) : "?"}
+              <div key={i} className="flex items-center gap-3 py-2.5" style={{ borderBottom: "1px solid var(--border)" }}>
+                <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold shrink-0"
+                  style={{ background: AVATAR_BG[i % AVATAR_BG.length], color: "white" }}>
+                  {c.name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  {filled ? (
-                    <>
-                      <p className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{name}</p>
-                      <p className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{minsAgo} min ago</p>
-                    </>
-                  ) : (
-                    <p className="text-[13px] font-medium" style={{ color: "var(--text-muted)" }}>Waiting for someone...</p>
-                  )}
+                  <p className="text-[13px] font-bold truncate" style={{ color: "var(--text)" }}>{c.name}</p>
+                  <p className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{ago} min ago</p>
                 </div>
-                {filled && (
-                  <span className="text-[12px] font-bold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
-                    &minus;{fp(chopAmountEach)}
-                  </span>
-                )}
+                <span className="text-[12px] font-bold tabular-nums shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--emerald)" }}>
+                  &minus;{fp(c.amount)}
+                </span>
               </div>
             );
           })}
+          {/* Empty slots */}
+          {Array.from({ length: Math.min(chopsLeft, 2) }).map((_, i) => (
+            <div key={`empty-${i}`} className="flex items-center gap-3 py-2.5" style={{ borderBottom: i < Math.min(chopsLeft, 2) - 1 ? "1px solid var(--border)" : "none" }}>
+              <div className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-medium shrink-0"
+                style={{ background: "var(--sand)", border: "1.5px dashed var(--text-muted)", color: "var(--text-muted)" }}>?</div>
+              <p className="text-[13px] font-medium" style={{ color: "var(--text-muted)" }}>Waiting for someone...</p>
+            </div>
+          ))}
         </div>
 
         {/* Remaining slots summary */}
