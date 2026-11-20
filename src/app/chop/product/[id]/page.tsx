@@ -31,6 +31,21 @@ export default function ChopProductPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [sharing, setSharing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [chopCode, setChopCode] = useState<string | null>(null);
+  const [chopping, setChopping] = useState(false);
+  const [chopResult, setChopResult] = useState<string | null>(null);
+  const [userName, setUserName] = useState("");
+
+  // Load user name + check for existing chop session
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("chopdrop-customer");
+      if (stored) {
+        const p = JSON.parse(stored);
+        if (p.name) setUserName(p.name);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -73,8 +88,26 @@ export default function ChopProductPage() {
   async function handleShare() {
     if (!product) return;
     setSharing(true);
-    const url = `${window.location.origin}/chop/product/${id}`;
-    const text = `Chop the price of ${product.name} to \u20A60 on ChopDrop!`;
+
+    // Create a chop session if we don't have one
+    let code = chopCode;
+    if (!code) {
+      try {
+        const res = await fetch("/api/chop", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: [{ productId: product.id, quantity: 1, retailPrice: product.retailPrice, groupPrice: product.groupPrice, name: product.name, imageUrl: product.imageUrl }] }),
+        });
+        const d = await res.json();
+        if (d.success && d.data?.shareCode) {
+          code = d.data.shareCode;
+          setChopCode(code);
+        }
+      } catch {}
+    }
+
+    const url = code ? `${window.location.origin}/chop/${code}` : `${window.location.origin}/chop/product/${id}`;
+    const text = `Chop the price of ${product.name} on ChopDrop!`;
     if (navigator.share) {
       try { await navigator.share({ title: `Chop: ${product.name}`, text, url }); } catch {}
     } else {
@@ -85,6 +118,50 @@ export default function ChopProductPage() {
       } catch {}
     }
     setSharing(false);
+  }
+
+  async function handleChop() {
+    if (!product || chopping) return;
+    const name = userName || "Friend";
+    setChopping(true);
+    // Try to find or create a chop session for this product
+    try {
+      // First try to create a session
+      let code = chopCode;
+      if (!code) {
+        const res = await fetch("/api/chop", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: [{ productId: product.id, quantity: 1, retailPrice: product.retailPrice, groupPrice: product.groupPrice, name: product.name, imageUrl: product.imageUrl }] }),
+        });
+        const d = await res.json();
+        if (d.success && d.data?.shareCode) {
+          code = d.data.shareCode;
+          setChopCode(code);
+        }
+      }
+      if (code) {
+        const clickRes = await fetch(`/api/chop/${code}/click`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name }),
+        });
+        const clickData = await clickRes.json();
+        if (clickData.success) {
+          setChopResult(`You chopped ${fp(clickData.data.chopAmount)} off!`);
+          setTimeout(() => setChopResult(null), 3000);
+          // Redirect to the chop session page
+          router.push(`/chop/${code}`);
+        } else {
+          setChopResult(clickData.error || "Could not chop");
+          setTimeout(() => setChopResult(null), 3000);
+        }
+      }
+    } catch {
+      setChopResult("Something went wrong");
+      setTimeout(() => setChopResult(null), 3000);
+    }
+    setChopping(false);
   }
 
   if (loading) {
@@ -307,15 +384,32 @@ export default function ChopProductPage() {
         </div>
       )}
 
+      {/* ── Chop result toast ── */}
+      {chopResult && (
+        <div className="fixed z-[100] left-0 right-0 bottom-[140px] px-5 celebrate">
+          <div className="max-w-[480px] mx-auto flex items-center justify-center gap-2 rounded-lg px-4 py-3" style={{ background: chopResult.includes("chopped") ? "var(--emerald)" : "var(--coral)" }}>
+            <span className="text-[13px] font-bold text-white">{chopResult}</span>
+          </div>
+        </div>
+      )}
+
       {/* ── Sticky bottom CTAs ── */}
       <div className="fixed bottom-[60px] left-0 right-0 z-40 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto space-y-2">
-          <button type="button" onClick={handleShare}
-            className="w-full h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback"
-            style={{ background: "var(--coral)" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
-            {sharing ? "Sharing..." : `Share link to chop · ${chopsLeft} more needed`}
-          </button>
+          {/* Primary: Chop now (for visitors) or Share (for owner) */}
+          <div className="flex gap-2">
+            <button type="button" onClick={handleChop} disabled={chopping}
+              className="flex-1 h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback disabled:opacity-50"
+              style={{ background: "var(--coral)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+              {chopping ? "Chopping..." : "Chop the price"}
+            </button>
+            <button type="button" onClick={handleShare}
+              className="w-[50px] h-[50px] rounded-[12px] flex items-center justify-center press-feedback shrink-0"
+              style={{ background: "var(--sand)" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
+            </button>
+          </div>
           <button type="button" onClick={() => {
             cart.addItem({ dailyMenuId: product.id, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantId: product.vendor.id, restaurantName: product.vendor.name, price: product.retailPrice });
             router.push("/cart");
