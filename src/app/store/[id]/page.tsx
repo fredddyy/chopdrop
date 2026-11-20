@@ -390,8 +390,9 @@ export default function StorePage() {
             <div className="flex items-center justify-between">
               {/* Left — number circle + avatars + details */}
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-[40px] h-[40px] rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                  <span className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.size}</span>
+                <div className="w-[40px] h-[40px] rounded-full flex flex-col items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
+                  <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.size}</span>
+                  <span className="text-[7px] font-bold leading-none mt-0.5" style={{ color: "var(--text-muted)" }}>ppl</span>
                 </div>
                 <div className="min-w-0">
                   {/* Overlapping avatars */}
@@ -413,9 +414,9 @@ export default function StorePage() {
                         );
                       })}
                     </div>
-                    {selOverflow > 0 && <span className="text-[10px] font-extrabold ml-1" style={{ color: "var(--text-secondary)" }}>+{selOverflow}</span>}
+                    {selOverflow > 0 && <span className="text-[10px] font-extrabold ml-1" style={{ color: "var(--text-secondary)" }}>+{selOverflow} spots</span>}
                   </div>
-                  <p className="text-[11px] mt-1"><span className="font-bold" style={{ color: "var(--text-secondary)" }}>{sel.discount}% off</span><span className="font-medium" style={{ color: "var(--text-muted)" }}> · {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`} window</span></p>
+                  <p className="text-[11px] mt-1"><span className="font-bold" style={{ color: "var(--text-secondary)" }}>Save {sel.discount}%</span><span className="font-medium" style={{ color: "var(--text-muted)" }}> · Closes in {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`}</span></p>
                 </div>
               </div>
               {/* Right — dynamic price + progress ring */}
@@ -424,12 +425,12 @@ export default function StorePage() {
                   {cartSubtotal > 0 ? (
                     <>
                       <p className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(selPrice)}</p>
-                      <p className="text-[10px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>you pay</p>
+                      <p className="text-[10px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</p>
                     </>
                   ) : (
                     <>
                       <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.discount}%</p>
-                      <p className="text-[10px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>off</p>
+                      <p className="text-[10px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>off</p>
                     </>
                   )}
                 </div>
