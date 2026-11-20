@@ -141,6 +141,7 @@ export default function StorePage() {
   const [storeTierPools, setStoreTierPools] = useState<Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null>>({});
   const [storeTierProductId, setStoreTierProductId] = useState("");
   const [selectedTierIdx, setSelectedTierIdx] = useState(2);
+  const [howItWorksOpen, setHowItWorksOpen] = useState(false);
 
   function addToPlate(item: Product, storeName: string) {
     cart.addItem({ dailyMenuId: item.id, name: item.name, description: item.description || "", imageUrl: item.imageUrl, restaurantId: id, restaurantName: storeName, price: item.retailPrice });
@@ -361,8 +362,19 @@ export default function StorePage() {
           {/* Header */}
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Order with others &amp; save</h3>
-            <span className="text-[11px] font-bold" style={{ color: "var(--coral)" }}>How it works</span>
+            <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How it works</button>
           </div>
+
+          {/* How it works — collapsible */}
+          {howItWorksOpen && (
+            <div className="rounded-[12px] p-3.5 mb-3 card-enter" style={{ background: "var(--sand)" }}>
+              <div className="space-y-2 text-[11px] leading-[155%]" style={{ color: "var(--text-secondary)" }}>
+                <p><span className="font-bold" style={{ color: "var(--text)" }}>1.</span> Pick a group size and add items to your plate.</p>
+                <p><span className="font-bold" style={{ color: "var(--text)" }}>2.</span> Pay at the group price. Share your link so others can join.</p>
+                <p><span className="font-bold" style={{ color: "var(--text)" }}>3.</span> Group fills? Everyone saves. Doesn&apos;t fill? Full refund, no risk.</p>
+              </div>
+            </div>
+          )}
 
           {/* Tier pill selectors */}
           <div className="flex gap-2 mb-3 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
@@ -402,8 +414,8 @@ export default function StorePage() {
                         <div key={j} className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[7px] font-medium overflow-hidden"
                           style={{
                             background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
-                            border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--border)",
-                            color: filled ? "white" : "var(--border)",
+                            border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--text-muted)",
+                            color: filled ? "white" : "var(--text-muted)",
                           }}>
                           {filled && selPool?.memberAvatars?.[j]
                             ? <img src={selPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
@@ -412,7 +424,7 @@ export default function StorePage() {
                         );
                       })}
                     </div>
-                    {selOverflow > 0 && <span className="text-[8px] font-bold ml-1" style={{ color: "var(--text-muted)" }}>+{selOverflow}</span>}
+                    {selOverflow > 0 && <span className="text-[9px] font-extrabold ml-1" style={{ color: "var(--text-secondary)" }}>+{selOverflow}</span>}
                   </div>
                   <p className="text-[11px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>{sel.discount}% off · {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`} window</p>
                 </div>
