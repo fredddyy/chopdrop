@@ -37,7 +37,7 @@ export default function ChopProductPage() {
   const [userName, setUserName] = useState("");
   const [chopSession, setChopSession] = useState<{ currentTotal: number; currentChopCount: number; maxChops: number; chopAmountPerClick: number; expiresAt: string; choppers: Array<{ name: string; amount: number; createdAt: string }> } | null>(null);
 
-  // Load user name + check for existing chop session
+  // Load user name + restore existing chop session code
   useEffect(() => {
     try {
       const stored = localStorage.getItem("chopdrop-customer");
@@ -45,8 +45,13 @@ export default function ChopProductPage() {
         const p = JSON.parse(stored);
         if (p.name) setUserName(p.name);
       }
+      const savedCodes = localStorage.getItem("chopdrop-chop-codes");
+      if (savedCodes) {
+        const codes: Record<string, string> = JSON.parse(savedCodes);
+        if (codes[id]) setChopCode(codes[id]);
+      }
     } catch {}
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -100,6 +105,16 @@ export default function ChopProductPage() {
     return () => clearInterval(iv);
   }, [chopCode]);
 
+  function saveChopCode(code: string) {
+    setChopCode(code);
+    try {
+      const saved = localStorage.getItem("chopdrop-chop-codes");
+      const codes: Record<string, string> = saved ? JSON.parse(saved) : {};
+      codes[id] = code;
+      localStorage.setItem("chopdrop-chop-codes", JSON.stringify(codes));
+    } catch {}
+  }
+
   async function handleShare() {
     if (!product) return;
     setSharing(true);
@@ -116,7 +131,7 @@ export default function ChopProductPage() {
         const d = await res.json();
         if (d.success && d.data?.shareCode) {
           code = d.data.shareCode;
-          setChopCode(code);
+          if (code) saveChopCode(code);
         }
       } catch {}
     }
@@ -152,7 +167,7 @@ export default function ChopProductPage() {
         const d = await res.json();
         if (d.success && d.data?.shareCode) {
           code = d.data.shareCode;
-          setChopCode(code);
+          if (code) saveChopCode(code);
         }
       }
       if (code) {
