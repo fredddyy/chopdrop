@@ -404,25 +404,23 @@ export default function StorePage() {
                 </div>
                 {overflow > 0 && <span className="text-[10px] font-extrabold ml-1.5" style={{ color: "var(--text-secondary)" }}>+{overflow}</span>}
               </div>
-              {/* Price or Save% — right of avatars */}
-              <div className="shrink-0 text-right">
-                {cartSubtotal > 0 ? (
-                  <>
-                    <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
-                    <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)} solo</p>
-                  </>
-                ) : (
-                  <p className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>Save {discount}%</p>
-                )}
-              </div>
+              {/* Price — only when items in cart */}
+              {cartSubtotal > 0 && (
+                <div className="shrink-0 text-right">
+                  <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
+                  <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)} solo</p>
+                </div>
+              )}
             </div>
             {/* Status + timer */}
             <div className="flex items-center justify-between mt-2.5">
               <div>
-                <p className="text-[13px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
-                  {!hasPool ? "Start group buy" : `Join group · ${members} of ${minPeople}`}
-                </p>
-                <p className="text-[10px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>{minPeople} people needed</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-[13px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
+                    {!hasPool ? "Start group buy" : `Join group · ${members} of ${minPeople}`}
+                  </p>
+                  <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>· {minPeople} people needed</span>
+                </div>
               </div>
               {/* Timer — live when active, static when idle */}
               <div className="shrink-0 text-right">
