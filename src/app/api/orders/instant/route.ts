@@ -14,13 +14,14 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
 
   const body = await request.json();
-  const { items, deliveryOption, lat, lng, poolId, groupDiscount } = body as {
+  const { items, deliveryOption, lat, lng, poolId, groupDiscount, clientTotal } = body as {
     items: Array<{ productId: string; quantity: number; price: number }>;
     deliveryOption?: "pickup" | "delivery";
     lat?: number;
     lng?: number;
     poolId?: string;
     groupDiscount?: boolean;
+    clientTotal?: number;
   };
 
   if (!items || items.length === 0) {
@@ -80,10 +81,13 @@ export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin") || "https://chopdrop-app.vercel.app";
   const callbackUrl = `${origin}/orders`;
 
+  // Use client-calculated total if provided (ensures Paystack matches what user sees)
+  const paystackAmount = clientTotal && clientTotal > 0 ? clientTotal : totalAmount + serviceFee + deliveryFee;
+
   // Initialize Paystack
   const paystack = await initializeTransaction({
     email,
-    amount: totalAmount + serviceFee + deliveryFee,
+    amount: paystackAmount,
     reference,
     callbackUrl,
   });

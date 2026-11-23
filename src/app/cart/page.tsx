@@ -79,8 +79,13 @@ export default function CartPage() {
     } catch {}
   }, []);
 
-  // Reset loading state on mount (user may have returned from Paystack via back button)
-  useEffect(() => { setLoading(false); }, []);
+  // Reset loading state when page is restored from back-forward cache (after Paystack cancel)
+  useEffect(() => {
+    setLoading(false);
+    const handlePageShow = (e: PageTransitionEvent) => { if (e.persisted) setLoading(false); };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []);
 
   // Restore cart from backup if empty (user returned from failed Paystack payment)
   useEffect(() => {
@@ -244,7 +249,7 @@ export default function CartPage() {
       const items = cart.items.map(i => ({ productId: i.dailyMenuId, quantity: i.quantity, price: i.price }));
 
       const primaryProductId = items[0].productId.replace("instant-", "");
-      const payload: Record<string, unknown> = { items, deliveryOption: deliveryToggle };
+      const payload: Record<string, unknown> = { items, deliveryOption: deliveryToggle, clientTotal: orderTotal };
 
       // If group mode, apply discount but DON'T join pool yet (join after payment confirms)
       if (isGroupMode) {
