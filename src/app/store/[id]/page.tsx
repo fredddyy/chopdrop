@@ -349,17 +349,18 @@ export default function StorePage() {
         const AVATAR_BG = ["#E84C3D", "#F39C12", "#3498DB", "#1ABC9C", "#9B59B6"];
         return (
         <div className="px-5 mt-4">
-          <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
-            {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Save {discount}% with {minPeople}+ people</span>
-              </div>
-              <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[10px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How?</button>
+          {/* Header — outside card */}
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+              <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Order &amp; save with others</span>
             </div>
+            <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[10px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How?</button>
+          </div>
+          <p className="text-[11px] mb-2.5" style={{ color: "var(--text-muted)" }}>Minimum of {minPeople} people needed · {discount}% off</p>
 
-            {/* Avatars + status + price */}
+          {/* Card */}
+          <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="flex -space-x-1.5">
