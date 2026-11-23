@@ -623,7 +623,7 @@ export default function StorePage() {
                   <button type="button" onClick={() => { cart.setCheckoutMode(store.name, "solo"); router.push("/cart"); }}
                     className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
                     style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Alone</span>
+                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>Buy alone</span>
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
                   </button>
                   <button type="button" onClick={() => {
