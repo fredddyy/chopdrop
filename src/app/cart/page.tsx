@@ -255,7 +255,7 @@ export default function CartPage() {
       if (isGroupMode) {
         payload.groupDiscount = true;
         // Save group intent so we can join pool after payment
-        sessionStorage.setItem("chopdrop-pending-group", JSON.stringify({ productId: primaryProductId, minSize: 3, quantity: items[0].quantity }));
+        localStorage.setItem("chopdrop-pending-group", JSON.stringify({ productId: primaryProductId, minSize: 3, quantity: items[0].quantity }));
       }
       if (deliveryToggle === "delivery" && deliveryPref?.lat && deliveryPref?.lng) {
         payload.lat = deliveryPref.lat; payload.lng = deliveryPref.lng;
@@ -271,7 +271,7 @@ export default function CartPage() {
       if (data.data.authorizationUrl) {
         // Don't clear cart — keep it so user can retry if payment is cancelled
         // Cart will be cleared on the orders page after successful payment return
-        sessionStorage.setItem("chopdrop-clear-cart-on-success", "true");
+        localStorage.setItem("chopdrop-clear-cart-on-success", "true");
         window.location.href = data.data.authorizationUrl;
       } else if (orderTotal === 0) {
         cart.clearCart();
@@ -479,6 +479,23 @@ export default function CartPage() {
           </section>
 
           {/* ═══ ORDER SUMMARY ═══ */}
+          {!infoLoaded ? (
+            <section className="rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="space-y-3">
+                {[65, 50, 40, 45].map((w, i) => (
+                  <div key={i} className="flex justify-between items-center">
+                    <div className="h-4 rounded-lg" style={{ width: `${w}%`, background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 80}ms` }} />
+                    <div className="h-4 rounded-lg w-[20%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 80 + 40}ms` }} />
+                  </div>
+                ))}
+                <div className="h-px" style={{ background: "var(--border)" }} />
+                <div className="flex justify-between items-center">
+                  <div className="h-5 rounded-lg w-[25%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                  <div className="h-6 rounded-lg w-[30%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                </div>
+              </div>
+            </section>
+          ) : (
           <section className="rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <div className="space-y-2.5 text-[13px]">
               <div className="flex justify-between items-center">
@@ -527,6 +544,7 @@ export default function CartPage() {
               </div>
             </div>
           </section>
+          )}
         </div>
       )}
 

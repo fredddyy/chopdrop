@@ -45,12 +45,12 @@ export default function OrdersPage() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("reference") || params.get("trxref")) {
       // Clear cart after successful payment
-      if (sessionStorage.getItem("chopdrop-clear-cart-on-success")) {
+      if (localStorage.getItem("chopdrop-clear-cart-on-success")) {
         cart.clearCart();
-        sessionStorage.removeItem("chopdrop-clear-cart-on-success");
+        localStorage.removeItem("chopdrop-clear-cart-on-success");
       }
       // Join pool if group order was pending
-      const pending = sessionStorage.getItem("chopdrop-pending-group");
+      const pending = localStorage.getItem("chopdrop-pending-group");
       if (pending) {
         const { productId, minSize, quantity } = JSON.parse(pending);
         fetch("/api/pools/find-or-create", {
@@ -58,7 +58,7 @@ export default function OrdersPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId, minSize, quantity }),
         }).catch(() => {});
-        sessionStorage.removeItem("chopdrop-pending-group");
+        localStorage.removeItem("chopdrop-pending-group");
       }
     }
 
@@ -113,9 +113,19 @@ export default function OrdersPage() {
       {tab === "active" && (
         <div className="px-5 mt-4">
           {loading ? (
-            <div className="py-8 space-y-3">
+            <div className="py-4 space-y-3">
               {[0, 1].map((i) => (
-                <div key={i} className="h-[120px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
+                <div key={i} className="rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-[50px] h-[50px] rounded-[12px] shrink-0" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100}ms` }} />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 rounded-lg w-[60%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100 + 50}ms` }} />
+                      <div className="h-3 rounded-lg w-[40%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100 + 100}ms` }} />
+                    </div>
+                    <div className="h-5 rounded-lg w-[20%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100 + 50}ms` }} />
+                  </div>
+                  <div className="mt-3 h-[5px] rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${i * 100 + 150}ms` }} />
+                </div>
               ))}
             </div>
           ) : totalActive === 0 ? (
@@ -215,8 +225,16 @@ export default function OrdersPage() {
       {tab === "history" && (
         <div className="px-5 mt-4">
           {loading ? (
-            <div className="py-8 space-y-3">
-              <div className="h-[80px] rounded-[22px]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+            <div className="py-4 space-y-3">
+              <div className="rounded-[16px] p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-[50px] h-[50px] rounded-[12px] shrink-0" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 rounded-lg w-[55%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "50ms" }} />
+                    <div className="h-3 rounded-lg w-[35%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+                  </div>
+                </div>
+              </div>
             </div>
           ) : pastPools.length === 0 ? (
             <div className="py-12 text-center">

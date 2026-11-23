@@ -360,10 +360,32 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <main className="flex-1 max-w-[480px] mx-auto w-full pb-24" style={{ background: "var(--bg)" }}>
-        <div className="h-[56vh]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
-        <div className="px-5 pt-5 space-y-3">
-          <div className="h-7 rounded w-[65%]" style={{ background: "var(--sand)" }} />
-          <div className="h-10 rounded w-[45%]" style={{ background: "var(--sand)" }} />
+        {/* Header */}
+        <div className="h-[56px] px-5 flex items-center justify-between">
+          <div className="w-9 h-9 rounded-full" style={{ background: "var(--sand)" }} />
+          <div className="h-5 rounded-lg w-[40%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+          <div className="w-9 h-9 rounded-full" style={{ background: "var(--sand)" }} />
+        </div>
+        {/* Product image */}
+        <div className="mx-5 rounded-[16px] overflow-hidden" style={{ height: "236px", background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite" }} />
+        {/* Name + vendor */}
+        <div className="px-5 pt-4 space-y-2">
+          <div className="h-6 rounded-lg w-[65%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "100ms" }} />
+          <div className="h-4 rounded-lg w-[35%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "150ms" }} />
+        </div>
+        {/* Price */}
+        <div className="px-5 pt-4 flex items-baseline gap-3">
+          <div className="h-8 rounded-lg w-[30%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "200ms" }} />
+          <div className="h-5 rounded-lg w-[20%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "250ms" }} />
+        </div>
+        {/* Pool avatars */}
+        <div className="px-5 pt-4 flex items-center gap-3">
+          <div className="flex -space-x-2">
+            {[0, 1, 2, 3, 4].map(i => (
+              <div key={i} className="w-[32px] h-[32px] rounded-full" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: `${300 + i * 50}ms` }} />
+            ))}
+          </div>
+          <div className="h-4 rounded-lg w-[30%]" style={{ background: "var(--sand)", animation: "pulse 1.5s ease-in-out infinite", animationDelay: "500ms" }} />
         </div>
         <BottomNav />
       </main>
