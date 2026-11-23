@@ -382,41 +382,47 @@ export default function StorePage() {
 
           {/* Card */}
           <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
-            {/* Avatars row */}
-            <div className="flex items-center">
-              <div className="flex -space-x-2">
-                {Array.from({ length: Math.min(showAvatars, 5) }).map((_, j) => {
-                  const filled = j < members;
-                  return (
-                  <div key={j} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden"
-                    style={{
-                      background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
-                      border: filled ? "2.5px solid var(--sand)" : "1.5px dashed var(--text-muted)",
-                      color: filled ? "white" : "var(--text-muted)",
-                    }}>
-                    {filled && activePool?.memberAvatars?.[j]
-                      ? <img src={activePool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                      : filled ? (activePool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={12} />}
-                  </div>
-                  );
-                })}
+            {/* Avatars row + price/save */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="flex -space-x-2">
+                  {Array.from({ length: Math.min(showAvatars, 5) }).map((_, j) => {
+                    const filled = j < members;
+                    return (
+                    <div key={j} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden"
+                      style={{
+                        background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
+                        border: filled ? "2.5px solid var(--sand)" : "1.5px dashed var(--text-muted)",
+                        color: filled ? "white" : "var(--text-muted)",
+                      }}>
+                      {filled && activePool?.memberAvatars?.[j]
+                        ? <img src={activePool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                        : filled ? (activePool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={12} />}
+                    </div>
+                    );
+                  })}
+                </div>
+                {overflow > 0 && <span className="text-[10px] font-extrabold ml-1.5" style={{ color: "var(--text-secondary)" }}>+{overflow}</span>}
               </div>
-              {overflow > 0 && <span className="text-[10px] font-extrabold ml-1.5" style={{ color: "var(--text-secondary)" }}>+{overflow}</span>}
+              {/* Price or Save% — right of avatars */}
+              <div className="shrink-0 text-right">
+                {cartSubtotal > 0 ? (
+                  <>
+                    <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
+                    <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)} solo</p>
+                  </>
+                ) : (
+                  <p className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>Save {discount}%</p>
+                )}
+              </div>
             </div>
             {/* Status + timer */}
-            <div className="flex items-center justify-between mt-3">
+            <div className="flex items-center justify-between mt-2.5">
               <div>
                 <p className="text-[13px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
                   {!hasPool ? "Start group buy" : `Join group · ${members} of ${minPeople}`}
                 </p>
-                <p className="text-[10px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>Save {discount}% · {minPeople} people needed</p>
-                {/* Price — only when items in cart */}
-                {cartSubtotal > 0 && (
-                  <div className="flex items-baseline gap-1.5 mt-1.5">
-                    <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</span>
-                    <span className="text-[10px] font-medium line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)} solo</span>
-                  </div>
-                )}
+                <p className="text-[10px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>{minPeople} people needed</p>
               </div>
               {/* Timer — live when active, static when idle */}
               <div className="shrink-0 text-right">
