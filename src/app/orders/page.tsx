@@ -39,6 +39,21 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If returning from Paystack with a group order pending, join the pool now
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reference") || params.get("trxref")) {
+      const pending = sessionStorage.getItem("chopdrop-pending-group");
+      if (pending) {
+        const { productId, minSize, quantity } = JSON.parse(pending);
+        fetch("/api/pools/find-or-create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId, minSize, quantity }),
+        }).catch(() => {});
+        sessionStorage.removeItem("chopdrop-pending-group");
+      }
+    }
+
     Promise.all([
       fetch("/api/pools?mine=true").then((r) => r.json()).catch(() => ({ success: false })),
       fetch("/api/group-orders?mine=true").then((r) => r.ok ? r.json() : { success: false }).catch(() => ({ success: false })),
