@@ -443,12 +443,10 @@ export default function StorePage() {
             {/* Status + price */}
             <div className="flex items-center justify-between mt-2.5">
               <div>
-                <div className="flex items-center gap-1.5">
-                  <p className="text-[13px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
-                    {!hasPool ? "Start group buy" : "Join group"}
-                  </p>
-                  <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>· minimum of {minPeople} people needed</span>
-                </div>
+                <p className="text-[13px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
+                  {!hasPool ? "Start group buy" : "Join group"}
+                </p>
+                <p className="text-[10px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>minimum of {minPeople} people needed</p>
               </div>
               {/* Price/save — right of status */}
               {cartSubtotal > 0 ? (
