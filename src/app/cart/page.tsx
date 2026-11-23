@@ -35,6 +35,7 @@ export default function CartPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [chopLoading, setChopLoading] = useState(false);
   const [restaurantInfo, setRestaurantInfo] = useState<Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number; groupTiers: Array<{ min: number; discount: number }>; deliveryFee: number; groupDeliveryPct: number; poolMemberCount: number }>>({});
+  const [infoLoaded, setInfoLoaded] = useState(false);
 
   // Fetch group order info + pool data for restaurants in cart
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function CartPage() {
         if (r.name) info[r.name] = info[r.id];
       }
       setRestaurantInfo(info as Record<string, { groupTarget: number; groupDiscount: number; groupWindowMins: number; groupTiers: Array<{ min: number; discount: number }>; deliveryFee: number; groupDeliveryPct: number; poolMemberCount: number }>);
+      setInfoLoaded(true);
     });
   }, [cart.items.length]);
 
@@ -279,7 +281,7 @@ export default function CartPage() {
       <div className="px-5 pt-6 pb-4 flex items-center justify-between">
         <div>
           <h1 className="text-[20px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Checkout</h1>
-          <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{portionCount} item{portionCount !== 1 ? "s" : ""} · {formatNaira(orderTotal)}</p>
+          <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{portionCount} item{portionCount !== 1 ? "s" : ""} · {infoLoaded ? formatNaira(orderTotal) : "..."}</p>
         </div>
         <Link href="/home" className="text-[13px] font-bold" style={{ color: "var(--coral)" }}>+ Add more</Link>
       </div>

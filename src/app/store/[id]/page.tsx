@@ -180,6 +180,7 @@ export default function StorePage() {
   }, []);
   const [sheetQty, setSheetQty] = useState(1);
   const [livePools, setLivePools] = useState<RealPool[]>([]);
+  const [poolsLoaded, setPoolsLoaded] = useState(false);
   const cart = useCart();
   const [howItWorksOpen, setHowItWorksOpen] = useState(false);
 
@@ -221,6 +222,7 @@ export default function StorePage() {
         }
       }
       setLivePools(active);
+      setPoolsLoaded(true);
     });
   }, [store]);
 
@@ -380,7 +382,7 @@ export default function StorePage() {
       </div>
 
       {/* ═══ GROUP ORDER — single flat model ═══ */}
-      {store.groupDiscount > 0 && (() => {
+      {store.groupDiscount > 0 && poolsLoaded && (() => {
         const discount = store.groupDiscount;
         const minPeople = 3;
         const windowMins = 25;
