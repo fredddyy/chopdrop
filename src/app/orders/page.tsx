@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useCart } from "@/lib/cart";
 import { BottomNav } from "@/components/bottom-nav";
 
 function fp(kobo: number): string { return "\u20A6" + (kobo / 100).toLocaleString(); }
@@ -34,14 +35,21 @@ type Tab = "active" | "history";
 
 export default function OrdersPage() {
   const [tab, setTab] = useState<Tab>("active");
+  const cart = useCart();
   const [pools, setPools] = useState<PoolOrder[]>([]);
   const [groupOrders, setGroupOrders] = useState<GroupOrderItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If returning from Paystack with a group order pending, join the pool now
+    // If returning from Paystack, clear cart + join pool if group order
     const params = new URLSearchParams(window.location.search);
     if (params.get("reference") || params.get("trxref")) {
+      // Clear cart after successful payment
+      if (sessionStorage.getItem("chopdrop-clear-cart-on-success")) {
+        cart.clearCart();
+        sessionStorage.removeItem("chopdrop-clear-cart-on-success");
+      }
+      // Join pool if group order was pending
       const pending = sessionStorage.getItem("chopdrop-pending-group");
       if (pending) {
         const { productId, minSize, quantity } = JSON.parse(pending);

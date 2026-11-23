@@ -261,8 +261,9 @@ export default function CartPage() {
       const data = await res.json();
       if (!data.success) { setError(data.error || "Something went wrong"); setLoading(false); return; }
       if (data.data.authorizationUrl) {
-        sessionStorage.setItem("chopdrop-cart-backup", JSON.stringify(cart.items));
-        cart.clearCart();
+        // Don't clear cart — keep it so user can retry if payment is cancelled
+        // Cart will be cleared on the orders page after successful payment return
+        sessionStorage.setItem("chopdrop-clear-cart-on-success", "true");
         window.location.href = data.data.authorizationUrl;
       } else if (orderTotal === 0) {
         cart.clearCart();
