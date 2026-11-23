@@ -469,6 +469,9 @@ export default function ChopProductPage() {
               {chopSession && chopsDone > 0 ? (
                 <button type="button" onClick={() => {
                   cart.addItem({ dailyMenuId: product.id, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantId: product.vendor.id, restaurantName: product.vendor.name, price: currentPrice });
+                  // Set solo mode so cart doesn't apply group discount on top of chopped price
+                  cart.setCheckoutMode(product.vendor.id, "solo");
+                  cart.setCheckoutMode(product.vendor.name, "solo");
                   router.push("/cart");
                 }}
                   className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
