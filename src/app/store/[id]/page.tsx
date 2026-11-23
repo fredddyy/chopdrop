@@ -424,7 +424,8 @@ export default function StorePage() {
                 {overflow > 0 && <span className="text-[10px] font-extrabold ml-1.5" style={{ color: "var(--text-secondary)" }}>+{overflow}</span>}
               </div>
               {/* Timer — right of avatars */}
-              <div className="shrink-0">
+              <div className="shrink-0 text-right">
+                <p className="text-[9px] font-medium mb-1" style={{ color: "var(--text-muted)" }}>{windowMins}min window</p>
                 {hasPool && poolDeadline > 0 ? (
                   <GroupCountdown deadline={poolDeadline} />
                 ) : (
@@ -444,12 +445,9 @@ export default function StorePage() {
               </div>
               {/* Price/save — right of status */}
               {cartSubtotal > 0 ? (
-                <div className="shrink-0 text-right">
-                  <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
-                  <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)} solo</p>
-                </div>
+                <p className="text-[16px] font-extrabold tabular-nums leading-none shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
               ) : (
-                <span className="text-[13px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>Save {discount}%</span>
+                <span className="text-[13px] font-extrabold shrink-0" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>Save {discount}%</span>
               )}
             </div>
           </div>
