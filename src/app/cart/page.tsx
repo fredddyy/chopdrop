@@ -149,8 +149,7 @@ export default function CartPage() {
   const { groupSavings, isGroupMode, groupMemberCount, groupDeliveryFee } = (() => {
     let savings = 0;
     let isGroup = false;
-    let memberCount = 3;
-    try { const stored = localStorage.getItem("chopdrop-group-size"); if (stored) memberCount = parseInt(stored, 10) || 3; } catch {}
+    const memberCount = 3; // flat minimum
     let groupDelFee = baseDeliveryFee;
 
     const restaurants = new Map<string, number>();
@@ -166,30 +165,13 @@ export default function CartPage() {
       const info = restId ? restaurantInfo[restId] : null;
       if (mode === "group" && info) {
         isGroup = true;
-        // Use tier system: find the matching tier for the group size
-        // If no tiers in DB, generate from groupDiscount/groupTarget
-        let tiers = info.groupTiers || [];
-        if (tiers.length === 0 && info.groupDiscount > 0) {
-          const maxDisc = info.groupDiscount;
-          tiers = [
-            { min: 3, discount: Math.round(maxDisc / 3) },
-            { min: 5, discount: Math.round(maxDisc * 2 / 3) },
-            { min: info.groupTarget || 10, discount: maxDisc },
-          ];
-        }
-        let tierDiscount = 0;
-        for (const t of tiers) {
-          if (memberCount >= t.min) tierDiscount = t.discount;
-        }
-        const discount = tierDiscount;
-        if (discount > 0) {
-          savings += Math.round(restSubtotal * discount / 100);
-        }
-        // Split delivery by group size — round to whole naira (nearest 100 kobo)
+        // Flat discount — use restaurant's groupDiscount (default 30%)
+        const discount = info.groupDiscount || 30;
+        savings += Math.round(restSubtotal * discount / 100);
+        // Split delivery by 3 people
         groupDelFee = Math.round(baseDeliveryFee / memberCount / 100) * 100;
       }
     }
-    // Round savings to whole naira
     savings = Math.round(savings / 100) * 100;
     return { groupSavings: savings, isGroupMode: isGroup, groupMemberCount: memberCount, groupDeliveryFee: groupDelFee };
   })();

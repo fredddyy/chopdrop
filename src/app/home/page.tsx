@@ -769,9 +769,9 @@ export default function HomePage() {
                           </div>
                         )}
                         {/* Discount badge — top left of banner */}
-                        {bestTier && (
+                        {r.groupDiscount > 0 && (
                           <span className="absolute top-3 left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-full text-white" style={{ background: "var(--coral)" }}>
-                            Up to {bestTier.discount}% off
+                            {r.groupDiscount}% off · 3+ people
                           </span>
                         )}
                         {/* Group activity — on banner */}
@@ -822,11 +822,11 @@ export default function HomePage() {
                           const hasLive = r.livePools.count > 0;
                           return hasLive ? (
                           <p className="text-[10px] font-medium mt-1" style={{ color: "var(--text-muted)" }}>
-                            Up to {discountPct}% off · {r.livePools.count} {r.livePools.count === 1 ? "group" : "groups"} active
+                            {discountPct}% off · {r.livePools.count} {r.livePools.count === 1 ? "group" : "groups"} active
                           </p>
                           ) : (
                           <p className="text-[10px] font-medium mt-1.5" style={{ color: "var(--text-muted)" }}>
-                            Up to {discountPct}% off with {spotsNeeded}+ people
+                            {discountPct}% off with 3+ people
                           </p>
                           );
                         })()}

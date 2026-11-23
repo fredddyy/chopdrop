@@ -137,11 +137,6 @@ export default function StorePage() {
   const [sheetQty, setSheetQty] = useState(1);
   const [livePools, setLivePools] = useState<RealPool[]>([]);
   const cart = useCart();
-  const [storeTierSheet, setStoreTierSheet] = useState(false);
-  const [storeTierLoading, setStoreTierLoading] = useState(false);
-  const [storeTierPools, setStoreTierPools] = useState<Record<number, { memberCount: number; poolId: string; spotsLeft: number } | null>>({});
-  const [storeTierProductId, setStoreTierProductId] = useState("");
-  const [selectedTierIdx, setSelectedTierIdx] = useState(2);
   const [howItWorksOpen, setHowItWorksOpen] = useState(false);
 
   function addToPlate(item: Product, storeName: string) {
@@ -340,135 +335,64 @@ export default function StorePage() {
         </div>
       </div>
 
-      {/* ═══ GROUP ORDER SECTION ═══ */}
-      {store.groupTarget > 0 && store.groupDiscount > 0 && (() => {
-        const tierList = [
-          { size: 3, discount: 10, mins: 25 },
-          { size: 5, discount: 20, mins: 45 },
-          { size: store.groupTarget, discount: store.groupDiscount, mins: 60 },
-        ];
-        const sel = tierList[selectedTierIdx] || tierList[2];
-        const selPool = livePools.find(lp => lp.minSize === sel.size);
-        const hasSelPool = selPool && selPool.memberCount > 0;
-        const selMembers = hasSelPool ? selPool.memberCount : 0;
-        const selShowMax = Math.min(sel.size, 4);
-        const selOverflow = sel.size - selShowMax;
+      {/* ═══ GROUP ORDER — single flat model ═══ */}
+      {store.groupDiscount > 0 && (() => {
+        const discount = store.groupDiscount;
+        const minPeople = 3;
+        const windowMins = 25;
+        const activePool = livePools.find(lp => lp.memberCount > 0);
+        const members = activePool?.memberCount || 0;
+        const showMax = Math.min(minPeople + 2, 5);
         const storeCartItems = cart.items.filter(ci => ci.restaurantId === id || ci.restaurantName === store.name);
         const cartSubtotal = storeCartItems.reduce((s, ci) => s + ci.price * ci.quantity, 0);
-        const selPrice = cartSubtotal > 0 ? Math.round(cartSubtotal * (1 - sel.discount / 100)) : 0;
-        const fillPct = hasSelPool ? Math.round((selMembers / sel.size) * 100) : 0;
-        const AVATAR_BG = ["#E84C3D", "#F39C12", "#3498DB", "#1ABC9C", "#9B59B6", "#E67E22", "#2ECC71"];
+        const groupPrice = cartSubtotal > 0 ? Math.round(cartSubtotal * (1 - discount / 100)) : 0;
+        const AVATAR_BG = ["#E84C3D", "#F39C12", "#3498DB", "#1ABC9C", "#9B59B6"];
         return (
-        <div className="px-5 mt-5">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[15px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>Order with others &amp; save</h3>
-            <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[11px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How it works</button>
-          </div>
-
-          {/* Tier radio selectors */}
-          <div className="flex gap-2 mb-3 overflow-x-auto hide-scrollbar" style={{ touchAction: "pan-x" }}>
-            {tierList.map((tier, ti) => {
-              const isActive = selectedTierIdx === ti;
-              const isBest = ti === tierList.length - 1;
-              return (
-              <button key={tier.size} type="button" onClick={() => setSelectedTierIdx(ti)}
-                className="h-[34px] px-3 rounded-[10px] flex items-center gap-2 text-[11px] font-bold press-feedback shrink-0"
-                style={{
-                  background: isActive ? "var(--coral-soft)" : "var(--sand)",
-                  color: isActive ? "var(--coral)" : "var(--text-secondary)",
-                  border: isActive ? "1.5px solid var(--coral)" : "1.5px solid transparent",
-                  transform: isActive ? "scale(1.03)" : "scale(1)",
-                  transition: "all 250ms cubic-bezier(0.34, 1.56, 0.64, 1)",
-                }}>
-                {/* Radio → checkmark on select */}
-                <div className="w-[16px] h-[16px] rounded-full flex items-center justify-center shrink-0" style={{
-                  background: isActive ? "var(--coral)" : "transparent",
-                  border: isActive ? "none" : "2px solid var(--border)",
-                  transition: "all 200ms ease-out",
-                }}>
-                  {isActive && (
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7" /></svg>
-                  )}
-                </div>
-                <span>{tier.size} People</span>
-                <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full" style={{
-                  background: isActive ? "var(--coral)" : "var(--border)",
-                  color: isActive ? "white" : "var(--text-muted)",
-                  transition: "all 200ms ease-out",
-                }}>{tier.discount}%</span>
-              </button>
-              );
-            })}
-          </div>
-
-          {/* Selected tier detail card */}
+        <div className="px-5 mt-4">
           <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
-            <div className="flex items-center justify-between">
-              {/* Left — number circle + avatars + details */}
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-[40px] h-[40px] rounded-full flex flex-col items-center justify-center shrink-0" style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}>
-                  <span className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.size}</span>
-                  <span className="text-[7px] font-bold leading-none mt-0.5" style={{ color: "var(--text-muted)" }}>ppl</span>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-bold mb-1" style={{ color: "var(--text)" }}>{sel.size}-Person Group</p>
-                  {/* Overlapping avatars */}
-                  <div className="flex items-center">
-                    <div className="flex -space-x-1.5">
-                      {Array.from({ length: selShowMax }).map((_, j) => {
-                        const filled = hasSelPool && j < selMembers;
-                        return (
-                        <div key={j} className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[8px] font-medium overflow-hidden"
-                          style={{
-                            background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
-                            border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--text-muted)",
-                            color: filled ? "white" : "var(--text-muted)",
-                          }}>
-                          {filled && selPool?.memberAvatars?.[j]
-                            ? <img src={selPool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                            : filled ? (selPool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={10} />}
-                        </div>
-                        );
-                      })}
-                    </div>
-                    {selOverflow > 0 && <span className="text-[10px] font-extrabold ml-1" style={{ color: "var(--text-secondary)" }}>+{selOverflow} spots</span>}
-                  </div>
-                  <p className="text-[11px] mt-1"><span className="font-bold" style={{ color: "var(--text-secondary)" }}>Save {sel.discount}%</span><span className="font-medium" style={{ color: "var(--text-muted)" }}> · Closes in {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`}</span></p>
-                </div>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                <span className="text-[13px] font-bold" style={{ color: "var(--text)" }}>Save {discount}% with {minPeople}+ people</span>
               </div>
-              {/* Right — dynamic price + progress ring */}
-              <div className="flex items-center gap-3 shrink-0">
-                <div className="text-right">
-                  {cartSubtotal > 0 ? (
-                    <>
-                      <p className="text-[20px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(selPrice)}</p>
-                      <p className="text-[10px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{sel.discount}%</p>
-                      <p className="text-[10px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>off</p>
-                    </>
-                  )}
-                </div>
-                {/* Time window circle */}
-                <div className="relative w-[38px] h-[38px] flex items-center justify-center">
-                  <svg width="38" height="38" viewBox="0 0 38 38" className="absolute inset-0">
-                    <circle cx="19" cy="19" r="16" fill="none" stroke="var(--border)" strokeWidth="2.5" />
-                    <circle cx="19" cy="19" r="16" fill="none" stroke="var(--text-muted)" strokeWidth="2.5"
-                      strokeDasharray={`${2 * Math.PI * 16}`}
-                      strokeDashoffset={`${2 * Math.PI * 16 * 0.25}`}
-                      strokeLinecap="round"
-                      style={{ transform: "rotate(-90deg)", transformOrigin: "center" }} />
-                  </svg>
-                  <span className="text-[10px] font-extrabold tabular-nums leading-none" style={{ color: "var(--text-secondary)" }}>
-                    {sel.mins >= 60 ? `${Math.floor(sel.mins / 60)}h` : `${sel.mins}m`}
-                  </span>
-                </div>
-              </div>
+              <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[10px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How?</button>
             </div>
 
+            {/* Avatars + status + price */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex -space-x-1.5">
+                  {Array.from({ length: showMax }).map((_, j) => {
+                    const filled = j < members;
+                    return (
+                    <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[9px] font-medium overflow-hidden"
+                      style={{
+                        background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
+                        border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--text-muted)",
+                        color: filled ? "white" : "var(--text-muted)",
+                      }}>
+                      {filled && activePool?.memberAvatars?.[j]
+                        ? <img src={activePool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                        : filled ? (activePool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={10} />}
+                    </div>
+                    );
+                  })}
+                </div>
+                <div>
+                  <p className="text-[12px] font-bold" style={{ color: members >= minPeople ? "var(--emerald)" : "var(--text)" }}>
+                    {members > 0 ? `${members} of ${minPeople} joined` : `${minPeople} people needed`}
+                  </p>
+                  <p className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{windowMins}m window · Full refund if not filled</p>
+                </div>
+              </div>
+              {cartSubtotal > 0 && (
+                <div className="text-right shrink-0 ml-2">
+                  <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
+                  <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         );
@@ -644,10 +568,9 @@ export default function StorePage() {
                     <span className="text-[15px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(soloTotal)}</span>
                   </button>
                   <button type="button" onClick={() => {
-                    const tierSize = selectedTierIdx !== undefined ? [3, 5, store.groupTarget][selectedTierIdx] || store.groupTarget : store.groupTarget;
                     cart.setCheckoutMode(store.id, "group");
                     cart.setCheckoutMode(store.name, "group");
-                    try { localStorage.setItem("chopdrop-group-size", String(tierSize)); } catch {}
+                    try { localStorage.setItem("chopdrop-group-size", "3"); } catch {}
                     router.push("/cart");
                   }}
                     className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
