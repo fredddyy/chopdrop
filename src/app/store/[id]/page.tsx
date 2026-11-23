@@ -46,6 +46,23 @@ interface RealPool {
 
 const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 
+function GroupCountdown({ deadline }: { deadline: number }) {
+  const [left, setLeft] = useState(() => Math.max(0, Math.floor((deadline - Date.now()) / 1000)));
+  useEffect(() => {
+    const iv = setInterval(() => setLeft(Math.max(0, Math.floor((deadline - Date.now()) / 1000))), 1000);
+    return () => clearInterval(iv);
+  }, [deadline]);
+  if (left <= 0) return <p className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>Time expired</p>;
+  const m = Math.floor(left / 60);
+  const s = left % 60;
+  return (
+    <div className="flex items-center gap-1">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+      <span className="text-[11px] font-bold tabular-nums" style={{ color: "var(--coral)" }}>{m}m {s}s left</span>
+    </div>
+  );
+}
+
 function LiveTimer({ deadline }: { deadline: string }) {
   const [left, setLeft] = useState(() => Math.max(0, Math.floor((new Date(deadline).getTime() - Date.now()) / 1000)));
   useEffect(() => {
@@ -342,11 +359,15 @@ export default function StorePage() {
         const windowMins = 25;
         const activePool = livePools.find(lp => lp.memberCount > 0);
         const members = activePool?.memberCount || 0;
-        const showMax = 7;
+        const hasPool = members > 0;
+        const showAvatars = hasPool ? Math.max(members + 2, 5) : 5;
+        const overflow = hasPool && members > 5 ? members - 5 : 0;
         const storeCartItems = cart.items.filter(ci => ci.restaurantId === id || ci.restaurantName === store.name);
         const cartSubtotal = storeCartItems.reduce((s, ci) => s + ci.price * ci.quantity, 0);
         const groupPrice = cartSubtotal > 0 ? Math.round(cartSubtotal * (1 - discount / 100)) : 0;
         const AVATAR_BG = ["#E84C3D", "#F39C12", "#3498DB", "#1ABC9C", "#9B59B6"];
+        // Live countdown from pool deadline
+        const poolDeadline = activePool?.deadline ? new Date(activePool.deadline).getTime() : 0;
         return (
         <div className="px-5 mt-4">
           {/* Header — outside card */}
@@ -362,44 +383,47 @@ export default function StorePage() {
           {/* Card */}
           <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
             {/* Avatars row */}
-            <div className="flex -space-x-2">
-              {Array.from({ length: showMax }).map((_, j) => {
-                const filled = j < members;
-                return (
-                <div key={j} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden"
-                  style={{
-                    background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
-                    border: filled ? "2.5px solid var(--sand)" : "1.5px dashed var(--text-muted)",
-                    color: filled ? "white" : "var(--text-muted)",
-                  }}>
-                  {filled && activePool?.memberAvatars?.[j]
-                    ? <img src={activePool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                    : filled ? (activePool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={12} />}
-                </div>
-                );
-              })}
-            </div>
-            {/* Status + timer */}
-            <div className="flex items-center justify-between mt-2.5">
-              <div>
-                <p className="text-[12px] font-bold" style={{ color: members >= minPeople ? "var(--emerald)" : "var(--text)" }}>
-                  {members > 0 ? `${members} of ${minPeople} joined` : `${minPeople} people needed`}
-                </p>
-                <p className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{windowMins}m window · Full refund if not filled</p>
-              </div>
-              {/* Digital timer */}
-              <div className="flex items-center gap-1 shrink-0">
-                {[{ val: 0, unit: "h" }, { val: windowMins, unit: "m" }, { val: 0, unit: "s" }].map((seg, si) => (
-                  <div key={si} className="flex items-center">
-                    {si > 0 && <span className="text-[8px] font-bold mx-0.5" style={{ color: "var(--text-muted)" }}>:</span>}
-                    <span className="text-[12px] font-extrabold tabular-nums px-1.5 py-0.5 rounded-[5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)", background: "var(--card)" }}>
-                      {String(seg.val).padStart(2, "0")}
-                    </span>
-                    <span className="text-[7px] font-bold ml-0.5" style={{ color: "var(--text-muted)" }}>{seg.unit}</span>
+            <div className="flex items-center">
+              <div className="flex -space-x-2">
+                {Array.from({ length: Math.min(showAvatars, 5) }).map((_, j) => {
+                  const filled = j < members;
+                  return (
+                  <div key={j} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden"
+                    style={{
+                      background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
+                      border: filled ? "2.5px solid var(--sand)" : "1.5px dashed var(--text-muted)",
+                      color: filled ? "white" : "var(--text-muted)",
+                    }}>
+                    {filled && activePool?.memberAvatars?.[j]
+                      ? <img src={activePool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                      : filled ? (activePool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={12} />}
                   </div>
-                ))}
+                  );
+                })}
               </div>
+              {overflow > 0 && <span className="text-[10px] font-extrabold ml-1.5" style={{ color: "var(--text-secondary)" }}>+{overflow}</span>}
             </div>
+            {/* Status + save/price */}
+            <div className="flex items-center justify-between mt-2.5">
+              <p className="text-[12px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
+                {!hasPool ? "Start group buy" : `Join group · ${members} of ${minPeople}`}
+              </p>
+              {/* Right — save amount or discount */}
+              {cartSubtotal > 0 ? (
+                <div className="text-right shrink-0">
+                  <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
+                  <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</p>
+                </div>
+              ) : (
+                <span className="text-[13px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>Save {discount}%</span>
+              )}
+            </div>
+            {/* Live countdown — only when pool is active */}
+            {hasPool && poolDeadline > 0 && (
+              <div className="mt-2.5 pt-2.5" style={{ borderTop: "1px solid var(--border)" }}>
+                <GroupCountdown deadline={poolDeadline} />
+              </div>
+            )}
           </div>
         </div>
         );
