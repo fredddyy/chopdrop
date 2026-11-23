@@ -403,27 +403,32 @@ export default function StorePage() {
               </div>
               {overflow > 0 && <span className="text-[10px] font-extrabold ml-1.5" style={{ color: "var(--text-secondary)" }}>+{overflow}</span>}
             </div>
-            {/* Status + save/price */}
+            {/* Status + timer */}
             <div className="flex items-center justify-between mt-2.5">
-              <p className="text-[12px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
-                {!hasPool ? "Start group buy" : `Join group · ${members} of ${minPeople}`}
-              </p>
-              {/* Right — save amount or discount */}
-              {cartSubtotal > 0 ? (
-                <div className="text-right shrink-0">
-                  <p className="text-[16px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
-                  <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</p>
-                </div>
+              <div>
+                <p className="text-[12px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
+                  {!hasPool ? "Start group buy" : `Join group · ${members} of ${minPeople}`}
+                </p>
+                {/* Save amount or discount */}
+                {cartSubtotal > 0 ? (
+                  <div className="flex items-baseline gap-1.5 mt-0.5">
+                    <span className="text-[14px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</span>
+                    <span className="text-[9px] font-medium line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</span>
+                  </div>
+                ) : (
+                  <p className="text-[11px] font-bold mt-0.5" style={{ color: "var(--coral)" }}>Save {discount}%</p>
+                )}
+              </div>
+              {/* Timer — live when active, static when idle */}
+              {hasPool && poolDeadline > 0 ? (
+                <GroupCountdown deadline={poolDeadline} />
               ) : (
-                <span className="text-[13px] font-extrabold" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)" }}>Save {discount}%</span>
+                <div className="flex items-center gap-1 shrink-0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                  <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>{windowMins}m window</span>
+                </div>
               )}
             </div>
-            {/* Live countdown — only when pool is active */}
-            {hasPool && poolDeadline > 0 && (
-              <div className="mt-2.5 pt-2.5" style={{ borderTop: "1px solid var(--border)" }}>
-                <GroupCountdown deadline={poolDeadline} />
-              </div>
-            )}
           </div>
         </div>
         );
