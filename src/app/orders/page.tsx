@@ -72,8 +72,9 @@ export default function OrdersPage() {
     });
   }, []);
 
-  const activePools = pools.filter((p) => p.status === "OPEN" || p.status === "FILLED");
-  const pastPools = pools.filter((p) => p.status === "COMPLETED" || p.status === "EXPIRED" || p.status === "CANCELLED");
+  const now = Date.now();
+  const activePools = pools.filter((p) => (p.status === "OPEN" || p.status === "FILLED") && new Date(p.deadline).getTime() > now);
+  const pastPools = pools.filter((p) => p.status === "COMPLETED" || p.status === "EXPIRED" || p.status === "CANCELLED" || (p.status === "OPEN" && new Date(p.deadline).getTime() <= now));
   const activeGroupOrders = groupOrders.filter((g) => g.status === "OPEN" || g.status === "CLOSED" || g.status === "ORDERED" || g.status === "READY");
   const pastGroupOrders = groupOrders.filter((g) => g.status === "DELIVERED" || g.status === "CANCELLED");
   const totalActive = activePools.length + activeGroupOrders.length;
