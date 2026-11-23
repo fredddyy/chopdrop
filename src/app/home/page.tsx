@@ -779,14 +779,14 @@ export default function HomePage() {
                           <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 text-white" style={{ background: r.livePools.count > 0 ? "var(--coral)" : "rgba(0,0,0,0.7)" }}>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                             {r.livePools.count > 0
-                              ? `${r.livePools.count} ${r.livePools.count === 1 ? "group" : "groups"} buying`
+                              ? "Group buying now"
                               : `${r.groupDealCount} ${r.groupDealCount === 1 ? "deal" : "deals"}`}
                           </span>
                         )}
                         {/* Pool rows — bottom-right of banner */}
                         {r.livePools.pools.length > 0 && (
                           <div className="absolute bottom-2 right-2 flex flex-col gap-0.5 items-end">
-                            {r.livePools.pools.slice(0, 3).map((pool, pi) => (
+                            {r.livePools.pools.slice(0, 1).map((pool, pi) => (
                               <div key={pi} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full" style={{ background: "rgba(0,0,0,0.7)" }}>
                                 <div className="flex -space-x-1.5">
                                   {Array.from({ length: Math.min(pool.minSize, 5) }).map((_, j) => {
