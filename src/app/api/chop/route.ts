@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
   const shareCode = nanoid(8).toUpperCase();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const serviceFee = 15000; // ₦150
+  const serviceFee = 10000; // ₦100
   const currentTotal = retailTotal;
 
   const session = await prisma.chopSession.create({

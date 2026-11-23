@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
   const unitPrice = product.retailPrice;
   const totalAmount = unitPrice * quantity;
-  const serviceFee = 15000; // ₦150 flat
+  const serviceFee = 10000; // ₦100 flat
   const deliveryFee = deliveryAddress ? 120000 : 0; // ₦1,200 for delivery, free for pickup
   const grandTotal = totalAmount + serviceFee + deliveryFee;
 

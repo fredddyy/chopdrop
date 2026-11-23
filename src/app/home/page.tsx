@@ -71,6 +71,7 @@ function StoreImg({ src, fallback }: { src: string | null; fallback: string }) {
 
 function ChopCountdownBar({ productId }: { productId: string }) {
   const [left, setLeft] = useState(0);
+  const [expired, setExpired] = useState(false);
   useEffect(() => {
     let code: string | null = null;
     try {
@@ -81,6 +82,15 @@ function ChopCountdownBar({ productId }: { productId: string }) {
     fetch(`/api/chop/${code}`).then(r => r.json()).then(d => {
       if (d.success && d.data?.expiresAt) {
         const deadline = new Date(d.data.expiresAt).getTime();
+        if (deadline < Date.now() || d.data.status === "EXPIRED") {
+          // Clean up expired code
+          try {
+            const saved = localStorage.getItem("chopdrop-chop-codes");
+            if (saved) { const codes = JSON.parse(saved); delete codes[productId]; localStorage.setItem("chopdrop-chop-codes", JSON.stringify(codes)); }
+          } catch {}
+          setExpired(true);
+          return;
+        }
         const tick = () => setLeft(Math.max(0, Math.floor((deadline - Date.now()) / 1000)));
         tick();
         const iv = setInterval(tick, 1000);
@@ -88,7 +98,7 @@ function ChopCountdownBar({ productId }: { productId: string }) {
       }
     }).catch(() => {});
   }, [productId]);
-  if (left <= 0) return null;
+  if (expired || left <= 0) return null;
   const h = Math.floor(left / 3600);
   const m = Math.floor((left % 3600) / 60);
   const s = left % 60;

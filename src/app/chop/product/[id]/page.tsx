@@ -117,7 +117,24 @@ export default function ChopProductPage() {
     if (!chopCode) return;
     function fetchSession() {
       fetch(`/api/chop/${chopCode}`).then(r => r.json()).then(d => {
-        if (d.success && d.data) setChopSession(d.data);
+        if (d.success && d.data) {
+          // Check if expired
+          if (d.data.status === "EXPIRED" || (d.data.expiresAt && new Date(d.data.expiresAt).getTime() < Date.now())) {
+            // Clear expired code from localStorage
+            try {
+              const saved = localStorage.getItem("chopdrop-chop-codes");
+              if (saved) {
+                const codes = JSON.parse(saved);
+                delete codes[id];
+                localStorage.setItem("chopdrop-chop-codes", JSON.stringify(codes));
+              }
+            } catch {}
+            setChopCode(null);
+            setChopSession(null);
+            return;
+          }
+          setChopSession(d.data);
+        }
       }).catch(() => {});
     }
     fetchSession();

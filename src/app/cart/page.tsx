@@ -148,7 +148,7 @@ export default function CartPage() {
 
   // Calculate delivery and discounts using restaurant settings
   const packCount = Math.max(1, cart.items.filter(i => i.isPackItem).reduce((s, i) => s + i.quantity, 0) || Math.ceil(cart.items.filter(i => !i.isPackItem).length / 3) || 1);
-  const serviceFee = packCount * 15000;
+  const serviceFee = packCount * 10000;
   const creditsToApply = 0;
 
   // Find the first restaurant info for delivery fee

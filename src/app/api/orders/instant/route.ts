@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     discountAmount = Math.round(rawTotal * discPct / 100);
   }
   const totalAmount = rawTotal - discountAmount;
-  const serviceFee = 15000; // ₦150
+  const serviceFee = 10000; // ₦100
 
   // Use the first item's product for the order
   const primaryProductId = items[0].productId.replace("instant-", "");
