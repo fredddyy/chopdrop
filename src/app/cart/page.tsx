@@ -179,7 +179,7 @@ export default function CartPage() {
         const discount = info.groupDiscount || 30;
         savings += Math.round(restSubtotal * discount / 100);
         // Split delivery by 3 people
-        groupDelFee = Math.round(baseDeliveryFee / memberCount / 100) * 100;
+        groupDelFee = Math.round(baseDeliveryFee / memberCount / 1000) * 1000;
       }
     }
     savings = Math.round(savings / 100) * 100;
