@@ -74,10 +74,18 @@ function GroupCountdown({ deadline }: { deadline: number }) {
   if (left <= 0) return <p className="text-[10px] font-bold" style={{ color: "var(--coral)" }}>Time expired</p>;
   const m = Math.floor(left / 60);
   const s = left % 60;
+  const segments = [{ val: m, unit: "m" }, { val: s, unit: "s" }];
   return (
-    <div className="flex items-center gap-1">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="2.5" strokeLinecap="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-      <span className="text-[11px] font-bold tabular-nums" style={{ color: "var(--coral)" }}>{m}m {s}s left</span>
+    <div className="flex items-center gap-0.5">
+      {segments.map((seg, si) => (
+        <div key={si} className="flex items-center">
+          {si > 0 && <span className="text-[8px] font-bold mx-0.5" style={{ color: "var(--coral)" }}>:</span>}
+          <span className="text-[12px] font-extrabold tabular-nums px-1.5 py-0.5 rounded-[5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--coral)", background: "var(--coral-soft)" }}>
+            {String(seg.val).padStart(2, "0")}
+          </span>
+          <span className="text-[7px] font-bold ml-0.5" style={{ color: "var(--coral)" }}>{seg.unit}</span>
+        </div>
+      ))}
     </div>
   );
 }
