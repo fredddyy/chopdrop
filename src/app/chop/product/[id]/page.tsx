@@ -336,10 +336,6 @@ export default function ChopProductPage() {
           <span className="text-[11px] font-bold" style={{ color: "var(--emerald)" }}>
             {chopSession ? `Saved ${fp(product.retailPrice - currentPrice)} so far` : `Save ${fp(savings)}`}
           </span>
-          <span className="text-[11px] font-medium flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
-            Refundable
-          </span>
         </div>
       </div>
 
