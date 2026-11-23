@@ -342,7 +342,7 @@ export default function StorePage() {
         const windowMins = 25;
         const activePool = livePools.find(lp => lp.memberCount > 0);
         const members = activePool?.memberCount || 0;
-        const showMax = Math.min(minPeople + 2, 5);
+        const showMax = 7;
         const storeCartItems = cart.items.filter(ci => ci.restaurantId === id || ci.restaurantName === store.name);
         const cartSubtotal = storeCartItems.reduce((s, ci) => s + ci.price * ci.quantity, 0);
         const groupPrice = cartSubtotal > 0 ? Math.round(cartSubtotal * (1 - discount / 100)) : 0;
@@ -361,38 +361,44 @@ export default function StorePage() {
 
           {/* Card */}
           <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="flex -space-x-1.5">
-                  {Array.from({ length: showMax }).map((_, j) => {
-                    const filled = j < members;
-                    return (
-                    <div key={j} className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-[9px] font-medium overflow-hidden"
-                      style={{
-                        background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
-                        border: filled ? "2px solid var(--sand)" : "1.5px dashed var(--text-muted)",
-                        color: filled ? "white" : "var(--text-muted)",
-                      }}>
-                      {filled && activePool?.memberAvatars?.[j]
-                        ? <img src={activePool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
-                        : filled ? (activePool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={10} />}
-                    </div>
-                    );
-                  })}
+            {/* Avatars row */}
+            <div className="flex -space-x-2">
+              {Array.from({ length: showMax }).map((_, j) => {
+                const filled = j < members;
+                return (
+                <div key={j} className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden"
+                  style={{
+                    background: filled ? AVATAR_BG[j % AVATAR_BG.length] : "var(--card)",
+                    border: filled ? "2.5px solid var(--sand)" : "1.5px dashed var(--text-muted)",
+                    color: filled ? "white" : "var(--text-muted)",
+                  }}>
+                  {filled && activePool?.memberAvatars?.[j]
+                    ? <img src={activePool.memberAvatars[j]} alt="" className="w-full h-full object-cover" />
+                    : filled ? (activePool?.memberNames?.[j]?.charAt(0) || String.fromCharCode(65 + j)) : <User size={12} />}
                 </div>
-                <div>
-                  <p className="text-[12px] font-bold" style={{ color: members >= minPeople ? "var(--emerald)" : "var(--text)" }}>
-                    {members > 0 ? `${members} of ${minPeople} joined` : `${minPeople} people needed`}
-                  </p>
-                  <p className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{windowMins}m window · Full refund if not filled</p>
-                </div>
+                );
+              })}
+            </div>
+            {/* Status + timer */}
+            <div className="flex items-center justify-between mt-2.5">
+              <div>
+                <p className="text-[12px] font-bold" style={{ color: members >= minPeople ? "var(--emerald)" : "var(--text)" }}>
+                  {members > 0 ? `${members} of ${minPeople} joined` : `${minPeople} people needed`}
+                </p>
+                <p className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>{windowMins}m window · Full refund if not filled</p>
               </div>
-              {cartSubtotal > 0 && (
-                <div className="text-right shrink-0 ml-2">
-                  <p className="text-[18px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)" }}>{fp(groupPrice)}</p>
-                  <p className="text-[9px] font-medium mt-0.5 line-through tabular-nums" style={{ color: "var(--text-muted)" }}>{fp(cartSubtotal)}</p>
-                </div>
-              )}
+              {/* Digital timer */}
+              <div className="flex items-center gap-1 shrink-0">
+                {[{ val: 0, unit: "h" }, { val: windowMins, unit: "m" }, { val: 0, unit: "s" }].map((seg, si) => (
+                  <div key={si} className="flex items-center">
+                    {si > 0 && <span className="text-[8px] font-bold mx-0.5" style={{ color: "var(--text-muted)" }}>:</span>}
+                    <span className="text-[12px] font-extrabold tabular-nums px-1.5 py-0.5 rounded-[5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text)", background: "var(--card)" }}>
+                      {String(seg.val).padStart(2, "0")}
+                    </span>
+                    <span className="text-[7px] font-bold ml-0.5" style={{ color: "var(--text-muted)" }}>{seg.unit}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
