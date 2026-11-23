@@ -30,10 +30,10 @@ export async function POST(request: NextRequest) {
   // Calculate totals — apply group discount if applicable
   const rawTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   let discountAmount = 0;
-  if (groupDiscount && poolId) {
-    // Look up restaurant's groupDiscount
-    const primaryProductId = items[0].productId.replace("instant-", "");
-    const prod = await prisma.product.findUnique({ where: { id: primaryProductId }, select: { vendor: { select: { groupDiscount: true } } } });
+  if (groupDiscount) {
+    // Look up restaurant's groupDiscount — apply even without poolId (pool joins after payment)
+    const pProductId = items[0].productId.replace("instant-", "");
+    const prod = await prisma.product.findUnique({ where: { id: pProductId }, select: { vendor: { select: { groupDiscount: true } } } });
     const discPct = prod?.vendor?.groupDiscount || 30;
     discountAmount = Math.round(rawTotal * discPct / 100);
   }

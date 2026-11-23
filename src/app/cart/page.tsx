@@ -79,6 +79,9 @@ export default function CartPage() {
     } catch {}
   }, []);
 
+  // Reset loading state on mount (user may have returned from Paystack via back button)
+  useEffect(() => { setLoading(false); }, []);
+
   // Restore cart from backup if empty (user returned from failed Paystack payment)
   useEffect(() => {
     if (cart.items.length === 0) {
