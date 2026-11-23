@@ -265,7 +265,7 @@ export default function OrdersPage() {
                         background: pool.status === "COMPLETED" ? "var(--emerald-soft)" : pool.status === "EXPIRED" ? "var(--coral-soft)" : "var(--sand)",
                         color: pool.status === "COMPLETED" ? "var(--emerald)" : pool.status === "EXPIRED" ? "var(--coral)" : "var(--text-muted)",
                       }}>
-                        {pool.status === "COMPLETED" ? "Completed" : pool.status === "EXPIRED" ? "Expired · Refunded" : "Cancelled"}
+                        {pool.status === "COMPLETED" ? "Completed" : pool.status === "EXPIRED" ? (pool.myPaymentStatus === "REFUNDED" ? "Refunded" : "Expired · Refund processing") : "Cancelled"}
                       </span>
                     </div>
                   </div>
