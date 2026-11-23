@@ -445,9 +445,9 @@ export default function StorePage() {
               <div>
                 <div className="flex items-center gap-1.5">
                   <p className="text-[13px] font-bold" style={{ color: hasPool ? "var(--emerald)" : "var(--text)" }}>
-                    {!hasPool ? "Start group buy" : `Join group · ${members} of ${minPeople}`}
+                    {!hasPool ? "Start group buy" : "Join group"}
                   </p>
-                  <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>· {minPeople} people needed</span>
+                  <span className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>· minimum of {minPeople} people needed</span>
                 </div>
               </div>
               {/* Price/save — right of status */}
