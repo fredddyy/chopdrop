@@ -459,18 +459,35 @@ export default function ChopProductPage() {
       {/* ── Sticky bottom CTAs ── */}
       <div className="fixed bottom-[60px] left-0 right-0 z-50 px-5 pt-3 pb-3" style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[480px] mx-auto">
-          {chopSession && chopsDone > 0 && !isVisitor ? (
-            /* Owner view — can buy at current price or share more */
+          {isVisitor ? (
+            /* Visitor — chop the price for the owner */
+            <button type="button" onClick={handleChop} disabled={chopping}
+              className="w-full h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback disabled:opacity-50"
+              style={{ background: "var(--coral)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+              {chopping ? "Chopping..." : "Chop the price"}
+            </button>
+          ) : (
+            /* Owner — share link + buy at current price */
             <div className="flex gap-2.5">
-              <button type="button" onClick={() => {
-                cart.addItem({ dailyMenuId: product.id, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantId: product.vendor.id, restaurantName: product.vendor.name, price: currentPrice });
-                router.push("/cart");
-              }}
-                className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
-                style={{ background: "var(--coral)" }}>
-                <span className="text-[13px] font-bold">Buy now · {fp(currentPrice)}</span>
-                <span className="text-[9px] font-medium opacity-70">Saved {fp(product.retailPrice - currentPrice)} so far</span>
-              </button>
+              {chopSession && chopsDone > 0 ? (
+                <button type="button" onClick={() => {
+                  cart.addItem({ dailyMenuId: product.id, name: product.name, description: product.description || "", imageUrl: product.imageUrl, restaurantId: product.vendor.id, restaurantName: product.vendor.name, price: currentPrice });
+                  router.push("/cart");
+                }}
+                  className="flex-[1.4] h-[50px] rounded-[12px] flex flex-col items-center justify-center text-white press-feedback"
+                  style={{ background: "var(--coral)" }}>
+                  <span className="text-[13px] font-bold">Buy now · {fp(currentPrice)}</span>
+                  <span className="text-[9px] font-medium opacity-70">Saved {fp(product.retailPrice - currentPrice)} so far</span>
+                </button>
+              ) : (
+                <button type="button" onClick={handleShare}
+                  className="flex-[1.4] h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback"
+                  style={{ background: "var(--coral)" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
+                  Share to chop
+                </button>
+              )}
               <button type="button" onClick={handleShare}
                 className="flex-1 h-[50px] rounded-[12px] flex flex-col items-center justify-center press-feedback"
                 style={{ background: "var(--sand)" }}>
@@ -478,14 +495,6 @@ export default function ChopProductPage() {
                 <span className="text-[9px] font-medium" style={{ color: "var(--text-muted)" }}>{chopsLeft} chops left</span>
               </button>
             </div>
-          ) : (
-            /* Visitor view or first chop — always show "Chop the price" */
-            <button type="button" onClick={handleChop} disabled={chopping}
-              className="w-full h-[50px] rounded-[12px] flex items-center justify-center gap-2 text-[14px] font-bold text-white press-feedback disabled:opacity-50"
-              style={{ background: "var(--coral)" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
-              {chopping ? "Chopping..." : "Chop the price"}
-            </button>
           )}
         </div>
       </div>
