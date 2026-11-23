@@ -71,9 +71,15 @@ export async function POST(
       );
     }
 
-    // Calculate actual chop amount (never go below floor)
+    // Progressive chop — first person chops the most, each subsequent chop is smaller
+    // Uses a decreasing ratio: chop N gets (maxChops - N + 1) shares out of total shares
+    const totalShares = Array.from({ length: session.maxChops }, (_, i) => session.maxChops - i).reduce((a, b) => a + b, 0);
+    const chopNumber = session.currentChopCount + 1; // 1-indexed
+    const sharesForThisChop = session.maxChops - chopNumber + 1;
+    const totalSavings = session.retailTotal - session.groupFloor;
+    const progressiveAmount = Math.round((sharesForThisChop / totalShares) * totalSavings);
     const chopAmount = Math.min(
-      session.chopAmountPerClick,
+      Math.max(progressiveAmount, 1000), // at least ₦10
       session.currentTotal - session.groupFloor
     );
 
