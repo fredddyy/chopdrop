@@ -768,12 +768,6 @@ export default function HomePage() {
                             <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
                           </div>
                         )}
-                        {/* Discount badge — top left of banner */}
-                        {r.groupDiscount > 0 && (
-                          <span className="absolute top-3 left-3 text-[10px] font-extrabold px-2.5 py-1 rounded-full text-white" style={{ background: "var(--coral)" }}>
-                            {r.groupDiscount}% off · 3+ people
-                          </span>
-                        )}
                         {/* Group activity — on banner */}
                         {(r.livePools.count > 0 || r.groupDealCount > 0) && (
                           <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 text-white" style={{ background: r.livePools.count > 0 ? "var(--coral)" : "rgba(0,0,0,0.7)" }}>
