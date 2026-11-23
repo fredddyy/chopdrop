@@ -46,6 +46,25 @@ interface RealPool {
 
 const AVATAR_COLORS = ["#1C1C1E", "#EF502B", "#246347", "#F8CB57", "#E6DEF6"];
 
+function StaticCountdown({ mins }: { mins: number }) {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  const segments = h > 0 ? [{ val: h, unit: "h" }, { val: m, unit: "m" }, { val: 0, unit: "s" }] : [{ val: m, unit: "m" }, { val: 0, unit: "s" }];
+  return (
+    <div className="flex items-center gap-0.5">
+      {segments.map((seg, si) => (
+        <div key={si} className="flex items-center">
+          {si > 0 && <span className="text-[8px] font-bold mx-0.5" style={{ color: "var(--text-muted)" }}>:</span>}
+          <span className="text-[12px] font-extrabold tabular-nums px-1.5 py-0.5 rounded-[5px]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif", color: "var(--text-muted)", background: "var(--card)" }}>
+            {String(seg.val).padStart(2, "0")}
+          </span>
+          <span className="text-[7px] font-bold ml-0.5" style={{ color: "var(--text-muted)" }}>{seg.unit}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function GroupCountdown({ deadline }: { deadline: number }) {
   const [left, setLeft] = useState(() => Math.max(0, Math.floor((deadline - Date.now()) / 1000)));
   useEffect(() => {
@@ -405,17 +424,11 @@ export default function StorePage() {
                 {overflow > 0 && <span className="text-[10px] font-extrabold ml-1.5" style={{ color: "var(--text-secondary)" }}>+{overflow}</span>}
               </div>
               {/* Timer — right of avatars */}
-              <div className="shrink-0 text-right">
+              <div className="shrink-0">
                 {hasPool && poolDeadline > 0 ? (
                   <GroupCountdown deadline={poolDeadline} />
                 ) : (
-                  <>
-                    <div className="flex items-center gap-1 justify-end">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      <span className="text-[11px] font-bold" style={{ color: "var(--text-secondary)" }}>{windowMins}m window</span>
-                    </div>
-                    <p className="text-[9px] font-medium mt-0.5" style={{ color: "var(--text-muted)" }}>Full refund if not filled</p>
-                  </>
+                  <StaticCountdown mins={windowMins} />
                 )}
               </div>
             </div>
