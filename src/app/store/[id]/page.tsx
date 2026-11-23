@@ -397,7 +397,7 @@ export default function StorePage() {
             </div>
             <button type="button" onClick={() => setHowItWorksOpen(!howItWorksOpen)} className="text-[10px] font-bold press-feedback" style={{ color: "var(--coral)" }}>How?</button>
           </div>
-          <p className="text-[11px] mb-2.5" style={{ color: "var(--text-muted)" }}>Minimum of {minPeople} people needed · {discount}% off</p>
+          <p className="text-[11px] mb-2.5" style={{ color: "var(--text-muted)" }}>Minimum of {minPeople} people needed · {discount}% off · {windowMins}min window</p>
 
           {/* Card */}
           <div className="rounded-[16px] p-4" style={{ background: "var(--sand)" }}>
@@ -424,8 +424,7 @@ export default function StorePage() {
                 {overflow > 0 && <span className="text-[10px] font-extrabold ml-1.5" style={{ color: "var(--text-secondary)" }}>+{overflow}</span>}
               </div>
               {/* Timer — right of avatars */}
-              <div className="shrink-0 text-right">
-                <p className="text-[9px] font-medium mb-1" style={{ color: "var(--text-muted)" }}>{windowMins}min window</p>
+              <div className="shrink-0">
                 {hasPool && poolDeadline > 0 ? (
                   <GroupCountdown deadline={poolDeadline} />
                 ) : (
