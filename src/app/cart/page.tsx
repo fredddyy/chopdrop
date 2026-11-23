@@ -237,6 +237,51 @@ export default function CartPage() {
     saveCustomerProfile({ name: customerName.trim(), phone: customerPhone.trim(), email: "", deliveryAddress: deliveryAddress.trim(), preferredFulfillment: "DELIVERY", officeId, officeName, collectionPoint });
     try {
       const items = cart.items.map(i => ({ productId: i.dailyMenuId, quantity: i.quantity, price: i.price }));
+
+      // If group mode, create/join a pool first
+      if (isGroupMode) {
+        const primaryProductId = items[0].productId.replace("instant-", "");
+        const poolRes = await fetch("/api/pools/find-or-create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId: primaryProductId, minSize: 3, quantity: items[0].quantity }),
+        });
+        const poolData = await poolRes.json();
+        if (!poolData.success) {
+          // If already joined, just go to orders
+          if (poolData.error?.includes("already")) {
+            cart.clearCart();
+            window.location.href = "/orders";
+            return;
+          }
+          setError(poolData.error || "Could not join group"); setLoading(false); return;
+        }
+        // Pool joined/created — now pay at the discounted price
+        const poolId = poolData.data?.poolId;
+        const payload: Record<string, unknown> = { items, deliveryOption: deliveryToggle, poolId, groupDiscount: true };
+        if (deliveryToggle === "delivery" && deliveryPref?.lat && deliveryPref?.lng) {
+          payload.lat = deliveryPref.lat; payload.lng = deliveryPref.lng;
+        } else if (deliveryToggle === "delivery") {
+          try {
+            const stored = localStorage.getItem("chopdrop-customer");
+            if (stored) { const p = JSON.parse(stored); if (p.latitude && p.longitude) { payload.lat = p.latitude; payload.lng = p.longitude; } }
+          } catch {}
+        }
+        const res = await fetch("/api/orders/instant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (!data.success) { setError(data.error || "Something went wrong"); setLoading(false); return; }
+        if (data.data.authorizationUrl) {
+          sessionStorage.setItem("chopdrop-cart-backup", JSON.stringify(cart.items));
+          cart.clearCart();
+          window.location.href = data.data.authorizationUrl;
+        } else {
+          cart.clearCart();
+          window.location.href = `/order/confirmation/${data.data.orderCode || "success"}`;
+        }
+        return;
+      }
+
+      // Solo mode — same as before
       const payload: Record<string, unknown> = { items, deliveryOption: deliveryToggle };
       if (deliveryToggle === "delivery" && deliveryPref?.lat && deliveryPref?.lng) {
         payload.lat = deliveryPref.lat; payload.lng = deliveryPref.lng;
@@ -250,12 +295,10 @@ export default function CartPage() {
       const data = await res.json();
       if (!data.success) { setError(data.error || "Something went wrong"); setLoading(false); return; }
       if (data.data.authorizationUrl) {
-        // Save cart to sessionStorage so we can restore on failed payment
         sessionStorage.setItem("chopdrop-cart-backup", JSON.stringify(cart.items));
         cart.clearCart();
         window.location.href = data.data.authorizationUrl;
       } else if (orderTotal === 0) {
-        // Zero-amount order (credits covered everything)
         cart.clearCart();
         window.location.href = `/order/confirmation/${data.data.orderCode || "success"}`;
       } else { setError("Payment failed. Try again."); setLoading(false); }

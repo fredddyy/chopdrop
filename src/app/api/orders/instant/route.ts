@@ -14,19 +14,30 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
 
   const body = await request.json();
-  const { items, deliveryOption, lat, lng } = body as {
+  const { items, deliveryOption, lat, lng, poolId, groupDiscount } = body as {
     items: Array<{ productId: string; quantity: number; price: number }>;
     deliveryOption?: "pickup" | "delivery";
     lat?: number;
     lng?: number;
+    poolId?: string;
+    groupDiscount?: boolean;
   };
 
   if (!items || items.length === 0) {
     return NextResponse.json({ success: false, error: "No items" }, { status: 400 });
   }
 
-  // Calculate totals
-  const totalAmount = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  // Calculate totals — apply group discount if applicable
+  const rawTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  let discountAmount = 0;
+  if (groupDiscount && poolId) {
+    // Look up restaurant's groupDiscount
+    const primaryProductId = items[0].productId.replace("instant-", "");
+    const prod = await prisma.product.findUnique({ where: { id: primaryProductId }, select: { vendor: { select: { groupDiscount: true } } } });
+    const discPct = prod?.vendor?.groupDiscount || 30;
+    discountAmount = Math.round(rawTotal * discPct / 100);
+  }
+  const totalAmount = rawTotal - discountAmount;
   const serviceFee = 15000; // ₦150
 
   // Use the first item's product for the order

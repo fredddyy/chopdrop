@@ -27,26 +27,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Product not found" }, { status: 404 });
   }
 
-  // Validate minSize matches a real tier (with fallback defaults)
-  let tiers = Array.isArray(product.vendor.groupTiers) ? product.vendor.groupTiers as Array<{ min: number; discount: number }> : [];
-  if (tiers.length === 0) {
-    tiers = [{ min: 3, discount: 10 }, { min: 5, discount: 20 }, { min: 10, discount: 30 }];
-  }
-  const selectedTier = tiers.find(t => t.min === minSize);
-  if (!selectedTier) {
-    return NextResponse.json({ success: false, error: `No tier found for ${minSize} people` }, { status: 400 });
-  }
-
-  // Compute tier price
-  const unitPrice = Math.round(product.retailPrice * (1 - selectedTier.discount / 100));
+  // Flat discount model — use restaurant's groupDiscount (default 30%)
+  const vendor = await prisma.restaurant.findUnique({ where: { id: product.vendorId }, select: { groupDiscount: true } });
+  const discountPct = vendor?.groupDiscount || 30;
+  const unitPrice = Math.round(product.retailPrice * (1 - discountPct / 100));
 
   // Resolve area from user profile
   const creator = await prisma.user.findUnique({ where: { id: user.id }, select: { areaName: true } });
   const areaName = creator?.areaName || null;
 
-  // Pool timer
-  const timerSetting = await prisma.setting.findUnique({ where: { key: "pool-default-timer" } });
-  const poolHours = timerSetting?.value && Number(timerSetting.value) > 0 ? Number(timerSetting.value) : 2;
+  // Pool timer — 25 minutes (0.4167 hours) for the flat group model
+  const timerSetting = await prisma.setting.findUnique({ where: { key: "pool-default-timer-mins" } });
+  const poolMins = timerSetting?.value && Number(timerSetting.value) > 0 ? Number(timerSetting.value) : 25;
+  const poolHours = poolMins / 60;
 
   // Atomic find-or-create in a transaction
   const result = await prisma.$transaction(async (tx) => {
@@ -127,7 +120,7 @@ export async function POST(request: NextRequest) {
     data: {
       ...result,
       unitPrice,
-      discount: selectedTier.discount,
+      discount: discountPct,
       totalAmount: unitPrice * quantity,
     },
   });
