@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createHash } from "crypto";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth";
 
 export async function POST(
   request: NextRequest,
@@ -8,13 +9,21 @@ export async function POST(
 ) {
   try {
     const { code } = await params;
-    const body = await request.json();
-    const { name } = body as { name?: string };
 
-    if (!name || typeof name !== "string" || !name.trim()) {
+    // ── SAFEGUARD: Require logged-in user (phone-verified) ──
+    const cookieStore = await cookies();
+    const token = cookieStore.get("chopdrop-user-token")?.value;
+    if (!token) {
       return NextResponse.json(
-        { success: false, error: "Name is required" },
-        { status: 400 }
+        { success: false, error: "Log in to chop a price" },
+        { status: 401 }
+      );
+    }
+    const user = verifyToken(token);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "Log in to chop a price" },
+        { status: 401 }
       );
     }
 
@@ -26,6 +35,14 @@ export async function POST(
       return NextResponse.json(
         { success: false, error: "Chop session not found" },
         { status: 404 }
+      );
+    }
+
+    // ── SAFEGUARD: Can't chop your own session ──
+    if (session.userId === user.id) {
+      return NextResponse.json(
+        { success: false, error: "You can't chop your own price — share the link with friends!" },
+        { status: 400 }
       );
     }
 
@@ -54,14 +71,9 @@ export async function POST(
       );
     }
 
-    // Hash IP for dedup
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
-    const ipHash = createHash("sha256").update(ip).digest("hex");
-
-    // Check for existing chop from this IP
-    const existingChop = await prisma.chopClick.findUnique({
-      where: { sessionId_ipHash: { sessionId: session.id, ipHash } },
+    // ── SAFEGUARD: One chop per USER (not per IP) ──
+    const existingChop = await prisma.chopClick.findFirst({
+      where: { sessionId: session.id, chopperId: user.id },
     });
 
     if (existingChop) {
@@ -71,16 +83,19 @@ export async function POST(
       );
     }
 
+    // ── SAFEGUARD: Floor price — never go below 70% of retail (max 30% off) ──
+    const floorPrice = Math.round(session.retailTotal * 0.7);
+    const effectiveFloor = Math.max(session.groupFloor, floorPrice);
+
     // Progressive chop — first person chops the most, each subsequent chop is smaller
-    // Uses a decreasing ratio: chop N gets (maxChops - N + 1) shares out of total shares
     const totalShares = Array.from({ length: session.maxChops }, (_, i) => session.maxChops - i).reduce((a, b) => a + b, 0);
-    const chopNumber = session.currentChopCount + 1; // 1-indexed
+    const chopNumber = session.currentChopCount + 1;
     const sharesForThisChop = session.maxChops - chopNumber + 1;
-    const totalSavings = session.retailTotal - session.groupFloor;
+    const totalSavings = session.retailTotal - effectiveFloor;
     const progressiveAmount = Math.round((sharesForThisChop / totalShares) * totalSavings);
     const chopAmount = Math.min(
       Math.max(progressiveAmount, 1000), // at least ₦10
-      session.currentTotal - session.groupFloor
+      session.currentTotal - effectiveFloor
     );
 
     if (chopAmount <= 0) {
@@ -90,12 +105,24 @@ export async function POST(
       );
     }
 
-    // Create click + update session atomically
+    // Get user name for display
+    const chopperUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { firstName: true, lastName: true },
+    });
+    const chopperName = chopperUser ? `${chopperUser.firstName || ""} ${chopperUser.lastName || ""}`.trim() || "Friend" : "Friend";
+
+    // IP hash as backup tracking
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+    const ipHash = require("crypto").createHash("sha256").update(ip).digest("hex");
+
+    // ── Create click + update session + credit chopper atomically ──
     const [click, updatedSession] = await prisma.$transaction([
       prisma.chopClick.create({
         data: {
           sessionId: session.id,
-          chopperName: name.trim(),
+          chopperName,
+          chopperId: user.id,
           ipHash,
           amount: chopAmount,
         },
@@ -109,14 +136,35 @@ export async function POST(
       }),
     ]);
 
+    // ── SAFEGUARD: Give chopper ₦50 credit (non-blocking) ──
+    const CHOP_REWARD = 5000; // 50 naira in kobo
+    try {
+      await prisma.creditWallet.upsert({
+        where: { userId: user.id },
+        update: { balance: { increment: CHOP_REWARD } },
+        create: { userId: user.id, balance: CHOP_REWARD },
+      });
+      await prisma.creditTransaction.create({
+        data: {
+          walletId: (await prisma.creditWallet.findUnique({ where: { userId: user.id } }))!.id,
+          amount: CHOP_REWARD,
+          type: "CREDIT",
+          description: `Chop reward for helping ${session.shareCode}`,
+        },
+      });
+    } catch {
+      // Non-critical — don't fail the chop if credit fails
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         chopAmount: click.amount,
         newTotal: updatedSession.currentTotal,
-        chopperName: name.trim(),
+        chopperName,
         totalChops: updatedSession.currentChopCount,
         maxChops: updatedSession.maxChops,
+        rewardCredit: CHOP_REWARD,
       },
     });
   } catch (error: unknown) {

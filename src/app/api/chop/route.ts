@@ -29,6 +29,19 @@ export async function POST(request: NextRequest) {
       { status: 401 },
     );
 
+  // ── SAFEGUARD: Cap 3 chop sessions per user per day ──
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const userSessionsToday = await prisma.chopSession.count({
+    where: { userId: user.id, createdAt: { gte: todayStart } },
+  });
+  if (userSessionsToday >= 3) {
+    return NextResponse.json(
+      { success: false, error: "You can only create 3 chop sessions per day" },
+      { status: 400 },
+    );
+  }
+
   const body = await request.json();
   const { items } = body as { items: ChopItem[] };
 
@@ -73,9 +86,10 @@ export async function POST(request: NextRequest) {
     chopAmountPerClick = Math.floor(savingsRange / 5);
   }
 
+  // ── SAFEGUARD: Max 10 chops per session ──
   const maxChops = Math.min(
     Math.floor(savingsRange / chopAmountPerClick),
-    50,
+    10,
   );
 
   if (maxChops <= 0) {
@@ -86,7 +100,8 @@ export async function POST(request: NextRequest) {
   }
 
   const shareCode = nanoid(8).toUpperCase();
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  // ── SAFEGUARD: 1-hour window (not 24h) ──
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
   const serviceFee = 10000; // ₦100
   const currentTotal = retailTotal;
 

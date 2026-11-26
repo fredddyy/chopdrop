@@ -558,6 +558,7 @@ model ChopSession {
 model ChopClick {
   id          String   @id @default(cuid())
   sessionId   String
+  chopperId   String?  // userId of the person who chopped (null for legacy clicks)
   chopperName String
   ipHash      String
   amount      Int      // kobo — actual amount this chop removed
@@ -567,6 +568,7 @@ model ChopClick {
 
   @@unique([sessionId, ipHash])
   @@index([sessionId])
+  @@index([sessionId, chopperId])
 }
 
 enum ChopStatus {
