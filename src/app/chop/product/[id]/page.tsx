@@ -118,9 +118,13 @@ export default function ChopProductPage() {
     function fetchSession() {
       fetch(`/api/chop/${chopCode}`).then(r => r.json()).then(d => {
         if (d.success && d.data) {
-          // Check if expired
-          if (d.data.status === "EXPIRED" || (d.data.expiresAt && new Date(d.data.expiresAt).getTime() < Date.now())) {
-            // Clear expired code from localStorage
+          // Check if expired OR legacy session (>1h remaining = old 24h window)
+          const expiresAt = d.data.expiresAt ? new Date(d.data.expiresAt).getTime() : 0;
+          const timeRemaining = expiresAt - Date.now();
+          const isExpired = d.data.status === "EXPIRED" || expiresAt < Date.now();
+          const isLegacy = timeRemaining > 3600000; // >1h remaining = old 24h session
+          if (isExpired || isLegacy) {
+            // Clear stale code from localStorage
             try {
               const saved = localStorage.getItem("chopdrop-chop-codes");
               if (saved) {

@@ -82,7 +82,8 @@ function ChopCountdownBar({ productId }: { productId: string }) {
     fetch(`/api/chop/${code}`).then(r => r.json()).then(d => {
       if (d.success && d.data?.expiresAt) {
         const deadline = new Date(d.data.expiresAt).getTime();
-        if (deadline < Date.now() || d.data.status === "EXPIRED") {
+        const timeRemaining = deadline - Date.now();
+        if (deadline < Date.now() || d.data.status === "EXPIRED" || timeRemaining > 3600000) {
           // Clean up expired code
           try {
             const saved = localStorage.getItem("chopdrop-chop-codes");
